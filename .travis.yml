@@ -11,10 +11,9 @@ go_import_path: github.com/makerdao/vdb-mcd-transformers
 before_install:
 - make installtools
 - bash ./scripts/install-postgres-11.sh
-- curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-- echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-- sudo apt-get update && sudo apt-get install yarn python3-pip -y
+- sudo apt-get update && sudo apt-get install python3-pip -y
 - sudo pip3 install awscli
+- docker build -f dockerfiles/gomoderator/Dockerfile .
 script:
 - scripts/check_config.sh
 - env GO111MODULE=on make test

@@ -40,6 +40,7 @@ const (
 	Sump       = "sump"
 	Bump       = "bump"
 	Hump       = "hump"
+	Live       = "live"
 )
 
 var (
@@ -114,6 +115,13 @@ var (
 		Keys: nil,
 		Type: types.Uint256,
 	}
+
+	LiveKey      = common.HexToHash(vdbStorage.IndexTwelve)
+	LiveMetadata = types.ValueMetadata{
+		Name: Live,
+		Keys: nil,
+		Type: types.Uint256,
+	}
 )
 
 type keysLoader struct {
@@ -180,6 +188,7 @@ func addStaticMappings(mappings map[common.Hash]types.ValueMetadata) map[common.
 	mappings[SumpKey] = SumpMetadata
 	mappings[BumpKey] = BumpMetadata
 	mappings[HumpKey] = HumpMetadata
+	mappings[LiveKey] = LiveMetadata
 	return mappings
 }
 

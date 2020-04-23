@@ -24,9 +24,11 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -36,17 +38,14 @@ import (
 
 var _ = Describe("Vow storage repository test", func() {
 	var (
-		diffID, fakeHeaderID int64
-		fakeAddress          string
-		fakeUint256          string
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		err                  error
+		diffID, fakeHeaderID int64
+		fakeAddress          = "0x" + fakes.RandomString(40)
+		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		repo                 vow.VowStorageRepository
 	)
 
 	BeforeEach(func() {
-		fakeAddress = fakes.FakeAddress.Hex()
-		fakeUint256 = strconv.Itoa(rand.Intn(1000000))
 		test_config.CleanTestDB(db)
 		repo = vow.VowStorageRepository{}
 		repo.SetDB(db)
@@ -101,82 +100,46 @@ var _ = Describe("Vow storage repository test", func() {
 		})
 	})
 
-	It("persists a vow vat", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.VatMetadata, fakeAddress)
+	Describe("Vat", func() {
+		metadata := types.ValueMetadata{Name: storage.Vat}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: storage.Vat,
+			Value:          fakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowVatTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, vat AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowVatTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate vow vat", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.VatMetadata, fakeAddress)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("Flapper", func() {
+		metadata := types.ValueMetadata{Name: vow.Flapper}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Flapper,
+			Value:          fakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowFlapperTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.VatMetadata, fakeAddress)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowVatTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("persists a vow flapper", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.FlapperMetadata, fakeAddress)
+	Describe("Flopper", func() {
+		metadata := types.ValueMetadata{Name: vow.Flopper}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Flopper,
+			Value:          fakeAddress,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowFlopperTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, flapper AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlapperTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
-	})
-
-	It("does not duplicate vow flapper", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.FlapperMetadata, fakeAddress)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.FlapperMetadata, fakeAddress)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlapperTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
-
-	It("persists a vow flopper", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.FlopperMetadata, fakeAddress)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, flopper AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlopperTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeAddress)
-	})
-
-	It("does not duplicate vow flopper", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.FlopperMetadata, fakeAddress)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.FlopperMetadata, fakeAddress)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowFlopperTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
 	Describe("vow sin mapping", func() {
@@ -223,185 +186,115 @@ var _ = Describe("Vow storage repository test", func() {
 		})
 	})
 
-	It("persists a vow Sin integer", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.SinIntegerMetadata, fakeUint256)
+	Describe("Sin integer", func() {
+		metadata := types.ValueMetadata{Name: vow.SinInteger}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.SinInteger,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowSinIntegerTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, sin AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinIntegerTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate vow Sin integer", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.SinIntegerMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("Ash", func() {
+		metadata := types.ValueMetadata{Name: vow.Ash}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Ash,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowAshTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.SinIntegerMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSinIntegerTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("persists a vow Ash", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.AshMetadata, fakeUint256)
+	Describe("Wait", func() {
+		metadata := types.ValueMetadata{Name: vow.Wait}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Wait,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowWaitTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, ash AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowAshTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate vow Ash", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.AshMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("Dump", func() {
+		metadata := types.ValueMetadata{Name: vow.Dump}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Dump,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowDumpTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.AshMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowAshTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("persists a vow Wait", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.WaitMetadata, fakeUint256)
+	Describe("Sump", func() {
+		metadata := types.ValueMetadata{Name: vow.Sump}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Sump,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowSumpTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, wait AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowWaitTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate vow Wait", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.WaitMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("Bump", func() {
+		metadata := types.ValueMetadata{Name: vow.Bump}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Bump,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowBumpTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.WaitMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowWaitTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("persists a vow Dump", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.DumpMetadata, fakeUint256)
+	Describe("Hump", func() {
+		metadata := types.ValueMetadata{Name: vow.Hump}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: vow.Hump,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowHumpTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, dump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowDumpTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 
-	It("does not duplicate vow Dump", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.DumpMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("Live", func() {
+		metadata := types.ValueMetadata{Name: storage.Live}
+		inputs := shared_behaviors.StorageBehaviorInputs{
+			ValueFieldName: storage.Live,
+			Value:          fakeUint256,
+			Schema:         constants.MakerSchema,
+			TableName:      constants.VowLiveTable,
+			Repository:     &repo,
+			Metadata:       metadata,
+		}
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.DumpMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*)  FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowDumpTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
-
-	It("persists a vow Sump", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.SumpMetadata, fakeUint256)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, sump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSumpTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate vow Sump", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.SumpMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.SumpMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowSumpTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
-
-	It("persists a vow Bump", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.BumpMetadata, fakeUint256)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, bump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowBumpTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate vow Bump", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.BumpMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.BumpMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowBumpTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
-
-	It("persists a vow Hump", func() {
-		err = repo.Create(diffID, fakeHeaderID, vow.HumpMetadata, fakeUint256)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, hump AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowHumpTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate vow Hump", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vow.HumpMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vow.HumpMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VowHumpTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+		shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 	})
 })

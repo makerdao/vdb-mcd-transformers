@@ -27,6 +27,14 @@ func FlipABI() string {
 }
 func FlopABI() string { return getContractABI("MCD_FLOP") }
 func JugABI() string  { return getContractABI("MCD_JUG") }
+func MedianABI() string {
+	return GetContractsABI([]string{
+		"MEDIAN_ETH", "MEDIAN_BAT",
+	})
+}
+func OasisABI() string {
+	return GetContractsABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
+}
 func OsmABI() string {
 	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
 }
@@ -61,8 +69,38 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string   { return getSolidityFunctionSignature(JugABI(), "init") }
-func logValueMethod() string  { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func jugInitMethod() string        { return getSolidityFunctionSignature(JugABI(), "init") }
+func logBumpEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
+func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
+func logKillEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
+func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
+func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
+func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
+func logTradeEvent() string        { return getSolidityFunctionSignature(OasisABI(), "LogTrade") }
+func logUnsortedOfferMethod() string {
+	return getSolidityFunctionSignature(OasisABI(), "LogUnsortedOffer")
+}
+func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+
+func medianDissBatchMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
+}
+func medianDissSingleMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+}
+func medianDropMethod() string {
+	return getSolidityFunctionSignature(MedianABI(), "drop")
+}
+func medianLiftMethod() string {
+	return getSolidityFunctionSignature(MedianABI(), "lift")
+}
+func medianKissBatchMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
+}
+func medianKissSingleMethod() string {
+	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
+}
 func newCdpMethod() string    { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func osmChangeMethod() string { return getSolidityFunctionSignature(OsmABI(), "change") }
 func potCageMethod() string   { return getSolidityFunctionSignature(PotABI(), "cage") }
@@ -100,8 +138,10 @@ func vatForkMethod() string { return getSolidityFunctionSignature(VatABI(), "for
 func vatFrobMethod() string { return getSolidityFunctionSignature(VatABI(), "frob") }
 func vatGrabMethod() string { return getSolidityFunctionSignature(VatABI(), "grab") }
 func vatHealMethod() string { return getSolidityFunctionSignature(VatABI(), "heal") }
+func vatHopeMethod() string { return getSolidityFunctionSignature(VatABI(), "hope") }
 func vatInitMethod() string { return getSolidityFunctionSignature(VatABI(), "init") }
 func vatMoveMethod() string { return getSolidityFunctionSignature(VatABI(), "move") }
+func vatNopeMethod() string { return getSolidityFunctionSignature(VatABI(), "nope") }
 func vatSlipMethod() string { return getSolidityFunctionSignature(VatABI(), "slip") }
 func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suck") }
 func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }

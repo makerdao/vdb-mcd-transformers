@@ -4,9 +4,15 @@
 # Verify required args present
 MISSING_VAR_MESSAGE=" is required and no value was given"
 
-if test -z "$GET_STORAGE_VALUE_BLOCK_NUMBER"
+if test -z "$STARTING_BLOCK_NUMBER"
 then
-    echo GET_STORAGE_VALUE_BLOCK_NUMBER $MISSING_VAR_MESSAGE
+    echo STARTING_BLOCK_NUMBER $MISSING_VAR_MESSAGE
+    exit 1
+fi
+
+if test -z "$ENDING_BLOCK_NUMBER"
+then
+    echo ENDING_BLOCK_NUMBER $MISSING_VAR_MESSAGE
     exit 1
 fi
 
@@ -34,5 +40,5 @@ if test -z "$VDB_PG_CONNECT"; then
 fi
 
 # Run getStorageValue
-echo "Running getStorageValue for block: $GET_STORAGE_VALUE_BLOCK_NUMBER"
-./vulcanizedb getStorageValue --get-storage-value-block-number=$GET_STORAGE_VALUE_BLOCK_NUMBER --config config.toml
+echo "Running backfillStorage from block $STARTING_BLOCK_NUMBER to $ENDING_BLOCK_NUMBER"
+./vulcanizedb backfillStorage -s=$STARTING_BLOCK_NUMBER -e=$ENDING_BLOCK_NUMBER --config config.toml

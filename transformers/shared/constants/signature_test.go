@@ -86,8 +86,68 @@ var _ = Describe("Signature constants", func() {
 		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
+	It("generates diss (batch) signature", func() {
+		Expect(MedianDissBatchSignature()).To(Equal("0x46d4577d00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates diss (single) signature", func() {
+		Expect(MedianDissSingleSignature()).To(Equal("0x65c4ce7a00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates kiss (batch) signature", func() {
+		Expect(MedianKissBatchSignature()).To(Equal("0x1b25b65f00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates drop signature", func() {
+		Expect(MedianDropSignature()).To(Equal("0x8ef5eaf000000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates lift signature", func() {
+		Expect(MedianLiftSignature()).To(Equal("0x9431810600000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates kiss (single) signature", func() {
+		Expect(MedianKissSingleSignature()).To(Equal("0xf29c29c400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates new cdp signature", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
+	})
+
+	It("generates oasis log bump signature", func() {
+		Expect(LogBumpSignature()).To(Equal("0x70a14c213064359ede031fd2a1645a11ce2ec825ffe6ab5cfb5b160c3ef4d0a2"))
+	})
+
+	It("generates oasis log item update signature", func() {
+		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
+	})
+
+	It("generates oasis log kill signature", func() {
+		Expect(LogKillSignature()).To(Equal("0x9577941d28fff863bfbee4694a6a4a56fb09e169619189d2eaa750b5b4819995"))
+	})
+
+	It("generates oasis log make signature", func() {
+		Expect(LogMakeSignature()).To(Equal("0x773ff502687307abfa024ac9f62f9752a0d210dac2ffd9a29e38e12e2ea82c82"))
+	})
+
+	It("generates oasis log minsell signature", func() {
+		Expect(LogMinSellSignature()).To(Equal("0xc28d56449b0bb31e64ee7487e061f57a2e72aea8019d810832f26dda099823d0"))
+	})
+
+	It("generates oasis log sorted offer signature", func() {
+		Expect(LogSortedOfferSignature()).To(Equal("0x20fb9bad86c18f7e22e8065258790d9416a7d2df8ff05f80f82c46d38b925acd"))
+	})
+
+	It("generates oasis log take signature", func() {
+		Expect(LogTakeSignature()).To(Equal("0x3383e3357c77fd2e3a4b30deea81179bc70a795d053d14d5b7f2f01d0fd4596f"))
+	})
+
+	It("generates oasis log trade signature", func() {
+		Expect(LogTradeSignature()).To(Equal("0x819e390338feffe95e2de57172d6faf337853dfd15c7a09a32d76f7fd2443875"))
+	})
+
+	It("generates oasis log unsorted offer signature", func() {
+		Expect(LogUnsortedOfferSignature()).To(Equal("0x8173832a493e0a3989e521458e55bfe9feac9f9b675a94e100b9d5a85f814862"))
 	})
 
 	It("generates pot cage signature", func() {
@@ -178,12 +238,20 @@ var _ = Describe("Signature constants", func() {
 		Expect(VatHealSignature()).To(Equal("0xf37ac61c00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates vat hope signature", func() {
+		Expect(VatHopeSignature()).To(Equal("0xa3b22fc400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates vat init signature", func() {
 		Expect(VatInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vat move signature", func() {
 		Expect(VatMoveSignature()).To(Equal("0xbb35783b00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vat nope signature", func() {
+		Expect(VatNopeSignature()).To(Equal("0xdc4d20fa00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vat slip signature", func() {

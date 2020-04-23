@@ -19,7 +19,21 @@ import (
 	jug_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk/initializer"
 	jug_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow/initializer"
 	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
+	log_bump "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_bump/initializer"
+	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
+	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
+	log_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_min_sell/initializer"
+	log_sorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_sorted_offer/initializer"
+	log_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_take/initializer"
+	log_trade "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_trade/initializer"
+	log_unsorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_unsorted_offer/initializer"
 	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
+	median_diss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch/initializer"
+	median_diss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single/initializer"
+	median_drop "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_drop/initializer"
+	median_kiss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_kiss/batch/initializer"
+	median_kiss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_kiss/single/initializer"
+	median_lift "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_lift/initializer"
 	new_cdp "github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp/initializer"
 	osm_change "github.com/makerdao/vdb-mcd-transformers/transformers/events/osm_change/initializer"
 	pot_cage "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage/initializer"
@@ -35,6 +49,8 @@ import (
 	tend "github.com/makerdao/vdb-mcd-transformers/transformers/events/tend/initializer"
 	tick "github.com/makerdao/vdb-mcd-transformers/transformers/events/tick/initializer"
 	vat_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/deny_initializer"
+	vat_hope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/hope_initializer"
+	vat_nope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/nope_initializer"
 	vat_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/rely_initializer"
 	vat_file_debt_ceiling "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling/initializer"
 	vat_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk/initializer"
@@ -91,7 +107,21 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			jug_file_ilk.EventTransformerInitializer,
 			jug_file_vow.EventTransformerInitializer,
 			jug_init.EventTransformerInitializer,
+			log_bump.EventTransformerInitializer,
+			log_item_update.EventTransformerInitializer,
+			log_make.EventTransformerInitializer,
+			log_min_sell.EventTransformerInitializer,
+			log_sorted_offer.EventTransformerInitializer,
+			log_take.EventTransformerInitializer,
+			log_trade.EventTransformerInitializer,
+			log_unsorted_offer.EventTransformerInitializer,
 			log_value.EventTransformerInitializer,
+			median_diss_batch.EventTransformerInitializer,
+			median_diss_single.EventTransformerInitializer,
+			median_drop.EventTransformerInitializer,
+			median_kiss_batch.EventTransformerInitializer,
+			median_kiss_single.EventTransformerInitializer,
+			median_lift.EventTransformerInitializer,
 			new_cdp.EventTransformerInitializer,
 			osm_change.EventTransformerInitializer,
 			pot_cage.EventTransformerInitializer,
@@ -116,8 +146,10 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vat_frob.EventTransformerInitializer,
 			vat_grab.EventTransformerInitializer,
 			vat_heal.EventTransformerInitializer,
+			vat_hope.EventTransformerInitializer,
 			vat_init.EventTransformerInitializer,
 			vat_move.EventTransformerInitializer,
+			vat_nope.EventTransformerInitializer,
 			vat_rely.EventTransformerInitializer,
 			vat_slip.EventTransformerInitializer,
 			vat_suck.EventTransformerInitializer,

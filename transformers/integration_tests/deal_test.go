@@ -89,9 +89,9 @@ var _ = Describe("Deal transformer", func() {
 		Expect(dbResult[0].BidID).To(Equal("115"))
 		Expect(dbResult[0].AddressID).To(Equal(flipAddressID))
 	})
-	//TODO: There are no flop deal events on mainnet
-	XIt("persists a flop deal log event", func() {
-		blockNumber := int64(15788320)
+
+	It("persists a flop deal log event", func() {
+		blockNumber := int64(9763527)
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
@@ -115,13 +115,12 @@ var _ = Describe("Deal transformer", func() {
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidID).To(Equal("989"))
+		Expect(dbResult[0].BidID).To(Equal("102"))
 		Expect(dbResult[0].AddressID).To(Equal(flopAddressID))
 	})
 
-	//TODO: There are no flap deal events on mainnet
-	XIt("persists a flap deal log event", func() {
-		blockNumber := int64(15240030)
+	It("persists a flap deal log event", func() {
+		blockNumber := int64(9635404)
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
@@ -144,8 +143,8 @@ var _ = Describe("Deal transformer", func() {
 		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(2))
-		Expect(dbResult[0].BidID).To(Equal("506"))
+		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].BidID).To(Equal("48"))
 		Expect(dbResult[0].AddressID).To(Equal(flapAddressID))
 	})
 })

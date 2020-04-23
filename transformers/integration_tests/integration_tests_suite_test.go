@@ -1,7 +1,6 @@
 package integration_tests
 
 import (
-	"errors"
 	"io/ioutil"
 	"log"
 	"testing"
@@ -30,21 +29,15 @@ var _ = BeforeSuite(func() {
 	testConfig.SetConfigName("testing")
 	testConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	err := testConfig.ReadInConfig()
+	Expect(err).To(BeNil())
 	ipc = testConfig.GetString("client.ipcPath")
-	if err != nil {
-		logrus.Fatal(err)
-	}
 	// If we don't have an ipc path in the config file, check the env variable
 	if ipc == "" {
 		configErr := testConfig.BindEnv("url", "CLIENT_IPCPATH")
-		if configErr != nil {
-			logrus.Fatalf("Unable to bind url to CLIENT_IPCPATH env var")
-		}
+		Expect(configErr).To(BeNil(), "Unable to bind url to CLIENT_IPCPATH env var")
 		ipc = testConfig.GetString("url")
 	}
-	if ipc == "" {
-		logrus.Fatal(errors.New("testing.toml IPC path or $CLIENT_IPCPATH env variable need to be set"))
-	}
+	Expect(ipc).NotTo(BeEmpty(), "testing.toml IPC path or $CLIENT_IPCPATH env variable need to be set")
 
 	rpcClient, ethClient, clientErr := getClients(ipc)
 	Expect(clientErr).NotTo(HaveOccurred())

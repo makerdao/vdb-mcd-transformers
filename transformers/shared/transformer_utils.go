@@ -19,7 +19,9 @@ package shared
 import (
 	"errors"
 	"fmt"
+	"math"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 )
@@ -51,4 +53,20 @@ func VerifyLog(log types.Log, expectedNumTopics int, isDataRequired bool) error 
 		return ErrLogMissingData
 	}
 	return nil
+}
+
+func GetLogNoteAddresses(arrayLength uint64, eventLogData []byte) ([]string, error) {
+	startingIndex := 2
+	maxVisibleAddresses := 4
+	endIndex := startingIndex + int(math.Min(float64(maxVisibleAddresses), float64(arrayLength))-1)
+	var addresses []string
+	for i := startingIndex; i <= endIndex; i++ {
+		logDataBytes, logNoteErr := GetLogNoteArgumentAtIndex(i, eventLogData)
+		if logNoteErr != nil {
+			return nil, logNoteErr
+		}
+		addressHex := common.BytesToAddress(logDataBytes).Hex()
+		addresses = append(addresses, addressHex)
+	}
+	return addresses, nil
 }

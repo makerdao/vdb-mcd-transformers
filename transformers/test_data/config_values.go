@@ -21,10 +21,30 @@ func FlipAddresses() []string {
 	return addressesResult
 }
 
-func EthFlipAddress() string { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
-func EthOsmAddress() string  { return checksum(constants.GetContractAddress("OSM_ETH")) }
-func FlopAddress() string    { return checksum(constants.GetContractAddress("MCD_FLOP")) }
-func JugAddress() string     { return checksum(constants.GetContractAddress("MCD_JUG")) }
+func EthFlipAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
+func EthMedianAddress() string { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
+func EthOsmAddress() string    { return checksum(constants.GetContractAddress("OSM_ETH")) }
+func FlopAddress() string      { return checksum(constants.GetContractAddress("MCD_FLOP")) }
+func JugAddress() string       { return checksum(constants.GetContractAddress("MCD_JUG")) }
+func MedianAddresses() []string {
+	var addressesResult []string
+	medianAddresses := constants.GetContractAddresses([]string{"MEDIAN_ETH", "MEDIAN_BAT"})
+
+	for _, address := range medianAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+}
+func OasisAddresses() []string {
+	var addressesResult []string
+	oasisAddresses := constants.GetContractAddresses([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
+
+	for _, address := range oasisAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+
+}
 func OsmAddresses() []string {
 	var addressesResult []string
 	osmAddresses := constants.GetContractAddresses([]string{"OSM_ETH", "OSM_BAT"})
