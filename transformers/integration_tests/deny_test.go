@@ -39,6 +39,22 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8928160), test_data.JugAddress(), usrAddress, usrAddress)
 	})
 
+	Context("OSM Bat deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957031), test_data.OsmBatAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM Eth deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957029), test_data.OsmEthAddress(), usrAddress, usrAddress)
+	})
+
+	// "OSM_USDC" is actually just a DS value contract right now and does not have "deny"
+	XContext("OSM USDC deny events", func() {
+		usrAddress := ""
+		denyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), usrAddress, usrAddress)
+	})
+
 	Context("Pot deny events", func() {
 		usrAddress := "0x1a5ee7c64cf874c735968e3a42fa13f1c03427f9"
 		denyIntegrationTest(int64(8928160), test_data.PotAddress(), usrAddress, usrAddress)
