@@ -21,6 +21,7 @@ var (
 			common.HexToHash("0x0000000000000000000000006b175474e89094c44da98b954eedeac495271d0f"),
 			common.HexToHash("0x0000000000000000000000000000000000000000000000001bc16d674ec80000"),
 		},
+
 		Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000044bf7c734e0000000000000000000000006b175474e89094c44da98b954eedeac495271d0f0000000000000000000000000000000000000000000000001bc16d674ec80000"),
 		BlockNumber: 8944595,
 		TxHash:      common.HexToHash("0x307beec267a2ca431f24501b13add423ddfba6aef0b23e4c54673b309f6065cc"),
@@ -43,8 +44,8 @@ var (
 	setMinSellModel = event.InsertionModel{
 		SchemaName: constants.MakerSchema,
 		TableName:  constants.SetMinSellTable,
-		OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.PayGemColumn,
-			constants.DustColumn},
+		OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK,
+			constants.PayGemColumn, constants.DustColumn},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK:       SetMinSellEventLog.HeaderID,
 			event.LogFK:          SetMinSellEventLog.ID,
