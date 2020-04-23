@@ -64,6 +64,7 @@ const (
 	PotFileVowTable         = "pot_file_vow"
 	PotJoinTable            = "pot_join"
 	RelyTable               = "rely"
+	SetMinSellTable         = "set_min_sell"
 	SpotFileMatTable        = "spot_file_mat"
 	SpotFileParTable        = "spot_file_par"
 	SpotFilePipTable        = "spot_file_pip"
