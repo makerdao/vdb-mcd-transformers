@@ -42,6 +42,7 @@ import (
 	pot_file_dsr "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr/initializer"
 	pot_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow/initializer"
 	pot_join "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join/initializer"
+	set_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/set_min_sell/initializer"
 	spot_file_mat "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat/initializer"
 	spot_file_par "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/par/initializer"
 	spot_file_pip "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip/initializer"
@@ -131,6 +132,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			pot_file_vow.EventTransformerInitializer,
 			pot_join.EventTransformerInitializer,
 			rely.EventTransformerInitializer,
+			set_min_sell.EventTransformerInitializer,
 			spot_file_mat.EventTransformerInitializer,
 			spot_file_par.EventTransformerInitializer,
 			spot_file_pip.EventTransformerInitializer,
