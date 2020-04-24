@@ -11180,6 +11180,7 @@ CREATE TABLE maker.set_min_sell (
     header_id integer NOT NULL,
     address_id integer NOT NULL,
     pay_gem integer NOT NULL,
+    msg_sender integer NOT NULL,
     dust numeric
 );
 
@@ -19600,6 +19601,13 @@ CREATE INDEX set_min_sell_log_index ON maker.set_min_sell USING btree (log_id);
 
 
 --
+-- Name: set_min_sell_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_msg_sender ON maker.set_min_sell USING btree (msg_sender);
+
+
+--
 -- Name: set_min_sell_pay_gem_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -23560,6 +23568,14 @@ ALTER TABLE ONLY maker.set_min_sell
 
 ALTER TABLE ONLY maker.set_min_sell
     ADD CONSTRAINT set_min_sell_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

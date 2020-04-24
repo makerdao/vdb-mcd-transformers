@@ -24,6 +24,12 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		senderAddress := log.Log.Topics[1].Hex()
+		senderAddressID, senderAddressErr := shared.GetOrCreateAddress(senderAddress, db)
+		if senderAddressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(senderAddressErr)
+		}
+
 		payGemAddress := log.Log.Topics[2].Hex()
 		payGemID, payGemErr := shared.GetOrCreateAddress(payGemAddress, db)
 		if payGemErr != nil {
@@ -37,14 +43,15 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 			TableName:  constants.SetMinSellTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, event.LogFK, event.AddressFK, constants.PayGemColumn,
-				constants.DustColumn,
+				constants.MsgSenderColumn, constants.DustColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.AddressFK:        addressID,
-				event.HeaderFK:         log.HeaderID,
-				event.LogFK:            log.ID,
-				constants.PayGemColumn: payGemID,
-				constants.DustColumn:   shared.BigIntToString(dustInt),
+				event.AddressFK:           addressID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.PayGemColumn:    payGemID,
+				constants.MsgSenderColumn: senderAddressID,
+				constants.DustColumn:      shared.BigIntToString(dustInt),
 			},
 		}
 

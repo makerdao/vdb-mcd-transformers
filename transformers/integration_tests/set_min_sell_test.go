@@ -53,17 +53,20 @@ var _ = Describe("SetMinSell Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []setMinSellModel
-		err = db.Select(&dbResults, `SELECT pay_gem, dust, address_id from maker.set_min_sell`)
+		err = db.Select(&dbResults, `SELECT pay_gem, dust, msg_sender, address_id from maker.set_min_sell`)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasis_one_address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedPayGemID, payGemErr := shared.GetOrCreateAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F", db)
 		Expect(payGemErr).NotTo(HaveOccurred())
+		expectedMsgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xdb33dfd3d61308c33c63209845dad3e6bfb2c674", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 		Expect(dbResult.PayGem).To(Equal(expectedPayGemID))
+		Expect(dbResult.MsgSender).To(Equal(expectedMsgSenderID))
 		Expect(dbResult.Dust).To(Equal("2000000000000000000"))
 		Expect(dbResult.AddressID).To(Equal(expectedAddressID))
 	})
@@ -98,18 +101,21 @@ var _ = Describe("SetMinSell Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []setMinSellModel
-		err = db.Select(&dbResults, `SELECT pay_gem, dust, address_id from maker.set_min_sell`)
+		err = db.Select(&dbResults, `SELECT pay_gem, dust, msg_sender, address_id from maker.set_min_sell`)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedAddressID, addressErr := shared.GetOrCreateAddress(oasis_two_address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedPayGemID, payGemErr := shared.GetOrCreateAddress("0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", db)
 		Expect(payGemErr).NotTo(HaveOccurred())
+		expectedMsgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xdb33dfd3d61308c33c63209845dad3e6bfb2c674", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(2))
 		sort.Sort(byDust(dbResults))
 		dbResult := dbResults[0]
 		Expect(dbResult.PayGem).To(Equal(expectedPayGemID))
+		Expect(dbResult.MsgSender).To(Equal(expectedMsgSenderID))
 		Expect(dbResult.Dust).To(Equal("21786"))
 		Expect(dbResult.AddressID).To(Equal(expectedAddressID))
 	})
@@ -117,6 +123,7 @@ var _ = Describe("SetMinSell Transformer", func() {
 
 type setMinSellModel struct {
 	PayGem    int64  `db:"pay_gem"`
+	MsgSender int64  `db:"msg_sender"`
 	Dust      string `db:"dust"`
 	AddressID int64  `db:"address_id"`
 }

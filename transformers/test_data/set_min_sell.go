@@ -38,14 +38,14 @@ var (
 		Transformed: false,
 	}
 
-	SetMinSellPayGemAddress = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
+	SetMinSellPayGemAddress    = common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f")
+	SetMinSellMsgSenderAddress = common.HexToAddress("0xdb33dfd3d61308c33c63209845dad3e6bfb2c674")
 
-	// https://etherscan.io/tx/0x307beec267a2ca431f24501b13add423ddfba6aef0b23e4c54673b309f6065cc#eventlog
 	setMinSellModel = event.InsertionModel{
 		SchemaName: constants.MakerSchema,
 		TableName:  constants.SetMinSellTable,
 		OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, event.AddressFK,
-			constants.PayGemColumn, constants.DustColumn},
+			constants.PayGemColumn, constants.MsgSenderColumn, constants.DustColumn},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK:       SetMinSellEventLog.HeaderID,
 			event.LogFK:          SetMinSellEventLog.ID,

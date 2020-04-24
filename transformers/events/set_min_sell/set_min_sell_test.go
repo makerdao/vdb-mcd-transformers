@@ -9,5 +9,5 @@ import (
 
 func TestLogMinSell(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "SetMinSell Suite")
+	RunSpecs(t, "SetMinSell Event Transformer Suite")
 }
