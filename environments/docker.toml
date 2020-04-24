@@ -446,6 +446,13 @@
         migrations = "db/migrations"
         contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
         rank = "0"
+    [exporter.set_min_sell]
+        path = "transformers/events/set_min_sell/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
     [exporter.spot_file_mat]
         path = "transformers/events/spot_file/mat/initializer"
         type = "eth_event"
