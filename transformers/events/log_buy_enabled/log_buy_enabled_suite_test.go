@@ -9,5 +9,5 @@ import (
 
 func TestLogBuyEnabled(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogBuyEnabled Suite")
+	RunSpecs(t, "LogBuyEnabled Event Transformer Suite")
 }

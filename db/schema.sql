@@ -10233,6 +10233,39 @@ ALTER SEQUENCE maker.log_make_id_seq OWNED BY maker.log_make.id;
 
 
 --
+-- Name: log_matching_enabled; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_matching_enabled (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    is_enabled boolean
+);
+
+
+--
+-- Name: log_matching_enabled_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_matching_enabled_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_matching_enabled_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_matching_enabled_id_seq OWNED BY maker.log_matching_enabled.id;
+
+
+--
 -- Name: log_min_sell; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13982,6 +14015,13 @@ ALTER TABLE ONLY maker.log_make ALTER COLUMN id SET DEFAULT nextval('maker.log_m
 
 
 --
+-- Name: log_matching_enabled id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled ALTER COLUMN id SET DEFAULT nextval('maker.log_matching_enabled_id_seq'::regclass);
+
+
+--
 -- Name: log_min_sell id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16056,6 +16096,22 @@ ALTER TABLE ONLY maker.log_make
 
 ALTER TABLE ONLY maker.log_make
     ADD CONSTRAINT log_make_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_pkey PRIMARY KEY (id);
 
 
 --
@@ -19045,6 +19101,27 @@ CREATE INDEX log_make_maker_index ON maker.log_make USING btree (maker);
 --
 
 CREATE INDEX log_make_pay_gem_index ON maker.log_make USING btree (pay_gem);
+
+
+--
+-- Name: log_matching_enabled_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_address_index ON maker.log_matching_enabled USING btree (address_id);
+
+
+--
+-- Name: log_matching_enabled_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_header_index ON maker.log_matching_enabled USING btree (header_id);
+
+
+--
+-- Name: log_matching_enabled_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_log_index ON maker.log_matching_enabled USING btree (log_id);
 
 
 --
@@ -22877,6 +22954,30 @@ ALTER TABLE ONLY maker.log_make
 
 ALTER TABLE ONLY maker.log_make
     ADD CONSTRAINT log_make_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --

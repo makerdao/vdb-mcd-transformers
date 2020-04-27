@@ -9,5 +9,5 @@ import (
 
 func TestLogMatchingEnabled(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogMatchingEnabled Suite")
+	RunSpecs(t, "LogMatchingEnabled Event Transformer Suite")
 }

@@ -38,6 +38,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogBu
 
 	return entities, nil
 }
+
 func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	entities, entityErr := t.toEntities(abi, logs)
 	if entityErr != nil {
