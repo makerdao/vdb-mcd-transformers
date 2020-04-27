@@ -350,35 +350,14 @@ var _ = Describe("Maker storage repository", func() {
 	})
 
 	Describe("getting vat can keys", func() {
-		It("returns tx_from and usr address from vat hope/nope events", func() {
-			hopeTxFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			hopeUsr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			insertVatHope(hopeTxFrom, hopeUsr, db)
-			nopeTxFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			nopeUsr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			insertVatNope(nopeTxFrom, nopeUsr, db)
+		It("returns urn from maker.cdp_manager_urns as bit and cdp manager address as usr", func() {
+			urn := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			insertCdpManagerUrn(urn, db)
 
 			can, err := repository.GetVatCanKeys()
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(can).To(ConsistOf(
-				storage.Can{Bit: hopeTxFrom, Usr: hopeUsr},
-				storage.Can{Bit: nopeTxFrom, Usr: nopeUsr},
-			))
-		})
-
-		It("does not include duplicates", func() {
-			txFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			usr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
-			insertVatHope(txFrom, usr, db)
-			insertVatNope(txFrom, usr, db)
-			insertVatHope(txFrom, usr, db)
-			insertVatNope(txFrom, usr, db)
-
-			can, err := repository.GetVatCanKeys()
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(can).To(ConsistOf(storage.Can{Bit: txFrom, Usr: usr}))
+			Expect(can).To(ConsistOf(storage.Can{Bit: urn, Usr: test_data.CdpManagerAddress()}))
 		})
 
 		It("does not return error if no matching rows", func() {
@@ -850,6 +829,15 @@ func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
 	Expect(err).NotTo(HaveOccurred())
 }
 
+func insertCdpManagerUrn(urn string, db *postgres.DB) {
+	blockNumber := rand.Int63()
+	headerID := insertHeader(db, blockNumber)
+	diffID := test_helpers.CreateFakeDiffRecordWithHeader(db, fakes.GetFakeHeader(blockNumber))
+	_, err := db.Exec(`INSERT INTO maker.cdp_manager_urns (diff_id, header_id, cdpi, urn)
+		VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`, diffID, headerID, 0, urn)
+	Expect(err).NotTo(HaveOccurred())
+}
+
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFoldLog := test_data.CreateTestLog(headerID, db)
@@ -987,34 +975,6 @@ func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *pos
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
-func insertVatHope(msgSender, usr string, db *postgres.DB) {
-	insertVatHopeOrNope(msgSender, usr, "hope", db)
-}
-
-func insertVatHopeOrNope(msgSender, usr, hopeOrNope string, db *postgres.DB) {
-	blockNumber := rand.Int63()
-	headerID := insertHeader(db, blockNumber)
-	transaction := core.TransactionModel{
-		From:    msgSender,
-		Hash:    "0x" + test_data.RandomString(64),
-		TxIndex: 0,
-		Value:   "0",
-	}
-	insertTransaction(blockNumber, transaction, db)
-	log := types.Log{TxHash: common.HexToHash(transaction.Hash)}
-	eventLogRepository := repositories.NewEventLogRepository(db)
-	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, []types.Log{log})
-	Expect(insertLogsErr).NotTo(HaveOccurred())
-	usrID, usrErr := shared.GetOrCreateAddress(usr, db)
-	Expect(usrErr).NotTo(HaveOccurred())
-	var logID int64
-	getLogErr := db.Get(&logID, `SELECT id FROM public.event_logs WHERE tx_hash = $1`, transaction.Hash)
-	Expect(getLogErr).NotTo(HaveOccurred())
-	insertQuery := fmt.Sprintf("INSERT INTO maker.vat_%s (header_id, log_id, usr) VALUES ($1, $2, $3)", hopeOrNope)
-	_, execErr := db.Exec(insertQuery, headerID, logID, usrID)
-	Expect(execErr).NotTo(HaveOccurred())
-}
-
 func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatMoveLog := test_data.CreateTestLog(headerID, db)
@@ -1024,10 +984,6 @@ func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 		headerID, src, dst, 0, vatMoveLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
-}
-
-func insertVatNope(msgSender, usr string, db *postgres.DB) {
-	insertVatHopeOrNope(msgSender, usr, "nope", db)
 }
 
 func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {

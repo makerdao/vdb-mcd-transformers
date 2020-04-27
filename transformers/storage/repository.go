@@ -20,6 +20,8 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	vdbRepository "github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -30,8 +32,8 @@ type Urn struct {
 }
 
 type Can struct {
-	Bit string `db:"tx_from"`
-	Usr string `db:"address"`
+	Bit string
+	Usr string
 }
 
 var ErrNoFlips = errors.New("no flips exist in db")
@@ -266,20 +268,21 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 }
 
 func (repository *MakerStorageRepository) GetVatCanKeys() ([]Can, error) {
-	var canKeys []Can
-	selectErr := repository.db.Select(&canKeys, `
-		SELECT transactions.tx_from, addresses.address
-		FROM maker.vat_hope
-			LEFT JOIN public.addresses ON vat_hope.usr = addresses.id
-			LEFT JOIN public.event_logs ON vat_hope.log_id = event_logs.id
-			LEFT JOIN public.transactions ON event_logs.tx_hash = transactions.hash
-		UNION
-		SELECT transactions.tx_from, addresses.address
-		FROM maker.vat_nope
-			LEFT JOIN public.addresses ON vat_nope.usr = addresses.id
-			LEFT JOIN public.event_logs ON vat_nope.log_id = event_logs.id
-			LEFT JOIN public.transactions ON event_logs.tx_hash = transactions.hash`)
-	return canKeys, selectErr
+	var urns []string
+	selectErr := repository.db.Select(&urns, `SELECT urn as bit FROM maker.cdp_manager_urns`)
+	if selectErr != nil {
+		return nil, selectErr
+	}
+	cdpManagerAddress := common.HexToAddress(constants.GetContractAddress("CDP_MANAGER")).Hex()
+	var cans []Can
+	for _, urn := range urns {
+		can := Can{
+			Bit: urn,
+			Usr: cdpManagerAddress,
+		}
+		cans = append(cans, can)
+	}
+	return cans, nil
 }
 
 func (repository *MakerStorageRepository) GetVatWardsAddresses() ([]string, error) {

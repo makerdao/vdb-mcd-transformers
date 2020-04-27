@@ -26,7 +26,7 @@ import (
 const (
 	insertVatQuery      = `INSERT INTO maker.cdp_manager_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	InsertCdpiQuery     = `INSERT INTO maker.cdp_manager_cdpi (diff_id, header_id, cdpi) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertUrnsQuery     = `INSERT INTO maker.cdp_manager_urns (diff_id, header_id, cdpi, urn) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertUrnsQuery     = `INSERT INTO maker.cdp_manager_urns (diff_id, header_id, cdpi, urn) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertListPrevQuery = `INSERT INTO maker.cdp_manager_list_prev (diff_id, header_id, cdpi, prev) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertListNextQuery = `INSERT INTO maker.cdp_manager_list_next (diff_id, header_id, cdpi, next) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertOwnsQuery     = `INSERT INTO maker.cdp_manager_owns (diff_id, header_id, cdpi, owner) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -87,7 +87,7 @@ func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64,
 		return keyErr
 	}
 
-	_, writeErr := repository.db.Exec(insertUrnsQuery, diffID, headerID, cdpi, urns)
+	_, writeErr := repository.db.Exec(InsertUrnsQuery, diffID, headerID, cdpi, urns)
 	return writeErr
 }
 

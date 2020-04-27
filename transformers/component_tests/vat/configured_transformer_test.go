@@ -24,6 +24,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -95,6 +96,32 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vatAddressID, 10)))
 		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+	})
+
+	It("reads in a Vat can storage diff row and persists it", func() {
+		bitAddress := "0xA343597588A6B0b89F223761b34e8e59d26C7CA3"
+		bitAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(bitAddress, db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+		urnsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, fakes.FakeHash, fakes.AnotherFakeHash)
+		_, insertErr := db.Exec(cdp_manager.InsertUrnsQuery, urnsDiff.ID, header.Id, 0, bitAddress)
+		Expect(insertErr).NotTo(HaveOccurred())
+
+		userAddress := test_data.CdpManagerAddress()
+		userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+		Expect(userAddressErr).NotTo(HaveOccurred())
+
+		key := common.HexToHash("a9e7c36d2bb007228418450f4974182bb58cceda5fc169c080dbb8b53a4a2747")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		canDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+
+		transformErr := transformer.Execute(canDiff)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var canResult test_helpers.DoubleMappingRes
+		err := db.Get(&canResult, `SELECT diff_id, header_id, bit as key_one, usr AS key_two, can AS value FROM maker.vat_can`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertDoubleMapping(canResult, canDiff.ID, header.Id, strconv.FormatInt(bitAddressID, 10), strconv.FormatInt(userAddressID, 10), "1")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {
