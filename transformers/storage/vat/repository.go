@@ -27,6 +27,7 @@ import (
 )
 
 const (
+	insertCanQuery     = `INSERT INTO maker.vat_can (diff_id, header_id, bit, usr, can) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertDaiQuery     = `INSERT INTO maker.vat_dai (diff_id, header_id, guy, dai) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertGemQuery     = `INSERT INTO maker.vat_gem (diff_id, header_id, ilk_id, guy, gem) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertIlkArtQuery  = `INSERT INTO maker.vat_ilk_art (diff_id, header_id, ilk_id, art) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -52,6 +53,8 @@ func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata 
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, contractAddress, value.(string), repository.db)
+	case Can:
+		return repository.insertCan(diffID, headerID, metadata, value.(string))
 	case Dai:
 		return repository.insertDai(diffID, headerID, metadata, value.(string))
 	case Gem:
@@ -87,6 +90,46 @@ func (repository *VatStorageRepository) Create(diffID, headerID int64, metadata 
 
 func (repository *VatStorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
+}
+
+func (repository *VatStorageRepository) insertCan(diffID, headerID int64, metadata types.ValueMetadata, can string) error {
+	bit, bitErr := getKey(metadata.Keys, constants.Bit)
+	if bitErr != nil {
+		return bitErr
+	}
+	usr, usrErr := getKey(metadata.Keys, constants.User)
+	if usrErr != nil {
+		return usrErr
+	}
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	bitID, insertBitErr := shared.GetOrCreateAddressInTransaction(bit, tx)
+	if insertBitErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("can bit", insertBitErr.Error())
+		}
+		return insertBitErr
+	}
+	usrID, insertUsrErr := shared.GetOrCreateAddressInTransaction(usr, tx)
+	if insertUsrErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("can usr", insertBitErr.Error())
+		}
+		return insertUsrErr
+	}
+	_, writeErr := tx.Exec(insertCanQuery, diffID, headerID, bitID, usrID, can)
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("can", writeErr.Error())
+		}
+		return writeErr
+	}
+	return tx.Commit()
 }
 
 func (repository *VatStorageRepository) insertDai(diffID, headerID int64, metadata types.ValueMetadata, dai string) error {
@@ -273,17 +316,17 @@ func (repository *VatStorageRepository) insertFieldWithIlkAndUrn(diffID, headerI
 }
 
 func getGuy(keys map[types.Key]string) (string, error) {
-	guy, ok := keys[constants.Guy]
-	if !ok {
-		return "", types.ErrMetadataMalformed{MissingData: constants.Guy}
-	}
-	return guy, nil
+	return getKey(keys, constants.Guy)
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {
-	ilk, ok := keys[constants.Ilk]
+	return getKey(keys, constants.Ilk)
+}
+
+func getKey(keys map[types.Key]string, key types.Key) (string, error) {
+	val, ok := keys[key]
 	if !ok {
-		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", types.ErrMetadataMalformed{MissingData: key}
 	}
-	return ilk, nil
+	return val, nil
 }

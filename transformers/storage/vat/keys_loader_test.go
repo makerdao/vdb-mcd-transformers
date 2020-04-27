@@ -67,6 +67,15 @@ var _ = Describe("Vat storage keys loader", func() {
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
+		It("returns error if can keys lookup fails", func() {
+			storageRepository.GetVatCanKeysError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+
 		It("returns error if dai keys lookup fails", func() {
 			storageRepository.GetDaiKeysError = fakes.FakeError
 
@@ -127,8 +136,34 @@ var _ = Describe("Vat storage keys loader", func() {
 				mappings, err := storageKeysLoader.LoadMappings()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(storageRepository.GetVatWardsKeysCalled).To(Equal(true))
+				Expect(storageRepository.GetVatWardsKeysCalled).To(BeTrue())
 				Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
+			})
+		})
+
+		Describe("can", func() {
+			It("returns value metadata for can", func() {
+				canBit := fakes.FakeAddress.Hex()
+				canUsr := fakes.AnotherFakeAddress.Hex()
+				storageRepository.VatCanKeys = []mcdStorage.Can{{
+					Bit: canBit,
+					Usr: canUsr,
+				}}
+				paddedCanBit := "0x000000000000000000000000" + canBit[2:]
+				encodedPrimaryMapIndex := crypto.Keccak256(common.FromHex(paddedCanBit + vat.CanMappingIndex))
+				paddedCanUsr := common.FromHex("0x000000000000000000000000" + canUsr[2:])
+				canKey := common.BytesToHash(crypto.Keccak256(paddedCanUsr, encodedPrimaryMapIndex))
+				expectedMetadata := types.ValueMetadata{
+					Name: vat.Can,
+					Keys: map[types.Key]string{constants.Bit: canBit, constants.User: canUsr},
+					Type: types.Uint256,
+				}
+
+				mappings, err := storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(storageRepository.GetVatCanKeysCalled).To(BeTrue())
+				Expect(mappings[canKey]).To(Equal(expectedMetadata))
 			})
 		})
 

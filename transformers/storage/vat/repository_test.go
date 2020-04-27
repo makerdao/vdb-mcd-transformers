@@ -104,6 +104,59 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
+	Describe("can", func() {
+		It("writes a row", func() {
+			fakeBitAddress := "0x" + test_data.RandomString(40)
+			fakeUsrAddress := "0x" + fakes.RandomString(40)
+			metadata := types.GetValueMetadata(vat.Can, map[types.Key]string{constants.Bit: fakeBitAddress, constants.User: fakeUsrAddress}, types.Uint256)
+
+			insertErr := repo.Create(diffID, fakeHeaderID, metadata, fakeUint256)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			var result DoubleMappingRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, bit AS key_one, usr AS key_two, can AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatCanTable))
+			err := db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			bitAddressID, bitAddressErr := shared.GetOrCreateAddress(fakeBitAddress, db)
+			Expect(bitAddressErr).NotTo(HaveOccurred())
+			usrAddressID, usrAddressErr := shared.GetOrCreateAddress(fakeUsrAddress, db)
+			Expect(usrAddressErr).NotTo(HaveOccurred())
+			AssertDoubleMapping(result, diffID, fakeHeaderID, strconv.FormatInt(bitAddressID, 10), strconv.FormatInt(usrAddressID, 10), fakeUint256)
+		})
+
+		It("does not duplicate a row", func() {
+			fakeBitAddress := "0x" + test_data.RandomString(40)
+			fakeUsrAddress := "0x" + fakes.RandomString(40)
+			metadata := types.GetValueMetadata(vat.Can, map[types.Key]string{constants.Bit: fakeBitAddress, constants.User: fakeUsrAddress}, types.Uint256)
+			insertOneErr := repo.Create(diffID, fakeHeaderID, metadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, metadata, fakeUint256)
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatCanTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
+		It("returns an error if metadata missing bit", func() {
+			malformedCanMetadata := types.GetValueMetadata(vat.Can, map[types.Key]string{constants.User: FakeAddress}, types.Uint256)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedCanMetadata, fakeUint256)
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Bit}))
+
+		})
+
+		It("returns an error if metadata missing usr", func() {
+			malformedCanMetadata := types.GetValueMetadata(vat.Can, map[types.Key]string{constants.Bit: FakeAddress}, types.Uint256)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedCanMetadata, fakeUint256)
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
+		})
+	})
+
 	Describe("dai", func() {
 		It("writes a row", func() {
 			daiMetadata := types.GetValueMetadata(vat.Dai, map[types.Key]string{constants.Guy: fakeGuy}, types.Uint256)

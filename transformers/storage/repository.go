@@ -29,6 +29,11 @@ type Urn struct {
 	Identifier string
 }
 
+type Can struct {
+	Bit string `db:"tx_from"`
+	Usr string `db:"address"`
+}
+
 var ErrNoFlips = errors.New("no flips exist in db")
 
 type IMakerStorageRepository interface {
@@ -42,9 +47,10 @@ type IMakerStorageRepository interface {
 	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
 	GetUrns() ([]Urn, error)
+	GetVatCanKeys() ([]Can, error)
 	GetVatSinKeys() ([]string, error)
-	GetVowSinKeys() ([]string, error)
 	GetVatWardsAddresses() ([]string, error)
+	GetVowSinKeys() ([]string, error)
 	GetWardsAddresses(string) ([]string, error)
 	SetDB(db *postgres.DB)
 }
@@ -257,6 +263,23 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 		SELECT DISTINCT kicks FROM maker.flop_kicks
 		WHERE address_id = $1`, addressId)
 	return bidIds, err
+}
+
+func (repository *MakerStorageRepository) GetVatCanKeys() ([]Can, error) {
+	var canKeys []Can
+	selectErr := repository.db.Select(&canKeys, `
+		SELECT transactions.tx_from, addresses.address
+		FROM maker.vat_hope
+			LEFT JOIN public.addresses ON vat_hope.usr = addresses.id
+			LEFT JOIN public.event_logs ON vat_hope.log_id = event_logs.id
+			LEFT JOIN public.transactions ON event_logs.tx_hash = transactions.hash
+		UNION
+		SELECT transactions.tx_from, addresses.address
+		FROM maker.vat_nope
+			LEFT JOIN public.addresses ON vat_nope.usr = addresses.id
+			LEFT JOIN public.event_logs ON vat_nope.log_id = event_logs.id
+			LEFT JOIN public.transactions ON event_logs.tx_hash = transactions.hash`)
+	return canKeys, selectErr
 }
 
 func (repository *MakerStorageRepository) GetVatWardsAddresses() ([]string, error) {

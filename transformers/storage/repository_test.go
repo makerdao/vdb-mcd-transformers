@@ -349,6 +349,46 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting vat can keys", func() {
+		It("returns tx_from and usr address from vat hope/nope events", func() {
+			hopeTxFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			hopeUsr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			insertVatHope(hopeTxFrom, hopeUsr, db)
+			nopeTxFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			nopeUsr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			insertVatNope(nopeTxFrom, nopeUsr, db)
+
+			can, err := repository.GetVatCanKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(can).To(ConsistOf(
+				storage.Can{Bit: hopeTxFrom, Usr: hopeUsr},
+				storage.Can{Bit: nopeTxFrom, Usr: nopeUsr},
+			))
+		})
+
+		It("does not include duplicates", func() {
+			txFrom := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			usr := common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
+			insertVatHope(txFrom, usr, db)
+			insertVatNope(txFrom, usr, db)
+			insertVatHope(txFrom, usr, db)
+			insertVatNope(txFrom, usr, db)
+
+			can, err := repository.GetVatCanKeys()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(can).To(ConsistOf(storage.Can{Bit: txFrom, Usr: usr}))
+		})
+
+		It("does not return error if no matching rows", func() {
+			can, err := repository.GetVatCanKeys()
+
+			Expect(len(can)).To(BeZero())
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
 	Describe("getting vat sin keys", func() {
 		It("fetches guy from w field of vat grab", func() {
 			insertVatGrab(guy1, guy1, guy1, guy2, 1, db)
@@ -947,6 +987,34 @@ func insertVatHeal(blockNumber int64, transaction core.TransactionModel, db *pos
 	Expect(execErr).NotTo(HaveOccurred())
 }
 
+func insertVatHope(msgSender, usr string, db *postgres.DB) {
+	insertVatHopeOrNope(msgSender, usr, "hope", db)
+}
+
+func insertVatHopeOrNope(msgSender, usr, hopeOrNope string, db *postgres.DB) {
+	blockNumber := rand.Int63()
+	headerID := insertHeader(db, blockNumber)
+	transaction := core.TransactionModel{
+		From:    msgSender,
+		Hash:    "0x" + test_data.RandomString(64),
+		TxIndex: 0,
+		Value:   "0",
+	}
+	insertTransaction(blockNumber, transaction, db)
+	log := types.Log{TxHash: common.HexToHash(transaction.Hash)}
+	eventLogRepository := repositories.NewEventLogRepository(db)
+	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, []types.Log{log})
+	Expect(insertLogsErr).NotTo(HaveOccurred())
+	usrID, usrErr := shared.GetOrCreateAddress(usr, db)
+	Expect(usrErr).NotTo(HaveOccurred())
+	var logID int64
+	getLogErr := db.Get(&logID, `SELECT id FROM public.event_logs WHERE tx_hash = $1`, transaction.Hash)
+	Expect(getLogErr).NotTo(HaveOccurred())
+	insertQuery := fmt.Sprintf("INSERT INTO maker.vat_%s (header_id, log_id, usr) VALUES ($1, $2, $3)", hopeOrNope)
+	_, execErr := db.Exec(insertQuery, headerID, logID, usrID)
+	Expect(execErr).NotTo(HaveOccurred())
+}
+
 func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatMoveLog := test_data.CreateTestLog(headerID, db)
@@ -956,6 +1024,10 @@ func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 		headerID, src, dst, 0, vatMoveLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
+}
+
+func insertVatNope(msgSender, usr string, db *postgres.DB) {
+	insertVatHopeOrNope(msgSender, usr, "nope", db)
 }
 
 func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {

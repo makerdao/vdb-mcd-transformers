@@ -18,6 +18,7 @@ type MockMakerStorageRepository struct {
 	PotPieUsers             []string
 	SinKeys                 []string
 	Urns                    []storage.Urn
+	VatCanKeys              []storage.Can
 	VatWardsKeys            []string
 	WardsKeys               []string
 	GetCdpisCalled          bool
@@ -38,14 +39,16 @@ type MockMakerStorageRepository struct {
 	GetOwnersError          error
 	GetPotPieUsersCalled    bool
 	GetPotPieUsersError     error
-	GetVatSinKeysCalled     bool
-	GetVatSinKeysError      error
-	GetVowSinKeysCalled     bool
-	GetVowSinKeysError      error
 	GetUrnsCalled           bool
 	GetUrnsError            error
+	GetVatCanKeysCalled     bool
+	GetVatCanKeysError      error
+	GetVatSinKeysCalled     bool
+	GetVatSinKeysError      error
 	GetVatWardsKeysCalled   bool
 	GetVatWardsKeysError    error
+	GetVowSinKeysCalled     bool
+	GetVowSinKeysError      error
 	GetWardsKeysCalledWith  string
 	GetWardsKeysError       error
 }
@@ -108,6 +111,11 @@ func (repository *MockMakerStorageRepository) GetVowSinKeys() ([]string, error) 
 func (repository *MockMakerStorageRepository) GetUrns() ([]storage.Urn, error) {
 	repository.GetUrnsCalled = true
 	return repository.Urns, repository.GetUrnsError
+}
+
+func (repository *MockMakerStorageRepository) GetVatCanKeys() ([]storage.Can, error) {
+	repository.GetVatCanKeysCalled = true
+	return repository.VatCanKeys, repository.GetVatCanKeysError
 }
 
 func (repository *MockMakerStorageRepository) GetVatWardsAddresses() ([]string, error) {

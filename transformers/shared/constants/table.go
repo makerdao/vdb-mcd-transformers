@@ -170,6 +170,7 @@ const (
 	SpotLiveTable           = "spot_live"
 	SpotParTable            = "spot_par"
 	SpotVatTable            = "spot_vat"
+	VatCanTable             = "vat_can"
 	VatDaiTable             = "vat_dai"
 	VatDebtTable            = "vat_debt"
 	VatGemTable             = "vat_gem"

@@ -11710,6 +11710,40 @@ ALTER SEQUENCE maker.urns_id_seq OWNED BY maker.urns.id;
 
 
 --
+-- Name: vat_can; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vat_can (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    "bit" integer NOT NULL,
+    usr integer NOT NULL,
+    can numeric NOT NULL
+);
+
+
+--
+-- Name: vat_can_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vat_can_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vat_can_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vat_can_id_seq OWNED BY maker.vat_can.id;
+
+
+--
 -- Name: vat_dai; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14398,6 +14432,13 @@ ALTER TABLE ONLY maker.urns ALTER COLUMN id SET DEFAULT nextval('maker.urns_id_s
 
 
 --
+-- Name: vat_can id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can ALTER COLUMN id SET DEFAULT nextval('maker.vat_can_id_seq'::regclass);
+
+
+--
 -- Name: vat_dai id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16898,6 +16939,22 @@ ALTER TABLE ONLY maker.urns
 
 ALTER TABLE ONLY maker.urns
     ADD CONSTRAINT urns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vat_can vat_can_diff_id_header_id_bit_usr_can_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_diff_id_header_id_bit_usr_can_key UNIQUE (diff_id, header_id, "bit", usr, can);
+
+
+--
+-- Name: vat_can vat_can_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_pkey PRIMARY KEY (id);
 
 
 --
@@ -20118,6 +20175,27 @@ CREATE INDEX tick_log_index ON maker.tick USING btree (log_id);
 --
 
 CREATE INDEX urn_ilk_index ON maker.urns USING btree (ilk_id);
+
+
+--
+-- Name: vat_can_bit_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_can_bit_index ON maker.vat_can USING btree ("bit");
+
+
+--
+-- Name: vat_can_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_can_header_id_index ON maker.vat_can USING btree (header_id);
+
+
+--
+-- Name: vat_can_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_can_usr_index ON maker.vat_can USING btree (usr);
 
 
 --
@@ -24260,6 +24338,38 @@ ALTER TABLE ONLY maker.tick
 
 ALTER TABLE ONLY maker.urns
     ADD CONSTRAINT urns_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_can vat_can_bit_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_bit_fkey FOREIGN KEY ("bit") REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_can vat_can_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_can vat_can_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vat_can vat_can_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vat_can
+    ADD CONSTRAINT vat_can_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

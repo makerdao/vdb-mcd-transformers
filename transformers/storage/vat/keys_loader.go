@@ -29,6 +29,7 @@ import (
 )
 
 const (
+	Can     = "can"
 	Dai     = "dai"
 	Gem     = "gem"
 	IlkArt  = "Art"
@@ -46,6 +47,7 @@ const (
 )
 
 var (
+	CanMappingIndex  = vdbStorage.IndexOne
 	IlksMappingIndex = vdbStorage.IndexTwo
 	UrnsMappingIndex = vdbStorage.IndexThree
 	GemsMappingIndex = vdbStorage.IndexFour
@@ -99,6 +101,10 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	if wardsErr != nil {
 		return nil, wardsErr
 	}
+	mappings, canErr := loader.addCanKeys(mappings)
+	if canErr != nil {
+		return nil, canErr
+	}
 	mappings, daiErr := loader.addDaiKeys(mappings)
 	if daiErr != nil {
 		return nil, daiErr
@@ -125,6 +131,25 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[LineKey] = LineMetadata
 	mappings[LiveKey] = LiveMetadata
 	return mappings
+}
+
+func (loader *keysLoader) addCanKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+	cans, err := loader.storageRepository.GetVatCanKeys()
+	if err != nil {
+		return nil, err
+	}
+	for _, can := range cans {
+		paddedBit, padBitErr := utilities.PadAddress(can.Bit)
+		if padBitErr != nil {
+			return nil, padBitErr
+		}
+		paddedUsr, padUsrErr := utilities.PadAddress(can.Usr)
+		if padUsrErr != nil {
+			return nil, padUsrErr
+		}
+		mappings[getCanKey(paddedBit, paddedUsr)] = getCanMetadata(can.Bit, can.Usr)
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
@@ -209,6 +234,15 @@ func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]types.ValueMetadat
 		mappings[getUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Identifier)
 	}
 	return mappings, nil
+}
+
+func getCanKey(bit, usr string) common.Hash {
+	return vdbStorage.GetKeyForNestedMapping(CanMappingIndex, bit, usr)
+}
+
+func getCanMetadata(bit, usr string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.Bit: bit, constants.User: usr}
+	return types.GetValueMetadata(Can, keys, types.Uint256)
 }
 
 func getIlkArtKey(ilk string) common.Hash {

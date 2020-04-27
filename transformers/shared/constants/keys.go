@@ -24,6 +24,7 @@ import (
 // Storage keys
 const (
 	BidId     types.Key = "bid_id"
+	Bit       types.Key = "bit"
 	Cdpi      types.Key = "cdpi"
 	Flip      types.Key = "flip"
 	Guy       types.Key = "guy"
