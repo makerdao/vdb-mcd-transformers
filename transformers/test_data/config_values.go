@@ -23,7 +23,6 @@ func FlipAddresses() []string {
 
 func EthFlipAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
 func EthMedianAddress() string { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
-func EthOsmAddress() string    { return checksum(constants.GetContractAddress("OSM_ETH")) }
 func FlopAddress() string      { return checksum(constants.GetContractAddress("MCD_FLOP")) }
 func JugAddress() string       { return checksum(constants.GetContractAddress("MCD_JUG")) }
 func MedianAddresses() []string {
@@ -47,6 +46,7 @@ func OasisAddresses() []string {
 }
 func OsmAddresses() []string {
 	var addressesResult []string
+	// Does not include OSM_USDC since that's actually just a DSValue contract right now, not an OSM
 	osmAddresses := constants.GetContractAddresses([]string{"OSM_ETH", "OSM_BAT"})
 
 	for _, address := range osmAddresses {
@@ -54,6 +54,9 @@ func OsmAddresses() []string {
 	}
 	return addressesResult
 }
+func OsmBatAddress() string     { return checksum(constants.GetContractAddress("OSM_BAT")) }
+func OsmEthAddress() string     { return checksum(constants.GetContractAddress("OSM_ETH")) }
+func OsmUsdcAddress() string    { return checksum(constants.GetContractAddress("OSM_USDC")) }
 func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }
 func SpotAddress() string       { return checksum(constants.GetContractAddress("MCD_SPOT")) }
 func VatAddress() string        { return checksum(constants.GetContractAddress("MCD_VAT")) }
