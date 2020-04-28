@@ -17,19 +17,13 @@
 package base_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 )
 
 func TestBase(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "JugFileBase Suite")
+	RunSpecs(t, "JugFileBase Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})

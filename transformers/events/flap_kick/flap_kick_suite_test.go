@@ -17,10 +17,7 @@
 package flap_kick_test
 
 import (
-	"io/ioutil"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,9 +25,5 @@ import (
 
 func TestFlapKick(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "FlapKick Suite")
+	RunSpecs(t, "FlapKick Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

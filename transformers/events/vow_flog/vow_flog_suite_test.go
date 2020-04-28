@@ -17,19 +17,13 @@
 package vow_flog
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
 )
 
 func TestVowFlog(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VowFlog Suite")
+	RunSpecs(t, "VowFlog Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

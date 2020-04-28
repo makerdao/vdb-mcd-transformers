@@ -10,7 +10,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -50,6 +49,4 @@ var _ = BeforeSuite(func() {
 
 	// Set log to discard logs emitted by dependencies
 	log.SetOutput(ioutil.Discard)
-	// Set logrus to discard logs emitted by mcd_transformers
-	logrus.SetOutput(ioutil.Discard)
 })

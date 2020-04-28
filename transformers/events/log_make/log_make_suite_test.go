@@ -9,5 +9,5 @@ import (
 
 func TestLogMake(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogMake Suite")
+	RunSpecs(t, "LogMake Event Transformer Suite")
 }

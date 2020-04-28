@@ -9,5 +9,5 @@ import (
 
 func TestLogItemUpdate(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogItemUpdate Suite")
+	RunSpecs(t, "LogItemUpdate Event Transformer Suite")
 }

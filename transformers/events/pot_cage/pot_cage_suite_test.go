@@ -9,5 +9,5 @@ import (
 
 func TestPotCage(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotCage Suite")
+	RunSpecs(t, "PotCage Event Transformer Suite")
 }

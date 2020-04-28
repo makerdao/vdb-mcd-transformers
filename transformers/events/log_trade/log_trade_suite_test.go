@@ -9,5 +9,5 @@ import (
 
 func TestLogTrade(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogTrade Suite")
+	RunSpecs(t, "LogTrade Event Transformer Suite")
 }

@@ -17,19 +17,13 @@
 package vow_fess
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
 )
 
 func TestVowFess(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VowFess Suite")
+	RunSpecs(t, "VowFess Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

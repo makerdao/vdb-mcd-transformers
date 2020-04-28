@@ -17,19 +17,13 @@
 package ilk_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 )
 
 func TestIlk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "JugFileIlk Suite")
+	RunSpecs(t, "JugFileIlk Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})

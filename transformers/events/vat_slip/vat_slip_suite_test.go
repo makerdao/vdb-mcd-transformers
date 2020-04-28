@@ -17,19 +17,13 @@
 package vat_slip_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
 )
 
 func TestVatSlip(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VatSlip Suite")
+	RunSpecs(t, "VatSlip Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

@@ -9,5 +9,5 @@ import (
 
 func TestCat(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Cat Suite")
+	RunSpecs(t, "Cat Component Test Suite")
 }
