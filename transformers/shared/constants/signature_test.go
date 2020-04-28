@@ -102,6 +102,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(MedianDropSignature()).To(Equal("0x8ef5eaf000000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates log median price", func() {
+		Expect(LogMedianPriceSignature()).To(Equal("0xb78ebc573f1f889ca9e1e0fb62c843c836f3d3a2e1f43ef62940e9b894f4ea4c"))
+	})
+
 	It("generates lift signature", func() {
 		Expect(MedianLiftSignature()).To(Equal("0x9431810600000000000000000000000000000000000000000000000000000000"))
 	})
