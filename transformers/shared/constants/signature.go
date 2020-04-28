@@ -34,6 +34,7 @@ func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMe
 func LogBumpSignature() string            { return getEventTopicZero(logBumpEvent()) }
 func LogBuyEnabledSignature() string      { return getEventTopicZero(logBuyEnabledEvent()) }
 func LogDeleteSignature() string          { return getEventTopicZero(logDeleteEvent()) }
+func LogInsertSignature() string          { return getEventTopicZero(logInsertEvent()) }
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogKillSignature() string            { return getEventTopicZero(logKillEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }

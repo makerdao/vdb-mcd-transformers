@@ -73,6 +73,7 @@ func jugInitMethod() string      { return getSolidityFunctionSignature(JugABI(),
 func logBumpEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
 func logBuyEnabledEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogBuyEnabled") }
 func logDeleteEvent() string     { return getSolidityFunctionSignature(OasisABI(), "LogDelete") }
+func logInsertEvent() string     { return getSolidityFunctionSignature(OasisABI(), "LogInsert") }
 func logItemUpdateEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
 func logKillEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
 func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
