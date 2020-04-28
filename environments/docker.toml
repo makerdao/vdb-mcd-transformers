@@ -33,6 +33,7 @@
         "jug_init",
         "log_bump",
         "log_buy_enabled",
+        "log_delete",
         "log_item_update",
         "log_make",
         "log_matching_enabled",
@@ -280,6 +281,13 @@
         rank = "0"
     [exporter.log_buy_enabled]
         path = "transformers/events/log_buy_enabled/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_delete]
+        path = "transformers/events/log_delete/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
