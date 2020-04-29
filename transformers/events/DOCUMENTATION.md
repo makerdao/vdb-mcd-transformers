@@ -2,115 +2,205 @@
 
 ## Architecture
 
-Transformers fetch logs from Ethereum, convert/decode them into usable data, and then persist them in postgres.
-
-A transformer converts the raw chain data into a human friendly representation suitable for consumption in the API
-
-For Maker, vulcanize will be run in `lightSync` mode, so it will store all headers, and then fetchers pull relevant logs by making RPC calls.
+Transformers fetch logs from Ethereum, convert/decode them into usable data, and
+then persist them in postgres. A transformer converts the raw chain data into a 
+human friendly representation suitable for consumption in the API.
 
 ## Event Types
 
-For Maker there are two main types of log events that we're tracking:
-
+For Maker there are three main types of log events that we're tracking:
+  
 1. Custom events that are defined in the contract solidity code.
 1. `LogNote` events which utilize the [DSNote library](https://github.com/dapphub/ds-note).
 1. `Note` events in the `Vat`
 
-The transformer process for each of these different log types is the same, except for the converting process, as denoted below.
+The transformer process for each of these different log types is the same,
+except for the converting process, as denoted below.
 
 ## Creating a Transformer
 
-1. Pull an example event (from mainnet, kovan, ganache etc.)
-1. Add event & method sig, contract address, `checked_headers` column name, and label to relevant files in [`constants`](../shared/constants)
-1. Write a test for the event sig in [`event_signature_generator_test.go`](../shared/constants/event_signature_generator_test.go)
-1. Create DB table (using `make new_migration`).
-1. Create columns in `checked_headers` in the _same_ migration
-1. Add a line to clean the new table `CleanTestDB` (in [`test_config.go`](../../test_config/test_config.go))
-1. Define `model.go`
-1. Create test event in [`test_data`](../test_data)
-1. Write transformer + transformer tests
-1. Create an config object [`shared.EventTransformerConfig`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) in `config.go`
-1. Wire up transformer in [`transformers.go`](../transformers.go), remembering to add it to `EventTransformerInitializers()`
-1. Add transformer to config file for `composeAndExecute`.
-1. Manually trigger an event and check that it gets persisted to postgres.
-1. Create an integration test for the shiny new transformer in [`integration_tests`](../integration_tests)
+### Ensure there is a Contract
+If the contract isn't already present in the environment you'll need to add it
+before you can begin transforming its events. To do so:
 
-**Fetching Logs**
+1. Get the contract signature if you don't already have it.
+1. Search for the contract on [etherscan](https://etherscan.io/). Bookmark this
+   page, it is your new best friend.
+1. In each environment (at this time testing, docker and mcdTransformers) add a
+   new contract to the contract section. For example:
+   
+``` toml
+[contract]
+  [contract.MCD_FLIP_ETH_A]
+      address  = "0xd8a04f5412223f513dc55f839574430f5ec15531"
+      abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+      deployed = 8928180
+```
+* The address is the signature you searched for, as a string.
+* The abi can be found on the `contracts` tab in Etherscan (scroll down).
+You'll need the entire thing as a string, so it's best to use single quotes
+like above.
+* The deployed field is the block number the contract was deployed on. That
+can be found on the Contract's page, by looking for the Contract Creator
+and clicking it's transaction hash. That will take you to the block it was deployed on.
 
-1. Generate an example raw log event, by either:
+### Create the Transformer
 
-   - Pulling the log directly from the Kovan deployment.
-   - Deploying the contract to a local chain and emitting the event manually.
+To create a custom transformer you will need to create a new `Transformer`
+struct with a `ToModels` method on it which converts a `core.EventLog` object
+(the raw, untransformed data) to an `event.InsertionModel` (the domain object).
+
+Note that for this step you probably do _not_ need to create the database
+migration. This is because the only thing you'll be saving are addresses, which
+go into the already existing address table. If you do need to create the
+migration, you'll know, because the tests won't pass. The directions here assume
+you do not, yet.
+
+1. Search for the contract on etherscan using it's signature. 
+1. Find the events for the contract in the contract's source.
+1. For each event in the contract:
+    1. Write a test for the event signature in 
+    [`signature_test.go`](../shared/constants/signature_test.go)
+        1. To find out the event's signature you can use this [Keccak-256
+       calculator](https://emn178.github.io/online-tools/keccak_256.html). For Example:
+            * Search Etherscan for the contract `0x39755357759cE0d7f32dC8dC45414CCa409AE24e`. 
+            * Open the 'Contract' tab and in the contract source code and search
+            for the `LogItemUpdate` event. It looks like this: `event LogItemUpdate(uint id);`. 
+            * You can copy that string and paste it into the Keccak-256
+            calculator (link above). Remove the parameter names and use
+            `uint256` for the `unit` so like this: `LogItemUpdate(uint256)`.
+            This will output an event signature.
+            * To verify you got the signature right you can take that signature
+            (in this case
+            `a2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488`) 
+            and search for it on the events tab of the contract. Make sure you 
+            prefix it with `0x`. The results should include the event you are
+            looking for, provided one already exists for it.
+    1. Make the test pass by updating the function list in `signature.go` as
+       well as updating `method.go` as needed. Both of these files are in the
+       constants package.
+    1. Create test event in [`test_data`](../test_data)
+        * Use Data from a real event in Etherscan wherever possible.
+          Particularly when it comes to Topics and the Data entries. You'll
+          thank me later.
+        * Update constants as needed. Look at older examples of test data for
+          inspiration.
+        * You do not need a database migration at this point.
+    1. Create a new directory in `events` named after your new transformer. This
+       will be the package your transformer is stored in.
+    1. Create three files - `transformer.go`, `transformer_test.go` and
+       `<package_name>_test.go` in the new directory. See the other transformers
+       for examples.
+    1. `<package_name>_test.go` lets `gingko` run tests in this directory. The
+       file should look something like this:
+       
+```go
+ package <package_name>_test
+
+import (
+	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+func TestLogMinSell(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "<PackageName>  Suite")
+}
+```
+   1. Implement the toModels function in `transformer.go` with the appropriate
+   testing in `transformer_test.go` of course. This means converting the raw log 
+   into a go struct. 
+   1. For custom events you can convert each EventLog entry into an entity
+   using the function `contract.UnpackLog(&entity, "<EventLogName>", log.Log)`.
+   The entity is usually defined (by you) in a file called `entity.go` in the
+   same package as the transformer. See the transformer in
+   `transformers/events/log_make` for an example of this method.
+   1. After converting the log entry to an entity, look up all of it's foreign
+      keys from it's data and assign them to the entity.
+   1. From the entity create an InsertionModel, which you return.
+   1. For `LogNote` events you'll need to look at the method signature of the
+   method that is calling them, because LogNote events are a generic structure.
+   For example:
+       * the `tend` method is called on the [flip.sol
+       contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), 
+       and its method signature looks like this: `tend(uint,uint,uint)`.
+       * The first four bytes of the Keccak-256 hashed method signature will be 
+       located in `topic[0]` on the log.
+       * The message sender will be in `topic[1]`.
+       * The first parameter passed to `tend` becomes `topic[2]`.
+       * The second parameter passed to `tend` will be `topic[3]`.
+       * Any additional parameters will be in the log's data field.
+       * More detail is located in the [DSNote
+         repo](https://github.com/dapphub/ds-note).
+       * For an example implementation look at the `flip_sol` transformer.
+   1. If, while implementing the transformer and its corresponding unit tests
+      you find you need to migrate the database see below. 
+
+### Store the data in the database
+1. Use the `make new_migration` task to create a new migration.
+    * Each event log has its own table in the database.
+    * The specific log event tables are all created in the `maker` schema.
+1. The new migration can be run by running `make test` or `make migration NAME=vulcanize_test`.
+1. To verify that the migration will work create an integration for the shiny
+   new transformer in [`integration_tests`](../integration_tests).
+1. Integration tests can be run with `make integrationtest`.
+
+### Add the transformer to the list of transformers to run
+Finally you can add the transformer to the list of transformers by updating the
+configuration, and creating an initializer for the transformer.
+
+1. In the environments (docker.toml, testing.toml and mcdTransformers.toml) add
+   the new package name the list of `transformerNames` in the exporter - alphabetically.
+1. Underneath that list add a configuration (alphabetically again) to list of
+   configurations. For example:
+   
+``` toml
+[exporter.log_delete]
+      path = "transformers/events/log_delete/initializer"
+      type = "eth_event"
+      repository = "github.com/makerdao/vdb-mcd-transformers"
+      migrations = "db/migrations"
+      contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+      rank = "0"
+```
+1. Note the path to the initializer is a directory named initializer in your new
+   event transformer package. Of course you haven't created that yet. Create
+   that directory and inside it create a file named `initializer.go`. 
+1. Initializers are boilerplate that tell the system how to create your
+   transformer. They look like this:
+   
+```go
+package initializer
+
+import (
+  "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete"
+  "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+  "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+  "github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+)
+
+var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
+  Config:      shared.GetEventTransformerConfig(constants.LogDeleteTable, constants.LogDeleteSignature()),
+  Transformer: log_delete.Transformer{},
+}.NewTransformer
+```
+
+Simply replace the constants and package names with your transformer.
+
+1. Finally add your package to the list of transformerExporters in `plugins/transformerExporter.go`. Again alphabetically.
+
+### Fetching Logs
+
+In the event there are not logs for an event you're looking to transform in
+etherscan (be it in Mainnet, Kovan or other) you can generate an example raw
+event by deploying the contract to a local chain and emitting the event manually.
 
 1. Fetch the logs from the chain based on the example event's topic zero:
-
    - The topic zero is based on the keccak-256 hash of the log event's method signature. These are located in [`pkg/transformers/shared/constants/signature.go`](../shared/constants/signature.go).
    - Fetching is done in batch from the [`watcher`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/watcher/event_watcher.go).
    - The logs are then chunked up by the [`chunker`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/chunker/log_chunker.go) before being delegated to each transformer.
-
-**Coverting logs**
-
-- **Converting most custom events** (such as FlopKick)
-
-  1.  Convert the raw log into a Go struct.
-      - We've been using [go-ethereum's abigen tool](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) to get the contract's ABI, and a Go struct that represents the event log. We will unpack the raw logs into this struct.
-        - To use abigen: `abigen --sol flip.sol --pkg flip --out {/path/to/output_file}`
-          - sol: this is the path to the solidity contract
-          - pkg: a package name for the generated Go code
-          - out: the file path for the generated Go code (optional)
-        - the output for `flop.sol` will include the FlopperAbi and the FlopperKick struct:
-        ```go
-            type FlopperKick struct {
-              Id  *big.Int
-              Lot *big.Int
-              Bid *big.Int
-              Gal common.Address
-              End *big.Int
-              Raw types.Log
-            }
-        ```
-      - Using go-ethereum's `contract.UnpackLog` method we can unpack the raw log into the FlopperKick struct (which we're referring to as the `entity`).
-        - See the `ToEntity` method in [`events/flop_kick/transformer.go`](flop_kick/transformer.go).
-  1.  Convert the entity into a database model. See the `ToModel` method in `pkg/transformers/flop_kick/transformer`.
-
-- **Converting LogNote events** (such as tend)
-  - Since LogNote events are a generic structure, they depend on the method signature of the method that is calling them. For example, the `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), and it's method signature looks like this: `tend(uint,uint,uint)`.
-    - The first four bytes of the Keccak-256 hashed method signature will be located in `topic[0]` on the log.
-    - The message sender will be in `topic[1]`.
-    - The first parameter passed to `tend` becomes `topic[2]`.
-    - The second parameter passed to `tend` will be `topic[3]`.
-    - Any additional parameters will be in the log's data field.
-    - More detail is located in the [DSNote repo](https://github.com/dapphub/ds-note).
-
-**Get all MissingHeaders**
-
-- Headers are inserted into VulcanizeDB as part of the `lightSync` command. Then for each transformer we check each header for matching logs.
-- The MissingHeaders method queries the `checked_headers` table to see if the header has been checked for the given log type.
-
-**Persist the log record to VulcanizeDB**
-
-- Each event log has it's own table in the database, as well as it's own column in the `checked_headers` table.
-  - The `checked_headers` table allows us to keep track of which headers have been checked for a given log type.
-- To create a new migration file: `./scripts/create_migration create_flop_kick`
-  - See `db/migrations/1536942529_create_flop_kick.up.sql`.
-  - The specific log event tables are all created in the `maker` schema.
-  - There is a one-many association between `headers` and the log
-    event tables. This is so that if a header is removed due to a reorg, the associated log event records are also removed.
-- To run the migrations: `make migrate HOST=local_host PORT=5432 NAME=vulcanize_private`
-- When a new log record is inserted into VulcanizeDB, we also need to make sure to insert a record into the `checked_headers` table for the given log type.
-- We have been using the repository pattern (i.e. wrapping all SQL/ORM invocations in isolated namespaces per table) to interact with the database, see the `Create` method in `pkg/transformers/flop_kick/repository.go`.
-
-**MarkHeaderChecked**
-
-- There is a chance that a header does not have a log for the given transformer's log type, and in this instance we also want to record that the header has been "checked" so that we don't continue to query that header over and over.
-- In the transformer we'll make sure to insert a row for the header indicating that it has been checked for the log type that the transformer is responsible for.
-
-**Wire each component up in the transformer**
-
-- We use a [`EventTransformerInitializer`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/transformer/event_transformer.go) struct for each transformer so that we can inject ethRPC and postgresDB connections as well as configuration data (including the contract address, block range, etc.) into the transformer.
-- See any of `pkg/transformers/flop_kick/transformer.go`
-- All of the transformers are then initialized in `pkg/transformers/transformers.go` with their configuration.
-- The transformers can be executed by using the `continuousLogSync` command, which can be configured to run specific transformers or all transformers.
 
 ## Useful Documents
 
