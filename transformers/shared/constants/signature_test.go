@@ -182,6 +182,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(RelySignature()).To(Equal("0x65fae35e00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates setMinSell signature", func() {
+		Expect(SetMinSellSignature()).To(Equal("0xbf7c734e00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates spot file mat signature", func() {
 		Expect(SpotFileMatSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})

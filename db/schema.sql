@@ -11171,6 +11171,41 @@ ALTER SEQUENCE maker.rely_id_seq OWNED BY maker.rely.id;
 
 
 --
+-- Name: set_min_sell; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.set_min_sell (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    pay_gem integer NOT NULL,
+    msg_sender integer NOT NULL,
+    dust numeric
+);
+
+
+--
+-- Name: set_min_sell_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.set_min_sell_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: set_min_sell_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.set_min_sell_id_seq OWNED BY maker.set_min_sell.id;
+
+
+--
 -- Name: spot_file_mat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14110,6 +14145,13 @@ ALTER TABLE ONLY maker.rely ALTER COLUMN id SET DEFAULT nextval('maker.rely_id_s
 
 
 --
+-- Name: set_min_sell id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell ALTER COLUMN id SET DEFAULT nextval('maker.set_min_sell_id_seq'::regclass);
+
+
+--
 -- Name: spot_file_mat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16422,6 +16464,22 @@ ALTER TABLE ONLY maker.rely
 
 ALTER TABLE ONLY maker.rely
     ADD CONSTRAINT rely_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: set_min_sell set_min_sell_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: set_min_sell set_min_sell_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_pkey PRIMARY KEY (id);
 
 
 --
@@ -19519,6 +19577,41 @@ CREATE INDEX rely_msg_sender_index ON maker.rely USING btree (msg_sender);
 --
 
 CREATE INDEX rely_usr_index ON maker.rely USING btree (usr);
+
+
+--
+-- Name: set_min_sell_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_address_index ON maker.set_min_sell USING btree (address_id);
+
+
+--
+-- Name: set_min_sell_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_header_index ON maker.set_min_sell USING btree (header_id);
+
+
+--
+-- Name: set_min_sell_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_log_index ON maker.set_min_sell USING btree (log_id);
+
+
+--
+-- Name: set_min_sell_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_msg_sender ON maker.set_min_sell USING btree (msg_sender);
+
+
+--
+-- Name: set_min_sell_pay_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_pay_gem_index ON maker.set_min_sell USING btree (pay_gem);
 
 
 --
@@ -23451,6 +23544,46 @@ ALTER TABLE ONLY maker.rely
 
 ALTER TABLE ONLY maker.rely
     ADD CONSTRAINT rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_pay_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

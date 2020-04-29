@@ -47,6 +47,7 @@ const (
 	DartColumn      event.ColumnName = "dart"
 	DataColumn      event.ColumnName = "data"
 	DinkColumn      event.ColumnName = "dink"
+	DustColumn      event.ColumnName = "dust"
 	DstColumn       event.ColumnName = "dst"
 	EndColumn       event.ColumnName = "end"
 	EraColumn       event.ColumnName = "era"

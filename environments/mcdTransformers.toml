@@ -68,6 +68,7 @@
         "pot_file_vow",
         "pot_join",
         "rely",
+        "set_min_sell",
         "spot_file_mat",
         "spot_file_par",
         "spot_file_pip",
@@ -450,6 +451,13 @@
         contracts = ["MCD_CAT", "MCD_FLAP", "MCD_FLIP_BAT_A", "MCD_FLIP_ETH_A", "MCD_FLIP_SAI", "MCD_FLIP_USDC_A",
                      "MCD_FLOP", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "OSM_BAT",
                      "OSM_ETH"]
+        rank = "0"
+    [exporter.set_min_sell]
+        path = "transformers/events/set_min_sell/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
         rank = "0"
     [exporter.spot_file_mat]
         path = "transformers/events/spot_file/mat/initializer"
