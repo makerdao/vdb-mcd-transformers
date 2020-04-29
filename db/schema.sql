@@ -10120,6 +10120,74 @@ ALTER SEQUENCE maker.log_buy_enabled_id_seq OWNED BY maker.log_buy_enabled.id;
 
 
 --
+-- Name: log_delete; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_delete (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    keeper integer NOT NULL,
+    offer_id numeric
+);
+
+
+--
+-- Name: log_delete_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_delete_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_delete_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_delete_id_seq OWNED BY maker.log_delete.id;
+
+
+--
+-- Name: log_insert; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_insert (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    keeper integer NOT NULL,
+    offer_id numeric
+);
+
+
+--
+-- Name: log_insert_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_insert_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_insert_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_insert_id_seq OWNED BY maker.log_insert.id;
+
+
+--
 -- Name: log_item_update; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13994,6 +14062,20 @@ ALTER TABLE ONLY maker.log_buy_enabled ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: log_delete id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete ALTER COLUMN id SET DEFAULT nextval('maker.log_delete_id_seq'::regclass);
+
+
+--
+-- Name: log_insert id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert ALTER COLUMN id SET DEFAULT nextval('maker.log_insert_id_seq'::regclass);
+
+
+--
 -- Name: log_item_update id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16048,6 +16130,38 @@ ALTER TABLE ONLY maker.log_buy_enabled
 
 ALTER TABLE ONLY maker.log_buy_enabled
     ADD CONSTRAINT log_buy_enabled_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_delete log_delete_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_delete log_delete_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_insert log_insert_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_insert log_insert_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_pkey PRIMARY KEY (id);
 
 
 --
@@ -18996,6 +19110,62 @@ CREATE INDEX log_buy_enabled_header_index ON maker.log_buy_enabled USING btree (
 --
 
 CREATE INDEX log_buy_enabled_log_index ON maker.log_buy_enabled USING btree (log_id);
+
+
+--
+-- Name: log_delete_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_address_index ON maker.log_delete USING btree (address_id);
+
+
+--
+-- Name: log_delete_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_header_index ON maker.log_delete USING btree (header_id);
+
+
+--
+-- Name: log_delete_keeper_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_keeper_index ON maker.log_delete USING btree (keeper);
+
+
+--
+-- Name: log_delete_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_log_index ON maker.log_delete USING btree (log_id);
+
+
+--
+-- Name: log_insert_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_address_index ON maker.log_insert USING btree (address_id);
+
+
+--
+-- Name: log_insert_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_header_index ON maker.log_insert USING btree (header_id);
+
+
+--
+-- Name: log_insert_keeper_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_keeper_index ON maker.log_insert USING btree (keeper);
+
+
+--
+-- Name: log_insert_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_log_index ON maker.log_insert USING btree (log_id);
 
 
 --
@@ -22834,6 +23004,70 @@ ALTER TABLE ONLY maker.log_buy_enabled
 
 ALTER TABLE ONLY maker.log_buy_enabled
     ADD CONSTRAINT log_buy_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_keeper_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_keeper_fkey FOREIGN KEY (keeper) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_keeper_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_keeper_fkey FOREIGN KEY (keeper) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	//TODO Updqte with real data
+	// TODO: Update with real data
 	logBuyEnabledRawLog = types.Log{
 		Address:     common.HexToAddress(OasisAddresses()[0]),
 		Topics:      []common.Hash{common.HexToHash(constants.LogBuyEnabledSignature())},

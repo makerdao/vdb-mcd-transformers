@@ -41,6 +41,8 @@ const (
 	JugInitTable            = "jug_init"
 	LogBumpTable            = "log_bump"
 	LogBuyEnabledTable      = "log_buy_enabled"
+	LogDeleteTable          = "log_delete"
+	LogInsertTable          = "log_insert"
 	LogItemUpdateTable      = "log_item_update"
 	LogKillTable            = "log_kill"
 	LogMakeTable            = "log_make"

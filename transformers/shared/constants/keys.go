@@ -58,6 +58,7 @@ const (
 	IlkColumn       event.ColumnName = "ilk_id"
 	InkColumn       event.ColumnName = "ink"
 	IsEnabled       event.ColumnName = "is_enabled"
+	KeeperColumn    event.ColumnName = "keeper"
 	LotColumn       event.ColumnName = "lot"
 	MakerColumn     event.ColumnName = "maker"
 	MinAmountColumn event.ColumnName = "min_amount"

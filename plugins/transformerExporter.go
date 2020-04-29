@@ -21,6 +21,8 @@ import (
 	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
 	log_bump "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_bump/initializer"
 	log_buy_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_buy_enabled/initializer"
+	log_delete "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete/initializer"
+	log_insert "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_insert/initializer"
 	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
 	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
 	log_matching_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_matching_enabled/initializer"
@@ -112,6 +114,8 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			jug_init.EventTransformerInitializer,
 			log_bump.EventTransformerInitializer,
 			log_buy_enabled.EventTransformerInitializer,
+			log_delete.EventTransformerInitializer,
+			log_insert.EventTransformerInitializer,
 			log_item_update.EventTransformerInitializer,
 			log_make.EventTransformerInitializer,
 			log_matching_enabled.EventTransformerInitializer,
