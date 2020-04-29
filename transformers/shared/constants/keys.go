@@ -38,6 +38,7 @@ const (
 const (
 	AColumn         event.ColumnName = "a"
 	ALengthColumn   event.ColumnName = "a_length"
+	AgeColumn       event.ColumnName = "age"
 	ArtColumn       event.ColumnName = "art"
 	BidColumn       event.ColumnName = "bid"
 	BidIDColumn     event.ColumnName = "bid_id"
@@ -82,6 +83,7 @@ const (
 	UrnColumn       event.ColumnName = "urn_id"
 	UsrColumn       event.ColumnName = "usr"
 	VColumn         event.ColumnName = "v"
+	ValColumn       event.ColumnName = "val"
 	WColumn         event.ColumnName = "w"
 	WadColumn       event.ColumnName = "wad"
 	WhatColumn      event.ColumnName = "what"

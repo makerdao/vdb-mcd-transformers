@@ -38,6 +38,7 @@
         "log_item_update",
         "log_make",
         "log_matching_enabled",
+        "log_median_price",
         "log_min_sell",
         "log_sorted_offer",
         "log_take",
@@ -321,6 +322,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_median_price]
+        path = "transformers/events/log_median_price/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_BAT", "MEDIAN_ETH"]
         rank = "0"
     [exporter.log_min_sell]
         path = "transformers/events/log_min_sell/initializer"
