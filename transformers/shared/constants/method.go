@@ -69,11 +69,15 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string        { return getSolidityFunctionSignature(JugABI(), "init") }
-func logBumpEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
-func logItemUpdateEvent() string   { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
-func logKillEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
-func logMakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func jugInitMethod() string      { return getSolidityFunctionSignature(JugABI(), "init") }
+func logBumpEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
+func logBuyEnabledEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogBuyEnabled") }
+func logItemUpdateEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
+func logKillEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
+func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
+func logMatchingEnabledEvent() string {
+	return getSolidityFunctionSignature(OasisABI(), "LogMatchingEnabled")
+}
 func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }

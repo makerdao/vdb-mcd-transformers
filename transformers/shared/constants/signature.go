@@ -32,9 +32,11 @@ func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIl
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func LogBumpSignature() string            { return getEventTopicZero(logBumpEvent()) }
+func LogBuyEnabledSignature() string      { return getEventTopicZero(logBuyEnabledEvent()) }
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogKillSignature() string            { return getEventTopicZero(logKillEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }
+func LogMatchingEnabledSignature() string { return getEventTopicZero(logMatchingEnabledEvent()) }
 func LogMinSellSignature() string         { return getEventTopicZero(logMinSellEvent()) }
 func LogSortedOfferSignature() string     { return getEventTopicZero(logSortedOfferMethod()) }
 func LogTakeSignature() string            { return getEventTopicZero(logTakeEvent()) }
