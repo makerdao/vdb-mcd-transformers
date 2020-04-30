@@ -41,8 +41,6 @@ if test -n "$DIFF_BLOCK_FROM_HEAD_OF_CHAIN"; then
     DIFF_STARTING_BLOCK=$DIFF_BLOCK_FROM_HEAD_OF_CHAIN
 fi
 
-echo "diff starting block"
-echo $DIFF_STARTING_BLOCK
 echo "Starting transformer execution..."
 # Fire up execute
 ./vulcanizedb execute --config config.toml -d $DIFF_STARTING_BLOCK
