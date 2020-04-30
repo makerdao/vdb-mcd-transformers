@@ -306,7 +306,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, time.Nanosecond)
+				w := watcher.NewStorageWatcher(db, time.Nanosecond, -1)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -392,7 +392,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.EthFlipAddress()))
 
-				sw := watcher.NewStorageWatcher(db, time.Nanosecond)
+				sw := watcher.NewStorageWatcher(db, time.Nanosecond, -1)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
