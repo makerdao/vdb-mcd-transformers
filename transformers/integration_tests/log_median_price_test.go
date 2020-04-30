@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_median_price"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -50,10 +51,13 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []logMedianPriceModel
-		err = db.Select(&dbResults, `SELECT val, age from maker.log_median_price`)
+		err = db.Select(&dbResults, `SELECT address_id, val, age from maker.log_median_price`)
 		Expect(err).NotTo(HaveOccurred())
+		expectedAddressID, addressErr := shared.GetOrCreateAddress(medianEthAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
+		Expect(dbResults[0].AddressID).To(Equal(expectedAddressID))
 		Expect(dbResults[0].Val).To(Equal("192578360000000000000"))
 		Expect(dbResults[0].Age).To(Equal("1588003362"))
 	})
@@ -88,16 +92,20 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResults []logMedianPriceModel
-		err = db.Select(&dbResults, `SELECT val, age from maker.log_median_price`)
+		err = db.Select(&dbResults, `SELECT address_id, val, age from maker.log_median_price`)
 		Expect(err).NotTo(HaveOccurred())
+		expectedAddressID, addressErr := shared.GetOrCreateAddress(medianBatAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))
+		Expect(dbResults[0].AddressID).To(Equal(expectedAddressID))
 		Expect(dbResults[0].Val).To(Equal("179042302500000000"))
 		Expect(dbResults[0].Age).To(Equal("1588036910"))
 	})
 })
 
 type logMedianPriceModel struct {
-	Val string
-	Age string
+	Val       string
+	Age       string
+	AddressID int64 `db:"address_id"`
 }

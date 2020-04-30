@@ -32,6 +32,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogMe
 
 		entity.HeaderID = log.HeaderID
 		entity.LogID = log.ID
+		entity.ContractAddress = address
 		entities = append(entities, entity)
 	}
 
@@ -46,18 +47,24 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 
 	var models []event.InsertionModel
 	for _, LogMedianPriceEntity := range entities {
+		addressID, addressErr := shared.GetOrCreateAddress(LogMedianPriceEntity.ContractAddress.Hex(), db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
 		LogMedianPriceModel := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogMedianPriceTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
+				event.AddressFK,
 				constants.ValColumn,
 				constants.AgeColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:      LogMedianPriceEntity.HeaderID,
 				event.LogFK:         LogMedianPriceEntity.LogID,
+				event.AddressFK:     addressID,
 				constants.ValColumn: shared.BigIntToString(LogMedianPriceEntity.Val),
 				constants.AgeColumn: shared.BigIntToString(LogMedianPriceEntity.Age),
 			},
