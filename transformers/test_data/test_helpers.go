@@ -80,7 +80,9 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
 	eventLogRepository := repositories.NewEventLogRepository(db)
 	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, []types.Log{log})
 	Expect(insertLogsErr).NotTo(HaveOccurred())
-	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs()
+
+	logCount := getLogCount(db)
+	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs(0, logCount)
 	Expect(getLogsErr).NotTo(HaveOccurred())
 	for _, EventLog := range eventLogs {
 		if EventLog.Log.TxIndex == log.TxIndex {
@@ -98,7 +100,9 @@ func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventL
 	eventLogRepository := repositories.NewEventLogRepository(db)
 	insertLogsErr := eventLogRepository.CreateEventLogs(headerID, logs)
 	Expect(insertLogsErr).NotTo(HaveOccurred())
-	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs()
+
+	logCount := getLogCount(db)
+	eventLogs, getLogsErr := eventLogRepository.GetUntransformedEventLogs(0, logCount)
 	Expect(getLogsErr).NotTo(HaveOccurred())
 	var results []core.EventLog
 	for _, EventLog := range eventLogs {
@@ -109,4 +113,12 @@ func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventL
 		}
 	}
 	return results
+}
+
+func getLogCount(db *postgres.DB) int {
+	var logCount int
+	logCountErr := db.Get(&logCount, `SELECT count(*) from public.event_logs`)
+	Expect(logCountErr).NotTo(HaveOccurred())
+
+	return logCount
 }
