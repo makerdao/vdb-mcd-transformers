@@ -7,8 +7,9 @@ import (
 
 // This file contains "shortcuts" to some configuration values useful for testing
 
-func CatAddress() string  { return checksum(constants.GetContractAddress("MCD_CAT")) }
-func FlapAddress() string { return checksum(constants.GetContractAddress("MCD_FLAP")) }
+func BatMedianAddress() string { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
+func CatAddress() string       { return checksum(constants.GetContractAddress("MCD_CAT")) }
+func FlapAddress() string      { return checksum(constants.GetContractAddress("MCD_FLAP")) }
 func FlipAddresses() []string {
 	var addressesResult []string
 	flipAddresses := constants.GetContractAddresses([]string{

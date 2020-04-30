@@ -47,6 +47,7 @@ const (
 	LogKillTable            = "log_kill"
 	LogMakeTable            = "log_make"
 	LogMatchingEnabledTable = "log_matching_enabled"
+	LogMedianPriceTable     = "log_median_price"
 	LogMinSellTable         = "log_min_sell"
 	LogSortedOfferTable     = "log_sorted_offer"
 	LogTakeTable            = "log_take"

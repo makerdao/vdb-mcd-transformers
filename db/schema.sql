@@ -10334,6 +10334,40 @@ ALTER SEQUENCE maker.log_matching_enabled_id_seq OWNED BY maker.log_matching_ena
 
 
 --
+-- Name: log_median_price; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_median_price (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    val numeric,
+    age numeric
+);
+
+
+--
+-- Name: log_median_price_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_median_price_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_median_price_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_median_price_id_seq OWNED BY maker.log_median_price.id;
+
+
+--
 -- Name: log_min_sell; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14104,6 +14138,13 @@ ALTER TABLE ONLY maker.log_matching_enabled ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: log_median_price id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price ALTER COLUMN id SET DEFAULT nextval('maker.log_median_price_id_seq'::regclass);
+
+
+--
 -- Name: log_min_sell id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16226,6 +16267,22 @@ ALTER TABLE ONLY maker.log_matching_enabled
 
 ALTER TABLE ONLY maker.log_matching_enabled
     ADD CONSTRAINT log_matching_enabled_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_median_price log_median_price_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_median_price log_median_price_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_pkey PRIMARY KEY (id);
 
 
 --
@@ -19292,6 +19349,27 @@ CREATE INDEX log_matching_enabled_header_index ON maker.log_matching_enabled USI
 --
 
 CREATE INDEX log_matching_enabled_log_index ON maker.log_matching_enabled USING btree (log_id);
+
+
+--
+-- Name: log_median_price_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_address_index ON maker.log_median_price USING btree (address_id);
+
+
+--
+-- Name: log_median_price_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_header_index ON maker.log_median_price USING btree (header_id);
+
+
+--
+-- Name: log_median_price_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_log_index ON maker.log_median_price USING btree (log_id);
 
 
 --
@@ -23212,6 +23290,30 @@ ALTER TABLE ONLY maker.log_matching_enabled
 
 ALTER TABLE ONLY maker.log_matching_enabled
     ADD CONSTRAINT log_matching_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --

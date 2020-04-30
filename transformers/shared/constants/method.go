@@ -80,6 +80,7 @@ func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(
 func logMatchingEnabledEvent() string {
 	return getSolidityFunctionSignature(OasisABI(), "LogMatchingEnabled")
 }
+func logMedianPriceEvent() string  { return getSolidityFunctionSignature(MedianABI(), "LogMedianPrice") }
 func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
