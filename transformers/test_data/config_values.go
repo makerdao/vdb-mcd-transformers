@@ -7,9 +7,8 @@ import (
 
 // This file contains "shortcuts" to some configuration values useful for testing
 
-func BatMedianAddress() string { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
-func CatAddress() string       { return checksum(constants.GetContractAddress("MCD_CAT")) }
-func FlapAddress() string      { return checksum(constants.GetContractAddress("MCD_FLAP")) }
+func CatAddress() string  { return checksum(constants.GetContractAddress("MCD_CAT")) }
+func FlapAddress() string { return checksum(constants.GetContractAddress("MCD_FLAP")) }
 func FlipAddresses() []string {
 	var addressesResult []string
 	flipAddresses := constants.GetContractAddresses([]string{
@@ -22,19 +21,22 @@ func FlipAddresses() []string {
 	return addressesResult
 }
 
-func EthFlipAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
-func EthMedianAddress() string { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
-func FlopAddress() string      { return checksum(constants.GetContractAddress("MCD_FLOP")) }
-func JugAddress() string       { return checksum(constants.GetContractAddress("MCD_JUG")) }
+func FlipEthAddress() string  { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
+func FlipWbtcAddress() string { return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A")) }
+func FlopAddress() string     { return checksum(constants.GetContractAddress("MCD_FLOP")) }
+func JugAddress() string      { return checksum(constants.GetContractAddress("MCD_JUG")) }
 func MedianAddresses() []string {
 	var addressesResult []string
-	medianAddresses := constants.GetContractAddresses([]string{"MEDIAN_ETH", "MEDIAN_BAT"})
+	medianAddresses := constants.GetContractAddresses([]string{"MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_WBTC"})
 
 	for _, address := range medianAddresses {
 		addressesResult = append(addressesResult, checksum(address))
 	}
 	return addressesResult
 }
+func MedianBatAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
+func MedianEthAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
+func MedianWbtcAddress() string { return checksum(constants.GetContractAddress("MEDIAN_WBTC")) }
 func OasisAddresses() []string {
 	var addressesResult []string
 	oasisAddresses := constants.GetContractAddresses([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
@@ -58,6 +60,7 @@ func OsmAddresses() []string {
 func OsmBatAddress() string     { return checksum(constants.GetContractAddress("OSM_BAT")) }
 func OsmEthAddress() string     { return checksum(constants.GetContractAddress("OSM_ETH")) }
 func OsmUsdcAddress() string    { return checksum(constants.GetContractAddress("OSM_USDC")) }
+func OsmWbtcAddress() string    { return checksum(constants.GetContractAddress("OSM_WBTC")) }
 func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }
 func SpotAddress() string       { return checksum(constants.GetContractAddress("MCD_SPOT")) }
 func VatAddress() string        { return checksum(constants.GetContractAddress("MCD_VAT")) }

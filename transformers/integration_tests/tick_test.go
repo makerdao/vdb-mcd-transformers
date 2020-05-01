@@ -80,7 +80,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
 		Expect(flipAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

@@ -13,7 +13,7 @@ import (
 )
 
 var RawMedianLiftLogWithFiveAccounts = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianLiftSignature()),
 		common.HexToHash("0x000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f"),
@@ -59,7 +59,7 @@ var medianLiftModelWithFiveAccounts = event.InsertionModel{
 }
 
 var rawMedianLiftLogWithOneAccount = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianLiftSignature()),
 		common.HexToHash("0x000000000000000000000000c45e7858eef1318337a803ede8c5a9be12e2b40f"),

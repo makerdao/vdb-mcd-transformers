@@ -42,7 +42,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		tendConfig = event.TransformerConfig{
 			TransformerName:   constants.TendTable,
-			ContractAddresses: []string{test_data.EthFlipAddress()},
+			ContractAddresses: []string{test_data.FlipEthAddress()},
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TendSignature(),
 		}

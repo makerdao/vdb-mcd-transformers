@@ -16,6 +16,6 @@ var _ = Describe("flip created trigger", func() {
 	})
 
 	Describe("updating flip created", func() {
-		bid_creation.SharedBidCreationTriggerTests(constants.FlipTable, test_data.EthFlipAddress(), &flipKickModel)
+		bid_creation.SharedBidCreationTriggerTests(constants.FlipTable, test_data.FlipEthAddress(), &flipKickModel)
 	})
 })

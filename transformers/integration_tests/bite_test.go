@@ -77,7 +77,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
 		Expect(dbResult[0].Ink).To(Equal("50000000000000000000"))
-		Expect(dbResult[0].Flip).To(Equal(test_data.EthFlipAddress()))
+		Expect(dbResult[0].Flip).To(Equal(test_data.FlipEthAddress()))
 		Expect(dbResult[0].Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
 		Expect(dbResult[0].Id).To(Equal("112"))
 	})

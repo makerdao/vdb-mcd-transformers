@@ -26,10 +26,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928163), test_data.FlapAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip rely events", func() {
+	Context("Flip ETH rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		relyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip WBTC rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flop rely events", func() {
@@ -44,23 +50,47 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("OSM Bat rely events", func() {
+	Context("Median BAT rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956961), test_data.MedianBatAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median ETH rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956896), test_data.MedianEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956963), test_data.MedianWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM BAT rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(9529100), test_data.OsmBatAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("OSM Eth rely events", func() {
+	Context("OSM ETH rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(9529100), test_data.OsmEthAddress(), msgSenderAddress, usrAddress)
 	})
 
 	// "OSM_USDC" is actually just a DS value contract right now and does not have "rely"
-	XContext("OSM USDC events", func() {
+	XContext("OSM USDC rely events", func() {
 		usrAddress := ""
 		msgSenderAddress := ""
 		relyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(9975536), test_data.OsmWbtcAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Pot rely events", func() {

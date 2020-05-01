@@ -58,7 +58,7 @@ var _ = Describe("MedianKissBatch EventTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
 
