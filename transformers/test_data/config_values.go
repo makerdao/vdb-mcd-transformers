@@ -21,9 +21,10 @@ func FlipAddresses() []string {
 	return addressesResult
 }
 
-func EthFlipAddress() string { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
-func FlopAddress() string    { return checksum(constants.GetContractAddress("MCD_FLOP")) }
-func JugAddress() string     { return checksum(constants.GetContractAddress("MCD_JUG")) }
+func FlipEthAddress() string  { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
+func FlipWbtcAddress() string { return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A")) }
+func FlopAddress() string     { return checksum(constants.GetContractAddress("MCD_FLOP")) }
+func JugAddress() string      { return checksum(constants.GetContractAddress("MCD_JUG")) }
 func MedianAddresses() []string {
 	var addressesResult []string
 	medianAddresses := constants.GetContractAddresses([]string{"MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_WBTC"})

@@ -26,10 +26,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928163), test_data.FlapAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip rely events", func() {
+	Context("Flip ETH rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		relyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip WBTC rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flop rely events", func() {

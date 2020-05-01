@@ -23,7 +23,7 @@ var _ = Describe("urn bid events query", func() {
 		bidTwoID,
 		bidThreeID int
 		usrOne, usrTwo string
-		ethFlipAddress = test_data.EthFlipAddress()
+		ethFlipAddress = test_data.FlipEthAddress()
 		batFlipAddress = common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
 	)
 

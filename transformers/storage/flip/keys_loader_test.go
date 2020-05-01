@@ -42,7 +42,7 @@ var _ = Describe("Flip storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = flip.NewKeysLoader(storageRepository, test_data.EthFlipAddress())
+		storageKeysLoader = flip.NewKeysLoader(storageRepository, test_data.FlipEthAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -71,7 +71,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.EthFlipAddress()))
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.FlipEthAddress()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 

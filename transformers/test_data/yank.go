@@ -28,7 +28,7 @@ import (
 )
 
 var rawYankLog = types.Log{
-	Address: common.HexToAddress(EthFlipAddress()),
+	Address: common.HexToAddress(FlipEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.YankSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
