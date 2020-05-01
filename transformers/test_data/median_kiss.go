@@ -13,7 +13,7 @@ import (
 )
 
 var rawMedianKissSingleLog = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianKissSingleSignature()),
 		common.HexToHash("0x000000000000000000000000ddb108893104de4e1c6d0e47c42237db4e617acc"),
@@ -55,7 +55,7 @@ var medianKissSingleModel = event.InsertionModel{
 }
 
 var rawMedianKissBatchLogOneAddress = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianKissBatchSignature()),
 		common.HexToHash("0x000000000000000000000000e87f55af91068a1da44095138f3d37c45894eb21"),
@@ -101,7 +101,7 @@ var medianKissBatchModelOneAddress = event.InsertionModel{
 }
 
 var RawMedianKissBatchLogFiveAddresses = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianKissBatchSignature()),
 		common.HexToHash("0x000000000000000000000000e87f55af91068a1da44095138f3d37c45894eb21"),

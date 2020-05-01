@@ -13,7 +13,7 @@ import (
 
 var (
 	rawEthLogMedianPriceLog = types.Log{
-		Address: common.HexToAddress(EthMedianAddress()),
+		Address: common.HexToAddress(MedianEthAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.LogMedianPriceSignature()),
 		},

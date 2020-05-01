@@ -82,36 +82,36 @@ var _ = Describe("Signature constants", func() {
 		Expect(JugInitSignature()).To(Equal("0x3b66319500000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates log value signature", func() {
-		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
-	})
-
-	It("generates diss (batch) signature", func() {
-		Expect(MedianDissBatchSignature()).To(Equal("0x46d4577d00000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates diss (single) signature", func() {
-		Expect(MedianDissSingleSignature()).To(Equal("0x65c4ce7a00000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates kiss (batch) signature", func() {
-		Expect(MedianKissBatchSignature()).To(Equal("0x1b25b65f00000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates drop signature", func() {
-		Expect(MedianDropSignature()).To(Equal("0x8ef5eaf000000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates log median price", func() {
 		Expect(LogMedianPriceSignature()).To(Equal("0xb78ebc573f1f889ca9e1e0fb62c843c836f3d3a2e1f43ef62940e9b894f4ea4c"))
 	})
 
-	It("generates lift signature", func() {
-		Expect(MedianLiftSignature()).To(Equal("0x9431810600000000000000000000000000000000000000000000000000000000"))
+	It("generates log value signature", func() {
+		Expect(LogValueSignature()).To(Equal("0x296ba4ca62c6c21c95e828080cb8aec7481b71390585605300a8a76f9e95b527"))
 	})
 
-	It("generates kiss (single) signature", func() {
+	It("generates median diss (batch) signature", func() {
+		Expect(MedianDissBatchSignature()).To(Equal("0x46d4577d00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates median diss (single) signature", func() {
+		Expect(MedianDissSingleSignature()).To(Equal("0x65c4ce7a00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates median drop signature", func() {
+		Expect(MedianDropSignature()).To(Equal("0x8ef5eaf000000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates median kiss (batch) signature", func() {
+		Expect(MedianKissBatchSignature()).To(Equal("0x1b25b65f00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates median kiss (single) signature", func() {
 		Expect(MedianKissSingleSignature()).To(Equal("0xf29c29c400000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates median lift signature", func() {
+		Expect(MedianLiftSignature()).To(Equal("0x9431810600000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates new cdp signature", func() {

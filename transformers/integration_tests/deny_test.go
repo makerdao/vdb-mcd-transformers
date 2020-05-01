@@ -39,12 +39,27 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8928160), test_data.JugAddress(), usrAddress, usrAddress)
 	})
 
-	Context("OSM Bat deny events", func() {
+	Context("Median BAT deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957024), test_data.MedianBatAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median ETH deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957020), test_data.MedianEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median WBTC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957027), test_data.MedianWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM BAT deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(8957031), test_data.OsmBatAddress(), usrAddress, usrAddress)
 	})
 
-	Context("OSM Eth deny events", func() {
+	Context("OSM ETH deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(8957029), test_data.OsmEthAddress(), usrAddress, usrAddress)
 	})
@@ -53,6 +68,11 @@ var _ = Describe("Deny transformer", func() {
 	XContext("OSM USDC deny events", func() {
 		usrAddress := ""
 		denyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM WBTC events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(9975543), test_data.OsmWbtcAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Pot deny events", func() {

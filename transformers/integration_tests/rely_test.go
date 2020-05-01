@@ -44,23 +44,47 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("OSM Bat rely events", func() {
+	Context("Median BAT rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956961), test_data.MedianBatAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median ETH rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956896), test_data.MedianEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956963), test_data.MedianWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM BAT rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(9529100), test_data.OsmBatAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("OSM Eth rely events", func() {
+	Context("OSM ETH rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(9529100), test_data.OsmEthAddress(), msgSenderAddress, usrAddress)
 	})
 
 	// "OSM_USDC" is actually just a DS value contract right now and does not have "rely"
-	XContext("OSM USDC events", func() {
+	XContext("OSM USDC rely events", func() {
 		usrAddress := ""
 		msgSenderAddress := ""
 		relyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(9975536), test_data.OsmWbtcAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Pot rely events", func() {
