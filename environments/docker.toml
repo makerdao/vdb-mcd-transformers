@@ -37,6 +37,7 @@
         "log_delete",
         "log_insert",
         "log_item_update",
+        "log_kill",
         "log_make",
         "log_matching_enabled",
         "log_median_price",
@@ -313,6 +314,13 @@
         rank = "0"
     [exporter.log_item_update]
         path = "transformers/events/log_item_update/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    [exporter.log_kill]
+        path = "transformers/events/log_kill/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
