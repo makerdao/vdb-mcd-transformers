@@ -2143,14 +2143,14 @@ COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id intege
 
 
 --
--- Name: delete_obsolete_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_urn_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) RETURNS api.urn_snapshot
+CREATE FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) RETURNS api.urn_snapshot
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    urn_state_block_number BIGINT := (
+    urn_snapshot_block_number BIGINT := (
         SELECT block_number
         FROM public.headers
         WHERE id = header_id);
@@ -2161,27 +2161,27 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urns.identifier
       AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
-      AND urn_snapshot.block_height = urn_state_block_number
+      AND urn_snapshot.block_height = urn_snapshot_block_number
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_ink
-            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_ink.header_id = delete_obsolete_urn_state.header_id))
+            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_ink.header_id = delete_obsolete_urn_snapshot.header_id))
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_art
-            WHERE vat_urn_art.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_art.header_id = delete_obsolete_urn_state.header_id));
+            WHERE vat_urn_art.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_art.header_id = delete_obsolete_urn_snapshot.header_id));
     RETURN NULL;
 END
 $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_urn_state(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_obsolete_urn_snapshot(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -6332,7 +6332,7 @@ BEGIN
         PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6425,7 +6425,7 @@ BEGIN
         PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;
