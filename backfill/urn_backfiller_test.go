@@ -11,7 +11,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/mocks"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	vdbMocks "github.com/makerdao/vulcanizedb/libraries/shared/mocks"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -23,7 +22,6 @@ import (
 var _ = Describe("Urn BackFiller", func() {
 	var (
 		mockBlockChain       *fakes.MockBlockChain
-		mockDiffsRepository  *vdbMocks.MockStorageDiffRepository
 		mockEventsRepository *mocks.EventsRepository
 		mockUrnsRepository   *mocks.UrnsRepository
 		backFiller           backfill.UrnBackFiller
@@ -31,12 +29,10 @@ var _ = Describe("Urn BackFiller", func() {
 
 	BeforeEach(func() {
 		mockBlockChain = fakes.NewMockBlockChain()
-		mockDiffsRepository = &vdbMocks.MockStorageDiffRepository{}
 		mockEventsRepository = &mocks.EventsRepository{}
 		mockUrnsRepository = &mocks.UrnsRepository{}
 		backFiller = backfill.NewUrnBackFiller(
 			mockBlockChain,
-			mockDiffsRepository,
 			mockEventsRepository,
 			mockUrnsRepository,
 		)
@@ -292,7 +288,7 @@ var _ = Describe("Urn BackFiller", func() {
 				StorageKey:    crypto.Keccak256Hash(expectedUrnInkKey.Bytes()),
 				StorageValue:  common.BytesToHash(fakeValue),
 			}
-			Expect(mockDiffsRepository.CreateBackFilledStorageValuePassedRawDiffs).To(ContainElement(expectedDiff))
+			Expect(mockUrnsRepository.InsertUrnDiffPassedDiff).To(Equal(expectedDiff))
 		})
 
 		It("returns error if persisting diff fails", func() {
@@ -308,7 +304,7 @@ var _ = Describe("Urn BackFiller", func() {
 			fakeHeader := core.Header{BlockNumber: rand.Int63()}
 			mockEventsRepository.GetHeaderByIDHeaderToReturn = fakeHeader
 			mockBlockChain.SetStorageValuesToReturn(fakeHeader.BlockNumber, backfill.VatAddress, []byte{0, 1, 2, 3, 4, 5})
-			mockDiffsRepository.CreateBackFilledStorageValueReturnError = fakes.FakeError
+			mockUrnsRepository.InsertUrnDiffErr = fakes.FakeError
 
 			err := backFiller.BackfillUrns(0)
 

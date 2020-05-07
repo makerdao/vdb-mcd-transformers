@@ -27,16 +27,13 @@ type UrnBackFiller interface {
 type urnBackFiller struct {
 	db               *postgres.DB
 	blockChain       core.BlockChain
-	diffRepository   storage.DiffRepository
 	eventsRepository EventsRepository
 	urnsRepository   UrnsRepository
 }
 
-func NewUrnBackFiller(blockChain core.BlockChain, diffRepository storage.DiffRepository,
-	eventsRepository EventsRepository, urnsRepository UrnsRepository) UrnBackFiller {
+func NewUrnBackFiller(blockChain core.BlockChain, eventsRepository EventsRepository, urnsRepository UrnsRepository) UrnBackFiller {
 	return urnBackFiller{
 		blockChain:       blockChain,
-		diffRepository:   diffRepository,
 		eventsRepository: eventsRepository,
 		urnsRepository:   urnsRepository,
 	}
@@ -48,14 +45,15 @@ func (backFiller urnBackFiller) BackfillUrns(startingBlock int) error {
 		return fmt.Errorf("failed getting urns: %w", urnsErr)
 	}
 
-	logrus.Printf("getting frobs for %d urns\n", len(urns))
-	for _, u := range urns {
+	lenUrns := len(urns)
+	logrus.Printf("getting frobs for %d urns\n", lenUrns)
+	for i, u := range urns {
 		frobs, frobsErr := backFiller.eventsRepository.GetFrobs(u.ID, startingBlock)
 		if frobsErr != nil {
 			return fmt.Errorf("error getting frobs for urn %d: %w", u.ID, frobsErr)
 		}
 
-		logrus.Printf("getting diffs for %d frobs for urn %s of ilk %s", len(frobs), u.Urn, u.Ilk)
+		logrus.Infof("getting %d out of %d urns: %s, %s - %d frobs", i, lenUrns, u.Ilk, u.Urn, len(frobs))
 		for _, f := range frobs {
 			dink, ok := big.NewInt(0).SetString(f.Dink, 10)
 			if !ok {
@@ -136,7 +134,7 @@ func (backFiller urnBackFiller) getAndPersistDiff(key common.Hash, header core.H
 			StorageKey:    crypto.Keccak256Hash(k.Bytes()),
 			StorageValue:  common.BytesToHash(v),
 		}
-		createDiffErr := backFiller.diffRepository.CreateBackFilledStorageValue(diff)
+		createDiffErr := backFiller.urnsRepository.InsertUrnDiff(diff)
 		if createDiffErr != nil {
 			return fmt.Errorf("error inserting diff: %w", createDiffErr)
 		}

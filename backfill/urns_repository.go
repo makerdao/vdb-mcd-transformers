@@ -1,6 +1,9 @@
 package backfill
 
-import "github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+import (
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+)
 
 type Urn struct {
 	ID  int
@@ -10,6 +13,7 @@ type Urn struct {
 
 type UrnsRepository interface {
 	GetUrns() ([]Urn, error)
+	InsertUrnDiff(diff types.RawDiff) error
 	VatUrnArtExists(urnID, headerID int) (bool, error)
 	VatUrnInkExists(urnID, headerID int) (bool, error)
 }
@@ -28,6 +32,14 @@ func (u urnsRepository) GetUrns() ([]Urn, error) {
 		FROM maker.urns
 		JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id`)
 	return urns, err
+}
+
+func (u urnsRepository) InsertUrnDiff(diff types.RawDiff) error {
+	_, err := u.db.Exec(`INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key,
+                storage_value, from_backfill) VALUES ($1, $2, $3, $4, $5, true) ON CONFLICT DO NOTHING;`,
+		diff.BlockHeight, diff.BlockHash.Bytes(), diff.HashedAddress.Bytes(), diff.StorageKey.Bytes(),
+		diff.StorageValue.Bytes())
+	return err
 }
 
 func (u urnsRepository) VatUrnArtExists(urnID, headerID int) (bool, error) {

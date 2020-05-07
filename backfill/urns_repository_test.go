@@ -1,6 +1,8 @@
 package backfill_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"math/rand"
 
 	"github.com/makerdao/vdb-mcd-transformers/backfill"
@@ -43,6 +45,49 @@ var _ = Describe("Urns repository", func() {
 				Ilk: fakeIlk,
 				Urn: fakeUrn,
 			}))
+		})
+	})
+
+	Describe("InsertUrnDiff", func() {
+		It("inserts a back filled diff", func() {
+			diff := types.RawDiff{
+				HashedAddress: common.HexToHash(test_data.RandomString(64)),
+				BlockHash:     common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:   rand.Int(),
+				StorageKey:    common.HexToHash(test_data.RandomString(64)),
+				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+			}
+
+			err := repo.InsertUrnDiff(diff)
+
+			Expect(err).NotTo(HaveOccurred())
+			var persistedDiff types.PersistedDiff
+			readErr := db.Get(&persistedDiff, `SELECT * FROM public.storage_diff LIMIT 1`)
+			Expect(readErr).NotTo(HaveOccurred())
+			Expect(persistedDiff.RawDiff).To(Equal(diff))
+			Expect(persistedDiff.FromBackfill).To(BeTrue())
+			Expect(persistedDiff.Checked).To(BeFalse())
+		})
+
+		It("doesn't duplicate diffs", func() {
+			diff := types.RawDiff{
+				HashedAddress: common.HexToHash(test_data.RandomString(64)),
+				BlockHash:     common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:   rand.Int(),
+				StorageKey:    common.HexToHash(test_data.RandomString(64)),
+				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+			}
+
+			err := repo.InsertUrnDiff(diff)
+			Expect(err).NotTo(HaveOccurred())
+
+			errTwo := repo.InsertUrnDiff(diff)
+			Expect(errTwo).NotTo(HaveOccurred())
+
+			var count int
+			readErr := db.Get(&count, `SELECT count(*) FROM public.storage_diff`)
+			Expect(readErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
 		})
 	})
 

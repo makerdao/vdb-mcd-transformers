@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -22,6 +21,7 @@ You can optionally pass a starting block number to backfill since a given block.
 			logrus.Fatalf("error backfilling urns: %s", err.Error())
 		}
 		logrus.Println("Backfilling urns completed successfully")
+		return
 	},
 }
 
@@ -34,10 +34,9 @@ func init() {
 func backfillUrns() error {
 	blockChain := getBlockChain()
 	db := utils.LoadPostgres(databaseConfig, blockChain.Node())
-	diffRepository := storage.NewDiffRepository(&db)
 	eventRepository := backfill.NewEventsRepository(&db)
 	urnsRepository := backfill.NewUrnsRepository(&db)
-	backfiller := backfill.NewUrnBackFiller(blockChain, diffRepository, eventRepository, urnsRepository)
+	backfiller := backfill.NewUrnBackFiller(blockChain, eventRepository, urnsRepository)
 
 	return backfiller.BackfillUrns(startingBlock)
 }
