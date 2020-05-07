@@ -202,4 +202,34 @@ var _ = Describe("Median Storage Repository", func() {
 			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.A}))
 		})
 	})
+
+	Describe("orcl mapping", func() {
+		var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
+		It("writes a row", func() {
+			fakeOrclAddress := "0x" + fakes.RandomString(40)
+			orclMetadata := types.GetValueMetadata(median.Orcl, map[types.Key]string{constants.Address: fakeOrclAddress}, types.Uint256)
+
+			writeErr := repo.Create(diffID, fakeHeaderID, orclMetadata, fakeUint256)
+			Expect(writeErr).NotTo(HaveOccurred())
+
+			var result MappingResWithAddress
+			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, a AS key, orcl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianOrclTable))
+			readErr := db.Get(&result, query)
+			Expect(readErr).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
+			orclAddressID, orclAddressErr := shared.GetOrCreateAddress(fakeOrclAddress, db)
+			Expect(orclAddressErr).NotTo(HaveOccurred())
+			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(orclAddressID, 10), fakeUint256)
+		})
+
+		It("returns an error if metadata missing 'a' address", func() {
+			malformedOrclMetadata := types.GetValueMetadata(median.Orcl, map[types.Key]string{}, types.Uint256)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedOrclMetadata, fakeUint256)
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.A}))
+		})
+
+	})
 })

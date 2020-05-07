@@ -37,6 +37,7 @@ type IMakerStorageRepository interface {
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetMedianBudAddresses(string) ([]string, error)
+	GetMedianOrclAddresses(string) ([]string, error)
 	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
 	GetUrns() ([]Urn, error)
@@ -49,6 +50,24 @@ type IMakerStorageRepository interface {
 
 type MakerStorageRepository struct {
 	db *postgres.DB
+}
+
+func (repository *MakerStorageRepository) GetMedianOrclAddresses(contractAddress string) ([]string, error) {
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
+	if addressErr != nil {
+		return nil, addressErr
+	}
+	var orclAddresses []string
+	err := repository.db.Select(&orclAddresses, `
+		SELECT a_address
+		FROM maker.median_lift, UNNEST(a) a_address
+		WHERE address_id = $1
+		UNION
+		SELECT a_address
+		FROM maker.median_drop, UNNEST(a) a_address
+		WHERE address_id = $1
+		`, addressID)
+	return orclAddresses, err
 }
 
 func (repository *MakerStorageRepository) GetFlapBidIDs(contractAddress string) ([]string, error) {

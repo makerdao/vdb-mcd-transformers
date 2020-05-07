@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	Val = "val"
-	Age = "age"
-	Bar = "bar"
-	Bud = "bud"
+	Val  = "val"
+	Age  = "age"
+	Bar  = "bar"
+	Bud  = "bud"
+	Orcl = "orcl"
 )
 
 var (
@@ -28,7 +29,8 @@ var (
 	BarKey      = common.HexToHash(vdbStorage.IndexTwo)
 	BarMetadata = types.GetValueMetadata(Bar, nil, types.Uint256)
 
-	BudMappingIndex = vdbStorage.IndexFour
+	OrclMappingIndex = vdbStorage.IndexThree
+	BudMappingIndex  = vdbStorage.IndexFour
 )
 
 type keysLoader struct {
@@ -42,9 +44,17 @@ func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contrac
 
 func (loader keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
 	mappings := loadStaticKeys()
+	return loader.addDynamicMappings(mappings)
+}
+
+func (loader keysLoader) addDynamicMappings(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	mappings, wardsErr := loader.loadWardsKeys(mappings)
 	if wardsErr != nil {
 		return nil, wardsErr
+	}
+	mappings, orclErr := loader.loadOrclKeys(mappings)
+	if orclErr != nil {
+		return nil, orclErr
 	}
 	return loader.loadBudKeys(mappings)
 }
@@ -62,6 +72,21 @@ func (loader *keysLoader) loadWardsKeys(mappings map[common.Hash]types.ValueMeta
 		return nil, err
 	}
 	return wards.AddWardsKeys(mappings, addresses)
+}
+
+func (loader *keysLoader) loadOrclKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+	orclAddresses, orclErr := loader.storageRepository.GetMedianOrclAddresses(loader.contractAddress)
+	if orclErr != nil {
+		return nil, orclErr
+	}
+	for _, address := range orclAddresses {
+		paddedAddress, padErr := utilities.PadAddress(address)
+		if padErr != nil {
+			return nil, padErr
+		}
+		mappings[getOrclKey(paddedAddress)] = getOrclMetadata(address)
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) loadBudKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
@@ -88,6 +113,14 @@ func getBudMetadata(address string) types.ValueMetadata {
 	return types.GetValueMetadata(Bud, keys, types.Uint256)
 }
 
+func getOrclKey(address string) common.Hash {
+	return vdbStorage.GetKeyForMapping(OrclMappingIndex, address)
+}
+
+func getOrclMetadata(address string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.Address: address}
+	return types.GetValueMetadata(Orcl, keys, types.Uint256)
+}
 func (loader keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }

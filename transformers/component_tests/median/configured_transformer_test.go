@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -20,7 +21,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Executing the flip transformer", func() {
+var _ = Describe("Executing the median transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = test_data.EthMedianAddress()
@@ -120,6 +121,45 @@ var _ = Describe("Executing the flip transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(budResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
 			test_helpers.AssertMapping(budResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
+		})
+	})
+
+	Describe("orcl", func() {
+		It("reads in an orcl storage diff row and persists it", func() {
+			liftLog := test_data.CreateTestLog(header.Id, db)
+			liftModel := test_data.MedianLiftModelWithOneAccount()
+
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			Expect(medianAddressErr).NotTo(HaveOccurred())
+
+			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+			aAddressID, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			Expect(aAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			liftModel.ColumnValues[event.HeaderFK] = header.Id
+			liftModel.ColumnValues[event.LogFK] = liftLog.ID
+			liftModel.ColumnValues[event.AddressFK] = medianAddressID
+			liftModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			liftModel.ColumnValues[constants.AColumn] = pq.Array([]string{aAddress})
+			insertErr := event.PersistModels([]event.InsertionModel{liftModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("d96e792a1d8f411d1f279b1c9ea610f0bcad22e8356661708ae9e456b88582f0")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+
+			transformErr := transformer.Execute(liftDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var orclResult test_helpers.MappingResWithAddress
+			err := db.Get(&orclResult, `SELECT diff_id, header_id, address_id, a AS key, orcl AS value from maker.median_orcl`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(orclResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			test_helpers.AssertMapping(orclResult.MappingRes, liftDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
 		})
 	})
 })

@@ -165,6 +165,7 @@ const (
 	MedianAgeTable          = "median_age"
 	MedianBarTable          = "median_bar"
 	MedianBudTable          = "median_bud"
+	MedianOrclTable         = "median_orcl"
 	PotChiTable             = "pot_chi"
 	PotDsrTable             = "pot_dsr"
 	PotLiveTable            = "pot_live"

@@ -36,6 +36,17 @@ CREATE TABLE maker.median_age
 CREATE INDEX median_age_header_id_index
     ON maker.median_age (header_id);
 
+CREATE TABLE maker.median_orcl
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    a          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    orcl        INTEGER NOT NULL,
+    UNIQUE (diff_id, header_id, address_id, a, orcl)
+);
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.median_val_header_id_index;
@@ -45,3 +56,4 @@ DROP INDEX maker.median_age_header_id_index;
 DROP TABLE maker.median_val;
 DROP TABLE maker.median_bar;
 DROP TABLE maker.median_age;
+DROP TABLE maker.median_orcl;

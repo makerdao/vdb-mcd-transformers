@@ -98,4 +98,34 @@ var _ = Describe("Median storage keys loader", func() {
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 	})
+
+	Describe("orcl", func() {
+		It("returns value metadata for orcl", func() {
+			orclAddress := common.HexToAddress(test_data.RandomString(40)).Hex()
+			storageRepository.MedianOrclAddresses = []string{orclAddress}
+			paddedOrclAddress := "0x000000000000000000000000" + orclAddress[2:]
+			orclKey := common.BytesToHash(crypto.Keccak256(common.FromHex(paddedOrclAddress + median.OrclMappingIndex)))
+			expectedMetadata := types.ValueMetadata{
+				Name: median.Orcl,
+				Keys: map[types.Key]string{constants.Address: orclAddress},
+				Type: types.Uint256,
+			}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetMedianOrclAddressesCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(mappings[orclKey]).To(Equal(expectedMetadata))
+
+		})
+
+		It("returns error on failure", func() {
+			storageRepository.GetMedianOrclAddressesError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+	})
 })
