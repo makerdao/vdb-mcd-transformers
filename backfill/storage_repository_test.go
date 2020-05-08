@@ -16,16 +16,16 @@ import (
 var _ = Describe("Urns repository", func() {
 	var (
 		db   = test_config.NewTestDB(test_config.NewTestNode())
-		repo backfill.UrnsRepository
+		repo backfill.StorageRepository
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = backfill.NewUrnsRepository(db)
+		repo = backfill.NewStorageRepository(db)
 	})
 
 	Describe("GetUrns", func() {
-		It("returns id, ilk identifier, and urn identifier for all urns", func() {
+		It("returns urn ID, raw ilk, ilk ID, and urn identifier for all urns", func() {
 			fakeIlk := test_data.RandomString(64)
 			fakeIlkIdentifier := "ETH-A"
 			var ilkID int
@@ -41,14 +41,15 @@ var _ = Describe("Urns repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(urns).To(ConsistOf(backfill.Urn{
-				ID:  urnID,
-				Ilk: fakeIlk,
-				Urn: fakeUrn,
+				UrnID: urnID,
+				Ilk:   fakeIlk,
+				IlkID: ilkID,
+				Urn:   fakeUrn,
 			}))
 		})
 	})
 
-	Describe("InsertUrnDiff", func() {
+	Describe("InsertDiff", func() {
 		It("inserts a back filled diff", func() {
 			diff := types.RawDiff{
 				HashedAddress: common.HexToHash(test_data.RandomString(64)),
@@ -58,7 +59,7 @@ var _ = Describe("Urns repository", func() {
 				StorageValue:  common.HexToHash(test_data.RandomString(64)),
 			}
 
-			err := repo.InsertUrnDiff(diff)
+			err := repo.InsertDiff(diff)
 
 			Expect(err).NotTo(HaveOccurred())
 			var persistedDiff types.PersistedDiff
@@ -78,16 +79,71 @@ var _ = Describe("Urns repository", func() {
 				StorageValue:  common.HexToHash(test_data.RandomString(64)),
 			}
 
-			err := repo.InsertUrnDiff(diff)
+			err := repo.InsertDiff(diff)
 			Expect(err).NotTo(HaveOccurred())
 
-			errTwo := repo.InsertUrnDiff(diff)
+			errTwo := repo.InsertDiff(diff)
 			Expect(errTwo).NotTo(HaveOccurred())
 
 			var count int
 			readErr := db.Get(&count, `SELECT count(*) FROM public.storage_diff`)
 			Expect(readErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
+		})
+	})
+
+	Describe("VatIlkArtExists", func() {
+		var (
+			headerID, diffID int64
+			ilkID            int
+		)
+
+		BeforeEach(func() {
+			headerID = test_data.CreateTestHeader(db)
+			diffID = test_helpers.CreateFakeDiffRecord(db)
+
+			fakeIlk := test_data.RandomString(64)
+			fakeIlkIdentifier := "ETH-A"
+			ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`, fakeIlk, fakeIlkIdentifier)
+			Expect(ilkErr).NotTo(HaveOccurred())
+		})
+
+		It("returns true if vat_ilk_art for same ilk and header exists", func() {
+			_, insertErr := db.Exec(`INSERT INTO maker.vat_ilk_art (diff_id, header_id, ilk_id, art) VALUES
+                            ($1, $2, $3, $4)`, diffID, headerID, ilkID, 0)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			exists, err := repo.VatIlkArtExists(ilkID, int(headerID))
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeTrue())
+		})
+
+		It("returns false if vat_ilk_art only exists for same ilk at a different block", func() {
+			_, insertErr := db.Exec(`INSERT INTO maker.vat_ilk_art (diff_id, header_id, ilk_id, art) VALUES
+                            ($1, $2, $3, $4)`, diffID, headerID, ilkID, 0)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			exists, err := repo.VatIlkArtExists(ilkID, int(rand.Int31()))
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeFalse())
+		})
+
+		It("returns false if vat_urn_art only has rows for same header that are different urns", func() {
+			var anotherIlkID int
+			anotherIlkErr := db.Get(&anotherIlkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2)
+				RETURNING id`, test_data.RandomString(40), "BAT-A")
+			Expect(anotherIlkErr).NotTo(HaveOccurred())
+
+			_, insertErr := db.Exec(`INSERT INTO maker.vat_ilk_art (diff_id, header_id, ilk_id, art) VALUES
+                            ($1, $2, $3, $4)`, diffID, headerID, anotherIlkID, 0)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			exists, err := repo.VatIlkArtExists(ilkID, int(headerID))
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeFalse())
 		})
 	})
 
@@ -134,9 +190,9 @@ var _ = Describe("Urns repository", func() {
 		})
 
 		It("returns false if vat_urn_art only has rows for same header that are different urns", func() {
-			anotherFakeUrn := test_data.RandomString(40)
 			var anotherUrnID int
-			anotherUrnErr := db.Get(&anotherUrnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`, ilkID, anotherFakeUrn)
+			anotherUrnErr := db.Get(&anotherUrnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2)
+				RETURNING id`, ilkID, test_data.RandomString(40))
 			Expect(anotherUrnErr).NotTo(HaveOccurred())
 
 			_, insertErr := db.Exec(`INSERT INTO maker.vat_urn_art (diff_id, header_id, urn_id, art) VALUES

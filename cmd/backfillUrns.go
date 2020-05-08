@@ -35,8 +35,8 @@ func backfillUrns() error {
 	blockChain := getBlockChain()
 	db := utils.LoadPostgres(databaseConfig, blockChain.Node())
 	eventRepository := backfill.NewEventsRepository(&db)
-	urnsRepository := backfill.NewUrnsRepository(&db)
-	backfiller := backfill.NewUrnBackFiller(blockChain, eventRepository, urnsRepository)
+	storageRepository := backfill.NewStorageRepository(&db)
+	backFiller := backfill.NewFrobBackFiller(blockChain, eventRepository, storageRepository)
 
-	return backfiller.BackfillUrns(startingBlock)
+	return backFiller.BackFillFrobStorage(startingBlock)
 }
