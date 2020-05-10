@@ -6,19 +6,27 @@ import (
 )
 
 type EventsRepository struct {
-	GetFrobsPassedUrnIDs        []int
-	GetFrobsPassedStartingBlock int
-	GetFrobsFrobsToReturn       []backfill.Frob
 	GetFrobsError               error
-	GetHeaderByIDPassedIDs      []int
-	GetHeaderByIDHeaderToReturn core.Header
+	GetFrobsFrobsToReturn       []backfill.Frob
+	GetFrobsPassedStartingBlock int
+	GetFrobsPassedUrnIDs        []int
+	GetGrabsError               error
+	GetGrabsGrabsToReturn       []backfill.Grab
+	GetGrabsPassedStartingBlock int
 	GetHeaderByIDError          error
+	GetHeaderByIDHeaderToReturn core.Header
+	GetHeaderByIDPassedIDs      []int
 }
 
 func (e *EventsRepository) GetFrobs(urnID, startingBlock int) ([]backfill.Frob, error) {
 	e.GetFrobsPassedUrnIDs = append(e.GetFrobsPassedUrnIDs, urnID)
 	e.GetFrobsPassedStartingBlock = startingBlock
 	return e.GetFrobsFrobsToReturn, e.GetFrobsError
+}
+
+func (e *EventsRepository) GetGrabs(startingBlock int) ([]backfill.Grab, error) {
+	e.GetGrabsPassedStartingBlock = startingBlock
+	return e.GetGrabsGrabsToReturn, e.GetGrabsError
 }
 
 func (e *EventsRepository) GetHeaderByID(id int) (core.Header, error) {

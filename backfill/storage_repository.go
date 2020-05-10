@@ -13,6 +13,7 @@ type Urn struct {
 }
 
 type StorageRepository interface {
+	GetUrnByID(id int) (Urn, error)
 	GetUrns() ([]Urn, error)
 	InsertDiff(diff types.RawDiff) error
 	VatIlkArtExists(ilkID, headerID int) (bool, error)
@@ -26,6 +27,16 @@ type storageRepository struct {
 
 func NewStorageRepository(db *postgres.DB) StorageRepository {
 	return storageRepository{db: db}
+}
+
+func (repo storageRepository) GetUrnByID(id int) (Urn, error) {
+	var urn Urn
+	err := repo.db.Get(&urn, `
+		SELECT DISTINCT urns.id AS urn_id, ilks.ilk, ilks.id AS ilk_id, urns.identifier AS urn
+		FROM maker.urns
+		    JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
+		    WHERE urns.id = $1`, id)
+	return urn, err
 }
 
 func (repo storageRepository) GetUrns() ([]Urn, error) {

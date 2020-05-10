@@ -11,8 +11,16 @@ type Frob struct {
 	Dart     string
 }
 
+type Grab struct {
+	HeaderID int `db:"header_id"`
+	UrnID    int `db:"urn_id"`
+	Dink     string
+	Dart     string
+}
+
 type EventsRepository interface {
 	GetFrobs(urnID, startingBlock int) ([]Frob, error)
+	GetGrabs(startingBlock int) ([]Grab, error)
 	GetHeaderByID(id int) (core.Header, error)
 }
 
@@ -32,6 +40,15 @@ func (e eventsRepository) GetFrobs(urnID, startingBlock int) ([]Frob, error) {
 		WHERE urn_id = $1 AND headers.block_number >= $2
 		ORDER BY headers.block_number ASC`, urnID, startingBlock)
 	return frobs, err
+}
+
+func (e eventsRepository) GetGrabs(startingBlock int) ([]Grab, error) {
+	var grabs []Grab
+	err := e.db.Select(&grabs, `SELECT header_id, urn_id, dink, dart
+		FROM maker.vat_grab
+		JOIN public.headers ON vat_grab.header_id = headers.id
+		WHERE headers.block_number >= $1`, startingBlock)
+	return grabs, err
 }
 
 func (e eventsRepository) GetHeaderByID(id int) (core.Header, error) {

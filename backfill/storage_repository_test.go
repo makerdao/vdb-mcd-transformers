@@ -1,14 +1,14 @@
 package backfill_test
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"math/rand"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/backfill"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -22,6 +22,31 @@ var _ = Describe("Urns repository", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		repo = backfill.NewStorageRepository(db)
+	})
+
+	Describe("GetUrnByID", func() {
+		It("returns urn for matching id", func() {
+			fakeIlk := test_data.RandomString(64)
+			fakeIlkIdentifier := "ETH-A"
+			var ilkID int
+			ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`, fakeIlk, fakeIlkIdentifier)
+			Expect(ilkErr).NotTo(HaveOccurred())
+
+			fakeUrn := test_data.RandomString(40)
+			var urnID int
+			urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`, ilkID, fakeUrn)
+			Expect(urnErr).NotTo(HaveOccurred())
+
+			urns, err := repo.GetUrnByID(urnID)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(urns).To(Equal(backfill.Urn{
+				UrnID: urnID,
+				Ilk:   fakeIlk,
+				IlkID: ilkID,
+				Urn:   fakeUrn,
+			}))
+		})
 	})
 
 	Describe("GetUrns", func() {

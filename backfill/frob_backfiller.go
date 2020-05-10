@@ -11,7 +11,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,7 +24,6 @@ type FrobBackFiller interface {
 }
 
 type frobBackFiller struct {
-	db                *postgres.DB
 	blockChain        core.BlockChain
 	eventsRepository  EventsRepository
 	storageRepository StorageRepository
