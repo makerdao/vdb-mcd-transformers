@@ -37,7 +37,6 @@ If the contract isn't already present in the environment you'll need to add it b
     * The abi can be found on the `contracts` tab in Etherscan (scroll down). You'll need the entire thing as a string, so it's best to use single quotes like above.
     * The deployed field is the block number of the transaction where the contract was deployed. That can be found on the Contract's page, by looking for the Contract Creator and clicking it's transaction hash. That will take you to the transaction where the it was deployed on.
 
-
 ### Create the Transformer
 
 To create a custom transformer you will need to create a new `Transformer`
@@ -92,7 +91,7 @@ you do not, yet, as this is most likely.
          1. From the entity create an InsertionModel, which you return.
       1. For `LogNote` events you'll need to look at the method signature of the method that is calling them, because LogNote events are a generic structure. For example:
          * The `tend` method is called on the [flip.sol contract](https://github.com/makerdao/dss/blob/master/src/flip.sol#L123), and its method signature looks like this: `tend(uint,uint,uint)`.
-         * The first four bytes of the Keccak-256 hashed method signature will be located in `topic[0]` on the log.
+         * Only the first four bytes of the Keccak-256 hashed method signature will be located in `topic[0]` on the log, unlike custom events.
          * The message sender will be in `topic[1]`.
          * The first parameter passed to `tend` becomes `topic[2]`.
          * The second parameter passed to `tend` will be `topic[3]`.
@@ -102,58 +101,60 @@ you do not, yet, as this is most likely.
       1. If, while implementing the transformer and its corresponding unit tests you find you need to migrate the database see below. 
 
 ### Store the data in the database
+
 1. Use the `make new_migration` task to create a new migration.
-    * Each event log has its own table in the database.
-    * The specific log event tables are all created in the `maker` schema.
+   * Each event log has its own table in the database.
+   * The specific log event tables are all created in the `maker` schema.
 1. The new migration can be run by running `make test` or `make migration NAME=<database_name>`. Note that if you need to modify the migration multiple times you do not need to rollback the new migration, `make test` will drop it and recreate it.
 1. To verify that the migration will work create an integration for the shiny
    new transformer in [`integration_tests`](../integration_tests).
-   *
+   * Unlike the transformer test you wrote earlier integration tests use their own `TransformerConfig` to run the transformer in the same way it will be in production.
+   * You don't look at the event transformer directly, but query from the database.
+   * These tests hit the internet as well, and will need real block numbers.
+   * For best results look at one of the other tests in the `integration_tests` directory, and use real data from etherscan/mainnet.
 1. Integration tests can be run with `make integrationtest`.
 
 ### Add the transformer to the list of transformers to run
+
 Finally you can add the transformer to the list of transformers by updating the
 configuration, and creating an initializer for the transformer.
-
+ 
 1. In the environments (docker.toml, testing.toml and mcdTransformers.toml) add
    the new package name the list of `transformerNames` in the exporter - alphabetically.
 1. Underneath that list add a configuration (alphabetically again) to list of
    configurations. For example:
    
-``` toml
-[exporter.log_delete]
-      path = "transformers/events/log_delete/initializer"
-      type = "eth_event"
-      repository = "github.com/makerdao/vdb-mcd-transformers"
-      migrations = "db/migrations"
-      contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
-      rank = "0"
-```
-1. Note the path to the initializer is a directory named initializer in your new
-   event transformer package. Of course you haven't created that yet. Create
-   that directory and inside it create a file named `initializer.go`. 
-1. Initializers are boilerplate that tell the system how to create your
-   transformer. They look like this:
+    ``` toml
+    [exporter.log_delete]
+        path = "transformers/events/log_delete/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        rank = "0"
+    ```
+1. Note the path to the initializer is a directory named initializer in your new event transformer package. Of course you haven't created that yet. Create that directory and inside it create a file named `initializer.go`. 
+1. Initializers are boilerplate that tell the system how to create your transformer. They look like this:
    
-```go
-package initializer
+    ```go
+    package initializer
 
-import (
-  "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete"
-  "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-  "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-  "github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-)
+    import (
+    "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete"
+    "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+    "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+    "github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+    )
 
-var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
-  Config:      shared.GetEventTransformerConfig(constants.LogDeleteTable, constants.LogDeleteSignature()),
-  Transformer: log_delete.Transformer{},
-}.NewTransformer
-```
+    var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
+    Config:      shared.GetEventTransformerConfig(constants.LogDeleteTable, constants.LogDeleteSignature()),
+    Transformer: log_delete.Transformer{},
+    }.NewTransformer
+    ```
 
-Simply replace the constants and package names with your transformer.
+    Simply replace the constants and package names with your transformer.
 
-1. Finally add your package to the list of transformerExporters in `plugins/transformerExporter.go`. Again alphabetically.
+1. Finally add your package to the list of transformerExporters in `plugins/transformerExporter.go`. Again alphabetically. This can also be generated using the `./vulcanizedb compose --config=/path/to/config.toml` command.
 
 ### Fetching Logs
 
