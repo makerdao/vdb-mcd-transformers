@@ -1,10 +1,10 @@
-package backfill_test
+package repository_test
 
 import (
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/backfill"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -16,12 +16,12 @@ import (
 var _ = Describe("Urns repository", func() {
 	var (
 		db   = test_config.NewTestDB(test_config.NewTestNode())
-		repo backfill.StorageRepository
+		repo repository.StorageRepository
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = backfill.NewStorageRepository(db)
+		repo = repository.NewStorageRepository(db)
 	})
 
 	Describe("GetUrnByID", func() {
@@ -40,32 +40,7 @@ var _ = Describe("Urns repository", func() {
 			urns, err := repo.GetUrnByID(urnID)
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(urns).To(Equal(backfill.Urn{
-				UrnID: urnID,
-				Ilk:   fakeIlk,
-				IlkID: ilkID,
-				Urn:   fakeUrn,
-			}))
-		})
-	})
-
-	Describe("GetUrns", func() {
-		It("returns urn ID, raw ilk, ilk ID, and urn identifier for all urns", func() {
-			fakeIlk := test_data.RandomString(64)
-			fakeIlkIdentifier := "ETH-A"
-			var ilkID int
-			ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`, fakeIlk, fakeIlkIdentifier)
-			Expect(ilkErr).NotTo(HaveOccurred())
-
-			fakeUrn := test_data.RandomString(40)
-			var urnID int
-			urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`, ilkID, fakeUrn)
-			Expect(urnErr).NotTo(HaveOccurred())
-
-			urns, err := repo.GetUrns()
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(urns).To(ConsistOf(backfill.Urn{
+			Expect(urns).To(Equal(repository.Urn{
 				UrnID: urnID,
 				Ilk:   fakeIlk,
 				IlkID: ilkID,

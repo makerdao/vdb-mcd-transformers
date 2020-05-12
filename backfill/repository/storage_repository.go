@@ -1,4 +1,4 @@
-package backfill
+package repository
 
 import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -14,7 +14,6 @@ type Urn struct {
 
 type StorageRepository interface {
 	GetUrnByID(id int) (Urn, error)
-	GetUrns() ([]Urn, error)
 	InsertDiff(diff types.RawDiff) error
 	VatIlkArtExists(ilkID, headerID int) (bool, error)
 	VatUrnArtExists(urnID, headerID int) (bool, error)
@@ -37,15 +36,6 @@ func (repo storageRepository) GetUrnByID(id int) (Urn, error) {
 		    JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id
 		    WHERE urns.id = $1`, id)
 	return urn, err
-}
-
-func (repo storageRepository) GetUrns() ([]Urn, error) {
-	var urns []Urn
-	err := repo.db.Select(&urns, `
-		SELECT DISTINCT urns.id AS urn_id, ilks.ilk, ilks.id AS ilk_id, urns.identifier AS urn
-		FROM maker.urns
-		    JOIN maker.ilks on maker.ilks.id = maker.urns.ilk_id`)
-	return urns, err
 }
 
 func (repo storageRepository) InsertDiff(diff types.RawDiff) error {

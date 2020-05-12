@@ -1,4 +1,4 @@
-package backfill_test
+package frob_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestBackfill(t *testing.T) {
+func TestFrob(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Backfill Suite")
+	RunSpecs(t, "BackFill Frob Suite")
 }

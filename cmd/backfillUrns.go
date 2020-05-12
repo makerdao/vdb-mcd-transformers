@@ -3,19 +3,31 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/makerdao/vdb-mcd-transformers/backfill"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/frob"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/grab"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"sync"
 )
 
+type backFillInitializer func(core.BlockChain, repository.EventsRepository, repository.StorageRepository) backfill.BackFiller
+
 var (
-	startingBlock    int
 	eventsToBackFill []string
-	minEvents        = 1
-	maxEvents        = 2
+	frobEvent        = "frob"
+	grabEvent        = "grab"
+	initializers     = map[string]backFillInitializer{
+		frobEvent: frob.NewFrobBackFiller,
+		grabEvent: grab.NewGrabBackFiller,
+	}
+	maxEvents     = 2
+	minEvents     = 1
+	startingBlock int
 )
 
 // backfillUrnsCmd represents the backfillUrns command
@@ -49,41 +61,33 @@ func backfillUrns() error {
 
 	blockChain := getBlockChain()
 	db := utils.LoadPostgres(databaseConfig, blockChain.Node())
-	eventRepository := backfill.NewEventsRepository(&db)
-	storageRepository := backfill.NewStorageRepository(&db)
+	eventRepository := repository.NewEventsRepository(&db)
+	storageRepository := repository.NewStorageRepository(&db)
 
-	lenEvents := len(eventsToBackFill)
-	if lenEvents == 1 {
-		if eventsToBackFill[0] == "frob" {
-			backFiller := backfill.NewFrobBackFiller(blockChain, eventRepository, storageRepository)
-			return backFiller.BackFillFrobStorage(startingBlock)
-		} else {
-			backFiller := backfill.NewGrabBackFiller(blockChain, eventRepository, storageRepository)
-			return backFiller.BackFillGrabStorage(startingBlock)
-		}
-	} else {
-		var wg sync.WaitGroup
-		wg.Add(2)
+	var wg sync.WaitGroup
+	done := make(chan bool)
+	errs := make(chan error)
 
-		done := make(chan bool)
-		errs := make(chan error)
-
-		go backFillFrobEvents(blockChain, eventRepository, storageRepository, errs, &wg)
-		go backFillGrabEvents(blockChain, eventRepository, storageRepository, errs, &wg)
-
-		go func() {
-			wg.Wait()
-			close(done)
-		}()
-
-		select {
-		case <-done:
-			break
-		case err := <-errs:
-			logrus.Errorf("error executing back-fill: %w", err)
-			return err
-		}
+	for _, e := range eventsToBackFill {
+		initializer := initializers[e]
+		backFiller := initializer(blockChain, eventRepository, storageRepository)
+		wg.Add(1)
+		go backFillEvents(backFiller, startingBlock, errs, &wg)
 	}
+
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		break
+	case err := <-errs:
+		logrus.Errorf("error executing back-fill: %w", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -96,12 +100,12 @@ func validateEventsToBackfill() error {
 		return fmt.Errorf("only %d events are allowed", maxEvents)
 	}
 	if lenEvents == 1 {
-		if eventsToBackFill[0] != "frob" && eventsToBackFill[0] != "grab" {
+		if eventsToBackFill[0] != frobEvent && eventsToBackFill[0] != grabEvent {
 			return errors.New("only frob and/or grab are allowed")
 		}
 	}
 	if lenEvents == 2 {
-		if (eventsToBackFill[0] != "frob" && eventsToBackFill[0] != "grab") || (eventsToBackFill[0] != "frob" && eventsToBackFill[1] != "grab") {
+		if (eventsToBackFill[0] != frobEvent && eventsToBackFill[0] != grabEvent) || (eventsToBackFill[0] != frobEvent && eventsToBackFill[1] != grabEvent) {
 			return errors.New("only frob and/or grab are allowed")
 		}
 		if eventsToBackFill[0] == eventsToBackFill[1] {
@@ -111,22 +115,11 @@ func validateEventsToBackfill() error {
 	return nil
 }
 
-func backFillFrobEvents(blockChain core.BlockChain, eventsRepository backfill.EventsRepository, storageRepository backfill.StorageRepository, errs chan error, wg *sync.WaitGroup) {
+func backFillEvents(backFiller backfill.BackFiller, startingBlock int, errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
-	backFiller := backfill.NewFrobBackFiller(blockChain, eventsRepository, storageRepository)
-	err := backFiller.BackFillFrobStorage(startingBlock)
+	err := backFiller.BackFill(startingBlock)
 	if err != nil {
 		errs <- err
-		return
 	}
-}
-
-func backFillGrabEvents(blockChain core.BlockChain, eventsRepository backfill.EventsRepository, storageRepository backfill.StorageRepository, errs chan error, wg *sync.WaitGroup) {
-	defer wg.Done()
-	backFiller := backfill.NewGrabBackFiller(blockChain, eventsRepository, storageRepository)
-	err := backFiller.BackFillGrabStorage(startingBlock)
-	if err != nil {
-		errs <- err
-		return
-	}
+	return
 }

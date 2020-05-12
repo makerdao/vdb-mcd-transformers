@@ -1,16 +1,13 @@
 package mocks
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/backfill"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 )
 
 type StorageRepository struct {
-	GetUrnByIDUrnToReturn         backfill.Urn
+	GetUrnByIDUrnToReturn         repository.Urn
 	GetUrnByIDError               error
-	GetUrnsCalled                 bool
-	GetUrnsUrnsToReturn           []backfill.Urn
-	GetUrnsErr                    error
 	InsertDiffErr                 error
 	InsertDiffPassedDiff          types.RawDiff
 	VatIlkArtExistsBoolToReturn   bool
@@ -24,13 +21,8 @@ type StorageRepository struct {
 	VatUrnInkExistsPassedUrnID    int
 }
 
-func (mock *StorageRepository) GetUrnByID(id int) (backfill.Urn, error) {
+func (mock *StorageRepository) GetUrnByID(id int) (repository.Urn, error) {
 	return mock.GetUrnByIDUrnToReturn, mock.GetUrnByIDError
-}
-
-func (mock *StorageRepository) GetUrns() ([]backfill.Urn, error) {
-	mock.GetUrnsCalled = true
-	return mock.GetUrnsUrnsToReturn, mock.GetUrnsErr
 }
 
 func (mock *StorageRepository) InsertDiff(diff types.RawDiff) error {

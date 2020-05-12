@@ -1,0 +1,146 @@
+package shared
+
+import (
+	"fmt"
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/sirupsen/logrus"
+)
+
+var (
+	HashedVatAddress = crypto.Keccak256Hash(common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b").Bytes())
+	VatAddress       = common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b")
+)
+
+func FetchAndPersistDartDinkDiffs(
+	dart, dink string,
+	urnID, headerID int,
+	eventsRepository repository.EventsRepository,
+	storageRepository repository.StorageRepository,
+	blockChain core.BlockChain) error {
+	dartIsZero, dinkIsZero, err := dartAndDinkAreZero(dart, dink)
+	if err != nil {
+		return fmt.Errorf("error checking if dart/dink are zero: %w", err)
+	}
+	if dartIsZero && dinkIsZero {
+		return nil
+	}
+
+	urn, urnErr := storageRepository.GetUrnByID(urnID)
+	if urnErr != nil {
+		return fmt.Errorf("failed getting urn: %w", urnErr)
+	}
+
+	ilkArtExists, ilkArtErr := storageRepository.VatIlkArtExists(urn.IlkID, headerID)
+	if ilkArtErr != nil {
+		return fmt.Errorf("error checking if ilk art exists: %w", ilkArtErr)
+	}
+	urnArtExists, urnArtErr := storageRepository.VatUrnArtExists(urnID, headerID)
+	if urnArtErr != nil {
+		return fmt.Errorf("error checking if urn art exists: %w", urnArtErr)
+	}
+	urnInkExists, urnInkErr := storageRepository.VatUrnInkExists(urnID, headerID)
+	if urnInkErr != nil {
+		return fmt.Errorf("error checking if urn ink exists: %w", urnInkErr)
+	}
+	if !needToBackFillDiffsForDartDink(dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists) {
+		return nil
+	}
+
+	header, headerErr := eventsRepository.GetHeaderByID(headerID)
+	if headerErr != nil {
+		return fmt.Errorf("error getting header for id %d: %w", headerID, headerErr)
+	}
+
+	keys, keysErr := getDartDinkKeys(urn, dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists)
+	if keysErr != nil {
+		return fmt.Errorf("error generating storage keys: %w", keysErr)
+	}
+
+	logrus.Infof("fetching %d keys for urn %s", len(keys), urn.Urn)
+	insertErr := getAndPersistVatDiffs(keys, header, storageRepository, blockChain)
+	if insertErr != nil {
+		return fmt.Errorf("error getting and persisting keys: %w", insertErr)
+	}
+
+	return nil
+}
+
+func getAndPersistVatDiffs(keys []common.Hash, header core.Header, storageRepository repository.StorageRepository, blockChain core.BlockChain) error {
+	storageKeysToValues, storageErr := blockChain.BatchGetStorageAt(VatAddress, keys,
+		big.NewInt(header.BlockNumber))
+	if storageErr != nil {
+		return fmt.Errorf("error getting storage value: %w", storageErr)
+	}
+	for k, v := range storageKeysToValues {
+		diff := types.RawDiff{
+			HashedAddress: HashedVatAddress,
+			BlockHash:     common.HexToHash(header.Hash),
+			BlockHeight:   int(header.BlockNumber),
+			StorageKey:    crypto.Keccak256Hash(k.Bytes()),
+			StorageValue:  common.BytesToHash(v),
+		}
+		createDiffErr := storageRepository.InsertDiff(diff)
+		if createDiffErr != nil {
+			return fmt.Errorf("error inserting diff: %w", createDiffErr)
+		}
+	}
+	return nil
+}
+
+func dartAndDinkAreZero(dart, dink string) (bool, bool, error) {
+	dinkInt, dinkErr := StringToBigInt(dink)
+	if dinkErr != nil {
+		return false, false, fmt.Errorf("error formatting dink: %w", dinkErr)
+	}
+	dartInt, dartErr := StringToBigInt(dart)
+	if dartErr != nil {
+		return false, false, fmt.Errorf("error formatting dart: %w", dartErr)
+	}
+	return IsZero(dartInt), IsZero(dinkInt), nil
+}
+
+func needToBackFillDiffsForDartDink(dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists bool) bool {
+	return needToBackFillDiffsForIlkArt(dartIsZero, ilkArtExists) ||
+		needToBackFillDiffsForUrnArt(dartIsZero, urnArtExists) ||
+		needToBackFillDiffsForUrnInk(dinkIsZero, urnInkExists)
+}
+
+func getDartDinkKeys(urn repository.Urn, dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists bool) ([]common.Hash, error) {
+	var keys []common.Hash
+	if needToBackFillDiffsForIlkArt(dartIsZero, ilkArtExists) {
+		keys = append(keys, GetIlkArtKey(urn.Ilk))
+	}
+	if needToBackFillDiffsForUrnArt(dartIsZero, urnArtExists) {
+		urnArtKey, keyErr := GetUrnArtKey(urn)
+		if keyErr != nil {
+			return nil, fmt.Errorf("error getting urn art key: %w", keyErr)
+		}
+		keys = append(keys, urnArtKey)
+	}
+	if needToBackFillDiffsForUrnInk(dinkIsZero, urnInkExists) {
+		urnInkKey, keyErr := GetUrnInkKey(urn)
+		if keyErr != nil {
+			return nil, fmt.Errorf("error getting urn ink key: %w", keyErr)
+		}
+		keys = append(keys, urnInkKey)
+	}
+	return keys, nil
+}
+
+func needToBackFillDiffsForUrnInk(dinkIsZero, urnInkExists bool) bool {
+	return !dinkIsZero && !urnInkExists
+}
+
+func needToBackFillDiffsForUrnArt(dartIsZero, urnArtExists bool) bool {
+	return !dartIsZero && !urnArtExists
+}
+
+func needToBackFillDiffsForIlkArt(dartIsZero, ilkArtExists bool) bool {
+	return !dartIsZero && !ilkArtExists
+}

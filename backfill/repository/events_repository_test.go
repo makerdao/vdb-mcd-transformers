@@ -1,10 +1,10 @@
-package backfill_test
+package repository_test
 
 import (
 	"math/rand"
 	"strconv"
 
-	"github.com/makerdao/vdb-mcd-transformers/backfill"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -15,18 +15,18 @@ import (
 var _ = Describe("Events repository", func() {
 	var (
 		db   = test_config.NewTestDB(test_config.NewTestNode())
-		repo backfill.EventsRepository
+		repo repository.EventsRepository
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = backfill.NewEventsRepository(db)
+		repo = repository.NewEventsRepository(db)
 	})
 
 	Describe("GetFrobs", func() {
 		var (
 			urnID, startingBlock, earlierBlock      int
-			frobAtStartingBlock, frobAtEarlierBlock backfill.Frob
+			frobAtStartingBlock, frobAtEarlierBlock repository.Frob
 		)
 
 		BeforeEach(func() {
@@ -56,8 +56,9 @@ var _ = Describe("Events repository", func() {
 				earlierBlock, test_data.RandomString(64), db.NodeID)
 			Expect(earlierBlockErr).NotTo(HaveOccurred())
 
-			frobAtStartingBlock = backfill.Frob{
+			frobAtStartingBlock = repository.Frob{
 				HeaderID: startingBlockID,
+				UrnID:    urnID,
 				Dink:     strconv.Itoa(rand.Int()),
 				Dart:     strconv.Itoa(rand.Int()),
 			}
@@ -67,8 +68,9 @@ var _ = Describe("Events repository", func() {
 				frobAtStartingBlock.Dink, frobAtStartingBlock.Dart)
 			Expect(frobOneErr).NotTo(HaveOccurred())
 
-			frobAtEarlierBlock = backfill.Frob{
+			frobAtEarlierBlock = repository.Frob{
 				HeaderID: earlierBlockID,
+				UrnID:    urnID,
 				Dink:     strconv.Itoa(rand.Int()),
 				Dart:     strconv.Itoa(rand.Int()),
 			}
@@ -79,15 +81,15 @@ var _ = Describe("Events repository", func() {
 			Expect(frobTwoErr).NotTo(HaveOccurred())
 		})
 
-		It("returns frobs with matching urnID and block >= starting block", func() {
-			frobs, err := repo.GetFrobs(urnID, startingBlock)
+		It("returns frobs with block >= starting block", func() {
+			frobs, err := repo.GetFrobs(startingBlock)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(frobs).To(ConsistOf(frobAtStartingBlock))
 		})
 
 		It("orders results ascending by block_number", func() {
-			frobs, err := repo.GetFrobs(urnID, earlierBlock)
+			frobs, err := repo.GetFrobs(earlierBlock)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(frobs)).To(Equal(2))
@@ -98,7 +100,7 @@ var _ = Describe("Events repository", func() {
 	Describe("GetGrabs", func() {
 		var (
 			urnID, startingBlock, earlierBlock      int
-			grabAtStartingBlock, grabAtEarlierBlock backfill.Grab
+			grabAtStartingBlock, grabAtEarlierBlock repository.Grab
 		)
 
 		BeforeEach(func() {
@@ -128,7 +130,7 @@ var _ = Describe("Events repository", func() {
 				earlierBlock, test_data.RandomString(64), db.NodeID)
 			Expect(earlierBlockErr).NotTo(HaveOccurred())
 
-			grabAtStartingBlock = backfill.Grab{
+			grabAtStartingBlock = repository.Grab{
 				HeaderID: startingBlockID,
 				UrnID:    urnID,
 				Dink:     strconv.Itoa(rand.Int()),
@@ -140,7 +142,7 @@ var _ = Describe("Events repository", func() {
 				grabAtStartingBlock.Dink, grabAtStartingBlock.Dart)
 			Expect(grabOneErr).NotTo(HaveOccurred())
 
-			grabAtEarlierBlock = backfill.Grab{
+			grabAtEarlierBlock = repository.Grab{
 				HeaderID: earlierBlockID,
 				UrnID:    urnID,
 				Dink:     strconv.Itoa(rand.Int()),

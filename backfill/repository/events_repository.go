@@ -1,4 +1,4 @@
-package backfill
+package repository
 
 import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -7,6 +7,7 @@ import (
 
 type Frob struct {
 	HeaderID int `db:"header_id"`
+	UrnID    int `db:"urn_id"`
 	Dink     string
 	Dart     string
 }
@@ -19,7 +20,7 @@ type Grab struct {
 }
 
 type EventsRepository interface {
-	GetFrobs(urnID, startingBlock int) ([]Frob, error)
+	GetFrobs(startingBlock int) ([]Frob, error)
 	GetGrabs(startingBlock int) ([]Grab, error)
 	GetHeaderByID(id int) (core.Header, error)
 }
@@ -32,13 +33,13 @@ func NewEventsRepository(db *postgres.DB) EventsRepository {
 	return eventsRepository{db: db}
 }
 
-func (e eventsRepository) GetFrobs(urnID, startingBlock int) ([]Frob, error) {
+func (e eventsRepository) GetFrobs(startingBlock int) ([]Frob, error) {
 	var frobs []Frob
-	err := e.db.Select(&frobs, `SELECT header_id, dink, dart
+	err := e.db.Select(&frobs, `SELECT header_id, urn_id, dink, dart
 		FROM maker.vat_frob
 		JOIN public.headers ON vat_frob.header_id = headers.id
-		WHERE urn_id = $1 AND headers.block_number >= $2
-		ORDER BY headers.block_number ASC`, urnID, startingBlock)
+		WHERE headers.block_number >= $1
+		ORDER BY headers.block_number ASC`, startingBlock)
 	return frobs, err
 }
 
