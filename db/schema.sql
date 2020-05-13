@@ -1016,10 +1016,8 @@ $$;
 CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = event.ilk_identifier
-    AND urn_identifier = event.urn_identifier
-    AND block_height <= event.block_height
+SELECT *
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
@@ -1159,10 +1157,11 @@ $$;
 CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id)
-AND urn_identifier = (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id)
-AND block_height <= flip.block_height
+SELECT *
+FROM api.get_urn(
+     (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
+     (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
+     flip.block_height)
 $$;
 
 
@@ -1242,10 +1241,8 @@ $$;
 CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = event.ilk_identifier
-AND urn_identifier = event.urn_identifier
-AND block_height <= event.block_height
+SELECT *
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 
@@ -1465,6 +1462,21 @@ $$;
 
 
 --
+-- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_snapshot
+    LANGUAGE sql STABLE STRICT
+    AS $$
+
+SELECT *
+    FROM api.all_urns(get_urn.block_height)
+    WHERE ilk_identifier = get_urn.ilk_identifier
+    AND urn_identifier = get_urn.urn_identifier
+$$;
+
+
+--
 -- Name: ilk_file_event_ilk(api.ilk_file_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1575,10 +1587,8 @@ $$;
 CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = cdp.ilk_identifier
-AND urn_identifier = cdp.urn_identifier
-AND block_height <= api.max_block()
+SELECT *
+FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier, api.max_block())
 $$;
 
 

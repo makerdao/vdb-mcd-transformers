@@ -1,46 +1,51 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
 DROP FUNCTION IF EXISTS api.all_urn_states;
+
 DROP FUNCTION IF EXISTS api.get_urn;
+CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_snapshot
+    LANGUAGE sql STABLE STRICT
+    AS $_$
+
+SELECT *
+    FROM api.all_urns(get_urn.block_height)
+    WHERE ilk_identifier = get_urn.ilk_identifier
+    AND urn_identifier = get_urn.urn_identifier
+$_$;
 
 DROP FUNCTION IF EXISTS api.bite_event_urn;
-CREATE OR REPLACE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_snapshot
-     LANGUAGE sql STABLE
-     AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = event.ilk_identifier
-    AND urn_identifier = event.urn_identifier
-    AND block_height <= event.block_height
+CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 DROP FUNCTION IF EXISTS api.flip_bid_snapshot_urn;
 CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS api.urn_snapshot
        LANGUAGE sql STABLE
        AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id)
-AND urn_identifier = (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id)
-AND block_height <= flip.block_height
+SELECT *
+FROM api.get_urn(
+     (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
+     (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
+     flip.block_height)
 $$;
 
 DROP FUNCTION IF EXISTS api.frob_event_urn;
 CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS api.urn_snapshot
        LANGUAGE sql STABLE
        AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = event.ilk_identifier
-AND urn_identifier = event.urn_identifier
-AND block_height <= event.block_height
+SELECT *
+FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;
 
 DROP FUNCTION IF EXISTS api.managed_cdp_urn;
 CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS api.urn_snapshot
        LANGUAGE sql STABLE
        AS $$
-SELECT * FROM api.urn_snapshot
-WHERE ilk_identifier = cdp.ilk_identifier
-AND urn_identifier = cdp.urn_identifier
-AND block_height <= api.max_block()
+SELECT *
+FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier, api.max_block())
 $$;
 
 DROP FUNCTION IF EXISTS api.urn_state_bites;
@@ -59,6 +64,7 @@ CREATE TYPE api.urn_state AS (
 	updated timestamp without time zone
 );
 
+DROP FUNCTION IF EXISTS api.get_urn;
 CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_state
     LANGUAGE sql STABLE STRICT
     AS $_$
@@ -114,7 +120,7 @@ WHERE ink.urn_id IS NOT NULL
 $_$;
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT,
+CREATE FUNCTION api.all_urn_states(ilk_identifier TEXT, urn_identifier TEXT,
                                    block_height BIGINT DEFAULT api.max_block(),
                                    max_results INTEGER DEFAULT -1, result_offset INTEGER DEFAULT 0)
     RETURNS SETOF api.urn_state AS
@@ -128,7 +134,7 @@ BEGIN
               AND urns.ilk_id = (SELECT id
                                  FROM maker.ilks
                                  WHERE ilks.identifier = all_urn_states.ilk_identifier)
-        ),
+                                 ),
              relevant_blocks AS (
                  SELECT block_number
                  FROM maker.vat_urn_ink
