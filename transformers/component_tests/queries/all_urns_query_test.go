@@ -20,7 +20,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Urn view", func() {
+var _ = Describe("All Urns function", func() {
 	var (
 		vatRepo                vat.VatStorageRepository
 		headerRepo             datastore.HeaderRepository
@@ -50,7 +50,7 @@ var _ = Describe("Urn view", func() {
 		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
-	It("gets an urn", func() {
+	It("returns one urn", func() {
 		setupData := helper.GetUrnSetupData()
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		helper.CreateUrn(db, setupData, headerOne, metadata, vatRepo)
@@ -114,6 +114,39 @@ var _ = Describe("Urn view", func() {
 
 		helper.AssertUrn(result[0], expectedUrnOne)
 		helper.AssertUrn(result[1], expectedUrnTwo)
+	})
+
+	It("returns only the most recent urn for multiple snapshots of the same urn", func() {
+		oldUrnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		oldUrnSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(db, oldUrnSetupData, headerOne, oldUrnMetadata, vatRepo)
+
+		newUrnBlock := blockOne + 1
+		newUrnTimestamp := timestampOne + 1
+		newUrnHeader := createHeader(newUrnBlock, newUrnTimestamp, headerRepo)
+
+		newUrnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		newUrnSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(db, newUrnSetupData, newUrnHeader, newUrnMetadata, vatRepo)
+
+		createdTimestamp := helper.GetExpectedTimestamp(timestampOne)
+		expectedTimestamp := helper.GetExpectedTimestamp(newUrnTimestamp)
+		expectedUrn := helper.UrnState{
+			UrnIdentifier: urnOne,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   newUrnBlock,
+			Ink:           strconv.Itoa(newUrnSetupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(newUrnSetupData[vat.UrnArt].(int)),
+			Created:       helper.GetValidNullString(createdTimestamp),
+			Updated:       helper.GetValidNullString(expectedTimestamp),
+		}
+
+		var result []helper.UrnState
+		err = db.Select(&result, allUrnsQuery, newUrnBlock)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(result)).To(Equal(1))
+		helper.AssertUrn(result[0], expectedUrn)
 	})
 
 	It("returns available data if urn has ink but no art", func() {
