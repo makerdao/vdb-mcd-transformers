@@ -24,7 +24,7 @@ var _ = Describe("Median storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = median.NewKeysLoader(storageRepository, test_data.EthMedianAddress())
+		storageKeysLoader = median.NewKeysLoader(storageRepository, test_data.MedianEthAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -56,7 +56,7 @@ var _ = Describe("Median storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.MedianEthAddress()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 
@@ -85,7 +85,7 @@ var _ = Describe("Median storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetMedianBudAddressesCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(storageRepository.GetMedianBudAddressesCalledWith).To(Equal(test_data.MedianEthAddress()))
 			Expect(mappings[budKey]).To(Equal(expectedMetadata))
 		})
 
@@ -114,7 +114,7 @@ var _ = Describe("Median storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetMedianOrclAddressesCalledWith).To(Equal(test_data.EthMedianAddress()))
+			Expect(storageRepository.GetMedianOrclAddressesCalledWith).To(Equal(test_data.MedianEthAddress()))
 			Expect(mappings[orclKey]).To(Equal(expectedMetadata))
 
 		})

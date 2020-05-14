@@ -619,7 +619,7 @@ var _ = Describe("Maker storage repository", func() {
 			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
-			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertMedianKissSingle(a1, medianAddressID, db)
 			insertMedianDissSingle(a2, medianAddressID, db)
@@ -627,7 +627,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertMedianDissBatch([]string{a2, a4}, medianAddressID, db)
 			insertMedianKissSingle(a5, addressId, db)
 
-			aAddresses, err := repository.GetMedianBudAddresses(test_data.EthMedianAddress())
+			aAddresses, err := repository.GetMedianBudAddresses(test_data.MedianEthAddress())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4))
@@ -641,12 +641,12 @@ var _ = Describe("Maker storage repository", func() {
 			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
-			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertMedianLiftAddresses([]string{a1, a2, a3}, medianAddressID, db)
 			insertMedianDropAddresses([]string{a4, a5}, medianAddressID, db)
 
-			aAddresses, err := repository.GetMedianOrclAddresses(test_data.EthMedianAddress())
+			aAddresses, err := repository.GetMedianOrclAddresses(test_data.MedianEthAddress())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4, a5))

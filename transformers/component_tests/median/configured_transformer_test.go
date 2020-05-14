@@ -24,7 +24,7 @@ import (
 var _ = Describe("Executing the median transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.EthMedianAddress()
+		contractAddress   = test_data.MedianEthAddress()
 		keccakAddress     = types.HexToKeccak256Hash(contractAddress)
 		repository        = median.MedianStorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(median.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
@@ -51,7 +51,7 @@ var _ = Describe("Executing the median transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -90,7 +90,7 @@ var _ = Describe("Executing the median transformer", func() {
 			kissLog := test_data.CreateTestLog(header.Id, db)
 			kissModel := test_data.MedianKissSingleModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -129,7 +129,7 @@ var _ = Describe("Executing the median transformer", func() {
 			liftLog := test_data.CreateTestLog(header.Id, db)
 			liftModel := test_data.MedianLiftModelWithOneAccount()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"

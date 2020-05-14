@@ -32,7 +32,7 @@ var _ = Describe("Median Storage Repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = median.MedianStorageRepository{ContractAddress: test_data.EthMedianAddress()}
+		repo = median.MedianStorageRepository{ContractAddress: test_data.MedianEthAddress()}
 		repo.SetDB(db)
 		blockNumber = rand.Int63()
 		var insertHeaderErr error
