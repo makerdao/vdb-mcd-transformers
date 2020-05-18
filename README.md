@@ -14,14 +14,38 @@
 This repository is a collection of transformers to be used along with VDB as a plugin to fetch, transform and persist log events and storage slots of specified MCD contracts.
 
 ## Install
-### Dependencies
- - [VulcanizeDB](https://github.com/makerdao/vulcanizedb)
- - Go 1.12+
- - Postgres 11.2
+
+### Docker Setup
+
+This repository provides a docker-compose setup to manage the multiple container-based deployment for you, if at all possible you should use that setup.
+
+#### Dependencies
+ - Docker (the rest is handled by docker-compose)
+
+#### Database Initialization
+
+The database needs to be initialized once before bringing up the system. That can be by running, from the root directory, 
+
+```bash
+docker-compose -f dockerfiles/docker-compose.yml run execute ./run_migrations.sh
+```
+
+#### System Startup
+
+```bash
+docker-compose -f dockerfiles/docker-compose.yml up
+```
+
+### Manual Setup
+
+#### Dependencies
  - Ethereum Node
    - Use the patched version of [Go Ethereum](https://github.com/makerdao/go-ethereum) (1.8.23+) in order to have access to storage transformers and diffs.
    - [Parity 1.8.11+](https://github.com/paritytech/parity/releases)
-   
+ - [VulcanizeDB](https://github.com/makerdao/vulcanizedb)
+ - Go 1.12+
+ - Postgres 11.2
+    
 ### Getting the project
 Download the transformer codebase to your local local `GOPATH` via: `go get github.com/makerdao/vdb-mcd-transformers`
 
@@ -35,15 +59,9 @@ As mentioned above this repository is a plugin for VulcanizeDB.  As such it cann
 
 1. `execute` uses the raw Ethereum data that has been synced into Postgres and applies transformations to configured MCD contract data via [event](./transformers/events) and [storage](./transformers/storage) transformers. The VulcanizeDB repository includes a [general description](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/custom-transformers.md) about transformers.
 
-These core commands can be run via Docker a provided docker-compose setup. This can be done as follows: 
-
-1. `Run docker-compose -f dockerfiles/docker-compose.yml run execute ./run_migrations.sh` (to initially setup the database).
-2. `docker-compose up`
-
-
 The core commands can also be run via images or built and run via the command line interface. In either method, a postgres database will first need to be created:
 1. Install Postgres
-1. Create a user for yourself that is able run migrations and add extensions.
+   1. Create a user for yourself that is able run migrations and add extensions.
 1. `createdb vulcanize_public`
 1. Migrate the database using the `make migrate` task in this repository.
 
@@ -60,7 +78,13 @@ Note that, as with other commands, executing this requires either a config file 
 
 ### Running With Docker
 
-**NOTE** The database must be migrated once before running the `headerSync` command, otherwise the database will not be able to properly create its schema.
+#### Database Initialization
+
+**NOTE** The database must be migrated once before running the `headerSync` command, otherwise the database will not be able to properly create its schema. Assuming you are not using the `docker-compose` setup above you can migrate the database once using:
+
+```
+docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e CLIENT_IPCPATH=<path> makerdao/vdb-execute:latest ./run_migrations.sh
+```
 
 #### Running `headerSync`
 `headerSync` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-headersync).
