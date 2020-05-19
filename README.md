@@ -28,6 +28,8 @@ Download the transformer codebase to your local local `GOPATH` via:
 `go get github.com/makerdao/vdb-mcd-transformers`
 
 ## Usage
+
+### Plugin
 As mentioned above this repository is a plugin for VulcanizeDB.  As such it cannot be run as a standalone executable,
 but instead is intended to be included as part of a VulcanizeDB core command. There are two VulcanizeDB core commands that 
 are required for events and storage slots to be transformed and persisted to the Postgres database.
@@ -51,6 +53,13 @@ In some cases (such as recent Ubuntu systems), it may be necessary to overcome f
 localhost. To allow access on Ubuntu, set localhost connections via hostname, ipv4, and ipv6 from peer/md5 to trust in: /etc/postgresql/<version>/pg_hba.conf
 
 (It should be noted that trusted auth should only be enabled on systems without sensitive data in them: development and local test databases)
+
+### Backfill
+This project contains one executable, `backfillUrns`.
+This command enables you to get storage data for Urns by performing lookups at blocks where we detected events indicating an Urn state change.
+To run it, you first need to `go build`.
+After that, you can run something like `./vdb-mcd-transformers backfillUrns --starting-block 10000000` - which would backfill Urn storage since block 10,000,000 through the head of the chain.
+Note that, as with other commands, executing this requires either a config file or env vars to specify the database and ethereum node connection.
 
 ### Running With Docker
 #### Running `headerSync`
