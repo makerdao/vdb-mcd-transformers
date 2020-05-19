@@ -37,10 +37,10 @@ var _ = Describe("Urns repository", func() {
 			urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`, ilkID, fakeUrn)
 			Expect(urnErr).NotTo(HaveOccurred())
 
-			urns, err := repo.GetUrnByID(urnID)
+			urn, err := repo.GetUrnByID(urnID)
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(urns).To(Equal(repository.Urn{
+			Expect(urn).To(Equal(repository.Urn{
 				UrnID: urnID,
 				Ilk:   fakeIlk,
 				IlkID: ilkID,

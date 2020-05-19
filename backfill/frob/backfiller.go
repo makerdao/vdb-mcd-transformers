@@ -30,9 +30,15 @@ func (backFiller frobBackFiller) BackFill(startingBlock int) error {
 		return fmt.Errorf("error getting frobs: %w", frobsErr)
 	}
 
-	logrus.Infof("getting storage for %d grabs", len(frobs))
+	logrus.Infof("getting storage for %d frobs", len(frobs))
 	for i, frob := range frobs {
-		err := shared.FetchAndPersistDartDinkDiffs(frob.Dart, frob.Dink, frob.UrnID, frob.HeaderID, backFiller.eventsRepository, backFiller.storageRepository, backFiller.blockChain)
+		dartDink := shared.DartDink{
+			Dart:     frob.Dart,
+			Dink:     frob.Dink,
+			HeaderID: frob.HeaderID,
+			UrnID:    frob.UrnID,
+		}
+		err := shared.FetchAndPersistDartDinkDiffs(dartDink, backFiller.eventsRepository, backFiller.storageRepository, backFiller.blockChain)
 		if err != nil {
 			return fmt.Errorf("error fetching and persisting diffs for frob %d: %w", i, err)
 		}

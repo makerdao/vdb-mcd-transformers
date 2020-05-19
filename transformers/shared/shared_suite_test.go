@@ -25,5 +25,5 @@ import (
 
 func TestShared(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Shared Suite")
+	RunSpecs(t, "Transformers Shared Suite")
 }

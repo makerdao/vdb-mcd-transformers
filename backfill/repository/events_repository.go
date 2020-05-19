@@ -48,7 +48,8 @@ func (e eventsRepository) GetGrabs(startingBlock int) ([]Grab, error) {
 	err := e.db.Select(&grabs, `SELECT header_id, urn_id, dink, dart
 		FROM maker.vat_grab
 		JOIN public.headers ON vat_grab.header_id = headers.id
-		WHERE headers.block_number >= $1`, startingBlock)
+		WHERE headers.block_number >= $1
+		ORDER BY headers.block_number ASC`, startingBlock)
 	return grabs, err
 }
 

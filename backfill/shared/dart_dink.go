@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/sirupsen/logrus"
@@ -17,34 +18,37 @@ var (
 	VatAddress       = common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b")
 )
 
-func FetchAndPersistDartDinkDiffs(
-	dart, dink string,
-	urnID, headerID int,
-	eventsRepository repository.EventsRepository,
-	storageRepository repository.StorageRepository,
-	blockChain core.BlockChain) error {
-	dartIsZero, dinkIsZero, err := dartAndDinkAreZero(dart, dink)
+type DartDink struct {
+	Dart     string
+	Dink     string
+	HeaderID int
+	UrnID    int
+}
+
+func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository.EventsRepository, storageRepository repository.StorageRepository, blockChain core.BlockChain) error {
+	dartIsZero, dinkIsZero, err := dartAndDinkAreZero(dartDink.Dart, dartDink.Dink)
 	if err != nil {
 		return fmt.Errorf("error checking if dart/dink are zero: %w", err)
 	}
+	// if dart and dink are zero, there is no delta - so we wouldn't expect a diff
 	if dartIsZero && dinkIsZero {
 		return nil
 	}
 
-	urn, urnErr := storageRepository.GetUrnByID(urnID)
+	urn, urnErr := storageRepository.GetUrnByID(dartDink.UrnID)
 	if urnErr != nil {
 		return fmt.Errorf("failed getting urn: %w", urnErr)
 	}
 
-	ilkArtExists, ilkArtErr := storageRepository.VatIlkArtExists(urn.IlkID, headerID)
+	ilkArtExists, ilkArtErr := storageRepository.VatIlkArtExists(urn.IlkID, dartDink.HeaderID)
 	if ilkArtErr != nil {
 		return fmt.Errorf("error checking if ilk art exists: %w", ilkArtErr)
 	}
-	urnArtExists, urnArtErr := storageRepository.VatUrnArtExists(urnID, headerID)
+	urnArtExists, urnArtErr := storageRepository.VatUrnArtExists(dartDink.UrnID, dartDink.HeaderID)
 	if urnArtErr != nil {
 		return fmt.Errorf("error checking if urn art exists: %w", urnArtErr)
 	}
-	urnInkExists, urnInkErr := storageRepository.VatUrnInkExists(urnID, headerID)
+	urnInkExists, urnInkErr := storageRepository.VatUrnInkExists(dartDink.UrnID, dartDink.HeaderID)
 	if urnInkErr != nil {
 		return fmt.Errorf("error checking if urn ink exists: %w", urnInkErr)
 	}
@@ -52,9 +56,9 @@ func FetchAndPersistDartDinkDiffs(
 		return nil
 	}
 
-	header, headerErr := eventsRepository.GetHeaderByID(headerID)
+	header, headerErr := eventsRepository.GetHeaderByID(dartDink.HeaderID)
 	if headerErr != nil {
-		return fmt.Errorf("error getting header for id %d: %w", headerID, headerErr)
+		return fmt.Errorf("error getting header for id %d: %w", dartDink.HeaderID, headerErr)
 	}
 
 	keys, keysErr := getDartDinkKeys(urn, dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists)
@@ -114,7 +118,7 @@ func needToBackFillDiffsForDartDink(dartIsZero, dinkIsZero, ilkArtExists, urnArt
 func getDartDinkKeys(urn repository.Urn, dartIsZero, dinkIsZero, ilkArtExists, urnArtExists, urnInkExists bool) ([]common.Hash, error) {
 	var keys []common.Hash
 	if needToBackFillDiffsForIlkArt(dartIsZero, ilkArtExists) {
-		keys = append(keys, GetIlkArtKey(urn.Ilk))
+		keys = append(keys, vat.GetIlkArtKey(urn.Ilk))
 	}
 	if needToBackFillDiffsForUrnArt(dartIsZero, urnArtExists) {
 		urnArtKey, keyErr := GetUrnArtKey(urn)
