@@ -5,6 +5,15 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
+type Fork struct {
+	HeaderID int `db:"header_id"`
+	Ilk      string
+	Src      string
+	Dst      string
+	Dink     string
+	Dart     string
+}
+
 type Frob struct {
 	HeaderID int `db:"header_id"`
 	UrnID    int `db:"urn_id"`
@@ -20,6 +29,7 @@ type Grab struct {
 }
 
 type EventsRepository interface {
+	GetForks(startingBlock int) ([]Fork, error)
 	GetFrobs(startingBlock int) ([]Frob, error)
 	GetGrabs(startingBlock int) ([]Grab, error)
 	GetHeaderByID(id int) (core.Header, error)
@@ -31,6 +41,17 @@ type eventsRepository struct {
 
 func NewEventsRepository(db *postgres.DB) EventsRepository {
 	return eventsRepository{db: db}
+}
+
+func (e eventsRepository) GetForks(startingBlock int) ([]Fork, error) {
+	var forks []Fork
+	err := e.db.Select(&forks, `SELECT header_id, ilks.ilk, src, dst, dink, dart
+		FROM maker.vat_fork
+		    JOIN maker.ilks on vat_fork.ilk_id = ilks.id
+			JOIN public.headers ON vat_fork.header_id = headers.id
+		WHERE headers.block_number >= $1
+		ORDER BY headers.block_number ASC`, startingBlock)
+	return forks, err
 }
 
 func (e eventsRepository) GetFrobs(startingBlock int) ([]Frob, error) {

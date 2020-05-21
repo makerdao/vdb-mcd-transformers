@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -13,6 +14,7 @@ type Urn struct {
 }
 
 type StorageRepository interface {
+	GetOrCreateUrn(urn, ilk string) (int64, error)
 	GetUrnByID(id int) (Urn, error)
 	InsertDiff(diff types.RawDiff) error
 	VatIlkArtExists(ilkID, headerID int) (bool, error)
@@ -22,6 +24,10 @@ type StorageRepository interface {
 
 type storageRepository struct {
 	db *postgres.DB
+}
+
+func (repo storageRepository) GetOrCreateUrn(urn, ilk string) (int64, error) {
+	return shared.GetOrCreateUrn(urn, ilk, repo.db)
 }
 
 func NewStorageRepository(db *postgres.DB) StorageRepository {

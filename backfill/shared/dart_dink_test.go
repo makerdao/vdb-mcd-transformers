@@ -1,7 +1,6 @@
 package shared_test
 
 import (
-	"errors"
 	"math/big"
 	"math/rand"
 
@@ -21,17 +20,19 @@ import (
 )
 
 var _ = Describe("Dart Dink helpers", func() {
-	Describe("FetchAndPersistDartDinkDiffs", func() {
+	Describe("RetrieveDartDinkDiffs", func() {
 		var (
 			mockBlockChain        *fakes.MockBlockChain
 			mockEventsRepository  *mocks.EventsRepository
 			mockStorageRepository *mocks.StorageRepository
+			dartDinkRetriever     shared.DartDinkRetriever
 		)
 
 		BeforeEach(func() {
 			mockBlockChain = fakes.NewMockBlockChain()
 			mockEventsRepository = &mocks.EventsRepository{}
 			mockStorageRepository = &mocks.StorageRepository{}
+			dartDinkRetriever = shared.NewDartDinkRetriever(mockEventsRepository, mockStorageRepository, mockBlockChain)
 		})
 
 		It("ignores row if dink and dart are zero", func() {
@@ -40,7 +41,7 @@ var _ = Describe("Dart Dink helpers", func() {
 				Dart: "0",
 			}
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockBlockChain.BatchGetStorageAtCalls).To(BeEmpty())
@@ -58,7 +59,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatUrnArtExistsBoolToReturn = true
 			mockStorageRepository.VatUrnInkExistsBoolToReturn = true
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockStorageRepository.VatIlkArtExistsPassedIlkID).To(Equal(fakeUrn.IlkID))
@@ -76,7 +77,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatUrnArtExistsBoolToReturn = true
 			mockStorageRepository.VatUrnInkExistsBoolToReturn = true
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockStorageRepository.VatUrnArtExistsPassedHeaderID).To(Equal(fakeData.HeaderID))
@@ -94,7 +95,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatUrnArtExistsBoolToReturn = true
 			mockStorageRepository.VatUrnInkExistsBoolToReturn = true
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockStorageRepository.VatUrnInkExistsPassedHeaderID).To(Equal(fakeData.HeaderID))
@@ -110,7 +111,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatUrnArtExistsBoolToReturn = true
 			mockStorageRepository.VatUrnInkExistsBoolToReturn = true
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockBlockChain.BatchGetStorageAtCalls).To(BeEmpty())
@@ -125,10 +126,10 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatIlkArtExistsBoolToReturn = false
 			mockStorageRepository.GetUrnByIDError = fakes.FakeError
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).To(HaveOccurred())
-			Expect(errors.Is(err, fakes.FakeError)).To(BeTrue())
+			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
 		It("returns error if getting header for data requiring back-fill fails", func() {
@@ -140,10 +141,10 @@ var _ = Describe("Dart Dink helpers", func() {
 			mockStorageRepository.VatIlkArtExistsBoolToReturn = false
 			mockEventsRepository.GetHeaderByIDError = fakes.FakeError
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).To(HaveOccurred())
-			Expect(errors.Is(err, fakes.FakeError)).To(BeTrue())
+			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
 		It("looks up storage for data when some values are non-zero and don't already exist", func() {
@@ -159,7 +160,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			fakeHeader := core.Header{BlockNumber: rand.Int63()}
 			mockEventsRepository.GetHeaderByIDHeaderToReturn = fakeHeader
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			expectedIlkArtKey := storage.GetKeyForMapping(storage.IndexTwo, fakeUrn.Ilk)
@@ -188,7 +189,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			fakeValue := []byte{1, 2, 3, 4, 5}
 			mockBlockChain.SetStorageValuesToReturn(fakeHeader.BlockNumber, shared.VatAddress, fakeValue)
 
-			err := shared.FetchAndPersistDartDinkDiffs(fakeData, mockEventsRepository, mockStorageRepository, mockBlockChain)
+			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
 			Expect(err).NotTo(HaveOccurred())
 			paddedUrn, padErr := utilities.PadAddress(fakeUrn.Urn)

@@ -23,6 +23,90 @@ var _ = Describe("Events repository", func() {
 		repo = repository.NewEventsRepository(db)
 	})
 
+	Describe("GetForks", func() {
+		Describe("when there are forks", func() {
+			var (
+				startingBlock, earlierBlock             int
+				forkAtStartingBlock, forkAtEarlierBlock repository.Fork
+			)
+
+			BeforeEach(func() {
+				fakeIlk := test_data.RandomString(64)
+				fakeIlkIdentifier := "ETH-A"
+				var ilkID int
+				ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`,
+					fakeIlk, fakeIlkIdentifier)
+				Expect(ilkErr).NotTo(HaveOccurred())
+
+				startingBlock = rand.Int()
+				var startingBlockID int
+				startingBlockErr := db.Get(&startingBlockID, `
+				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
+					startingBlock, test_data.RandomString(64), db.NodeID)
+				Expect(startingBlockErr).NotTo(HaveOccurred())
+
+				earlierBlock = startingBlock - 1
+				var earlierBlockID int
+				earlierBlockErr := db.Get(&earlierBlockID, `
+				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
+					earlierBlock, test_data.RandomString(64), db.NodeID)
+				Expect(earlierBlockErr).NotTo(HaveOccurred())
+
+				forkAtStartingBlock = repository.Fork{
+					HeaderID: startingBlockID,
+					Ilk:      fakeIlk,
+					Src:      test_data.RandomString(40),
+					Dst:      test_data.RandomString(40),
+					Dink:     strconv.Itoa(rand.Int()),
+					Dart:     strconv.Itoa(rand.Int()),
+				}
+				forkAtStartingBlockLog := test_data.CreateTestLog(int64(forkAtStartingBlock.HeaderID), db)
+				_, forkOneErr := db.Exec(`INSERT INTO maker.vat_fork (header_id, log_id, ilk_id, src, dst, dink, dart)
+					VALUES ($1, $2, $3, $4, $5, $6, $7)`, forkAtStartingBlock.HeaderID, forkAtStartingBlockLog.ID, ilkID,
+					forkAtStartingBlock.Src, forkAtStartingBlock.Dst, forkAtStartingBlock.Dink, forkAtStartingBlock.Dart)
+				Expect(forkOneErr).NotTo(HaveOccurred())
+
+				forkAtEarlierBlock = repository.Fork{
+					HeaderID: earlierBlockID,
+					Ilk:      fakeIlk,
+					Src:      test_data.RandomString(40),
+					Dst:      test_data.RandomString(40),
+					Dink:     strconv.Itoa(rand.Int()),
+					Dart:     strconv.Itoa(rand.Int()),
+				}
+				forkAtEarlierBlockLog := test_data.CreateTestLog(int64(forkAtEarlierBlock.HeaderID), db)
+				_, forkTwoErr := db.Exec(`INSERT INTO maker.vat_fork (header_id, log_id, ilk_id, src, dst, dink, dart)
+				VALUES ($1, $2, $3, $4, $5, $6, $7)`, forkAtEarlierBlock.HeaderID, forkAtEarlierBlockLog.ID, ilkID,
+					forkAtEarlierBlock.Src, forkAtEarlierBlock.Dst, forkAtEarlierBlock.Dink, forkAtEarlierBlock.Dart)
+				Expect(forkTwoErr).NotTo(HaveOccurred())
+			})
+
+			It("returns forks with block >= starting block", func() {
+				forks, err := repo.GetForks(startingBlock)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(forks).To(ConsistOf(forkAtStartingBlock))
+			})
+
+			It("orders results ascending by block_number", func() {
+				forks, err := repo.GetForks(earlierBlock)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(len(forks)).To(Equal(2))
+				Expect(forks[0]).To(Equal(forkAtEarlierBlock))
+			})
+		})
+
+		Describe("when there are no forks", func() {
+			It("returns empty list without error", func() {
+				forks, err := repo.GetForks(0)
+
+				Expect(len(forks)).To(BeZero())
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
 	Describe("GetFrobs", func() {
 		Describe("when there are frobs", func() {
 			var (

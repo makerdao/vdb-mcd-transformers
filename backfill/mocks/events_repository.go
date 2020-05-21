@@ -6,6 +6,9 @@ import (
 )
 
 type EventsRepository struct {
+	GetForksError               error
+	GetForksForksToReturn       []repository.Fork
+	GetForksPassedStartingBlock int
 	GetFrobsError               error
 	GetFrobsFrobsToReturn       []repository.Frob
 	GetFrobsPassedStartingBlock int
@@ -17,17 +20,22 @@ type EventsRepository struct {
 	GetHeaderByIDPassedIDs      []int
 }
 
-func (e *EventsRepository) GetFrobs(startingBlock int) ([]repository.Frob, error) {
-	e.GetFrobsPassedStartingBlock = startingBlock
-	return e.GetFrobsFrobsToReturn, e.GetFrobsError
+func (mock *EventsRepository) GetForks(startingBlock int) ([]repository.Fork, error) {
+	mock.GetForksPassedStartingBlock = startingBlock
+	return mock.GetForksForksToReturn, mock.GetForksError
 }
 
-func (e *EventsRepository) GetGrabs(startingBlock int) ([]repository.Grab, error) {
-	e.GetGrabsPassedStartingBlock = startingBlock
-	return e.GetGrabsGrabsToReturn, e.GetGrabsError
+func (mock *EventsRepository) GetFrobs(startingBlock int) ([]repository.Frob, error) {
+	mock.GetFrobsPassedStartingBlock = startingBlock
+	return mock.GetFrobsFrobsToReturn, mock.GetFrobsError
 }
 
-func (e *EventsRepository) GetHeaderByID(id int) (core.Header, error) {
-	e.GetHeaderByIDPassedIDs = append(e.GetHeaderByIDPassedIDs, id)
-	return e.GetHeaderByIDHeaderToReturn, e.GetHeaderByIDError
+func (mock *EventsRepository) GetGrabs(startingBlock int) ([]repository.Grab, error) {
+	mock.GetGrabsPassedStartingBlock = startingBlock
+	return mock.GetGrabsGrabsToReturn, mock.GetGrabsError
+}
+
+func (mock *EventsRepository) GetHeaderByID(id int) (core.Header, error) {
+	mock.GetHeaderByIDPassedIDs = append(mock.GetHeaderByIDPassedIDs, id)
+	return mock.GetHeaderByIDHeaderToReturn, mock.GetHeaderByIDError
 }

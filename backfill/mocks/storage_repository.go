@@ -6,6 +6,8 @@ import (
 )
 
 type StorageRepository struct {
+	GetOrCreateUrnError           error
+	GetOrCreateUrnIDsToReturn     map[string]int64
 	GetUrnByIDUrnToReturn         repository.Urn
 	GetUrnByIDError               error
 	InsertDiffErr                 error
@@ -19,6 +21,13 @@ type StorageRepository struct {
 	VatUrnInkExistsBoolToReturn   bool
 	VatUrnInkExistsPassedHeaderID int
 	VatUrnInkExistsPassedUrnID    int
+}
+
+func (mock *StorageRepository) GetOrCreateUrn(urn, ilk string) (int64, error) {
+	if id, ok := mock.GetOrCreateUrnIDsToReturn[urn]; ok {
+		return id, nil
+	}
+	return 0, mock.GetOrCreateUrnError
 }
 
 func (mock *StorageRepository) GetUrnByID(id int) (repository.Urn, error) {
