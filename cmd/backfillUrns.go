@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -68,7 +69,8 @@ func backfillUrns() error {
 
 	for _, e := range eventsToBackFill {
 		initializer := initializers[e]
-		dartDinkRetriever := shared.NewDartDinkRetriever(eventRepository, storageRepository, blockChain)
+		headerRepository := repositories.NewHeaderRepository(&db)
+		dartDinkRetriever := shared.NewDartDinkRetriever(blockChain, eventRepository, headerRepository, storageRepository)
 		backFiller := initializer(blockChain, eventRepository, storageRepository, dartDinkRetriever)
 		wg.Add(1)
 		go backFillEvents(backFiller, startingBlock, errs, &wg)

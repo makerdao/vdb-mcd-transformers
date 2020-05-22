@@ -31,6 +31,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -42,7 +43,7 @@ var _ = Describe("QueuedSin", func() {
 		fakeEra                string
 		fakeTab                = strconv.Itoa(int(rand.Int31()))
 		headerOne              core.Header
-		headerRepository       repositories.HeaderRepository
+		headerRepository       datastore.HeaderRepository
 		logId                  int64
 		rawEra                 int
 		sinMappingMetadata     types.ValueMetadata

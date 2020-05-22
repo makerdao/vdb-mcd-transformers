@@ -57,8 +57,8 @@ var _ = Describe("Frob BackFiller", func() {
 
 		It("passes DartDink derived from frob to retriever", func() {
 			fakeFrob := repository.Frob{
-				HeaderID: rand.Int(),
-				UrnID:    rand.Int(),
+				HeaderID: rand.Int63(),
+				UrnID:    rand.Int63(),
 				Dink:     strconv.Itoa(rand.Int()),
 				Dart:     strconv.Itoa(rand.Int()),
 			}

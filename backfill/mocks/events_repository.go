@@ -2,7 +2,6 @@ package mocks
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
-	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
 type EventsRepository struct {
@@ -15,9 +14,6 @@ type EventsRepository struct {
 	GetGrabsError               error
 	GetGrabsGrabsToReturn       []repository.Grab
 	GetGrabsPassedStartingBlock int
-	GetHeaderByIDError          error
-	GetHeaderByIDHeaderToReturn core.Header
-	GetHeaderByIDPassedIDs      []int
 }
 
 func (mock *EventsRepository) GetForks(startingBlock int) ([]repository.Fork, error) {
@@ -33,9 +29,4 @@ func (mock *EventsRepository) GetFrobs(startingBlock int) ([]repository.Frob, er
 func (mock *EventsRepository) GetGrabs(startingBlock int) ([]repository.Grab, error) {
 	mock.GetGrabsPassedStartingBlock = startingBlock
 	return mock.GetGrabsGrabsToReturn, mock.GetGrabsError
-}
-
-func (mock *EventsRepository) GetHeaderByID(id int) (core.Header, error) {
-	mock.GetHeaderByIDPassedIDs = append(mock.GetHeaderByIDPassedIDs, id)
-	return mock.GetHeaderByIDHeaderToReturn, mock.GetHeaderByIDError
 }

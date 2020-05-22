@@ -24,6 +24,7 @@ var _ = Describe("Dart Dink helpers", func() {
 		var (
 			mockBlockChain        *fakes.MockBlockChain
 			mockEventsRepository  *mocks.EventsRepository
+			mockHeaderRepository  *fakes.MockHeaderRepository
 			mockStorageRepository *mocks.StorageRepository
 			dartDinkRetriever     shared.DartDinkRetriever
 		)
@@ -31,8 +32,9 @@ var _ = Describe("Dart Dink helpers", func() {
 		BeforeEach(func() {
 			mockBlockChain = fakes.NewMockBlockChain()
 			mockEventsRepository = &mocks.EventsRepository{}
+			mockHeaderRepository = &fakes.MockHeaderRepository{}
 			mockStorageRepository = &mocks.StorageRepository{}
-			dartDinkRetriever = shared.NewDartDinkRetriever(mockEventsRepository, mockStorageRepository, mockBlockChain)
+			dartDinkRetriever = shared.NewDartDinkRetriever(mockBlockChain, mockEventsRepository, mockHeaderRepository, mockStorageRepository)
 		})
 
 		It("ignores row if dink and dart are zero", func() {
@@ -49,11 +51,11 @@ var _ = Describe("Dart Dink helpers", func() {
 
 		It("passes ilk ID and header ID to detect if ilk art exists", func() {
 			fakeData := shared.DartDink{
-				HeaderID: rand.Int(),
+				HeaderID: rand.Int63(),
 				Dink:     "0",
 				Dart:     "1",
 			}
-			fakeUrn := repository.Urn{IlkID: rand.Int()}
+			fakeUrn := repository.Urn{IlkID: rand.Int63()}
 			mockStorageRepository.GetUrnByIDUrnToReturn = fakeUrn
 			mockStorageRepository.VatIlkArtExistsBoolToReturn = true
 			mockStorageRepository.VatUrnArtExistsBoolToReturn = true
@@ -68,8 +70,8 @@ var _ = Describe("Dart Dink helpers", func() {
 
 		It("passes urn ID and header ID to detect if urn art exists", func() {
 			fakeData := shared.DartDink{
-				HeaderID: rand.Int(),
-				UrnID:    rand.Int(),
+				HeaderID: rand.Int63(),
+				UrnID:    rand.Int63(),
 				Dink:     "0",
 				Dart:     "1",
 			}
@@ -86,8 +88,8 @@ var _ = Describe("Dart Dink helpers", func() {
 
 		It("passes urn ID and header ID to detect if urn ink exists", func() {
 			fakeData := shared.DartDink{
-				HeaderID: rand.Int(),
-				UrnID:    rand.Int(),
+				HeaderID: rand.Int63(),
+				UrnID:    rand.Int63(),
 				Dink:     "1",
 				Dart:     "0",
 			}
@@ -119,7 +121,7 @@ var _ = Describe("Dart Dink helpers", func() {
 
 		It("returns error if getting for urn for data requiring back-fill fails", func() {
 			fakeData := shared.DartDink{
-				UrnID: rand.Int(),
+				UrnID: rand.Int63(),
 				Dink:  "0",
 				Dart:  "1",
 			}
@@ -134,12 +136,12 @@ var _ = Describe("Dart Dink helpers", func() {
 
 		It("returns error if getting header for data requiring back-fill fails", func() {
 			fakeData := shared.DartDink{
-				UrnID: rand.Int(),
+				UrnID: rand.Int63(),
 				Dink:  "0",
 				Dart:  "1",
 			}
 			mockStorageRepository.VatIlkArtExistsBoolToReturn = false
-			mockEventsRepository.GetHeaderByIDError = fakes.FakeError
+			mockHeaderRepository.GetHeaderByIDError = fakes.FakeError
 
 			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
@@ -158,7 +160,7 @@ var _ = Describe("Dart Dink helpers", func() {
 			fakeUrn := repository.Urn{Ilk: test_data.RandomString(64)}
 			mockStorageRepository.GetUrnByIDUrnToReturn = fakeUrn
 			fakeHeader := core.Header{BlockNumber: rand.Int63()}
-			mockEventsRepository.GetHeaderByIDHeaderToReturn = fakeHeader
+			mockHeaderRepository.GetHeaderByIDHeaderToReturn = fakeHeader
 
 			err := dartDinkRetriever.RetrieveDartDinkDiffs(fakeData)
 
@@ -185,7 +187,7 @@ var _ = Describe("Dart Dink helpers", func() {
 				BlockNumber: rand.Int63(),
 				Hash:        test_data.RandomString(64),
 			}
-			mockEventsRepository.GetHeaderByIDHeaderToReturn = fakeHeader
+			mockHeaderRepository.GetHeaderByIDHeaderToReturn = fakeHeader
 			fakeValue := []byte{1, 2, 3, 4, 5}
 			mockBlockChain.SetStorageValuesToReturn(fakeHeader.BlockNumber, shared.VatAddress, fakeValue)
 

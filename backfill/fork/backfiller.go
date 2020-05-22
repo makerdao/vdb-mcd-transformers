@@ -15,7 +15,7 @@ type urnDinkDart struct {
 	Guy      string
 	Dart     string
 	Dink     string
-	HeaderID int
+	HeaderID int64
 }
 
 type forkBackFiller struct {
@@ -65,7 +65,7 @@ func (backFiller forkBackFiller) retrieveDiffsForUrn(data urnDinkDart) error {
 		Dart:     data.Dart,
 		Dink:     data.Dink,
 		HeaderID: data.HeaderID,
-		UrnID:    int(urnID),
+		UrnID:    urnID,
 	}
 	err := backFiller.dartDinkRetriever.RetrieveDartDinkDiffs(dartDink)
 	if err != nil {

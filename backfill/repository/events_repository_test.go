@@ -7,7 +7,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -39,14 +38,14 @@ var _ = Describe("Events repository", func() {
 				Expect(ilkErr).NotTo(HaveOccurred())
 
 				startingBlock = rand.Int()
-				var startingBlockID int
+				var startingBlockID int64
 				startingBlockErr := db.Get(&startingBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					startingBlock, test_data.RandomString(64), db.NodeID)
 				Expect(startingBlockErr).NotTo(HaveOccurred())
 
 				earlierBlock = startingBlock - 1
-				var earlierBlockID int
+				var earlierBlockID int64
 				earlierBlockErr := db.Get(&earlierBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					earlierBlock, test_data.RandomString(64), db.NodeID)
@@ -110,14 +109,15 @@ var _ = Describe("Events repository", func() {
 	Describe("GetFrobs", func() {
 		Describe("when there are frobs", func() {
 			var (
-				urnID, startingBlock, earlierBlock      int
+				urnID                                   int64
+				startingBlock, earlierBlock             int
 				frobAtStartingBlock, frobAtEarlierBlock repository.Frob
 			)
 
 			BeforeEach(func() {
 				fakeIlk := test_data.RandomString(64)
 				fakeIlkIdentifier := "ETH-A"
-				var ilkID int
+				var ilkID int64
 				ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`,
 					fakeIlk, fakeIlkIdentifier)
 				Expect(ilkErr).NotTo(HaveOccurred())
@@ -128,14 +128,14 @@ var _ = Describe("Events repository", func() {
 				Expect(urnErr).NotTo(HaveOccurred())
 
 				startingBlock = rand.Int()
-				var startingBlockID int
+				var startingBlockID int64
 				startingBlockErr := db.Get(&startingBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					startingBlock, test_data.RandomString(64), db.NodeID)
 				Expect(startingBlockErr).NotTo(HaveOccurred())
 
 				earlierBlock = startingBlock - 1
-				var earlierBlockID int
+				var earlierBlockID int64
 				earlierBlockErr := db.Get(&earlierBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					earlierBlock, test_data.RandomString(64), db.NodeID)
@@ -195,14 +195,15 @@ var _ = Describe("Events repository", func() {
 	Describe("GetGrabs", func() {
 		Describe("when there are grabs", func() {
 			var (
-				urnID, startingBlock, earlierBlock      int
+				urnID                                   int64
+				startingBlock, earlierBlock             int
 				grabAtStartingBlock, grabAtEarlierBlock repository.Grab
 			)
 
 			BeforeEach(func() {
 				fakeIlk := test_data.RandomString(64)
 				fakeIlkIdentifier := "ETH-A"
-				var ilkID int
+				var ilkID int64
 				ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`,
 					fakeIlk, fakeIlkIdentifier)
 				Expect(ilkErr).NotTo(HaveOccurred())
@@ -213,14 +214,14 @@ var _ = Describe("Events repository", func() {
 				Expect(urnErr).NotTo(HaveOccurred())
 
 				startingBlock = rand.Int()
-				var startingBlockID int
+				var startingBlockID int64
 				startingBlockErr := db.Get(&startingBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					startingBlock, test_data.RandomString(64), db.NodeID)
 				Expect(startingBlockErr).NotTo(HaveOccurred())
 
 				earlierBlock = startingBlock - 1
-				var earlierBlockID int
+				var earlierBlockID int64
 				earlierBlockErr := db.Get(&earlierBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					earlierBlock, test_data.RandomString(64), db.NodeID)
@@ -274,33 +275,6 @@ var _ = Describe("Events repository", func() {
 				Expect(len(grabs)).To(BeZero())
 				Expect(err).NotTo(HaveOccurred())
 			})
-		})
-	})
-
-	Describe("GetHeaderByID", func() {
-		It("returns header with associated ID", func() {
-			wantedHeader := core.Header{
-				BlockNumber: rand.Int63(),
-				Hash:        test_data.RandomString(64),
-				Raw:         nil,
-				Timestamp:   strconv.Itoa(rand.Int()),
-			}
-			var wantedHeaderID int
-			wantedHeaderErr := db.Get(&wantedHeaderID, `
-				INSERT INTO public.headers (block_number, hash, block_timestamp, eth_node_id) VALUES ($1, $2, $3, $4)
-				RETURNING id`, wantedHeader.BlockNumber, wantedHeader.Hash, wantedHeader.Timestamp, db.NodeID)
-			Expect(wantedHeaderErr).NotTo(HaveOccurred())
-			wantedHeader.Id = int64(wantedHeaderID)
-
-			_, anotherHeaderErr := db.Exec(`INSERT INTO public.headers (block_number, hash, block_timestamp,
-                            eth_node_id) VALUES ($1, $2, $3, $4) RETURNING id`, rand.Int()-1, test_data.RandomString(64),
-				strconv.Itoa(rand.Int()), db.NodeID)
-			Expect(anotherHeaderErr).NotTo(HaveOccurred())
-
-			header, err := repo.GetHeaderByID(wantedHeaderID)
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(header).To(Equal(wantedHeader))
 		})
 	})
 })

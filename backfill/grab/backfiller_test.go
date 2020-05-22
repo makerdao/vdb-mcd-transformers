@@ -52,8 +52,8 @@ var _ = Describe("Grab BackFiller", func() {
 
 		It("passes DartDink derived from grab to retriever", func() {
 			fakeGrab := repository.Grab{
-				HeaderID: rand.Int(),
-				UrnID:    rand.Int(),
+				HeaderID: rand.Int63(),
+				UrnID:    rand.Int63(),
 				Dink:     strconv.Itoa(rand.Int()),
 				Dart:     strconv.Itoa(rand.Int()),
 			}

@@ -13,14 +13,14 @@ type StorageRepository struct {
 	InsertDiffErr                 error
 	InsertDiffPassedDiff          types.RawDiff
 	VatIlkArtExistsBoolToReturn   bool
-	VatIlkArtExistsPassedHeaderID int
-	VatIlkArtExistsPassedIlkID    int
+	VatIlkArtExistsPassedHeaderID int64
+	VatIlkArtExistsPassedIlkID    int64
 	VatUrnArtExistsBoolToReturn   bool
-	VatUrnArtExistsPassedHeaderID int
-	VatUrnArtExistsPassedUrnID    int
+	VatUrnArtExistsPassedHeaderID int64
+	VatUrnArtExistsPassedUrnID    int64
 	VatUrnInkExistsBoolToReturn   bool
-	VatUrnInkExistsPassedHeaderID int
-	VatUrnInkExistsPassedUrnID    int
+	VatUrnInkExistsPassedHeaderID int64
+	VatUrnInkExistsPassedUrnID    int64
 }
 
 func (mock *StorageRepository) GetOrCreateUrn(urn, ilk string) (int64, error) {
@@ -30,7 +30,7 @@ func (mock *StorageRepository) GetOrCreateUrn(urn, ilk string) (int64, error) {
 	return 0, mock.GetOrCreateUrnError
 }
 
-func (mock *StorageRepository) GetUrnByID(id int) (repository.Urn, error) {
+func (mock *StorageRepository) GetUrnByID(id int64) (repository.Urn, error) {
 	return mock.GetUrnByIDUrnToReturn, mock.GetUrnByIDError
 }
 
@@ -39,19 +39,19 @@ func (mock *StorageRepository) InsertDiff(diff types.RawDiff) error {
 	return mock.InsertDiffErr
 }
 
-func (mock *StorageRepository) VatIlkArtExists(ilkID, headerID int) (bool, error) {
+func (mock *StorageRepository) VatIlkArtExists(ilkID, headerID int64) (bool, error) {
 	mock.VatIlkArtExistsPassedHeaderID = headerID
 	mock.VatIlkArtExistsPassedIlkID = ilkID
 	return mock.VatIlkArtExistsBoolToReturn, nil
 }
 
-func (mock *StorageRepository) VatUrnArtExists(urnID, headerID int) (bool, error) {
+func (mock *StorageRepository) VatUrnArtExists(urnID, headerID int64) (bool, error) {
 	mock.VatUrnArtExistsPassedHeaderID = headerID
 	mock.VatUrnArtExistsPassedUrnID = urnID
 	return mock.VatUrnArtExistsBoolToReturn, nil
 }
 
-func (mock *StorageRepository) VatUrnInkExists(urnID, headerID int) (bool, error) {
+func (mock *StorageRepository) VatUrnInkExists(urnID, headerID int64) (bool, error) {
 	mock.VatUrnInkExistsPassedHeaderID = headerID
 	mock.VatUrnInkExistsPassedUrnID = urnID
 	return mock.VatUrnInkExistsBoolToReturn, nil

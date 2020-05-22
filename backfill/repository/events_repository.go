@@ -1,12 +1,11 @@
 package repository
 
 import (
-	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 type Fork struct {
-	HeaderID int `db:"header_id"`
+	HeaderID int64 `db:"header_id"`
 	Ilk      string
 	Src      string
 	Dst      string
@@ -15,15 +14,15 @@ type Fork struct {
 }
 
 type Frob struct {
-	HeaderID int `db:"header_id"`
-	UrnID    int `db:"urn_id"`
+	HeaderID int64 `db:"header_id"`
+	UrnID    int64 `db:"urn_id"`
 	Dink     string
 	Dart     string
 }
 
 type Grab struct {
-	HeaderID int `db:"header_id"`
-	UrnID    int `db:"urn_id"`
+	HeaderID int64 `db:"header_id"`
+	UrnID    int64 `db:"urn_id"`
 	Dink     string
 	Dart     string
 }
@@ -32,7 +31,6 @@ type EventsRepository interface {
 	GetForks(startingBlock int) ([]Fork, error)
 	GetFrobs(startingBlock int) ([]Frob, error)
 	GetGrabs(startingBlock int) ([]Grab, error)
-	GetHeaderByID(id int) (core.Header, error)
 }
 
 type eventsRepository struct {
@@ -72,10 +70,4 @@ func (e eventsRepository) GetGrabs(startingBlock int) ([]Grab, error) {
 		WHERE headers.block_number >= $1
 		ORDER BY headers.block_number ASC`, startingBlock)
 	return grabs, err
-}
-
-func (e eventsRepository) GetHeaderByID(id int) (core.Header, error) {
-	var header core.Header
-	headerErr := e.db.Get(&header, `SELECT id, block_number, hash, raw, block_timestamp FROM headers WHERE id = $1`, id)
-	return header, headerErr
 }

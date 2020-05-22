@@ -52,7 +52,7 @@ var _ = Describe("Fork BackFiller", func() {
 
 		It("passes DartDink derived from fork src to retriever", func() {
 			fakeFork := repository.Fork{
-				HeaderID: rand.Int(),
+				HeaderID: rand.Int63(),
 				Ilk:      test_data.RandomString(64),
 				Src:      test_data.RandomString(40),
 				Dst:      "",
@@ -70,14 +70,14 @@ var _ = Describe("Fork BackFiller", func() {
 				Dart:     fakeFork.Dart,
 				Dink:     fakeFork.Dink,
 				HeaderID: fakeFork.HeaderID,
-				UrnID:    int(fakeUrnID),
+				UrnID:    fakeUrnID,
 			}
 			Expect(mockDartDinkRetriever.PassedDartDinks).To(ContainElement(expectedDartDink))
 		})
 
 		It("passes DartDink derived from fork dst to retriever", func() {
 			fakeFork := repository.Fork{
-				HeaderID: rand.Int(),
+				HeaderID: rand.Int63(),
 				Ilk:      test_data.RandomString(64),
 				Src:      "",
 				Dst:      test_data.RandomString(40),
@@ -95,7 +95,7 @@ var _ = Describe("Fork BackFiller", func() {
 				Dart:     fakeFork.Dart,
 				Dink:     fakeFork.Dink,
 				HeaderID: fakeFork.HeaderID,
-				UrnID:    int(fakeUrnID),
+				UrnID:    fakeUrnID,
 			}
 			Expect(mockDartDinkRetriever.PassedDartDinks).To(ContainElement(expectedDartDink))
 		})
