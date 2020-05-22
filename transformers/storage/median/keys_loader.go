@@ -18,6 +18,7 @@ const (
 	Bar  = "bar"
 	Bud  = "bud"
 	Orcl = "orcl"
+	Slot = "slot"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 
 	OrclMappingIndex = vdbStorage.IndexThree
 	BudMappingIndex  = vdbStorage.IndexFour
+	SlotMappingIndex = vdbStorage.IndexFive
 )
 
 type keysLoader struct {
@@ -55,6 +57,10 @@ func (loader keysLoader) addDynamicMappings(mappings map[common.Hash]types.Value
 	mappings, orclErr := loader.loadOrclKeys(mappings)
 	if orclErr != nil {
 		return nil, orclErr
+	}
+	mappings, slotErr := loader.loadSlotKeys(mappings)
+	if slotErr != nil {
+		return nil, slotErr
 	}
 	return loader.loadBudKeys(mappings)
 }
@@ -104,6 +110,17 @@ func (loader *keysLoader) loadBudKeys(mappings map[common.Hash]types.ValueMetada
 	return mappings, nil
 }
 
+func (loader *keysLoader) loadSlotKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+	slotIds, slotErr := loader.storageRepository.GetMedianSlotIds(loader.contractAddress)
+	if slotErr != nil {
+		return nil, slotErr
+	}
+	for _, slotId := range slotIds {
+		mappings[getSlotKey(slotId)] = getSlotMetadata(slotId)
+	}
+	return mappings, nil
+}
+
 func getBudKey(address string) common.Hash {
 	return vdbStorage.GetKeyForMapping(BudMappingIndex, address)
 }
@@ -121,6 +138,16 @@ func getOrclMetadata(address string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.Address: address}
 	return types.GetValueMetadata(Orcl, keys, types.Uint256)
 }
+
+func getSlotKey(slotId string) common.Hash {
+	return vdbStorage.GetKeyForMapping(SlotMappingIndex, slotId)
+}
+
+func getSlotMetadata(slotId string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SlotId: slotId}
+	return types.GetValueMetadata(Slot, keys, types.Uint8)
+}
+
 func (loader keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }

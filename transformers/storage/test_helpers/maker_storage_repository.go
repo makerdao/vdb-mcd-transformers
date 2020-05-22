@@ -16,6 +16,7 @@ type MockMakerStorageRepository struct {
 	Ilks                             []string
 	MedianBudAddresses               []string
 	MedianOrclAddresses              []string
+	MedianSlotIds                    []string
 	Owners                           []string
 	PotPieUsers                      []string
 	SinKeys                          []string
@@ -40,6 +41,8 @@ type MockMakerStorageRepository struct {
 	GetMedianBudAddressesError       error
 	GetMedianOrclAddressesCalledWith string
 	GetMedianOrclAddressesError      error
+	GetMedianSlotIdCalled            bool
+	GetMedianSlotIdError             error
 	GetOwnersCalled                  bool
 	GetOwnersError                   error
 	GetPotPieUsersCalled             bool
@@ -99,6 +102,11 @@ func (repository *MockMakerStorageRepository) GetMedianBudAddresses(address stri
 func (repository *MockMakerStorageRepository) GetMedianOrclAddresses(address string) ([]string, error) {
 	repository.GetMedianOrclAddressesCalledWith = address
 	return repository.MedianOrclAddresses, repository.GetMedianOrclAddressesError
+}
+
+func (repository *MockMakerStorageRepository) GetMedianSlotIds(string) ([]string, error) {
+	repository.GetMedianSlotIdCalled = true
+	return repository.MedianSlotIds, repository.GetMedianSlotIdError
 }
 
 func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {

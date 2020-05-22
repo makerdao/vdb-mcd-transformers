@@ -1,6 +1,9 @@
 package median_test
 
 import (
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -121,6 +124,35 @@ var _ = Describe("Median storage keys loader", func() {
 
 		It("returns error on failure", func() {
 			storageRepository.GetMedianOrclAddressesError = fakes.FakeError
+
+			_, err := storageKeysLoader.LoadMappings()
+
+			Expect(err).To(HaveOccurred())
+			Expect(err).To(MatchError(fakes.FakeError))
+		})
+	})
+
+	Describe("slot", func() {
+		It("returns value metadata for slot", func() {
+			slotId := strconv.Itoa(rand.Intn(8))
+			slotKey := common.BytesToHash(crypto.Keccak256(common.FromHex(slotId + median.SlotMappingIndex)))
+			expectedMetadata := types.ValueMetadata{
+				Name: median.Slot,
+				Keys: map[types.Key]string{constants.SlotId: slotId},
+				Type: types.Uint8,
+			}
+			storageRepository.MedianSlotIds = []string{slotId}
+
+			mappings, err := storageKeysLoader.LoadMappings()
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(storageRepository.GetMedianSlotIdCalled).To(Equal(true))
+			Expect(mappings[slotKey]).To(Equal(expectedMetadata))
+
+		})
+
+		It("returns error on failure", func() {
+			storageRepository.GetMedianSlotIdError = fakes.FakeError
 
 			_, err := storageKeysLoader.LoadMappings()
 
