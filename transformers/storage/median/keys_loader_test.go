@@ -139,7 +139,7 @@ var _ = Describe("Median storage keys loader", func() {
 			expectedMetadata := types.ValueMetadata{
 				Name: median.Slot,
 				Keys: map[types.Key]string{constants.SlotId: slotId},
-				Type: types.Uint8,
+				Type: types.Address,
 			}
 			storageRepository.MedianSlotIds = []string{slotId}
 

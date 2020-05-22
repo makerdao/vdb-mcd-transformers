@@ -230,6 +230,43 @@ var _ = Describe("Median Storage Repository", func() {
 			err := repo.Create(diffID, fakeHeaderID, malformedOrclMetadata, fakeUint256)
 			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.A}))
 		})
+	})
 
+	Describe("slot mapping", func() {
+		var fakeUint8 = strconv.Itoa(rand.Intn(255))
+		It("writes a row", func() {
+			fakeSlotAddress := "0x" + fakes.RandomString(40)
+			slotMetadata := types.GetValueMetadata(median.Slot, map[types.Key]string{constants.SlotId: fakeUint8}, types.Address)
+
+			writeErr := repo.Create(diffID, fakeHeaderID, slotMetadata, fakeSlotAddress)
+			Expect(writeErr).NotTo(HaveOccurred())
+
+			var result MappingResWithAddress
+			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, slot_id AS key, slot AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianSlotTable))
+			readErr := db.Get(&result, query)
+			Expect(readErr).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
+			slotAddressID, slotAddressErr := shared.GetOrCreateAddress(fakeSlotAddress, db)
+			Expect(slotAddressErr).NotTo(HaveOccurred())
+			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			AssertMapping(result.MappingRes, diffID, fakeHeaderID, fakeUint8, strconv.FormatInt(slotAddressID, 10))
+		})
+
+		It("does not duplicate row", func() {
+			fakeSlotAddress := "0x" + fakes.RandomString(40)
+			slotMetadata := types.GetValueMetadata(median.Slot, map[types.Key]string{constants.SlotId: fakeUint8}, types.Address)
+			insertOneErr := repo.Create(diffID, fakeHeaderID, slotMetadata, fakeSlotAddress)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, slotMetadata, fakeSlotAddress)
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianSlotTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
 	})
 })

@@ -145,7 +145,7 @@ func getSlotKey(slotId string) common.Hash {
 
 func getSlotMetadata(slotId string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.SlotId: slotId}
-	return types.GetValueMetadata(Slot, keys, types.Uint8)
+	return types.GetValueMetadata(Slot, keys, types.Address)
 }
 
 func (loader keysLoader) SetDB(db *postgres.DB) {

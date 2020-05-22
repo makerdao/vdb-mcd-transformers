@@ -17,6 +17,7 @@ const (
 	insertMedianBarQuery  = `INSERT INTO maker.median_bar (diff_id, header_id, address_id, bar) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertMedianBudQuery  = `INSERT INTO maker.median_bud (diff_id, header_id, address_id, a, bud) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertMedianOrclQuery = `INSERT INTO maker.median_orcl (diff_id, header_id, address_id, a, orcl) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertMedianSlotQuery = `INSERT INTO maker.median_slot (diff_id, header_id, address_id, slot_id, slot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
 type MedianStorageRepository struct {
@@ -36,6 +37,8 @@ func (repository MedianStorageRepository) Create(diffID, headerID int64, metadat
 		return repository.insertBud(diffID, headerID, metadata, repository.ContractAddress, value.(string))
 	case Orcl:
 		return repository.insertOrcl(diffID, headerID, metadata, repository.ContractAddress, value.(string))
+	case Slot:
+		return repository.insertSlot(diffID, headerID, metadata, repository.ContractAddress, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized median contract storage name: %s", metadata.Name))
 	}
@@ -229,6 +232,54 @@ func getBudAddress(keys map[types.Key]string) (string, error) {
 	user, ok := keys[constants.A]
 	if !ok {
 		return "", types.ErrMetadataMalformed{MissingData: constants.A}
+	}
+	return user, nil
+}
+
+func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, metadata types.ValueMetadata, contractAddress, slot string) error {
+	slotID, slotErr := getSlotID(metadata.Keys)
+	if slotErr != nil {
+		return slotErr
+	}
+
+	tx, txErr := repository.db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+
+	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, repository.db)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("contract address", addressErr.Error())
+		}
+		return addressErr
+	}
+
+	slotAddressID, slotAddressErr := shared.GetOrCreateAddress(slot, repository.db)
+	if slotAddressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("median slot address", slotAddressErr.Error())
+		}
+		return slotAddressErr
+	}
+
+	_, insertErr := tx.Exec(insertMedianSlotQuery, diffID, headerID, addressID, slotID, slotAddressID)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return shared.FormatRollbackError("slot record with address", insertErr.Error())
+		}
+		return insertErr
+	}
+	return tx.Commit()
+}
+
+func getSlotID(keys map[types.Key]string) (string, error) {
+	user, ok := keys[constants.SlotId]
+	if !ok {
+		return "", types.ErrMetadataMalformed{MissingData: constants.SlotId}
 	}
 	return user, nil
 }
