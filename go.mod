@@ -20,6 +20,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
+	gopkg.in/yaml.v2 v2.2.2
 )
 
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
