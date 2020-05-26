@@ -1,32 +1,31 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 
 	"github.com/makerdao/vdb-mcd-transformers/backfill"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/fork"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/frob"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/grab"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
+	"github.com/makerdao/vdb-mcd-transformers/backfill/shared"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-type backFillInitializer func(core.BlockChain, repository.EventsRepository, repository.StorageRepository) backfill.BackFiller
+type backFillInitializer func(core.BlockChain, repository.EventsRepository, repository.StorageRepository, shared.DartDinkRetriever) backfill.BackFiller
 
 var (
 	eventsToBackFill []string
-	frobEvent        = "frob"
-	grabEvent        = "grab"
 	initializers     = map[string]backFillInitializer{
-		frobEvent: frob.NewFrobBackFiller,
-		grabEvent: grab.NewGrabBackFiller,
+		backfill.ForkEvent: fork.NewForkBackFiller,
+		backfill.FrobEvent: frob.NewFrobBackFiller,
+		backfill.GrabEvent: grab.NewGrabBackFiller,
 	}
-	maxEvents     = 2
-	minEvents     = 1
 	startingBlock int
 )
 
@@ -54,7 +53,7 @@ func init() {
 }
 
 func backfillUrns() error {
-	validationErr := validateEventsToBackfill()
+	validationErr := backfill.ValidateArgs(eventsToBackFill)
 	if validationErr != nil {
 		return fmt.Errorf("invalid events-to-backfill: %w", validationErr)
 	}
@@ -70,7 +69,9 @@ func backfillUrns() error {
 
 	for _, e := range eventsToBackFill {
 		initializer := initializers[e]
-		backFiller := initializer(blockChain, eventRepository, storageRepository)
+		headerRepository := repositories.NewHeaderRepository(&db)
+		dartDinkRetriever := shared.NewDartDinkRetriever(blockChain, eventRepository, headerRepository, storageRepository)
+		backFiller := initializer(blockChain, eventRepository, storageRepository, dartDinkRetriever)
 		wg.Add(1)
 		go backFillEvents(backFiller, startingBlock, errs, &wg)
 	}
@@ -88,30 +89,6 @@ func backfillUrns() error {
 		return err
 	}
 
-	return nil
-}
-
-func validateEventsToBackfill() error {
-	lenEvents := len(eventsToBackFill)
-	if lenEvents < minEvents {
-		return fmt.Errorf("must specify at least %d event(s)", minEvents)
-	}
-	if lenEvents > maxEvents {
-		return fmt.Errorf("only %d events are allowed", maxEvents)
-	}
-	if lenEvents == 1 {
-		if eventsToBackFill[0] != frobEvent && eventsToBackFill[0] != grabEvent {
-			return errors.New("only frob and/or grab are allowed")
-		}
-	}
-	if lenEvents == 2 {
-		if (eventsToBackFill[0] != frobEvent && eventsToBackFill[0] != grabEvent) || (eventsToBackFill[0] != frobEvent && eventsToBackFill[1] != grabEvent) {
-			return errors.New("only frob and/or grab are allowed")
-		}
-		if eventsToBackFill[0] == eventsToBackFill[1] {
-			return errors.New("same event included twice")
-		}
-	}
 	return nil
 }
 

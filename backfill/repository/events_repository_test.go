@@ -7,7 +7,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -23,11 +22,11 @@ var _ = Describe("Events repository", func() {
 		repo = repository.NewEventsRepository(db)
 	})
 
-	Describe("GetFrobs", func() {
-		Describe("when there are frobs", func() {
+	Describe("GetForks", func() {
+		Describe("when there are forks", func() {
 			var (
-				urnID, startingBlock, earlierBlock      int
-				frobAtStartingBlock, frobAtEarlierBlock repository.Frob
+				startingBlock, earlierBlock             int
+				forkAtStartingBlock, forkAtEarlierBlock repository.Fork
 			)
 
 			BeforeEach(func() {
@@ -38,20 +37,105 @@ var _ = Describe("Events repository", func() {
 					fakeIlk, fakeIlkIdentifier)
 				Expect(ilkErr).NotTo(HaveOccurred())
 
-				fakeUrn := test_data.RandomString(40)
-				urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`,
-					ilkID, fakeUrn)
-				Expect(urnErr).NotTo(HaveOccurred())
-
 				startingBlock = rand.Int()
-				var startingBlockID int
+				var startingBlockID int64
 				startingBlockErr := db.Get(&startingBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					startingBlock, test_data.RandomString(64), db.NodeID)
 				Expect(startingBlockErr).NotTo(HaveOccurred())
 
 				earlierBlock = startingBlock - 1
-				var earlierBlockID int
+				var earlierBlockID int64
+				earlierBlockErr := db.Get(&earlierBlockID, `
+				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
+					earlierBlock, test_data.RandomString(64), db.NodeID)
+				Expect(earlierBlockErr).NotTo(HaveOccurred())
+
+				forkAtStartingBlock = repository.Fork{
+					HeaderID: startingBlockID,
+					Ilk:      fakeIlk,
+					Src:      test_data.RandomString(40),
+					Dst:      test_data.RandomString(40),
+					Dink:     strconv.Itoa(rand.Int()),
+					Dart:     strconv.Itoa(rand.Int()),
+				}
+				forkAtStartingBlockLog := test_data.CreateTestLog(int64(forkAtStartingBlock.HeaderID), db)
+				_, forkOneErr := db.Exec(`INSERT INTO maker.vat_fork (header_id, log_id, ilk_id, src, dst, dink, dart)
+					VALUES ($1, $2, $3, $4, $5, $6, $7)`, forkAtStartingBlock.HeaderID, forkAtStartingBlockLog.ID, ilkID,
+					forkAtStartingBlock.Src, forkAtStartingBlock.Dst, forkAtStartingBlock.Dink, forkAtStartingBlock.Dart)
+				Expect(forkOneErr).NotTo(HaveOccurred())
+
+				forkAtEarlierBlock = repository.Fork{
+					HeaderID: earlierBlockID,
+					Ilk:      fakeIlk,
+					Src:      test_data.RandomString(40),
+					Dst:      test_data.RandomString(40),
+					Dink:     strconv.Itoa(rand.Int()),
+					Dart:     strconv.Itoa(rand.Int()),
+				}
+				forkAtEarlierBlockLog := test_data.CreateTestLog(int64(forkAtEarlierBlock.HeaderID), db)
+				_, forkTwoErr := db.Exec(`INSERT INTO maker.vat_fork (header_id, log_id, ilk_id, src, dst, dink, dart)
+				VALUES ($1, $2, $3, $4, $5, $6, $7)`, forkAtEarlierBlock.HeaderID, forkAtEarlierBlockLog.ID, ilkID,
+					forkAtEarlierBlock.Src, forkAtEarlierBlock.Dst, forkAtEarlierBlock.Dink, forkAtEarlierBlock.Dart)
+				Expect(forkTwoErr).NotTo(HaveOccurred())
+			})
+
+			It("returns forks with block >= starting block", func() {
+				forks, err := repo.GetForks(startingBlock)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(forks).To(ConsistOf(forkAtStartingBlock))
+			})
+
+			It("orders results ascending by block_number", func() {
+				forks, err := repo.GetForks(earlierBlock)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(len(forks)).To(Equal(2))
+				Expect(forks[0]).To(Equal(forkAtEarlierBlock))
+			})
+		})
+
+		Describe("when there are no forks", func() {
+			It("returns empty list without error", func() {
+				forks, err := repo.GetForks(0)
+
+				Expect(len(forks)).To(BeZero())
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("GetFrobs", func() {
+		Describe("when there are frobs", func() {
+			var (
+				urnID                                   int64
+				startingBlock, earlierBlock             int
+				frobAtStartingBlock, frobAtEarlierBlock repository.Frob
+			)
+
+			BeforeEach(func() {
+				fakeIlk := test_data.RandomString(64)
+				fakeIlkIdentifier := "ETH-A"
+				var ilkID int64
+				ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`,
+					fakeIlk, fakeIlkIdentifier)
+				Expect(ilkErr).NotTo(HaveOccurred())
+
+				fakeUrn := test_data.RandomString(40)
+				urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`,
+					ilkID, fakeUrn)
+				Expect(urnErr).NotTo(HaveOccurred())
+
+				startingBlock = rand.Int()
+				var startingBlockID int64
+				startingBlockErr := db.Get(&startingBlockID, `
+				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
+					startingBlock, test_data.RandomString(64), db.NodeID)
+				Expect(startingBlockErr).NotTo(HaveOccurred())
+
+				earlierBlock = startingBlock - 1
+				var earlierBlockID int64
 				earlierBlockErr := db.Get(&earlierBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					earlierBlock, test_data.RandomString(64), db.NodeID)
@@ -111,14 +195,15 @@ var _ = Describe("Events repository", func() {
 	Describe("GetGrabs", func() {
 		Describe("when there are grabs", func() {
 			var (
-				urnID, startingBlock, earlierBlock      int
+				urnID                                   int64
+				startingBlock, earlierBlock             int
 				grabAtStartingBlock, grabAtEarlierBlock repository.Grab
 			)
 
 			BeforeEach(func() {
 				fakeIlk := test_data.RandomString(64)
 				fakeIlkIdentifier := "ETH-A"
-				var ilkID int
+				var ilkID int64
 				ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`,
 					fakeIlk, fakeIlkIdentifier)
 				Expect(ilkErr).NotTo(HaveOccurred())
@@ -129,14 +214,14 @@ var _ = Describe("Events repository", func() {
 				Expect(urnErr).NotTo(HaveOccurred())
 
 				startingBlock = rand.Int()
-				var startingBlockID int
+				var startingBlockID int64
 				startingBlockErr := db.Get(&startingBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					startingBlock, test_data.RandomString(64), db.NodeID)
 				Expect(startingBlockErr).NotTo(HaveOccurred())
 
 				earlierBlock = startingBlock - 1
-				var earlierBlockID int
+				var earlierBlockID int64
 				earlierBlockErr := db.Get(&earlierBlockID, `
 				INSERT INTO public.headers (block_number, hash, eth_node_id) VALUES ($1, $2, $3) RETURNING id`,
 					earlierBlock, test_data.RandomString(64), db.NodeID)
@@ -190,33 +275,6 @@ var _ = Describe("Events repository", func() {
 				Expect(len(grabs)).To(BeZero())
 				Expect(err).NotTo(HaveOccurred())
 			})
-		})
-	})
-
-	Describe("GetHeaderByID", func() {
-		It("returns header with associated ID", func() {
-			wantedHeader := core.Header{
-				BlockNumber: rand.Int63(),
-				Hash:        test_data.RandomString(64),
-				Raw:         nil,
-				Timestamp:   strconv.Itoa(rand.Int()),
-			}
-			var wantedHeaderID int
-			wantedHeaderErr := db.Get(&wantedHeaderID, `
-				INSERT INTO public.headers (block_number, hash, block_timestamp, eth_node_id) VALUES ($1, $2, $3, $4)
-				RETURNING id`, wantedHeader.BlockNumber, wantedHeader.Hash, wantedHeader.Timestamp, db.NodeID)
-			Expect(wantedHeaderErr).NotTo(HaveOccurred())
-			wantedHeader.Id = int64(wantedHeaderID)
-
-			_, anotherHeaderErr := db.Exec(`INSERT INTO public.headers (block_number, hash, block_timestamp,
-                            eth_node_id) VALUES ($1, $2, $3, $4) RETURNING id`, rand.Int()-1, test_data.RandomString(64),
-				strconv.Itoa(rand.Int()), db.NodeID)
-			Expect(anotherHeaderErr).NotTo(HaveOccurred())
-
-			header, err := repo.GetHeaderByID(wantedHeaderID)
-
-			Expect(err).NotTo(HaveOccurred())
-			Expect(header).To(Equal(wantedHeader))
 		})
 	})
 })

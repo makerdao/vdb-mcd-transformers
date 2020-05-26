@@ -12,13 +12,15 @@ import (
 
 type frobBackFiller struct {
 	blockChain        core.BlockChain
+	dartDinkRetriever shared.DartDinkRetriever
 	eventsRepository  repository.EventsRepository
 	storageRepository repository.StorageRepository
 }
 
-func NewFrobBackFiller(blockChain core.BlockChain, eventsRepository repository.EventsRepository, storageRepository repository.StorageRepository) backfill.BackFiller {
+func NewFrobBackFiller(blockChain core.BlockChain, eventsRepository repository.EventsRepository, storageRepository repository.StorageRepository, dartDinkRetriever shared.DartDinkRetriever) backfill.BackFiller {
 	return frobBackFiller{
 		blockChain:        blockChain,
+		dartDinkRetriever: dartDinkRetriever,
 		eventsRepository:  eventsRepository,
 		storageRepository: storageRepository,
 	}
@@ -38,10 +40,11 @@ func (backFiller frobBackFiller) BackFill(startingBlock int) error {
 			HeaderID: frob.HeaderID,
 			UrnID:    frob.UrnID,
 		}
-		err := shared.FetchAndPersistDartDinkDiffs(dartDink, backFiller.eventsRepository, backFiller.storageRepository, backFiller.blockChain)
+		err := backFiller.dartDinkRetriever.RetrieveDartDinkDiffs(dartDink)
 		if err != nil {
 			return fmt.Errorf("error fetching and persisting diffs for frob %d: %w", i, err)
 		}
 	}
+	logrus.Infof("finished getting storage for %d frobs", len(frobs))
 	return nil
 }

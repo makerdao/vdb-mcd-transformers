@@ -28,12 +28,12 @@ var _ = Describe("Urns repository", func() {
 		It("returns urn for matching id", func() {
 			fakeIlk := test_data.RandomString(64)
 			fakeIlkIdentifier := "ETH-A"
-			var ilkID int
+			var ilkID int64
 			ilkErr := db.Get(&ilkID, `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`, fakeIlk, fakeIlkIdentifier)
 			Expect(ilkErr).NotTo(HaveOccurred())
 
 			fakeUrn := test_data.RandomString(40)
-			var urnID int
+			var urnID int64
 			urnErr := db.Get(&urnID, `INSERT INTO maker.urns (ilk_id, identifier) VALUES ($1, $2) RETURNING id`, ilkID, fakeUrn)
 			Expect(urnErr).NotTo(HaveOccurred())
 
@@ -95,7 +95,7 @@ var _ = Describe("Urns repository", func() {
 	Describe("VatIlkArtExists", func() {
 		var (
 			headerID, diffID int64
-			ilkID            int
+			ilkID            int64
 		)
 
 		BeforeEach(func() {
@@ -113,7 +113,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, ilkID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatIlkArtExists(ilkID, int(headerID))
+			exists, err := repo.VatIlkArtExists(ilkID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeTrue())
@@ -124,7 +124,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, ilkID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatIlkArtExists(ilkID, int(rand.Int31()))
+			exists, err := repo.VatIlkArtExists(ilkID, int64(rand.Int31()))
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())
@@ -140,7 +140,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, anotherIlkID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatIlkArtExists(ilkID, int(headerID))
+			exists, err := repo.VatIlkArtExists(ilkID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())
@@ -150,7 +150,7 @@ var _ = Describe("Urns repository", func() {
 	Describe("VatUrnArtExists", func() {
 		var (
 			headerID, diffID int64
-			urnID, ilkID     int
+			urnID, ilkID     int64
 		)
 
 		BeforeEach(func() {
@@ -172,7 +172,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, urnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnArtExists(urnID, int(headerID))
+			exists, err := repo.VatUrnArtExists(urnID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeTrue())
@@ -183,7 +183,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, urnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnArtExists(urnID, int(rand.Int31()))
+			exists, err := repo.VatUrnArtExists(urnID, int64(rand.Int31()))
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())
@@ -199,7 +199,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, anotherUrnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnArtExists(urnID, int(headerID))
+			exists, err := repo.VatUrnArtExists(urnID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())
@@ -209,7 +209,7 @@ var _ = Describe("Urns repository", func() {
 	Describe("VatUrnInkExists", func() {
 		var (
 			headerID, diffID int64
-			urnID, ilkID     int
+			urnID, ilkID     int64
 		)
 
 		BeforeEach(func() {
@@ -231,7 +231,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, urnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnInkExists(urnID, int(headerID))
+			exists, err := repo.VatUrnInkExists(urnID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeTrue())
@@ -242,7 +242,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, urnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnInkExists(urnID, int(rand.Int31()))
+			exists, err := repo.VatUrnInkExists(urnID, int64(rand.Int31()))
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())
@@ -258,7 +258,7 @@ var _ = Describe("Urns repository", func() {
                             ($1, $2, $3, $4)`, diffID, headerID, anotherUrnID, 0)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			exists, err := repo.VatUrnInkExists(urnID, int(headerID))
+			exists, err := repo.VatUrnInkExists(urnID, headerID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(exists).To(BeFalse())

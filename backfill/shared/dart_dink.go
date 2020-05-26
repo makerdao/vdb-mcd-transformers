@@ -10,6 +10,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,11 +22,31 @@ var (
 type DartDink struct {
 	Dart     string
 	Dink     string
-	HeaderID int
-	UrnID    int
+	HeaderID int64
+	UrnID    int64
 }
 
-func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository.EventsRepository, storageRepository repository.StorageRepository, blockChain core.BlockChain) error {
+type DartDinkRetriever interface {
+	RetrieveDartDinkDiffs(dartDink DartDink) error
+}
+
+type dartDinkRetriever struct {
+	blockChain        core.BlockChain
+	eventsRepository  repository.EventsRepository
+	headerRepository  datastore.HeaderRepository
+	storageRepository repository.StorageRepository
+}
+
+func NewDartDinkRetriever(blockChain core.BlockChain, eventsRepository repository.EventsRepository, headerRepository datastore.HeaderRepository, storageRepository repository.StorageRepository) DartDinkRetriever {
+	return dartDinkRetriever{
+		blockChain:        blockChain,
+		eventsRepository:  eventsRepository,
+		headerRepository:  headerRepository,
+		storageRepository: storageRepository,
+	}
+}
+
+func (retriever dartDinkRetriever) RetrieveDartDinkDiffs(dartDink DartDink) error {
 	dartIsZero, dinkIsZero, err := dartAndDinkAreZero(dartDink.Dart, dartDink.Dink)
 	if err != nil {
 		return fmt.Errorf("error checking if dart/dink are zero: %w", err)
@@ -35,20 +56,20 @@ func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository
 		return nil
 	}
 
-	urn, urnErr := storageRepository.GetUrnByID(dartDink.UrnID)
+	urn, urnErr := retriever.storageRepository.GetUrnByID(dartDink.UrnID)
 	if urnErr != nil {
 		return fmt.Errorf("failed getting urn: %w", urnErr)
 	}
 
-	ilkArtExists, ilkArtErr := storageRepository.VatIlkArtExists(urn.IlkID, dartDink.HeaderID)
+	ilkArtExists, ilkArtErr := retriever.storageRepository.VatIlkArtExists(urn.IlkID, dartDink.HeaderID)
 	if ilkArtErr != nil {
 		return fmt.Errorf("error checking if ilk art exists: %w", ilkArtErr)
 	}
-	urnArtExists, urnArtErr := storageRepository.VatUrnArtExists(dartDink.UrnID, dartDink.HeaderID)
+	urnArtExists, urnArtErr := retriever.storageRepository.VatUrnArtExists(dartDink.UrnID, dartDink.HeaderID)
 	if urnArtErr != nil {
 		return fmt.Errorf("error checking if urn art exists: %w", urnArtErr)
 	}
-	urnInkExists, urnInkErr := storageRepository.VatUrnInkExists(dartDink.UrnID, dartDink.HeaderID)
+	urnInkExists, urnInkErr := retriever.storageRepository.VatUrnInkExists(dartDink.UrnID, dartDink.HeaderID)
 	if urnInkErr != nil {
 		return fmt.Errorf("error checking if urn ink exists: %w", urnInkErr)
 	}
@@ -56,7 +77,7 @@ func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository
 		return nil
 	}
 
-	header, headerErr := eventsRepository.GetHeaderByID(dartDink.HeaderID)
+	header, headerErr := retriever.headerRepository.GetHeaderByID(dartDink.HeaderID)
 	if headerErr != nil {
 		return fmt.Errorf("error getting header for id %d: %w", dartDink.HeaderID, headerErr)
 	}
@@ -67,7 +88,7 @@ func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository
 	}
 
 	logrus.Infof("fetching %d keys for urn %s", len(keys), urn.Urn)
-	insertErr := getAndPersistVatDiffs(keys, header, storageRepository, blockChain)
+	insertErr := retriever.getAndPersistVatDiffs(keys, header)
 	if insertErr != nil {
 		return fmt.Errorf("error getting and persisting keys: %w", insertErr)
 	}
@@ -75,8 +96,8 @@ func FetchAndPersistDartDinkDiffs(dartDink DartDink, eventsRepository repository
 	return nil
 }
 
-func getAndPersistVatDiffs(keys []common.Hash, header core.Header, storageRepository repository.StorageRepository, blockChain core.BlockChain) error {
-	storageKeysToValues, storageErr := blockChain.BatchGetStorageAt(VatAddress, keys,
+func (retriever dartDinkRetriever) getAndPersistVatDiffs(keys []common.Hash, header core.Header) error {
+	storageKeysToValues, storageErr := retriever.blockChain.BatchGetStorageAt(VatAddress, keys,
 		big.NewInt(header.BlockNumber))
 	if storageErr != nil {
 		return fmt.Errorf("error getting storage value: %w", storageErr)
@@ -89,7 +110,7 @@ func getAndPersistVatDiffs(keys []common.Hash, header core.Header, storageReposi
 			StorageKey:    crypto.Keccak256Hash(k.Bytes()),
 			StorageValue:  common.BytesToHash(v),
 		}
-		createDiffErr := storageRepository.InsertDiff(diff)
+		createDiffErr := retriever.storageRepository.InsertDiff(diff)
 		if createDiffErr != nil {
 			return fmt.Errorf("error inserting diff: %w", createDiffErr)
 		}

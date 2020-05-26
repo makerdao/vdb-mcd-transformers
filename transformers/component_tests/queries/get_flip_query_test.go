@@ -8,6 +8,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -20,7 +21,7 @@ var _ = Describe("Single flip view", func() {
 		contractAddress        = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
 		headerOne              core.Header
-		headerRepo             repositories.HeaderRepository
+		headerRepo             datastore.HeaderRepository
 	)
 
 	BeforeEach(func() {

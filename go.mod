@@ -9,10 +9,10 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200512153458-6d857133e389
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522184407-b3c722d0f42a
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
-	github.com/onsi/gomega v1.7.0
+	github.com/onsi/gomega v1.10.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spaolacci/murmur3 v1.0.1-0.20190317074736-539464a789e9
 	github.com/spf13/cobra v0.0.3

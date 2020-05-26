@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -49,7 +50,7 @@ var _ = Describe("urn_snapshot computed columns", func() {
 		vatRepository    vat.VatStorageRepository
 		catRepository    cat.CatStorageRepository
 		jugRepository    jug.JugStorageRepository
-		headerRepository repositories.HeaderRepository
+		headerRepository datastore.HeaderRepository
 	)
 
 	BeforeEach(func() {

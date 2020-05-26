@@ -12,6 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -20,7 +21,7 @@ import (
 var _ = Describe("Urn history query", func() {
 	var (
 		vatRepo                vat.VatStorageRepository
-		headerRepo             repositories.HeaderRepository
+		headerRepo             datastore.HeaderRepository
 		fakeUrn                string
 		blockOne, timestampOne int
 		headerOne              core.Header
