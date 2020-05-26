@@ -215,6 +215,8 @@ github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522164718-a2e0d0944e51 h1:FC
 github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522164718-a2e0d0944e51/go.mod h1:Obox9KYzpBtZ2rkU5dpmFicQ51OtebREuONHvpYjw0c=
 github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522184407-b3c722d0f42a h1:jC5iIwY4mXvqPhDupuyqXLPRlg7XLz5zF5B16zQXT4Y=
 github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522184407-b3c722d0f42a/go.mod h1:Obox9KYzpBtZ2rkU5dpmFicQ51OtebREuONHvpYjw0c=
+github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200526232336-ac90e4306d86 h1:BUMHD6b1MOjGS5GCv7TZpqusNCq5jfGuOBG+tXI64hc=
+github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200526232336-ac90e4306d86/go.mod h1:YizhD/sv4ywwCOJAjJNMPW3zjsnvGMW3hAGmMftE870=
 github.com/mattn/go-colorable v0.1.0/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.4 h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=

@@ -9,7 +9,7 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0
-	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200522184407-b3c722d0f42a
+	github.com/makerdao/vulcanizedb v0.0.14-rc.1.0.20200526232336-ac90e4306d86
 	github.com/mattn/go-runewidth v0.0.6
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.10.0
@@ -20,7 +20,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.2.4
 )
 
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
