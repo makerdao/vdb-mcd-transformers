@@ -196,7 +196,7 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 	}
 }
 
-func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.VatStorageRepository) {
+func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
@@ -213,7 +213,7 @@ func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
+func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.StorageRepository) {
 	// This also creates the ilk if it doesn't exist
 	urnMetadata := []types.ValueMetadata{metadata.UrnInk, metadata.UrnArt}
 	InsertValues(db, &vatRepo, header, setupData, urnMetadata)
@@ -221,7 +221,7 @@ func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.He
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
 	var (
-		vatRepo  vat.VatStorageRepository
+		vatRepo  vat.StorageRepository
 		catRepo  cat.CatStorageRepository
 		jugRepo  jug.JugStorageRepository
 		spotRepo spot.SpotStorageRepository

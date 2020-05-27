@@ -97,7 +97,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 		It("returns urn_state for a flip_bid_snapshot", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
-			vatRepository := vat.VatStorageRepository{}
+			vatRepository := vat.StorageRepository{}
 			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 

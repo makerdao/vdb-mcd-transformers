@@ -17,6 +17,8 @@
 package vat
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -97,25 +99,29 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	mappings := loadStaticMappings()
 	mappings, wardsErr := loader.addWardsKeys(mappings)
 	if wardsErr != nil {
-		return nil, wardsErr
+		return nil, fmt.Errorf("error adding wards keys to vat keys loader: %w", wardsErr)
 	}
 	mappings, daiErr := loader.addDaiKeys(mappings)
 	if daiErr != nil {
-		return nil, daiErr
+		return nil, fmt.Errorf("error adding dai keys to vat keys loader: %w", daiErr)
 	}
 	mappings, gemErr := loader.addGemKeys(mappings)
 	if gemErr != nil {
-		return nil, gemErr
+		return nil, fmt.Errorf("error adding gem geys to vat keys loader: %w", gemErr)
 	}
 	mappings, ilkErr := loader.addIlkKeys(mappings)
 	if ilkErr != nil {
-		return nil, ilkErr
+		return nil, fmt.Errorf("error adding ilk keys to vat keys loader: %w", ilkErr)
 	}
 	mappings, sinErr := loader.addSinKeys(mappings)
 	if sinErr != nil {
-		return nil, sinErr
+		return nil, fmt.Errorf("error adding sin keys to vat keys loader: %w", sinErr)
 	}
-	return loader.addUrnKeys(mappings)
+	mappings, urnErr := loader.addUrnKeys(mappings)
+	if urnErr != nil {
+		return nil, fmt.Errorf("error adding urn keys to vat keys loader: %w", urnErr)
+	}
+	return mappings, nil
 }
 
 func loadStaticMappings() map[common.Hash]types.ValueMetadata {
@@ -130,7 +136,7 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetVatWardsAddresses()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
 	}
 	return wards.AddWardsKeys(mappings, addresses)
 }
@@ -138,12 +144,12 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetad
 func (loader *keysLoader) addDaiKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	daiKeys, err := loader.storageRepository.GetDaiKeys()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting dai keys: %w", err)
 	}
 	for _, d := range daiKeys {
 		paddedDai, padErr := utilities.PadAddress(d)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[getDaiKey(paddedDai)] = getDaiMetadata(d)
 	}
@@ -153,12 +159,12 @@ func (loader *keysLoader) addDaiKeys(mappings map[common.Hash]types.ValueMetadat
 func (loader *keysLoader) addGemKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	gemKeys, err := loader.storageRepository.GetGemKeys()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting gem keys: %w", err)
 	}
 	for _, gem := range gemKeys {
 		paddedGem, padErr := utilities.PadAddress(gem.Identifier)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[getGemKey(gem.Ilk, paddedGem)] = getGemMetadata(gem.Ilk, gem.Identifier)
 	}
@@ -168,7 +174,7 @@ func (loader *keysLoader) addGemKeys(mappings map[common.Hash]types.ValueMetadat
 func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting ilks: %w", err)
 	}
 	for _, ilk := range ilks {
 		mappings[GetIlkArtKey(ilk)] = getIlkArtMetadata(ilk)
@@ -183,12 +189,12 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]types.ValueMetadat
 func (loader *keysLoader) addSinKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	sinKeys, err := loader.storageRepository.GetVatSinKeys()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting vat sin keys: %w", err)
 	}
 	for _, s := range sinKeys {
 		paddedSin, padErr := utilities.PadAddress(s)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[getSinKey(paddedSin)] = getSinMetadata(s)
 	}
@@ -198,12 +204,12 @@ func (loader *keysLoader) addSinKeys(mappings map[common.Hash]types.ValueMetadat
 func (loader *keysLoader) addUrnKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	urns, err := loader.storageRepository.GetUrns()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting urns: %w", err)
 	}
 	for _, urn := range urns {
 		paddedGuy, padErr := utilities.PadAddress(urn.Identifier)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[GetUrnArtKey(urn.Ilk, paddedGuy)] = getUrnArtMetadata(urn.Ilk, urn.Identifier)
 		mappings[GetUrnInkKey(urn.Ilk, paddedGuy)] = getUrnInkMetadata(urn.Ilk, urn.Identifier)

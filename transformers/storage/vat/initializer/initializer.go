@@ -27,5 +27,5 @@ import (
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_VAT")),
 	StorageKeysLookup: storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
-	Repository:        &vat.VatStorageRepository{},
+	Repository:        &vat.StorageRepository{},
 }.NewTransformer
