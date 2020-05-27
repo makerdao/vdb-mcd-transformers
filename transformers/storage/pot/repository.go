@@ -21,12 +21,12 @@ const (
 	insertPotLiveQuery    = `INSERT INTO maker.pot_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
-type PotStorageRepository struct {
+type StorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
 
-func (repository PotStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case UserPie:
 		return repository.insertUserPie(diffID, headerID, metadata, value.(string))
@@ -51,56 +51,82 @@ func (repository PotStorageRepository) Create(diffID, headerID int64, metadata t
 	}
 }
 
-func (repository *PotStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository PotStorageRepository) insertUserPie(diffID, headerID int64, metadata types.ValueMetadata, pie string) error {
+func (repository StorageRepository) insertUserPie(diffID, headerID int64, metadata types.ValueMetadata, pie string) error {
 	user, err := getUser(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting user for pot user pie: %w", err)
 	}
-
-	return shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repository.db)
+	insertErr := shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repository.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting pot user %s pie %s from diff ID %d: %w", user, pie, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertPie(diffID, headerID int64, pie string) error {
+func (repository StorageRepository) insertPie(diffID, headerID int64, pie string) error {
 	_, err := repository.db.Exec(insertPotPieQuery, diffID, headerID, pie)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pot pie %s from diff ID %d: %w", pie, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertDsr(diffID, headerID int64, dsr string) error {
+func (repository StorageRepository) insertDsr(diffID, headerID int64, dsr string) error {
 	_, err := repository.db.Exec(insertPotDsrQuery, diffID, headerID, dsr)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pot dsr %s from diff ID %d: %w", dsr, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertChi(diffID, headerID int64, chi string) error {
+func (repository StorageRepository) insertChi(diffID, headerID int64, chi string) error {
 	_, err := repository.db.Exec(insertPotChiQuery, diffID, headerID, chi)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pot chi %s from diff ID %d: %w", chi, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	return repository.insertAddressID(diffID, headerID, insertPotVatQuery, vat)
+func (repository StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	err := repository.insertAddressID(diffID, headerID, insertPotVatQuery, vat)
+	if err != nil {
+		return fmt.Errorf("error inserting pot vat %s from diff ID %d: %w", vat, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	return repository.insertAddressID(diffID, headerID, insertPotVowQuery, vow)
+func (repository StorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	err := repository.insertAddressID(diffID, headerID, insertPotVowQuery, vow)
+	if err != nil {
+		return fmt.Errorf("error inserting pot vow %s from diff ID %d: %w", vow, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertRho(diffID, headerID int64, rho string) error {
+func (repository StorageRepository) insertRho(diffID, headerID int64, rho string) error {
 	_, err := repository.db.Exec(insertPotRhoQuery, diffID, headerID, rho)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pot rho %s from diff ID %d: %w", rho, diffID, err)
+	}
+	return nil
 }
 
-func (repository PotStorageRepository) insertLive(diffID, headerID int64, live string) error {
+func (repository StorageRepository) insertLive(diffID, headerID int64, live string) error {
 	_, err := repository.db.Exec(insertPotLiveQuery, diffID, headerID, live)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pot live %s from diff ID %d: %w", live, diffID, err)
+	}
+	return nil
 }
 
-func (repository *PotStorageRepository) insertAddressID(diffID, headerID int64, query, address string) error {
+func (repository *StorageRepository) insertAddressID(diffID, headerID int64, query, address string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
-		return txErr
+		return fmt.Errorf("error beginning transaction: %w", txErr)
 	}
 	addressID, addressErr := shared.GetOrCreateAddressInTransaction(address, tx)
 	if addressErr != nil {
@@ -108,16 +134,17 @@ func (repository *PotStorageRepository) insertAddressID(diffID, headerID int64, 
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("address", addressErr)
 		}
-		return addressErr
+		return fmt.Errorf("error getting or creating address: %w", addressErr)
 	}
 
-	_, writeErr := tx.Exec(query, diffID, headerID, addressID)
-	if writeErr != nil {
+	_, insertErr := tx.Exec(query, diffID, headerID, addressID)
+	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("value that is address_id", writeErr)
+			return shared.FormatRollbackError("value that is address_id", insertErr)
 		}
-		return writeErr
+		msg := fmt.Sprintf("error inserting pot address_id value for %s from diff ID %d", address, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return tx.Commit()
 }

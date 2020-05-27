@@ -23,7 +23,7 @@ import (
 var _ = Describe("Pot storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 pot.PotStorageRepository
+		repo                 pot.StorageRepository
 		fakeAddress          = "0x" + fakes.RandomString(40)
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		diffID, fakeHeaderID int64
@@ -31,7 +31,7 @@ var _ = Describe("Pot storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = pot.PotStorageRepository{ContractAddress: test_data.PotAddress()}
+		repo = pot.StorageRepository{ContractAddress: test_data.PotAddress()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
