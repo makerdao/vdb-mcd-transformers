@@ -28,5 +28,5 @@ var vowAddress = constants.GetContractAddress("MCD_VOW")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(vowAddress),
 	StorageKeysLookup: storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, vowAddress)),
-	Repository:        &vow.VowStorageRepository{ContractAddress: vowAddress},
+	Repository:        &vow.StorageRepository{ContractAddress: vowAddress},
 }.NewTransformer
