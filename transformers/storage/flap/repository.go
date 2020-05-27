@@ -61,31 +61,31 @@ func (repository *FlapStorageRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository *FlapStorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertVatQuery, vat)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertVatQuery, vat, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertGem(diffID, headerID int64, gem string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertGemQuery, gem)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertGemQuery, gem, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBeg(diffID, headerID int64, beg string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertBegQuery, beg)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertBegQuery, beg, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertTtl(diffID, headerID int64, ttl string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertTtlQuery, ttl)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertTtlQuery, ttl, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertTau(diffID, headerID int64, tau string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertTauQuery, tau)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertTauQuery, tau, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, InsertKicksQuery, kicks)
+	return shared.InsertRecordWithAddress(diffID, headerID, InsertKicksQuery, kicks, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertLive(diffID, headerID int64, live string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertLiveQuery, live)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertLiveQuery, live, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
@@ -93,7 +93,7 @@ func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidBidQuery, bidId, bid)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
@@ -101,7 +101,7 @@ func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidLotQuery, bidId, lot)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
@@ -109,7 +109,7 @@ func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidGuyQuery, bidId, guy)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
@@ -117,7 +117,7 @@ func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidTicQuery, bidId, tic)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
@@ -125,7 +125,7 @@ func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidEndQuery, bidId, end)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
@@ -158,55 +158,4 @@ func getBidId(keys map[types.Key]string) (string, error) {
 		return "", types.ErrMetadataMalformed{MissingData: constants.BidId}
 	}
 	return bid, nil
-}
-
-func (repository *FlapStorageRepository) insertRecordWithAddress(diffID, headerID int64, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap field with address", insertErr.Error())
-		}
-		return insertErr
-	}
-
-	return tx.Commit()
-}
-
-func (repository *FlapStorageRepository) insertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, bidId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			errorString := fmt.Sprintf("flap field with address for bid id %s", bidId)
-			return shared.FormatRollbackError(errorString, insertErr.Error())
-		}
-		return insertErr
-	}
-	return tx.Commit()
 }

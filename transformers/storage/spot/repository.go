@@ -69,7 +69,7 @@ func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, met
 		return err
 	}
 
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip, repository.db)
 }
 
 func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata types.ValueMetadata, mat string) error {
@@ -77,7 +77,7 @@ func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, met
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat, repository.db)
 }
 
 func (repository SpotStorageRepository) insertSpotVat(diffID, headerID int64, vat string) error {
@@ -93,31 +93,6 @@ func (repository SpotStorageRepository) insertSpotPar(diffID, headerID int64, pa
 func (repository SpotStorageRepository) insertSpotLive(diffID, headerID int64, live string) error {
 	_, err := repository.db.Exec(insertSpotLiveQuery, diffID, headerID, live)
 	return err
-}
-
-func (repository *SpotStorageRepository) insertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
-
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

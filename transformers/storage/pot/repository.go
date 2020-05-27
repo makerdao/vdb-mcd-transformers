@@ -3,7 +3,6 @@ package pot
 import (
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
@@ -26,8 +25,6 @@ type PotStorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
-
-type diffInserter func(int64, *sqlx.Tx) error
 
 func (repository PotStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
@@ -64,11 +61,7 @@ func (repository PotStorageRepository) insertUserPie(diffID, headerID int64, met
 		return err
 	}
 
-	var insertUserPieDiff diffInserter = func(addressID int64, tx *sqlx.Tx) error {
-		_, writeErr := tx.Exec(insertPotUserPieQuery, diffID, headerID, addressID, pie)
-		return writeErr
-	}
-	return repository.insertRecordWithAddress(user, UserPie, insertUserPieDiff)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repository.db)
 }
 
 func (repository PotStorageRepository) insertPie(diffID, headerID int64, pie string) error {
@@ -87,19 +80,11 @@ func (repository PotStorageRepository) insertChi(diffID, headerID int64, chi str
 }
 
 func (repository PotStorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	var insertVatDiff diffInserter = func(addressID int64, tx *sqlx.Tx) error {
-		_, writeErr := tx.Exec(insertPotVatQuery, diffID, headerID, addressID)
-		return writeErr
-	}
-	return repository.insertRecordWithAddress(vat, Vat, insertVatDiff)
+	return repository.insertAddressID(diffID, headerID, insertPotVatQuery, vat)
 }
 
 func (repository PotStorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	var insertVowDiff diffInserter = func(addressID int64, tx *sqlx.Tx) error {
-		_, writeErr := tx.Exec(insertPotVowQuery, diffID, headerID, addressID)
-		return writeErr
-	}
-	return repository.insertRecordWithAddress(vow, Vow, insertVowDiff)
+	return repository.insertAddressID(diffID, headerID, insertPotVowQuery, vow)
 }
 
 func (repository PotStorageRepository) insertRho(diffID, headerID int64, rho string) error {
@@ -112,7 +97,7 @@ func (repository PotStorageRepository) insertLive(diffID, headerID int64, live s
 	return err
 }
 
-func (repository *PotStorageRepository) insertRecordWithAddress(address, variableName string, insertDiffRecord diffInserter) error {
+func (repository *PotStorageRepository) insertAddressID(diffID, headerID int64, query, address string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
@@ -121,16 +106,16 @@ func (repository *PotStorageRepository) insertRecordWithAddress(address, variabl
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("address", addressErr.Error())
+			return shared.FormatRollbackError("address", addressErr)
 		}
 		return addressErr
 	}
 
-	writeErr := insertDiffRecord(addressID, tx)
+	_, writeErr := tx.Exec(query, diffID, headerID, addressID)
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
+			return shared.FormatRollbackError("value that is address_id", writeErr)
 		}
 		return writeErr
 	}

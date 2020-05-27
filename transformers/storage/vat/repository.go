@@ -118,7 +118,7 @@ func (repository *StorageRepository) insertGem(diffID, headerID int64, metadata 
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
+			return shared.FormatRollbackError("ilk", ilkErr)
 		}
 		return fmt.Errorf("error getting or creating ilk for vat gem: %w", ilkErr)
 	}
@@ -126,7 +126,7 @@ func (repository *StorageRepository) insertGem(diffID, headerID int64, metadata 
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("gem", insertErr.Error())
+			return shared.FormatRollbackError("gem", insertErr)
 		}
 		return fmt.Errorf("error inserting vat gem %s from diff ID %d: %w", gem, diffID, insertErr)
 	}
@@ -138,7 +138,7 @@ func (repository *StorageRepository) insertIlkArt(diffID, headerID int64, metada
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk art: %w", err)
 	}
-	insertErr := repository.insertFieldWithIlk(diffID, headerID, ilk, IlkArt, InsertIlkArtQuery, art)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkArt, InsertIlkArtQuery, art, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s art %s from diff ID %d: %w", ilk, art, diffID, insertErr)
 	}
@@ -150,7 +150,7 @@ func (repository *StorageRepository) insertIlkDust(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk dust: %w", err)
 	}
-	insertErr := repository.insertFieldWithIlk(diffID, headerID, ilk, IlkDust, InsertIlkDustQuery, dust)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDust, InsertIlkDustQuery, dust, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s dust %s from diff ID %d: %w", ilk, dust, diffID, insertErr)
 	}
@@ -162,7 +162,7 @@ func (repository *StorageRepository) insertIlkLine(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk line: %w", err)
 	}
-	insertErr := repository.insertFieldWithIlk(diffID, headerID, ilk, IlkLine, InsertIlkLineQuery, line)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkLine, InsertIlkLineQuery, line, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s line %s from diff ID %d: %w", ilk, line, diffID, insertErr)
 	}
@@ -174,7 +174,7 @@ func (repository *StorageRepository) insertIlkRate(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk rate: %w", err)
 	}
-	insertErr := repository.insertFieldWithIlk(diffID, headerID, ilk, IlkRate, InsertIlkRateQuery, rate)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRate, InsertIlkRateQuery, rate, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s rate %s from diff ID %d: %w", ilk, rate, diffID, insertErr)
 	}
@@ -186,7 +186,7 @@ func (repository *StorageRepository) insertIlkSpot(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk spot: %w", err)
 	}
-	insertErr := repository.insertFieldWithIlk(diffID, headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s spot %s from diff ID %d: %w", ilk, spot, diffID, insertErr)
 	}
@@ -271,30 +271,6 @@ func (repository *StorageRepository) insertVatVice(diffID, headerID int64, vice 
 	return nil
 }
 
-func (repository *StorageRepository) insertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return fmt.Errorf("error beginning transaction: %w", txErr)
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
-		}
-		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
-	}
-	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
-		}
-		return fmt.Errorf("error inserting field with ilk: %w", writeErr)
-	}
-	return tx.Commit()
-}
-
 func (repository *StorageRepository) insertFieldWithIlkAndUrn(diffID, headerID int64, ilk, urn, variableName, query, value string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
@@ -305,7 +281,7 @@ func (repository *StorageRepository) insertFieldWithIlkAndUrn(diffID, headerID i
 	if urnErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("urn", urnErr.Error())
+			return shared.FormatRollbackError("urn", urnErr)
 		}
 		return fmt.Errorf("error getting or creating urn: %w", urnErr)
 	}
@@ -313,7 +289,7 @@ func (repository *StorageRepository) insertFieldWithIlkAndUrn(diffID, headerID i
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, insertErr.Error())
+			return shared.FormatRollbackError(variableName, insertErr)
 		}
 		return fmt.Errorf("error inserting field with urn: %w", insertErr)
 	}

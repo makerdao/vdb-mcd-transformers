@@ -23,20 +23,13 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	math2 "github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 var ErrInvalidIndex = func(index int) error {
 	return errors.New(fmt.Sprintf("unsupported log data index: %d", index))
-}
-
-func BigIntToInt64(value *big.Int) int64 {
-	if value == nil {
-		return int64(0)
-	} else {
-		return value.Int64()
-	}
 }
 
 func BigIntToString(value *big.Int) string {
@@ -61,7 +54,7 @@ func ConvertIntStringToHex(n string) (string, error) {
 
 func ConvertInt256HexToBigInt(hex string) *big.Int {
 	n := ConvertUint256HexToBigInt(hex)
-	return math2.S256(n)
+	return math.S256(n)
 }
 
 func ConvertUint256HexToBigInt(hex string) *big.Int {
@@ -94,27 +87,90 @@ func getDataWithIndexOffset(offset int, logData []byte) []byte {
 	return logData[dataBegin:dataEnd]
 }
 
-func MinInt64(ints []int64) (min int64) {
-	if len(ints) == 0 {
-		return 0
-	}
-	min = ints[0]
-	for _, i := range ints {
-		if i < min {
-			min = i
-		}
-	}
-	return
-}
-
 func DecodeHexToText(payload string) string {
 	return string(bytes.Trim(common.FromHex(payload), "\x00"))
 }
 
-func FormatRollbackError(field, err string) error {
-	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %s", field, err)
+func FormatRollbackError(field string, err error) error {
+	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %w", field, err)
 }
 
 func GetFullTableName(schema, table string) string {
 	return schema + "." + table
+}
+
+func InsertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string, db *postgres.DB) error {
+	tx, txErr := db.Beginx()
+	if txErr != nil {
+		return fmt.Errorf("error beginning transaction: %w", txErr)
+	}
+	ilkID, ilkErr := GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError("ilk", ilkErr)
+		}
+		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
+	}
+	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
+
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError(variableName, writeErr)
+		}
+		return fmt.Errorf("error inserting field with ilk: %w", writeErr)
+	}
+	return tx.Commit()
+}
+
+func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddress string, db *postgres.DB) error {
+	tx, txErr := db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+
+	addressId, addressErr := GetOrCreateAddressInTransaction(contractAddress, tx)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError("address", addressErr)
+		}
+		return fmt.Errorf("error getting or creating address: %w", addressErr)
+	}
+	_, insertErr := tx.Exec(query, diffID, headerID, addressId, value)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError("field with address", insertErr)
+		}
+		return fmt.Errorf("error inserting record with address: %w", insertErr)
+	}
+
+	return tx.Commit()
+}
+
+func InsertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value, contractAddress string, db *postgres.DB) error {
+	tx, txErr := db.Beginx()
+	if txErr != nil {
+		return txErr
+	}
+	addressId, addressErr := GetOrCreateAddressInTransaction(contractAddress, tx)
+	if addressErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError("address", addressErr)
+		}
+		return addressErr
+	}
+	_, insertErr := tx.Exec(query, diffID, headerID, addressId, bidId, value)
+	if insertErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			errorString := fmt.Sprintf("field with address for bid id %s", bidId)
+			return FormatRollbackError(errorString, insertErr)
+		}
+		return insertErr
+	}
+	return tx.Commit()
 }

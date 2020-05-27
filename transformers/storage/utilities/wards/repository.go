@@ -24,7 +24,7 @@ func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractA
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -33,7 +33,7 @@ func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractA
 	if userAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("wards user address", userAddressErr.Error())
+			return shared.FormatRollbackError("wards user address", userAddressErr)
 		}
 		return addressErr
 	}
@@ -42,7 +42,7 @@ func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractA
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("wards record with address", insertErr.Error())
+			return shared.FormatRollbackError("wards record with address", insertErr)
 		}
 		return insertErr
 	}

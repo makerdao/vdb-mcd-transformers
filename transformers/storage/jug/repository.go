@@ -69,7 +69,7 @@ func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, meta
 		return err
 	}
 
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho, repository.db)
 }
 
 func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata types.ValueMetadata, duty string) error {
@@ -77,7 +77,7 @@ func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, met
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty, repository.db)
 }
 
 func (repository JugStorageRepository) insertJugVat(diffID, headerID int64, vat string) error {
@@ -93,31 +93,6 @@ func (repository JugStorageRepository) insertJugVow(diffID, headerID int64, vow 
 func (repository JugStorageRepository) insertJugBase(diffID, headerID int64, repo string) error {
 	_, err := repository.db.Exec(insertJugBaseQuery, diffID, headerID, repo)
 	return err
-}
-
-func (repository *JugStorageRepository) insertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
-
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

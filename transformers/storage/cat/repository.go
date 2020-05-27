@@ -71,7 +71,7 @@ func (repository *CatStorageRepository) insertIlkFlip(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
 }
 
 func (repository *CatStorageRepository) insertIlkChop(diffID, headerID int64, metadata types.ValueMetadata, chop string) error {
@@ -79,7 +79,7 @@ func (repository *CatStorageRepository) insertIlkChop(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkChop, InsertCatIlkChopQuery, chop)
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
 }
 
 func (repository *CatStorageRepository) insertIlkLump(diffID, headerID int64, metadata types.ValueMetadata, lump string) error {
@@ -87,31 +87,7 @@ func (repository *CatStorageRepository) insertIlkLump(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkLump, InsertCatIlkLumpQuery, lump)
-}
-
-func (repository *CatStorageRepository) insertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

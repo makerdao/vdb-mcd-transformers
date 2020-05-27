@@ -68,39 +68,39 @@ func (repository *FlopStorageRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository *FlopStorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopVatQuery, vat)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopVatQuery, vat, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertGem(diffID, headerID int64, gem string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopGemQuery, gem)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopGemQuery, gem, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBeg(diffID, headerID int64, beg string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopBegQuery, beg)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopBegQuery, beg, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertPad(diffID, headerID int64, pad string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopPadQuery, pad)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopPadQuery, pad, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertTtl(diffID, headerID int64, ttl string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopTtlQuery, ttl)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopTtlQuery, ttl, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertTau(diffID, headerID int64, tau string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopTauQuery, tau)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopTauQuery, tau, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, InsertFlopKicksQuery, kicks)
+	return shared.InsertRecordWithAddress(diffID, headerID, InsertFlopKicksQuery, kicks, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertLive(diffID, headerID int64, live string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopLiveQuery, live)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopLiveQuery, live, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertFlopVowQuery, vow)
+	return shared.InsertRecordWithAddress(diffID, headerID, insertFlopVowQuery, vow, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
@@ -108,7 +108,7 @@ func (repository *FlopStorageRepository) insertBidBid(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidBidQuery, bidId, bid)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
@@ -116,7 +116,7 @@ func (repository *FlopStorageRepository) insertBidLot(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidLotQuery, bidId, lot)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
@@ -124,7 +124,7 @@ func (repository *FlopStorageRepository) insertBidGuy(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidGuyQuery, bidId, guy)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
@@ -132,7 +132,7 @@ func (repository *FlopStorageRepository) insertBidTic(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidTicQuery, bidId, tic)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
@@ -140,7 +140,7 @@ func (repository *FlopStorageRepository) insertBidEnd(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidEndQuery, bidId, end)
+	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlopBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlopStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
@@ -173,54 +173,4 @@ func getBidId(keys map[types.Key]string) (string, error) {
 		return "", types.ErrMetadataMalformed{MissingData: constants.BidId}
 	}
 	return bidId, nil
-}
-
-func (repository *FlopStorageRepository) insertRecordWithAddress(diffID, headerID int64, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flop address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flop field with address", insertErr.Error())
-		}
-		return insertErr
-	}
-
-	return tx.Commit()
-}
-
-func (repository *FlopStorageRepository) insertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	addressId, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flop address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, bidId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			errorString := fmt.Sprintf("flop field with address for bid id %s", bidId)
-			return shared.FormatRollbackError(errorString, insertErr.Error())
-		}
-		return insertErr
-	}
-	return tx.Commit()
 }
