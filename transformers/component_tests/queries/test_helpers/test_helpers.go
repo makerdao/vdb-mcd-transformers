@@ -422,7 +422,7 @@ func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interf
 }
 
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
-	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
+	cdpManagerRepo := cdp_manager.StorageRepository{}
 	cdpManagerRepo.SetDB(db)
 	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {

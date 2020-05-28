@@ -39,7 +39,7 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(cdp_manager.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = cdp_manager.CdpManagerStorageRepository{}
+		repository        = cdp_manager.StorageRepository{}
 		contractAddress   = test_data.CdpManagerAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		transformer       = storage.Transformer{
