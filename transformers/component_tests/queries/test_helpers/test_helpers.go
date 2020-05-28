@@ -200,7 +200,7 @@ func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.CatStorageRepository) {
+func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
@@ -222,7 +222,7 @@ func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.He
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
 	var (
 		vatRepo  vat.StorageRepository
-		catRepo  cat.CatStorageRepository
+		catRepo  cat.StorageRepository
 		jugRepo  jug.StorageRepository
 		spotRepo spot.StorageRepository
 	)

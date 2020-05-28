@@ -48,7 +48,7 @@ var _ = Describe("urn_snapshot computed columns", func() {
 		logIdOne,
 		logIdTwo int64
 		vatRepository    vat.StorageRepository
-		catRepository    cat.CatStorageRepository
+		catRepository    cat.StorageRepository
 		jugRepository    jug.StorageRepository
 		headerRepository datastore.HeaderRepository
 	)
