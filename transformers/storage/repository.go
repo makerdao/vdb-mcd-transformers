@@ -17,7 +17,6 @@
 package storage
 
 import (
-	"errors"
 	"strconv"
 
 	vdbRepository "github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -29,14 +28,12 @@ type Urn struct {
 	Identifier string
 }
 
-var ErrNoFlips = errors.New("no flips exist in db")
-
 type IMakerStorageRepository interface {
 	GetCdpis() ([]string, error)
 	GetDaiKeys() ([]string, error)
-	GetFlapBidIds(string) ([]string, error)
-	GetFlipBidIds(contractAddress string) ([]string, error)
-	GetFlopBidIds(contractAddress string) ([]string, error)
+	GetFlapBidIDs(string) ([]string, error)
+	GetFlipBidIDs(contractAddress string) ([]string, error)
+	GetFlopBidIDs(contractAddress string) ([]string, error)
 	GetGemKeys() ([]Urn, error)
 	GetIlks() ([]string, error)
 	GetOwners() ([]string, error)
@@ -53,13 +50,13 @@ type MakerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) ([]string, error) {
-	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+func (repository *MakerStorageRepository) GetFlapBidIDs(contractAddress string) ([]string, error) {
+	var bidIDs []string
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repository.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flap_kick WHERE address_id = $1
 		UNION
 		SELECT kicks FROM maker.flap_kicks WHERE address_id = $1
@@ -68,8 +65,8 @@ func (repository *MakerStorageRepository) GetFlapBidIds(contractAddress string) 
 		UNION
 		SELECT bid_id from maker.deal WHERE address_id = $1
 		UNION
-		SELECT bid_id from maker.yank WHERE address_id = $1`, addressId)
-	return bidIds, err
+		SELECT bid_id from maker.yank WHERE address_id = $1`, addressID)
+	return bidIDs, err
 }
 
 func (repository *MakerStorageRepository) GetDaiKeys() ([]string, error) {
@@ -192,13 +189,13 @@ func (repository *MakerStorageRepository) GetOwners() ([]string, error) {
 	return owners, err
 }
 
-func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
-	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+func (repository *MakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
+	var bidIDs []string
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repository.db.Select(&bidIDs, `
    		SELECT DISTINCT bid_id FROM maker.tick
 		WHERE address_id = $1
 		UNION
@@ -218,8 +215,8 @@ func (repository *MakerStorageRepository) GetFlipBidIds(contractAddress string) 
 		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flip_kicks
-		WHERE address_id = $1`, addressId)
-	return bidIds, err
+		WHERE address_id = $1`, addressID)
+	return bidIDs, err
 }
 
 func (repository *MakerStorageRepository) GetPotPieUsers() ([]string, error) {
@@ -235,13 +232,13 @@ func (repository *MakerStorageRepository) GetPotPieUsers() ([]string, error) {
 	return userAddresses, err
 }
 
-func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
-	var bidIds []string
-	addressId, addressErr := repository.GetOrCreateAddress(contractAddress)
+func (repository *MakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
+	var bidIDs []string
+	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return []string{}, addressErr
 	}
-	err := repository.db.Select(&bidIds, `
+	err := repository.db.Select(&bidIDs, `
 		SELECT bid_id FROM maker.flop_kick
 		WHERE address_id = $1
 		UNION
@@ -255,8 +252,8 @@ func (repository *MakerStorageRepository) GetFlopBidIds(contractAddress string) 
 		WHERE address_id = $1
 		UNION
 		SELECT DISTINCT kicks FROM maker.flop_kicks
-		WHERE address_id = $1`, addressId)
-	return bidIds, err
+		WHERE address_id = $1`, addressID)
+	return bidIDs, err
 }
 
 func (repository *MakerStorageRepository) GetVatWardsAddresses() ([]string, error) {

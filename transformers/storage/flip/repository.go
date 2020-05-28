@@ -103,7 +103,7 @@ func (repository *FlipStorageRepository) insertBidBid(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
@@ -112,7 +112,7 @@ func (repository *FlipStorageRepository) insertBidLot(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
@@ -121,7 +121,7 @@ func (repository *FlipStorageRepository) insertBidGuy(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
@@ -130,7 +130,7 @@ func (repository *FlipStorageRepository) insertBidTic(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
@@ -139,7 +139,7 @@ func (repository *FlipStorageRepository) insertBidEnd(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidUsr(diffID, headerID int64, metadata types.ValueMetadata, usr string) error {
@@ -148,7 +148,7 @@ func (repository *FlipStorageRepository) insertBidUsr(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidUsrQuery, bidId, usr, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidUsrQuery, bidId, usr, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidGal(diffID, headerID int64, metadata types.ValueMetadata, gal string) error {
@@ -157,7 +157,7 @@ func (repository *FlipStorageRepository) insertBidGal(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidGalQuery, bidId, gal, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidGalQuery, bidId, gal, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertBidTab(diffID, headerID int64, metadata types.ValueMetadata, tab string) error {
@@ -166,7 +166,7 @@ func (repository *FlipStorageRepository) insertBidTab(diffID, headerID int64, me
 		return err
 	}
 
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, InsertFlipBidTabQuery, bidId, tab, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, InsertFlipBidTabQuery, bidId, tab, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlipStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {

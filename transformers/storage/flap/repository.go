@@ -93,7 +93,7 @@ func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidBidQuery, bidId, bid, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
@@ -101,7 +101,7 @@ func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidLotQuery, bidId, lot, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
@@ -109,7 +109,7 @@ func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidGuyQuery, bidId, guy, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
@@ -117,7 +117,7 @@ func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidTicQuery, bidId, tic, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
@@ -125,7 +125,7 @@ func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, me
 	if err != nil {
 		return err
 	}
-	return shared.InsertRecordWithAddressAndBidId(diffID, headerID, insertBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
+	return shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidEndQuery, bidId, end, repository.ContractAddress, repository.db)
 }
 
 func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {

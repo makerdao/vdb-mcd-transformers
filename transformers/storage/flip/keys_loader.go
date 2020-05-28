@@ -83,7 +83,7 @@ func (loader *keysLoader) loadWardsKeys(mappings map[common.Hash]types.ValueMeta
 }
 
 func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	bidIds, bidErr := loader.storageRepository.GetFlipBidIds(loader.contractAddress)
+	bidIds, bidErr := loader.storageRepository.GetFlipBidIDs(loader.contractAddress)
 	if bidErr != nil {
 		return nil, bidErr
 	}

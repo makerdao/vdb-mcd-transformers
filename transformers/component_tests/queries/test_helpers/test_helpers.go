@@ -404,7 +404,7 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 }
 
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []types.ValueMetadata, contractAddress string) {
-	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
+	flopRepo := flop.StorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
 	InsertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
 }

@@ -9,9 +9,9 @@ import (
 type MockMakerStorageRepository struct {
 	Cdpis                   []string
 	DaiKeys                 []string
-	FlapBidIds              []string
-	FlipBidIds              []string
-	FlopBidIds              []string
+	FlapBidIDs              []string
+	FlipBidIDs              []string
+	FlopBidIDs              []string
 	GemKeys                 []storage.Urn
 	Ilks                    []string
 	Owners                  []string
@@ -24,12 +24,12 @@ type MockMakerStorageRepository struct {
 	GetCdpisError           error
 	GetDaiKeysCalled        bool
 	GetDaiKeysError         error
-	GetFlapBidIdsCalled     bool
-	GetFlapBidIdsError      error
-	GetFlipBidIdsCalledWith string
-	GetFlipBidIdsError      error
-	GetFlopBidIdsCalledWith string
-	GetFlopBidIdsError      error
+	GetFlapBidIDsCalled     bool
+	GetFlapBidIDsError      error
+	GetFlipBidIDsCalledWith string
+	GetFlipBidIDsError      error
+	GetFlopBidIDsCalledWith string
+	GetFlopBidIDsError      error
 	GetGemKeysCalled        bool
 	GetGemKeysError         error
 	GetIlksCalled           bool
@@ -60,19 +60,19 @@ func (repository *MockMakerStorageRepository) GetDaiKeys() ([]string, error) {
 	return repository.DaiKeys, repository.GetDaiKeysError
 }
 
-func (repository *MockMakerStorageRepository) GetFlapBidIds(string) ([]string, error) {
-	repository.GetFlapBidIdsCalled = true
-	return repository.FlapBidIds, repository.GetFlapBidIdsError
+func (repository *MockMakerStorageRepository) GetFlapBidIDs(string) ([]string, error) {
+	repository.GetFlapBidIDsCalled = true
+	return repository.FlapBidIDs, repository.GetFlapBidIDsError
 }
 
-func (repository *MockMakerStorageRepository) GetFlipBidIds(contractAddress string) ([]string, error) {
-	repository.GetFlipBidIdsCalledWith = contractAddress
-	return repository.FlipBidIds, repository.GetFlipBidIdsError
+func (repository *MockMakerStorageRepository) GetFlipBidIDs(contractAddress string) ([]string, error) {
+	repository.GetFlipBidIDsCalledWith = contractAddress
+	return repository.FlipBidIDs, repository.GetFlipBidIDsError
 }
 
-func (repository *MockMakerStorageRepository) GetFlopBidIds(contractAddress string) ([]string, error) {
-	repository.GetFlopBidIdsCalledWith = contractAddress
-	return repository.FlopBidIds, repository.GetFlopBidIdsError
+func (repository *MockMakerStorageRepository) GetFlopBidIDs(contractAddress string) ([]string, error) {
+	repository.GetFlopBidIDsCalledWith = contractAddress
+	return repository.FlopBidIDs, repository.GetFlopBidIDsError
 }
 
 func (repository *MockMakerStorageRepository) GetGemKeys() ([]storage.Urn, error) {

@@ -90,7 +90,7 @@ var _ = Describe("Flip storage keys loader", func() {
 	Describe("bid", func() {
 		Describe("when loading bid IDs fails", func() {
 			It("returns error", func() {
-				storageRepository.GetFlipBidIdsError = fakes.FakeError
+				storageRepository.GetFlipBidIDsError = fakes.FakeError
 
 				_, err := storageKeysLoader.LoadMappings()
 
@@ -108,7 +108,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			)
 
 			BeforeEach(func() {
-				storageRepository.FlipBidIds = []string{fakeBidId}
+				storageRepository.FlipBidIDs = []string{fakeBidId}
 				var err error
 				mappings, err = storageKeysLoader.LoadMappings()
 				Expect(err).NotTo(HaveOccurred())

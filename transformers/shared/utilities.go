@@ -150,7 +150,7 @@ func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddre
 	return tx.Commit()
 }
 
-func InsertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value, contractAddress string, db *postgres.DB) error {
+func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value, contractAddress string, db *postgres.DB) error {
 	tx, txErr := db.Beginx()
 	if txErr != nil {
 		return txErr

@@ -86,7 +86,7 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetad
 }
 
 func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	bidIds, getBidIdsErr := loader.storageRepository.GetFlapBidIds(loader.contractAddress)
+	bidIds, getBidIdsErr := loader.storageRepository.GetFlapBidIDs(loader.contractAddress)
 	if getBidIdsErr != nil {
 		return nil, getBidIdsErr
 	}

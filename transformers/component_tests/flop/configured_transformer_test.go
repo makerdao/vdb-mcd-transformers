@@ -41,7 +41,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		db                     = test_config.NewTestDB(test_config.NewTestNode())
 		flopperContractAddress = test_data.FlopAddress()
 		keccakOfAddress        = types.HexToKeccak256Hash(flopperContractAddress)
-		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
+		repository             = flop.StorageRepository{ContractAddress: flopperContractAddress}
 		storageKeysLookup      = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
 		header                 = fakes.FakeHeader
 		transformer            storage.Transformer
