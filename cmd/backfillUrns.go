@@ -85,7 +85,7 @@ func backfillUrns() error {
 	case <-done:
 		break
 	case err := <-errs:
-		logrus.Errorf("error executing back-fill: %w", err)
+		logrus.Errorf("error executing back-fill: %s", err.Error())
 		return err
 	}
 
