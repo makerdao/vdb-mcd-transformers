@@ -162,4 +162,45 @@ var _ = Describe("Executing the median transformer", func() {
 			test_helpers.AssertMapping(orclResult.MappingRes, liftDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
 		})
 	})
+
+	Describe("slot", func() {
+		It("reads a slot diff row and persists it", func() {
+			liftLog := test_data.CreateTestLog(header.Id, db)
+			liftModel := test_data.MedianLiftModelWithOneAccount()
+
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			Expect(medianAddressErr).NotTo(HaveOccurred())
+
+			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+			_, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			Expect(aAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			liftModel.ColumnValues[event.HeaderFK] = header.Id
+			liftModel.ColumnValues[event.LogFK] = liftLog.ID
+			liftModel.ColumnValues[event.AddressFK] = medianAddressID
+			liftModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			liftModel.ColumnValues[constants.AColumn] = pq.Array([]string{aAddress})
+			insertErr := event.PersistModels([]event.InsertionModel{liftModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("6666d42004e50ff3badadb0de5fc3899f37d3399b72f940c3f476b66e30ff7ba")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+
+			transformErr := transformer.Execute(liftDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var slotResult test_helpers.MappingResWithAddress
+			err := db.Get(&slotResult, `SELECT diff_id, header_id, address_id, slot_id AS key, slot AS value from maker.median_slot`)
+			Expect(err).NotTo(HaveOccurred())
+			slotValueAddressID, slotErr := shared.GetOrCreateAddress(value.String(), db)
+			Expect(slotErr).NotTo(HaveOccurred())
+			Expect(slotResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			test_helpers.AssertMapping(slotResult.MappingRes, liftDiff.ID, header.Id, "255", strconv.FormatInt(slotValueAddressID, 10))
+		})
+	})
 })

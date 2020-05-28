@@ -17,6 +17,7 @@
 package storage
 
 import (
+	"math"
 	"strconv"
 
 	vdbRepository "github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -38,7 +39,7 @@ type IMakerStorageRepository interface {
 	GetIlks() ([]string, error)
 	GetMedianBudAddresses(string) ([]string, error)
 	GetMedianOrclAddresses(string) ([]string, error)
-	GetMedianSlotIds(string) ([]string, error)
+	GetMedianSlotIds() ([]string, error)
 	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
 	GetUrns() ([]Urn, error)
@@ -53,14 +54,12 @@ type MakerStorageRepository struct {
 	db *postgres.DB
 }
 
-//TODO: Implement this!
-func (repository *MakerStorageRepository) GetMedianSlotIds(contractAddress string) ([]string, error) {
-	//addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
-	//if addressErr != nil {
-	//	return nil, addressErr
-	//}
-
-	return []string{contractAddress}, nil
+func (repository *MakerStorageRepository) GetMedianSlotIds() ([]string, error) {
+	slotIDs := make([]string, math.MaxUint8)
+	for i := 0; i < math.MaxUint8; i++ {
+		slotIDs[i] = strconv.FormatInt(int64(i+1), 10)
+	}
+	return slotIDs, nil
 }
 
 func (repository *MakerStorageRepository) GetMedianOrclAddresses(contractAddress string) ([]string, error) {

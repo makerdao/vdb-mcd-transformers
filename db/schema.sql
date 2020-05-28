@@ -10735,6 +10735,40 @@ ALTER SEQUENCE maker.median_orcl_id_seq OWNED BY maker.median_orcl.id;
 
 
 --
+-- Name: median_slot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_slot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    slot_id integer NOT NULL,
+    slot integer NOT NULL
+);
+
+
+--
+-- Name: median_slot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_slot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_slot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_slot_id_seq OWNED BY maker.median_slot.id;
+
+
+--
 -- Name: median_val; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14240,6 +14274,13 @@ ALTER TABLE ONLY maker.median_orcl ALTER COLUMN id SET DEFAULT nextval('maker.me
 
 
 --
+-- Name: median_slot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot ALTER COLUMN id SET DEFAULT nextval('maker.median_slot_id_seq'::regclass);
+
+
+--
 -- Name: median_val id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16557,6 +16598,22 @@ ALTER TABLE ONLY maker.median_orcl
 
 ALTER TABLE ONLY maker.median_orcl
     ADD CONSTRAINT median_orcl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_slot median_slot_diff_id_header_id_address_id_slot_id_slot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_diff_id_header_id_address_id_slot_id_slot_key UNIQUE (diff_id, header_id, address_id, slot_id, slot);
+
+
+--
+-- Name: median_slot median_slot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_pkey PRIMARY KEY (id);
 
 
 --
@@ -19909,6 +19966,27 @@ CREATE INDEX median_orcl_diff_id_index ON maker.median_orcl USING btree (diff_id
 --
 
 CREATE INDEX median_orcl_header_id_index ON maker.median_orcl USING btree (header_id);
+
+
+--
+-- Name: median_slot_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_address_index ON maker.median_slot USING btree (address_id);
+
+
+--
+-- Name: median_slot_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_header_id_index ON maker.median_slot USING btree (header_id);
+
+
+--
+-- Name: median_slot_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_id_index ON maker.median_slot USING btree (slot_id);
 
 
 --
@@ -24043,6 +24121,38 @@ ALTER TABLE ONLY maker.median_orcl
 
 ALTER TABLE ONLY maker.median_orcl
     ADD CONSTRAINT median_orcl_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_slot_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_slot_fkey FOREIGN KEY (slot) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

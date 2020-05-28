@@ -88,6 +88,24 @@ CREATE INDEX median_bud_address_index
 CREATE INDEX median_bud_a_index
     ON maker.median_bud (a);
 
+CREATE TABLE maker.median_slot
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    slot_id    INTEGER NOT NULL,
+    slot       INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    UNIQUE (diff_id, header_id, address_id, slot_id, slot)
+);
+
+CREATE INDEX median_slot_header_id_index
+    ON maker.median_slot (header_id);
+CREATE INDEX median_slot_address_index
+    ON maker.median_slot (address_id);
+CREATE INDEX median_slot_id_index
+    ON maker.median_slot (slot_id);
+
 -- +goose Down
 
 DROP TABLE maker.median_val;
@@ -95,3 +113,4 @@ DROP TABLE maker.median_bar;
 DROP TABLE maker.median_age;
 DROP TABLE maker.median_orcl;
 DROP TABLE maker.median_bud;
+DROP TABLE maker.median_slot;

@@ -104,7 +104,7 @@ func (repository *MockMakerStorageRepository) GetMedianOrclAddresses(address str
 	return repository.MedianOrclAddresses, repository.GetMedianOrclAddressesError
 }
 
-func (repository *MockMakerStorageRepository) GetMedianSlotIds(string) ([]string, error) {
+func (repository *MockMakerStorageRepository) GetMedianSlotIds() ([]string, error) {
 	repository.GetMedianSlotIdCalled = true
 	return repository.MedianSlotIds, repository.GetMedianSlotIdError
 }

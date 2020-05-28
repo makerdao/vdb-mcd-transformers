@@ -2,6 +2,7 @@ package median
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -276,10 +277,10 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 	return tx.Commit()
 }
 
-func getSlotID(keys map[types.Key]string) (string, error) {
-	user, ok := keys[constants.SlotId]
-	if !ok {
-		return "", types.ErrMetadataMalformed{MissingData: constants.SlotId}
+func getSlotID(keys map[types.Key]string) (int, error) {
+	slotID, err := strconv.Atoi(keys[constants.SlotId])
+	if err != nil {
+		return 0, err
 	}
-	return user, nil
+	return slotID, nil
 }

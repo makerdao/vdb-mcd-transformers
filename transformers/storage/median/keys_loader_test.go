@@ -6,6 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median"
@@ -134,14 +135,15 @@ var _ = Describe("Median storage keys loader", func() {
 
 	Describe("slot", func() {
 		It("returns value metadata for slot", func() {
-			slotId := strconv.Itoa(rand.Intn(8))
-			slotKey := common.BytesToHash(crypto.Keccak256(common.FromHex(slotId + median.SlotMappingIndex)))
+			fakeSlotId := strconv.Itoa(rand.Intn(8))
+			fakeHexSlotId, _ := shared.ConvertIntStringToHex(fakeSlotId)
+			slotKey := common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexSlotId + median.SlotMappingIndex)))
 			expectedMetadata := types.ValueMetadata{
 				Name: median.Slot,
-				Keys: map[types.Key]string{constants.SlotId: slotId},
+				Keys: map[types.Key]string{constants.SlotId: fakeSlotId},
 				Type: types.Address,
 			}
-			storageRepository.MedianSlotIds = []string{slotId}
+			storageRepository.MedianSlotIds = []string{fakeSlotId}
 
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())

@@ -2,6 +2,7 @@ package median
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities"
@@ -111,12 +112,16 @@ func (loader *keysLoader) loadBudKeys(mappings map[common.Hash]types.ValueMetada
 }
 
 func (loader *keysLoader) loadSlotKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	slotIds, slotErr := loader.storageRepository.GetMedianSlotIds(loader.contractAddress)
+	slotIds, slotErr := loader.storageRepository.GetMedianSlotIds()
 	if slotErr != nil {
 		return nil, slotErr
 	}
 	for _, slotId := range slotIds {
-		mappings[getSlotKey(slotId)] = getSlotMetadata(slotId)
+		hexSlotId, convertErr := shared.ConvertIntStringToHex(slotId)
+		if convertErr != nil {
+			return nil, convertErr
+		}
+		mappings[getSlotKey(hexSlotId)] = getSlotMetadata(slotId)
 	}
 	return mappings, nil
 }
