@@ -410,7 +410,7 @@ func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interf
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []types.ValueMetadata, contractAddress string) {
-	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
+	flapRepo := flap.StorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
 	InsertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
 }

@@ -67,7 +67,7 @@ var _ = Describe("Flap storage keys loader", func() {
 			Keys: nil,
 			Type: types.Uint256,
 		}))
-		Expect(mappings[flap.TtlAndTauStorageKey]).To(Equal(types.ValueMetadata{
+		Expect(mappings[flap.TTLAndTauStorageKey]).To(Equal(types.ValueMetadata{
 			Name:        mcdStorage.Packed,
 			Type:        types.PackedSlot,
 			PackedTypes: map[int]types.ValueType{0: types.Uint48, 1: types.Uint48},

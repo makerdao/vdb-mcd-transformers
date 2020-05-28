@@ -25,7 +25,7 @@ var _ = Describe("Flap storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		flapContractAddress  = test_data.FlapAddress()
-		repository           = &flap.FlapStorageRepository{ContractAddress: flapContractAddress}
+		repository           = &flap.StorageRepository{ContractAddress: flapContractAddress}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)
