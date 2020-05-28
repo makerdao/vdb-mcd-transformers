@@ -200,7 +200,7 @@ var _ = Describe("Updating bid_event table", func() {
 	Describe("inserting events after flip-specific diffs", func() {
 		var (
 			flipAddress   = test_data.FlipEthAddress()
-			flipRepo      flip.FlipStorageRepository
+			flipRepo      flip.StorageRepository
 			flipKickModel event.InsertionModel
 			diffID        int64
 		)
@@ -208,7 +208,7 @@ var _ = Describe("Updating bid_event table", func() {
 		BeforeEach(func() {
 			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 			flipKickModel = test_data.FlipKickModel()
@@ -255,7 +255,7 @@ var _ = Describe("Updating bid_event table", func() {
 	Describe("when flip-specific diffs are inserted after events", func() {
 		var (
 			flipAddress   string
-			flipRepo      flip.FlipStorageRepository
+			flipRepo      flip.StorageRepository
 			diffID        int64
 			flipKickModel event.InsertionModel
 		)
@@ -264,7 +264,7 @@ var _ = Describe("Updating bid_event table", func() {
 			flipAddress = test_data.FlipEthAddress()
 			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 			flipKickModel = test_data.FlipKickModel()
@@ -318,7 +318,7 @@ var _ = Describe("Updating bid_event table", func() {
 			headerTwo          core.Header
 			flipAddress        string
 			usrOne, usrTwo     string
-			flipRepo           flip.FlipStorageRepository
+			flipRepo           flip.StorageRepository
 			bidOneID, bidTwoID int
 			diffID,
 			logTwoID,
@@ -337,7 +337,7 @@ var _ = Describe("Updating bid_event table", func() {
 			ethFlipAddressID, ethFlipAddressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(ethFlipAddressErr).NotTo(HaveOccurred())
 
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 

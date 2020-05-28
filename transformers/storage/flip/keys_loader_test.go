@@ -52,7 +52,7 @@ var _ = Describe("Flip storage keys loader", func() {
 		Expect(mappings[flip.VatKey]).To(Equal(flip.VatMetadata))
 		Expect(mappings[flip.IlkKey]).To(Equal(flip.IlkMetadata))
 		Expect(mappings[flip.BegKey]).To(Equal(flip.BegMetadata))
-		Expect(mappings[flip.TtlAndTauStorageKey]).To(Equal(flip.TtlAndTauMetadata))
+		Expect(mappings[flip.TTLAndTauStorageKey]).To(Equal(flip.TTLAndTauMetadata))
 		Expect(mappings[flip.KicksKey]).To(Equal(flip.KicksMetadata))
 	})
 
