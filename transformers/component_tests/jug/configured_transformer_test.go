@@ -42,7 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 		contractAddress   = test_data.JugAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		storageKeysLookup = storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		repository        = jug.JugStorageRepository{ContractAddress: contractAddress}
+		repository        = jug.StorageRepository{ContractAddress: contractAddress}
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,

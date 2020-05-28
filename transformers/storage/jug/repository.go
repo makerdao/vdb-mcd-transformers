@@ -34,12 +34,12 @@ const (
 	insertJugBaseQuery    = `INSERT INTO maker.jug_base (diff_id, header_id, base) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
-type JugStorageRepository struct {
+type StorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
 
-func (repository JugStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -59,40 +59,56 @@ func (repository JugStorageRepository) Create(diffID, headerID int64, metadata t
 	}
 }
 
-func (repository *JugStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository JugStorageRepository) insertIlkRho(diffID, headerID int64, metadata types.ValueMetadata, rho string) error {
+func (repository StorageRepository) insertIlkRho(diffID, headerID int64, metadata types.ValueMetadata, rho string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting ilk for ilk rho: %w", err)
 	}
-
-	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho, repository.db)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho, repository.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s rho %s from diff ID %d: %w", ilk, rho, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository JugStorageRepository) insertIlkDuty(diffID, headerID int64, metadata types.ValueMetadata, duty string) error {
+func (repository StorageRepository) insertIlkDuty(diffID, headerID int64, metadata types.ValueMetadata, duty string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting ilk for ilk duty: %w", err)
 	}
-	return shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty, repository.db)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty, repository.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s duty %s from diff ID %d: %w", ilk, duty, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository JugStorageRepository) insertJugVat(diffID, headerID int64, vat string) error {
+func (repository StorageRepository) insertJugVat(diffID, headerID int64, vat string) error {
 	_, err := repository.db.Exec(insertJugVatQuery, diffID, headerID, vat)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting jug vat %s from diff ID %d: %w", vat, diffID, err)
+	}
+	return nil
 }
 
-func (repository JugStorageRepository) insertJugVow(diffID, headerID int64, vow string) error {
+func (repository StorageRepository) insertJugVow(diffID, headerID int64, vow string) error {
 	_, err := repository.db.Exec(insertJugVowQuery, diffID, headerID, vow)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting jug vow %s from diff ID %d: %w", vow, diffID, err)
+	}
+	return nil
 }
 
-func (repository JugStorageRepository) insertJugBase(diffID, headerID int64, repo string) error {
-	_, err := repository.db.Exec(insertJugBaseQuery, diffID, headerID, repo)
-	return err
+func (repository StorageRepository) insertJugBase(diffID, headerID int64, base string) error {
+	_, err := repository.db.Exec(insertJugBaseQuery, diffID, headerID, base)
+	if err != nil {
+		return fmt.Errorf("error inserting jug base %s from diff ID %d: %w", base, diffID, err)
+	}
+	return nil
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

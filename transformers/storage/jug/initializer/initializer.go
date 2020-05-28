@@ -28,5 +28,5 @@ var jugAddress = constants.GetContractAddress("MCD_JUG")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(jugAddress),
 	StorageKeysLookup: storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, jugAddress)),
-	Repository:        &jug.JugStorageRepository{ContractAddress: jugAddress},
+	Repository:        &jug.StorageRepository{ContractAddress: jugAddress},
 }.NewTransformer
