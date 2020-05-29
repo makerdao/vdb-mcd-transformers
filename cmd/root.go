@@ -36,20 +36,7 @@ func init() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
-	rootCmd.PersistentFlags().String("database-name", "vulcanize_public", "database name")
-	rootCmd.PersistentFlags().Int("database-port", 5432, "database port")
-	rootCmd.PersistentFlags().String("database-hostname", "localhost", "database hostname")
-	rootCmd.PersistentFlags().String("database-user", "", "database user")
-	rootCmd.PersistentFlags().String("database-password", "", "database password")
-	rootCmd.PersistentFlags().String("client-ipcPath", "", "location of geth.ipc file")
 	rootCmd.PersistentFlags().String("log-level", logrus.InfoLevel.String(), "Log level (trace, debug, info, warn, error, fatal, panic")
-
-	viper.BindPFlag("database.name", rootCmd.PersistentFlags().Lookup("database-name"))
-	viper.BindPFlag("database.port", rootCmd.PersistentFlags().Lookup("database-port"))
-	viper.BindPFlag("database.hostname", rootCmd.PersistentFlags().Lookup("database-hostname"))
-	viper.BindPFlag("database.user", rootCmd.PersistentFlags().Lookup("database-user"))
-	viper.BindPFlag("database.password", rootCmd.PersistentFlags().Lookup("database-password"))
-	viper.BindPFlag("client.ipcPath", rootCmd.PersistentFlags().Lookup("client-ipcPath"))
 	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("log-level"))
 }
 

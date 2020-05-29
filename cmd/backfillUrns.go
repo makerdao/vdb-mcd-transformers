@@ -15,6 +15,7 @@ import (
 	"github.com/makerdao/vulcanizedb/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type backFillInitializer func(core.BlockChain, repository.EventsRepository, repository.StorageRepository, shared.DartDinkRetriever) backfill.BackFiller
@@ -48,8 +49,22 @@ Optionally pass events to watch (fork, frob, grab) to backfill based off of cert
 
 func init() {
 	rootCmd.AddCommand(backfillUrnsCmd)
+
 	backfillUrnsCmd.Flags().IntVarP(&startingBlock, "starting-block", "s", 0, "starting block for backfilling diffs derived from urn events")
 	backfillUrnsCmd.Flags().StringSliceVarP(&eventsToBackFill, "events-to-backfill", "e", []string{"fork", "frob", "grab"}, "events to back-fill")
+	backfillUrnsCmd.Flags().String("database-name", "vulcanize_public", "database name")
+	backfillUrnsCmd.Flags().Int("database-port", 5432, "database port")
+	backfillUrnsCmd.Flags().String("database-hostname", "localhost", "database hostname")
+	backfillUrnsCmd.Flags().String("database-user", "", "database user")
+	backfillUrnsCmd.Flags().String("database-password", "", "database password")
+	backfillUrnsCmd.Flags().String("client-ipcPath", "", "location of geth.ipc file")
+
+	viper.BindPFlag("database.name", backfillUrnsCmd.Flags().Lookup("database-name"))
+	viper.BindPFlag("database.port", backfillUrnsCmd.Flags().Lookup("database-port"))
+	viper.BindPFlag("database.hostname", backfillUrnsCmd.Flags().Lookup("database-hostname"))
+	viper.BindPFlag("database.user", backfillUrnsCmd.Flags().Lookup("database-user"))
+	viper.BindPFlag("database.password", backfillUrnsCmd.Flags().Lookup("database-password"))
+	viper.BindPFlag("client.ipcPath", backfillUrnsCmd.Flags().Lookup("client-ipcPath"))
 }
 
 func backfillUrns() error {
