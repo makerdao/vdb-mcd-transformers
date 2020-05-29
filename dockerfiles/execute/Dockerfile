@@ -55,6 +55,7 @@ COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/run_migrations.sh .
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]
