@@ -11,7 +11,7 @@ import (
 
 func TestMedian(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Median Suite")
+	RunSpecs(t, "Median Component Test Suite")
 }
 
 var _ = BeforeSuite(func() {

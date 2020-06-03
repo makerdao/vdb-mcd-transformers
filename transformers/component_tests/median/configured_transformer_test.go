@@ -171,7 +171,7 @@ var _ = Describe("Executing the median transformer", func() {
 			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
-			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
 			_, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
 			Expect(aAddressErr).NotTo(HaveOccurred())
 
@@ -187,7 +187,8 @@ var _ = Describe("Executing the median transformer", func() {
 			insertErr := event.PersistModels([]event.InsertionModel{liftModel}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			key := common.HexToHash("6666d42004e50ff3badadb0de5fc3899f37d3399b72f940c3f476b66e30ff7ba")
+			//key is keccak hash aAddress passed through solidity bitshift uint8(uint256(a[i]) >> 152) + the index
+			key := common.HexToHash("2944b9af8d962e2b5d171cd2b530c03b245945580d9e2a1c9efc472e2e5ec88b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
 
@@ -200,7 +201,8 @@ var _ = Describe("Executing the median transformer", func() {
 			slotValueAddressID, slotErr := shared.GetOrCreateAddress(value.String(), db)
 			Expect(slotErr).NotTo(HaveOccurred())
 			Expect(slotResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
-			test_helpers.AssertMapping(slotResult.MappingRes, liftDiff.ID, header.Id, "255", strconv.FormatInt(slotValueAddressID, 10))
+			solidityKey := "172"
+			test_helpers.AssertMapping(slotResult.MappingRes, liftDiff.ID, header.Id, solidityKey, strconv.FormatInt(slotValueAddressID, 10))
 		})
 	})
 })
