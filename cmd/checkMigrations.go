@@ -5,13 +5,35 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
+// NamedFile interface represents a local file object, with a Name function
+type NamedFile interface {
+	Name() string
+}
+
 type Set = map[string]bool
+
+type githubJSON struct {
+	Name string
+}
+
+type GithubFile struct {
+	githubJSON
+}
+
+func (file *GithubFile) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &file.githubJSON)
+}
+
+func (file GithubFile) Name() string {
+	return file.githubJSON.Name
+}
 
 var checkMigrationsCmd = &cobra.Command{
 	Use:   "checkMigrations",
@@ -32,10 +54,6 @@ staging branch`,
 
 func init() {
 	rootCmd.AddCommand(checkMigrationsCmd)
-}
-
-type GithubFile struct {
-	Name string
 }
 
 func checkMigrations() error {
@@ -62,13 +80,8 @@ func checkMigrations() error {
 		return err
 	}
 
-	// Get the list of migration file names from staging
-	var stagingMigrations []string
-	for _, file := range files {
-		stagingMigrations = append(stagingMigrations, file.Name)
-	}
+	stagingMigrations := getGithubFileNames(files)
 
-	// Get the list of files from local
 	localFiles, err := ioutil.ReadDir("./db/migrations")
 
 	if err != nil {
@@ -76,12 +89,7 @@ func checkMigrations() error {
 	}
 
 	// Reduce to file names, only matchin .sql
-	var localMigrations []string
-	for _, localFile := range localFiles {
-		if strings.HasSuffix(localFile.Name(), ".sql") {
-			localMigrations = append(localMigrations, localFile.Name())
-		}
-	}
+	localMigrations := getLocalFileNamesFrom(localFiles)
 
 	var stagingMigrationSet = toSet(stagingMigrations)
 	var localMigrationSet = toSet(localMigrations)
@@ -103,6 +111,43 @@ func checkMigrations() error {
 	}
 
 	return nil
+}
+
+// GetGithubFileNames returns the list of file names from a list of
+// GithubFile objects
+func getGithubFileNames(files []GithubFile) []string {
+	var namedFiles = make([]NamedFile, len(files))
+
+	for i, file := range files {
+		namedFiles[i] = file
+	}
+
+	return GetSQLFilesFromList(namedFiles)
+}
+
+// GetLocalFileNamesFrom returns the list of file names from a list of
+// local file objects
+func getLocalFileNamesFrom(files []os.FileInfo) []string {
+	var namedFiles = make([]NamedFile, len(files))
+
+	for i, file := range files {
+		namedFiles[i] = file.(NamedFile)
+	}
+
+	return GetSQLFilesFromList(namedFiles)
+}
+
+// GetSQLFilesFromList returns the list of file names
+// from a list of, local file objects but only SQL files
+func GetSQLFilesFromList(files []NamedFile) []string {
+	var fileNames []string
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), ".sql") {
+			fileNames = append(fileNames, file.Name())
+		}
+	}
+
+	return fileNames
 }
 
 func toSet(list []string) Set {
