@@ -78,4 +78,44 @@ var _ = Describe("Check Migrations", func() {
 			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{"one.sql"}))
 		})
 	})
+
+	Describe("CheckNewMigrations", func() {
+		It("is not an error to have no new migrations", func() {
+			originalMigrations := []string{}
+			newMigrations := []string{}
+
+			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("is an error if the new migrations are out of order", func() {
+			originalMigrations := []string{"20200429072513_last.sql"}
+			newMigrations := []string{"20200429072512_newest.sql"}
+
+			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("does not change the new migrations passed in", func() {
+			originalMigrations := []string{"20200429072513_last.sql"}
+			newMigrations := []string{"20200429072515_newest.sql", "20200429072512_newest.sql"}
+
+			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+
+			Expect(err).To(HaveOccurred())
+			Expect(newMigrations).To(Equal([]string{"20200429072515_newest.sql", "20200429072512_newest.sql"}))
+		})
+
+		It("is does not erroneously report an error if the new Migrations come in out of order", func() {
+			originalMigrations := []string{"20200429072513_last.sql"}
+			newMigrations := []string{"20200429072517_newest.sql", "20200429072515_newest.sql"}
+
+			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(newMigrations).To(Equal([]string{"20200429072517_newest.sql", "20200429072515_newest.sql"}))
+		})
+	})
 })

@@ -91,28 +91,9 @@ func checkMigrations() error {
 	localMigrations := getLocalFileNamesFrom(localFiles)
 	newMigrations := NewMigrations(localMigrations, stagingMigrations)
 
-	// Retrieve what the latest migrations will be
-	for _, newMigration := range newMigrations {
-		stagingMigrations = append(stagingMigrations, newMigration)
-	}
-
-	sort.Strings(stagingMigrations)
-	sort.Strings(newMigrations)
-
-	lastMigrations := stagingMigrations[len(stagingMigrations)-len(newMigrations) : len(stagingMigrations)]
-
-	// Check - and return an error!
-	for idx, value := range lastMigrations {
-		if newMigrations[idx] != value {
-			fmt.Printf("New Migration %s is out of order. Update your timestamp! \n", newMigrations[idx])
-		}
-	}
-
-	return nil
+	return CheckNewMigrations(stagingMigrations, newMigrations)
 }
 
-// GetGithubFileNames returns the list of file names from a list of
-// GithubFile objects
 func getGithubFileNames(files []GithubFile) []string {
 	var namedFiles = make([]NamedFile, len(files))
 
@@ -123,8 +104,6 @@ func getGithubFileNames(files []GithubFile) []string {
 	return GetSQLFilesFromList(namedFiles)
 }
 
-// GetLocalFileNamesFrom returns the list of file names from a list of
-// local file objects
 func getLocalFileNamesFrom(files []os.FileInfo) []string {
 	var namedFiles = make([]NamedFile, len(files))
 
@@ -173,4 +152,28 @@ func diff(a Set, b Set) []string {
 	}
 
 	return diff
+}
+
+// CheckNewMigrations makes sure the new migrations are sorted correctly
+func CheckNewMigrations(originalMigrations []string, newMigrations []string) error {
+	sortedNewMigrations := make([]string, len(newMigrations))
+	copy(sortedNewMigrations, newMigrations)
+	sort.Strings(sortedNewMigrations)
+
+	finalMigrations := make([]string, len(originalMigrations))
+	copy(finalMigrations, originalMigrations)
+	for _, newMigration := range sortedNewMigrations {
+		finalMigrations = append(finalMigrations, newMigration)
+	}
+	sort.Strings(finalMigrations)
+
+	lastRunMigrations := finalMigrations[len(finalMigrations)-len(sortedNewMigrations) : len(finalMigrations)]
+
+	for idx, value := range lastRunMigrations {
+		if sortedNewMigrations[idx] != value {
+			return fmt.Errorf("migration %s is out of order, update your timestamp", sortedNewMigrations[idx])
+		}
+	}
+
+	return nil
 }
