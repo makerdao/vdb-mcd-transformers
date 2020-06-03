@@ -88,13 +88,10 @@ func checkMigrations() error {
 		return err
 	}
 
-	// Reduce to file names, only matchin .sql
 	localMigrations := getLocalFileNamesFrom(localFiles)
+	newMigrations := NewMigrations(localMigrations, stagingMigrations)
 
-	var stagingMigrationSet = toSet(stagingMigrations)
-	var localMigrationSet = toSet(localMigrations)
-	var newMigrations = diff(localMigrationSet, stagingMigrationSet)
-
+	// Retrieve what the latest migrations will be
 	for _, newMigration := range newMigrations {
 		stagingMigrations = append(stagingMigrations, newMigration)
 	}
@@ -104,6 +101,7 @@ func checkMigrations() error {
 
 	lastMigrations := stagingMigrations[len(stagingMigrations)-len(newMigrations) : len(stagingMigrations)]
 
+	// Check - and return an error!
 	for idx, value := range lastMigrations {
 		if newMigrations[idx] != value {
 			fmt.Printf("New Migration %s is out of order. Update your timestamp! \n", newMigrations[idx])
@@ -150,17 +148,23 @@ func GetSQLFilesFromList(files []NamedFile) []string {
 	return fileNames
 }
 
+// NewMigrations gets the list of brand new migrations
+func NewMigrations(newList []string, oldList []string) []string {
+	oldSet := toSet(oldList)
+	newSet := toSet(newList)
+	return diff(newSet, oldSet)
+}
+
 func toSet(list []string) Set {
-	var set = make(Set)
+	set := make(Set)
 	for _, entry := range list {
 		set[entry] = true
 	}
 	return set
 }
 
-// Run the set difference operation (A - B)
 func diff(a Set, b Set) []string {
-	var diff []string
+	diff := []string{}
 
 	for value := range a {
 		if b[value] == false {

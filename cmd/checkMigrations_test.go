@@ -41,4 +41,41 @@ var _ = Describe("Check Migrations", func() {
 			Expect(fileNames).To(Equal([]string{"one.sql"}))
 		})
 	})
+
+	Describe("NewMigrations", func() {
+		It("returns no new migrations when the new migrations list is empty", func() {
+			newMigrationList := []string{}
+			oldMigrationList := []string{}
+
+			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{}))
+		})
+
+		It("returns no new migrations when the migration lists are identical", func() {
+			newMigrationList := []string{"one.sql"}
+			oldMigrationList := []string{"one.sql"}
+
+			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{}))
+		})
+
+		It("returns any migrations that are in the new, but not the old", func() {
+			newMigrationList := []string{"one.sql"}
+			oldMigrationList := []string{}
+
+			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{"one.sql"}))
+		})
+
+		It("ignores oldMigrations", func() {
+			newMigrationList := []string{"one.sql"}
+			oldMigrationList := []string{"two.sql"}
+
+			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{"one.sql"}))
+		})
+
+		It("keeps the list to unique entries", func() {
+			newMigrationList := []string{"one.sql", "one.sql"}
+			oldMigrationList := []string{"two.sql", "two.sql"}
+
+			Expect(cmd.NewMigrations(newMigrationList, oldMigrationList)).To(Equal([]string{"one.sql"}))
+		})
+	})
 })
