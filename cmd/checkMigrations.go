@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -156,6 +157,30 @@ func diff(a Set, b Set) []string {
 
 // CheckNewMigrations makes sure the new migrations are sorted correctly
 func CheckNewMigrations(originalMigrations []string, newMigrations []string) error {
+	err := checkAllNewMigrationsAreTimestamped(newMigrations)
+	if err != nil {
+		return err
+	}
+
+	return checkNewMigrationsAreAfterCurrentOnes(originalMigrations, newMigrations)
+}
+
+func checkAllNewMigrationsAreTimestamped(newMigrations []string) error {
+	for _, newMigration := range newMigrations {
+		matched, err := regexp.MatchString(`\d{14}_`, newMigration)
+
+		if err != nil {
+			return err
+		}
+
+		if !matched {
+			return fmt.Errorf("migration %s does not start with a timestamp", newMigration)
+		}
+	}
+	return nil
+}
+
+func checkNewMigrationsAreAfterCurrentOnes(originalMigrations []string, newMigrations []string) error {
 	sortedNewMigrations := make([]string, len(newMigrations))
 	copy(sortedNewMigrations, newMigrations)
 	sort.Strings(sortedNewMigrations)

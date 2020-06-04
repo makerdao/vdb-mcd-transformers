@@ -108,7 +108,7 @@ var _ = Describe("Check Migrations", func() {
 			Expect(newMigrations).To(Equal([]string{"20200429072515_newest.sql", "20200429072512_newest.sql"}))
 		})
 
-		It("is does not erroneously report an error if the new Migrations come in out of order", func() {
+		It("does not erroneously report an error if the new Migrations come in out of order", func() {
 			originalMigrations := []string{"20200429072513_last.sql"}
 			newMigrations := []string{"20200429072517_newest.sql", "20200429072515_newest.sql"}
 
@@ -116,6 +116,15 @@ var _ = Describe("Check Migrations", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(newMigrations).To(Equal([]string{"20200429072517_newest.sql", "20200429072515_newest.sql"}))
+		})
+
+		It("requires every new migration to start with a 14 digit timestamp", func() {
+			originalMigrations := []string{"20200429072513_last.sql"}
+			newMigrations := []string{"20200429072517_newest.sql", "2020042907251z_newest.sql"}
+
+			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+
+			Expect(err).To(HaveOccurred())
 		})
 	})
 })
