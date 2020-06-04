@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -87,12 +88,15 @@ func checkMigrations() error {
 	}
 
 	newMigrations := NewMigrations(localMigrations, stagingMigrations)
+	logrus.Println("New Migrations are", newMigrations)
 
 	return CheckNewMigrations(stagingMigrations, newMigrations)
 }
 
 func getGithubFileNames() ([]string, error) {
 	url := fmt.Sprintf("http://api.github.com/repos/%s/contents/db/migrations?ref=%s", repo, branch)
+	logrus.Println("Retrieving Migration list from", url)
+
 	resp, err := http.Get(url)
 
 	if err != nil {
