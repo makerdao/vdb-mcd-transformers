@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -53,10 +54,8 @@ staging branch`,
 
 		if err != nil {
 			fmt.Printf("Error checking migrations %s\n", err.Error())
-			return
+			os.Exit(1)
 		}
-
-		return
 	},
 }
 
