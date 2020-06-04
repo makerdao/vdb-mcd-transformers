@@ -3,13 +3,7 @@ package cmd
 import (
 	"strings"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/makerdao/vulcanizedb/pkg/config"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-	"github.com/makerdao/vulcanizedb/pkg/eth/client"
-	"github.com/makerdao/vulcanizedb/pkg/eth/converters"
-	"github.com/makerdao/vulcanizedb/pkg/eth/node"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,23 +35,10 @@ func init() {
 }
 
 func initFuncs(cmd *cobra.Command, args []string) {
-	setViperConfigs()
 	logLvlErr := logLevel()
 	if logLvlErr != nil {
 		logrus.Fatalf("Could not set log level: %s", logLvlErr.Error())
 	}
-}
-
-func setViperConfigs() {
-	ipc = viper.GetString("client.ipcpath")
-	databaseConfig = config.Database{
-		Name:     viper.GetString("database.name"),
-		Hostname: viper.GetString("database.hostname"),
-		Port:     viper.GetInt("database.port"),
-		User:     viper.GetString("database.user"),
-		Password: viper.GetString("database.password"),
-	}
-	viper.Set("database.config", databaseConfig)
 }
 
 func logLevel() error {
@@ -71,24 +52,4 @@ func logLevel() error {
 	}
 	logrus.Info("Log level set to ", lvl.String())
 	return nil
-}
-
-func getBlockChain() *eth.BlockChain {
-	rpcClient, ethClient := getClients()
-	vdbEthClient := client.NewEthClient(ethClient)
-	vdbNode := node.MakeNode(rpcClient)
-	transactionConverter := converters.NewTransactionConverter(ethClient)
-	return eth.NewBlockChain(vdbEthClient, rpcClient, vdbNode, transactionConverter)
-}
-
-func getClients() (client.RpcClient, *ethclient.Client) {
-	rawRpcClient, err := rpc.Dial(ipc)
-
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	rpcClient := client.NewRpcClient(rawRpcClient, ipc)
-	ethClient := ethclient.NewClient(rawRpcClient)
-
-	return rpcClient, ethClient
 }

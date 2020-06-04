@@ -43,9 +43,9 @@ func (file GithubFile) Name() string {
 }
 
 var checkMigrationsCmd = &cobra.Command{
-	Use:              "checkMigrations",
-	PersistentPreRun: initGithubParams,
-	Short:            "Check that the migrations in this repository are properly timestamped for a merge.",
+	Use:    "checkMigrations",
+	PreRun: initGithubParams,
+	Short:  "Check that the migrations in this repository are properly timestamped for a merge.",
 	Long: `Check that any new migrations in this branch will run after all the migrations in the
 staging branch`,
 	Run: func(cmd *cobra.Command, args []string) {
