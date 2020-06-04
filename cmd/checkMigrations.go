@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var (
+	repo   string
+	branch string
 )
 
 // NamedFile interface represents a local file object, with a Name function
@@ -37,8 +42,9 @@ func (file GithubFile) Name() string {
 }
 
 var checkMigrationsCmd = &cobra.Command{
-	Use:   "checkMigrations",
-	Short: "Check that the migrations in this repository are properly timestamped for a merge.",
+	Use:              "checkMigrations",
+	PersistentPreRun: initGithubParams,
+	Short:            "Check that the migrations in this repository are properly timestamped for a merge.",
 	Long: `Check that any new migrations in this branch will run after all the migrations in the
 staging branch`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -55,64 +61,81 @@ staging branch`,
 
 func init() {
 	rootCmd.AddCommand(checkMigrationsCmd)
+	checkMigrationsCmd.Flags().String("repo", "makerdao/vdb-mcd-transformers", "Github Repository to check against, must be public")
+	checkMigrationsCmd.Flags().String("branch", "staging", "Branch to check against")
+
+	viper.BindPFlag("repo", checkMigrationsCmd.Flags().Lookup("repo"))
+	viper.BindPFlag("branch", checkMigrationsCmd.Flags().Lookup("branch"))
+}
+
+func initGithubParams(cmd *cobra.Command, args []string) {
+	repo = viper.GetString("repo")
+	branch = viper.GetString("branch")
 }
 
 func checkMigrations() error {
-	// Connect to Github (URL should be a param) (so should branch)
-	resp, err := http.Get("http://api.github.com/repos/makerdao/vdb-mcd-transformers/contents/db/migrations?ref=staging")
-
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Read the response
-	body, err := ioutil.ReadAll(resp.Body)
+	stagingMigrations, err := getGithubFileNames()
 
 	if err != nil {
 		return err
 	}
 
-	// Convert JSON to Struct
-	var files []GithubFile
-	err = json.Unmarshal(body, &files)
+	localMigrations, err := getLocalMigrations()
 
 	if err != nil {
 		return err
 	}
 
-	stagingMigrations := getGithubFileNames(files)
-
-	localFiles, err := ioutil.ReadDir("./db/migrations")
-
-	if err != nil {
-		return err
-	}
-
-	localMigrations := getLocalFileNamesFrom(localFiles)
 	newMigrations := NewMigrations(localMigrations, stagingMigrations)
 
 	return CheckNewMigrations(stagingMigrations, newMigrations)
 }
 
-func getGithubFileNames(files []GithubFile) []string {
+func getGithubFileNames() ([]string, error) {
+	url := fmt.Sprintf("http://api.github.com/repos/%s/contents/db/migrations?ref=%s", repo, branch)
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return []string{}, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	var files []GithubFile
+	err = json.Unmarshal(body, &files)
+
+	if err != nil {
+		return []string{}, err
+	}
+
 	var namedFiles = make([]NamedFile, len(files))
 
 	for i, file := range files {
 		namedFiles[i] = file
 	}
 
-	return GetSQLFilesFromList(namedFiles)
+	return GetSQLFilesFromList(namedFiles), nil
 }
 
-func getLocalFileNamesFrom(files []os.FileInfo) []string {
-	var namedFiles = make([]NamedFile, len(files))
+func getLocalMigrations() ([]string, error) {
+	localFiles, err := ioutil.ReadDir("./db/migrations")
 
-	for i, file := range files {
+	if err != nil {
+		return []string{}, err
+	}
+
+	namedFiles := make([]NamedFile, len(localFiles))
+
+	for i, file := range localFiles {
 		namedFiles[i] = file.(NamedFile)
 	}
 
-	return GetSQLFilesFromList(namedFiles)
+	return GetSQLFilesFromList(namedFiles), nil
 }
 
 // GetSQLFilesFromList returns the list of file names
