@@ -1,4 +1,4 @@
-package usdc_flip
+package usdc_a_flip
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"

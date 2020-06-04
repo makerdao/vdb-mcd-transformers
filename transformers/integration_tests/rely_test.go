@@ -1,6 +1,8 @@
 package integration_tests
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
@@ -30,6 +32,18 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		relyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A rely events", func() {
+		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDC-B rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(10144450), test_data.FlipUsdcBAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip WBTC rely events", func() {
@@ -155,9 +169,16 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddress
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddressHex, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
-		Expect(dbResult[0].MsgSender).To(Equal(msgSenderAddressID))
-		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
+		var matchFound bool
+		for _, result := range dbResult {
+			if result.AddressID == contractAddressID &&
+				result.MsgSender == msgSenderAddressID &&
+				result.Usr == usrAddressID {
+				matchFound = true
+			}
+		}
+
+		Expect(matchFound).To(BeTrue(), getRelyFailureMessage(contractAddressHex, blockNumber))
 	})
 }
 
@@ -165,4 +186,9 @@ type relyModel struct {
 	Usr       int64 `db:"usr"`
 	MsgSender int64 `db:"msg_sender"`
 	AddressID int64 `db:"address_id"`
+}
+
+func getRelyFailureMessage(contractAddress string, blockNumber int64) string {
+	failureMsgToFmt := "no matching rely event found for contract %s at block %d"
+	return fmt.Sprintf(failureMsgToFmt, contractAddress, blockNumber)
 }
