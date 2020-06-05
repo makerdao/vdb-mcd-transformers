@@ -48,11 +48,11 @@ SELECT buckets.bucket_start AS bucket_start,
 FROM buckets
     LEFT JOIN api.ilk_snapshot ON
     (
-        ilk_snapshot.ilk_identifier = ilk_identifier AND
+        ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND
         block_number = (
             SELECT MAX(block_number)
             FROM api.ilk_snapshot
-            WHERE ilk_snapshot.ilk_identifier = ilk_identifier AND updated < buckets.bucket_start + bucket_interval
+            WHERE ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND updated < buckets.bucket_start + bucket_interval
         )
     )
 ORDER BY bucket_start
