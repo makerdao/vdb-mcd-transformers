@@ -286,13 +286,13 @@ type UrnState struct {
 }
 
 func AssertUrn(actual, expected UrnState) {
-	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier))
-	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier))
-	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
-	Expect(actual.Ink).To(Equal(expected.Ink))
-	Expect(actual.Art).To(Equal(expected.Art))
-	Expect(actual.Created).To(Equal(expected.Created))
-	Expect(actual.Updated).To(Equal(expected.Updated))
+	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier), "Urn Identifier")
+	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier), "Ilk Identifier")
+	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight), "Block Height")
+	Expect(actual.Ink).To(Equal(expected.Ink), "Ink")
+	Expect(actual.Art).To(Equal(expected.Art), "Art")
+	Expect(actual.Created).To(Equal(expected.Created), "Created")
+	Expect(actual.Updated).To(Equal(expected.Updated), "Updated")
 }
 
 func GetCommonBidMetadatas(bidId string) []types.ValueMetadata {
