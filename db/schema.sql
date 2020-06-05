@@ -1469,10 +1469,13 @@ CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_heig
     LANGUAGE sql STABLE STRICT
     AS $$
 
-SELECT *
-    FROM api.all_urns(get_urn.block_height)
+SELECT urn_identifier, ilk_identifier, get_urn.block_height, ink, art, created, updated
+    FROM api.urn_snapshot
     WHERE ilk_identifier = get_urn.ilk_identifier
     AND urn_identifier = get_urn.urn_identifier
+    AND block_height <= get_urn.block_height
+    ORDER BY updated DESC
+    LIMIT 1
 $$;
 
 
