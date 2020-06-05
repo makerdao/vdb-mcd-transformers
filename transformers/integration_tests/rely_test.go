@@ -34,6 +34,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip TUSD rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip USDC-A rely events", func() {
 		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
