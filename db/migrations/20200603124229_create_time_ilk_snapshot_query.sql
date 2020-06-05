@@ -22,10 +22,10 @@ CREATE TYPE api.time_ilk_snapshot AS
     updated TIMESTAMP
 );
 
-CREATE FUNCTION api.time_ilk_snapshots(ilk_identifier TEXT, bucket_start TIMESTAMP, bucket_end TIMESTAMP, bucket_interval INTERVAL)
+CREATE FUNCTION api.time_ilk_snapshots(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_ilk_snapshot AS
 $$
-WITH buckets AS (SELECT generate_series(bucket_start, bucket_end - bucket_interval, bucket_interval) AS bucket_start)
+WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start)
 SELECT buckets.bucket_start AS bucket_start,
        buckets.bucket_start + bucket_interval AS bucket_end,
        bucket_interval AS bucket_interval,
