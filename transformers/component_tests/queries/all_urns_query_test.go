@@ -197,46 +197,26 @@ var _ = Describe("All Urns function", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			expectedTimestamp := helper.GetExpectedTimestamp(timestampTwo)
-			expectedUrn := helper.UrnState{
-				UrnIdentifier: urnTwo,
-				IlkIdentifier: helper.AnotherFakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk].(int)),
-				Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt].(int)),
-				Created:       helper.GetValidNullString(expectedTimestamp),
-				Updated:       helper.GetValidNullString(expectedTimestamp),
-			}
-
 			maxResults := 1
 			var result []helper.UrnState
+
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
 			FROM api.all_urns($1, $2)`, blockTwo, maxResults)
+
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(len(result)).To(Equal(maxResults))
-			helper.AssertUrn(result[0], expectedUrn)
 		})
 
 		It("offsets results if offset is provided", func() {
-			expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
-			expectedUrn := helper.UrnState{
-				UrnIdentifier: urnOne,
-				IlkIdentifier: helper.FakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
-				Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
-				Created:       helper.GetValidNullString(expectedTimestamp),
-				Updated:       helper.GetValidNullString(expectedTimestamp),
-			}
-
-			maxResults := 1
+			maxResults := 2 // We'll only get 1 because of the offset of 1, and a total of 2
 			resultOffset := 1
+
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
-			FROM api.all_urns($1, $2, $3) ORDER BY updated`, blockTwo, maxResults, resultOffset)
-			Expect(err).NotTo(HaveOccurred())
+			FROM api.all_urns($1, $2, $3)`, blockTwo, maxResults, resultOffset)
 
-			Expect(len(result)).To(Equal(maxResults))
-			helper.AssertUrn(result[0], expectedUrn)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(result)).To(Equal(1))
 		})
 	})
 
