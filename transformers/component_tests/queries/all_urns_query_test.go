@@ -86,7 +86,7 @@ var _ = Describe("All Urns function", func() {
 		expectedUrnOne := helper.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
-			BlockHeight:   blockTwo,
+			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
 			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
 			Created:       helper.GetValidNullString(expectedTimestamp),
