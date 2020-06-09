@@ -22,7 +22,13 @@ func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
 func FlapABI() string       { return getContractABI("MCD_FLAP") }
 func FlipABI() string {
 	return GetContractsABI([]string{
-		"MCD_FLIP_ETH_A", "MCD_FLIP_BAT_A", "MCD_FLIP_SAI",
+		"MCD_FLIP_BAT_A",
+		"MCD_FLIP_ETH_A",
+		"MCD_FLIP_SAI",
+		"MCD_FLIP_TUSD_A",
+		"MCD_FLIP_USDC_A",
+		"MCD_FLIP_USDC_B",
+		"MCD_FLIP_WBTC_A",
 	})
 }
 func FlopABI() string { return getContractABI("MCD_FLOP") }

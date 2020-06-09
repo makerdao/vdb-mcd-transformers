@@ -1,6 +1,8 @@
 package integration_tests
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
@@ -27,6 +29,21 @@ var _ = Describe("Deny transformer", func() {
 	Context("Flip ETH deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		denyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip TUSD deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-B deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10144450), test_data.FlipUsdcBAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flip WBTC deny events", func() {
@@ -139,10 +156,16 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddress
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddressHex, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
-		Expect(dbResult[0].MsgSender).To(Equal(msgSenderAddressID))
-		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
+		var matchFound bool
+		for _, result := range dbResult {
+			if result.AddressID == contractAddressID &&
+				result.MsgSender == msgSenderAddressID &&
+				result.Usr == usrAddressID {
+				matchFound = true
+			}
+		}
+
+		Expect(matchFound).To(BeTrue(), getDenyFailureMessage(contractAddressHex, blockNumber))
 	})
 }
 
@@ -150,4 +173,9 @@ type denyModel struct {
 	Usr       int64 `db:"usr"`
 	MsgSender int64 `db:"msg_sender"`
 	AddressID int64 `db:"address_id"`
+}
+
+func getDenyFailureMessage(contractAddress string, blockNumber int64) string {
+	failureMsgToFmt := "no matching deny event found for contract %s at block %d"
+	return fmt.Sprintf(failureMsgToFmt, contractAddress, blockNumber)
 }
