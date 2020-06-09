@@ -232,7 +232,7 @@ var _ = Describe("All Urns function", func() {
 			resultOffset := 1
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
-			FROM api.all_urns($1, $2, $3)`, blockTwo, maxResults, resultOffset)
+			FROM api.all_urns($1, $2, $3) ORDER BY updated`, blockTwo, maxResults, resultOffset)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(maxResults))

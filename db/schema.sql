@@ -965,7 +965,6 @@ WITH distinct_urn_snapshots AS (
         ORDER BY urn_identifier, ilk_identifier, updated DESC)
 SELECT *
     FROM distinct_urn_snapshots
-    ORDER BY updated DESC
     LIMIT all_urns.max_results
     OFFSET all_urns.result_offset
 $$;
