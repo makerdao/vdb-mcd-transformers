@@ -35,7 +35,7 @@ var backfillUrnsCmd = &cobra.Command{
 	Short: "Backfill diffs for urns, looking up diffs based on associated events",
 	Long: `Fetch diffs when events indicate the state of an Urn changed at a given block.
 Optionally pass a starting block number to backfill since a given block.
-Optionally pass events to watch (frob, grab) to backfill based off of certain events.`,
+Optionally pass events to watch (fork, frob, grab) to backfill based off of certain events.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := backfillUrns()
 		if err != nil {
@@ -49,7 +49,7 @@ Optionally pass events to watch (frob, grab) to backfill based off of certain ev
 func init() {
 	rootCmd.AddCommand(backfillUrnsCmd)
 	backfillUrnsCmd.Flags().IntVarP(&startingBlock, "starting-block", "s", 0, "starting block for backfilling diffs derived from urn events")
-	backfillUrnsCmd.Flags().StringSliceVarP(&eventsToBackFill, "events-to-backfill", "e", []string{"frob", "grab"}, "events to back-fill")
+	backfillUrnsCmd.Flags().StringSliceVarP(&eventsToBackFill, "events-to-backfill", "e", []string{"fork", "frob", "grab"}, "events to back-fill")
 }
 
 func backfillUrns() error {
