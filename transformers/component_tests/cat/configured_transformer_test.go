@@ -41,7 +41,7 @@ var _ = Describe("Executing the transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = test_data.CatAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = cat.CatStorageRepository{ContractAddress: contractAddress}
+		repository        = cat.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),

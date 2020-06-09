@@ -26,7 +26,7 @@ var _ = Describe("Bite event computed columns", func() {
 		headerOne              core.Header
 		biteGethLog            types.Log
 		biteEvent              event.InsertionModel
-		vatRepository          vat.VatStorageRepository
+		vatRepository          vat.StorageRepository
 		headerRepository       datastore.HeaderRepository
 	)
 

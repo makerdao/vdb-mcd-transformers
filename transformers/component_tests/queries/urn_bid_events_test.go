@@ -49,7 +49,7 @@ var _ = Describe("urn bid events query", func() {
 		logFourID := test_data.CreateTestLog(headerOneID, db).ID
 
 		// insert records used in join
-		repo := flip.FlipStorageRepository{ContractAddress: ethFlipAddress}
+		repo := flip.StorageRepository{ContractAddress: ethFlipAddress}
 		repo.SetDB(db)
 
 		ethIlkErr := repo.Create(diffID, headerOneID, flip.IlkMetadata, test_helpers.FakeIlk.Hex)

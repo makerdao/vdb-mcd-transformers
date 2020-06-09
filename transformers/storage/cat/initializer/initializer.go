@@ -28,5 +28,5 @@ var catAddress = constants.GetContractAddress("MCD_CAT")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_CAT")),
 	StorageKeysLookup: storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, catAddress)),
-	Repository:        &cat.CatStorageRepository{ContractAddress: catAddress},
+	Repository:        &cat.StorageRepository{ContractAddress: catAddress},
 }.NewTransformer

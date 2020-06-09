@@ -43,7 +43,7 @@ var _ = Describe("Frob event computed columns", func() {
 		headerOne              core.Header
 		frobGethLog            types.Log
 		frobEvent              event.InsertionModel
-		vatRepository          vat.VatStorageRepository
+		vatRepository          vat.StorageRepository
 		headerRepository       datastore.HeaderRepository
 	)
 

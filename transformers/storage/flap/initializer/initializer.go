@@ -29,5 +29,5 @@ var StorageTransformerInitializer storage.TransformerInitializer = storage.Trans
 	StorageKeysLookup: storage.NewKeysLookup(flap.NewKeysLoader(
 		&mcdStorage.MakerStorageRepository{},
 		constants.GetContractAddress("MCD_FLAP"))),
-	Repository: &flap.FlapStorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLAP")},
+	Repository: &flap.StorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLAP")},
 }.NewTransformer

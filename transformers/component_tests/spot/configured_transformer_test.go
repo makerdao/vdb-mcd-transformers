@@ -42,7 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 		contractAddress   = test_data.SpotAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		repository        = spot.SpotStorageRepository{ContractAddress: contractAddress}
+		repository        = spot.StorageRepository{ContractAddress: contractAddress}
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,

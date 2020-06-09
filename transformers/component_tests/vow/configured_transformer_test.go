@@ -42,7 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 		vowAddress        = test_data.VowAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(vowAddress)
 		storageKeysLookup = storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, vowAddress))
-		repository        = vow.VowStorageRepository{ContractAddress: vowAddress}
+		repository        = vow.StorageRepository{ContractAddress: vowAddress}
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(vowAddress),
 			StorageKeysLookup: storageKeysLookup,

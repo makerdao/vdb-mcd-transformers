@@ -40,7 +40,7 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = vat.VatStorageRepository{}
+		repository        = vat.StorageRepository{}
 		contractAddress   = test_data.VatAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		transformer       = storage.Transformer{

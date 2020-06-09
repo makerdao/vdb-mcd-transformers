@@ -19,7 +19,7 @@ import (
 
 var _ = Describe("Single urn view", func() {
 	var (
-		vatRepo                vat.VatStorageRepository
+		vatRepo                vat.StorageRepository
 		headerRepo             datastore.HeaderRepository
 		urnOne, urnTwo         string
 		blockOne, timestampOne int
@@ -31,7 +31,7 @@ var _ = Describe("Single urn view", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatRepo = vat.VatStorageRepository{}
+		vatRepo = vat.StorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

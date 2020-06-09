@@ -11,7 +11,7 @@ import (
 
 func TestFork(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Fork Suite")
+	RunSpecs(t, "BackFill Fork Suite")
 }
 
 var _ = BeforeSuite(func() {

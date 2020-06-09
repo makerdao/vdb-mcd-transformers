@@ -24,7 +24,7 @@ import (
 var _ = Describe("Flip storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 = &flip.FlipStorageRepository{ContractAddress: test_data.FlipEthAddress()}
+		repo                 = &flip.StorageRepository{ContractAddress: test_data.FlipEthAddress()}
 		diffID, fakeHeaderID int64
 	)
 

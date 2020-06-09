@@ -43,13 +43,13 @@ import (
 var _ = Describe("CDP Manager storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repository           cdp_manager.CdpManagerStorageRepository
+		repository           cdp_manager.StorageRepository
 		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repository = cdp_manager.CdpManagerStorageRepository{}
+		repository = cdp_manager.StorageRepository{}
 		repository.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error

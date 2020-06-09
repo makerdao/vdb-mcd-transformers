@@ -47,7 +47,7 @@ var _ = Describe("QueuedSin", func() {
 		logId                  int64
 		rawEra                 int
 		sinMappingMetadata     types.ValueMetadata
-		vowRepository          vow.VowStorageRepository
+		vowRepository          vow.StorageRepository
 		diffID                 int64
 	)
 
@@ -66,7 +66,7 @@ var _ = Describe("QueuedSin", func() {
 
 		diffID = storage_helper.CreateFakeDiffRecord(db)
 
-		vowRepository = vow.VowStorageRepository{}
+		vowRepository = vow.StorageRepository{}
 		vowRepository.SetDB(db)
 		sinMappingKeys := map[types.Key]string{constants.Timestamp: fakeEra}
 		sinMappingMetadata = types.GetValueMetadata(vow.SinMapping, sinMappingKeys, types.Uint256)

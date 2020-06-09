@@ -34,12 +34,12 @@ const (
 	insertSpotLiveQuery   = `INSERT INTO maker.spot_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
-type SpotStorageRepository struct {
+type StorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
 
-func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -59,65 +59,56 @@ func (repository SpotStorageRepository) Create(diffID, headerID int64, metadata 
 	}
 }
 
-func (repository *SpotStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository SpotStorageRepository) insertIlkPip(diffID, headerID int64, metadata types.ValueMetadata, pip string) error {
+func (repository StorageRepository) insertIlkPip(diffID, headerID int64, metadata types.ValueMetadata, pip string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting ilk for ilk pip: %w", err)
 	}
-
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip, repository.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s pip %s from diff ID %d: %w", ilk, pip, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository SpotStorageRepository) insertIlkMat(diffID, headerID int64, metadata types.ValueMetadata, mat string) error {
+func (repository StorageRepository) insertIlkMat(diffID, headerID int64, metadata types.ValueMetadata, mat string) error {
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting ilk for ilk mat: %w", err)
 	}
-	return repository.insertFieldWithIlk(diffID, headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat)
+	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat, repository.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s mat %s from diff ID %d: %w", ilk, mat, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository SpotStorageRepository) insertSpotVat(diffID, headerID int64, vat string) error {
+func (repository StorageRepository) insertSpotVat(diffID, headerID int64, vat string) error {
 	_, err := repository.db.Exec(insertSpotVatQuery, diffID, headerID, vat)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting spot vat %s from diff ID %d: %w", vat, diffID, err)
+	}
+	return nil
 }
 
-func (repository SpotStorageRepository) insertSpotPar(diffID, headerID int64, par string) error {
+func (repository StorageRepository) insertSpotPar(diffID, headerID int64, par string) error {
 	_, err := repository.db.Exec(insertSpotParQuery, diffID, headerID, par)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting spot par %s from diff ID %d: %w", par, diffID, err)
+	}
+	return nil
 }
 
-func (repository SpotStorageRepository) insertSpotLive(diffID, headerID int64, live string) error {
+func (repository StorageRepository) insertSpotLive(diffID, headerID int64, live string) error {
 	_, err := repository.db.Exec(insertSpotLiveQuery, diffID, headerID, live)
-	return err
-}
-
-func (repository *SpotStorageRepository) insertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
+	if err != nil {
+		return fmt.Errorf("error inserting spot live %s from diff ID %d: %w", live, diffID, err)
 	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
-	if ilkErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("ilk", ilkErr.Error())
-		}
-		return ilkErr
-	}
-	_, writeErr := tx.Exec(query, diffID, headerID, ilkID, value)
-
-	if writeErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError(variableName, writeErr.Error())
-		}
-		return writeErr
-	}
-	return tx.Commit()
+	return nil
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

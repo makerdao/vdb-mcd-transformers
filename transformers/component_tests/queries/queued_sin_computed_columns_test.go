@@ -43,7 +43,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			headerOne              core.Header
 			fakeTab                = strconv.Itoa(rand.Int())
 			sinMappingMetadata     types.ValueMetadata
-			vowRepository          vow.VowStorageRepository
+			vowRepository          vow.StorageRepository
 			headerRepository       datastore.HeaderRepository
 			diffID                 int64
 		)
@@ -59,7 +59,7 @@ var _ = Describe("Queued sin computed columns", func() {
 
 			diffID = storage_helper.CreateFakeDiffRecord(db)
 
-			vowRepository = vow.VowStorageRepository{}
+			vowRepository = vow.StorageRepository{}
 			vowRepository.SetDB(db)
 			sinMappingKeys := map[types.Key]string{constants.Timestamp: fakeEra}
 			sinMappingMetadata = types.GetValueMetadata(vow.SinMapping, sinMappingKeys, types.Uint256)

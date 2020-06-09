@@ -42,12 +42,12 @@ var _ = Describe("Vow storage repository test", func() {
 		diffID, fakeHeaderID int64
 		fakeAddress          = "0x" + fakes.RandomString(40)
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
-		repo                 vow.VowStorageRepository
+		repo                 vow.StorageRepository
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = vow.VowStorageRepository{}
+		repo = vow.StorageRepository{}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error

@@ -27,6 +27,6 @@ func GenerateStorageTransformerInitializer(contractAddress string) storage.Trans
 	return storage.Transformer{
 		Address:           common.HexToAddress(contractAddress),
 		StorageKeysLookup: storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress)),
-		Repository:        &flip.FlipStorageRepository{ContractAddress: contractAddress},
+		Repository:        &flip.StorageRepository{ContractAddress: contractAddress},
 	}.NewTransformer
 }

@@ -29,5 +29,5 @@ var StorageTransformerInitializer storage.TransformerInitializer = storage.Trans
 	StorageKeysLookup: storage.NewKeysLookup(flop.NewKeysLoader(
 		&mcdStorage.MakerStorageRepository{},
 		constants.GetContractAddress("MCD_FLOP"))),
-	Repository: &flop.FlopStorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLOP")},
+	Repository: &flop.StorageRepository{ContractAddress: constants.GetContractAddress("MCD_FLOP")},
 }.NewTransformer
