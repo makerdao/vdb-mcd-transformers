@@ -81,7 +81,7 @@ vdb-mcd-transformers:
 # Build is really "clean/rebuild"
 .PHONY: build
 build:
-	rm vdb-mcd-transformers
+	- rm vdb-mcd-transformers
 	go fmt ./...
 	go build
 
