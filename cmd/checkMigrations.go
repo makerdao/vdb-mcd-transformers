@@ -48,12 +48,12 @@ var checkMigrationsCmd = &cobra.Command{
 	PreRun: initGithubParams,
 	Short:  "Check that the migrations in this repository are properly timestamped for a merge.",
 	Long: `Check that any new migrations in this branch will run after all the migrations in the
-staging branch`,
+target branch, staging by default`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := checkMigrations()
 
 		if err != nil {
-			fmt.Printf("Error checking migrations %s\n", err.Error())
+			fmt.Printf("error checking migrations %s\n", err.Error())
 			os.Exit(1)
 		}
 	},
@@ -74,46 +74,47 @@ func initGithubParams(cmd *cobra.Command, args []string) {
 }
 
 func checkMigrations() error {
-	stagingMigrations, err := getGithubFileNames()
+	remoteMigrations, errGithub := getGithubFileNames()
 
-	if err != nil {
-		return err
+	if errGithub != nil {
+		return errGithub
 	}
 
-	localMigrations, err := getLocalMigrations()
+	localMigrations, errLocal := getLocalMigrations()
 
-	if err != nil {
-		return err
+	if errLocal != nil {
+		return errLocal
 	}
 
-	newMigrations := NewMigrations(localMigrations, stagingMigrations)
+	newMigrations := NewMigrations(localMigrations, remoteMigrations)
 	logrus.Println("New Migrations are", newMigrations)
 
-	return CheckNewMigrations(stagingMigrations, newMigrations)
+	return CheckNewMigrations(remoteMigrations, newMigrations)
 }
 
 func getGithubFileNames() ([]string, error) {
 	url := fmt.Sprintf("http://api.github.com/repos/%s/contents/db/migrations?ref=%s", repo, branch)
+	errorContext := "error getting migrations from Github %w"
 	logrus.Println("Retrieving Migration list from", url)
 
-	resp, err := http.Get(url)
+	resp, httpErr := http.Get(url)
 
-	if err != nil {
-		return []string{}, err
+	if httpErr != nil {
+		return []string{}, fmt.Errorf(errorContext, httpErr)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, ioErr := ioutil.ReadAll(resp.Body)
 
-	if err != nil {
-		return []string{}, err
+	if ioErr != nil {
+		return []string{}, fmt.Errorf(errorContext, ioErr)
 	}
 
 	var files []GithubFile
-	err = json.Unmarshal(body, &files)
+	jsonErr := json.Unmarshal(body, &files)
 
-	if err != nil {
-		return []string{}, err
+	if jsonErr != nil {
+		return []string{}, fmt.Errorf(errorContext, jsonErr)
 	}
 
 	var namedFiles = make([]NamedFile, len(files))
@@ -129,7 +130,7 @@ func getLocalMigrations() ([]string, error) {
 	localFiles, err := ioutil.ReadDir("./db/migrations")
 
 	if err != nil {
-		return []string{}, err
+		return []string{}, fmt.Errorf("error reading local migrations %w", err)
 	}
 
 	namedFiles := make([]NamedFile, len(localFiles))
@@ -196,7 +197,7 @@ func checkAllNewMigrationsAreTimestamped(newMigrations []string) error {
 		matched, err := regexp.MatchString(`\d{14}_`, newMigration)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("error checking migration has a timestamp %w", err)
 		}
 
 		if !matched {
