@@ -20,7 +20,7 @@ else
 fi
 
 if [ -z "$ENVIRONMENT" ]; then
-    echo 'You must specifiy an envionrment (bash deploy.sh <ENVIRONMENT>).'
+    echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
     echo 'Allowed values are "staging" or "prod"'
     exit 1
 fi

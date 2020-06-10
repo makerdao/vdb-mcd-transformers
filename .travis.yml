@@ -15,7 +15,9 @@ before_install:
 - sudo pip3 install awscli
 - docker build -f dockerfiles/gomoderator/Dockerfile .
 script:
+- set -e
 - scripts/check_config.sh
+- env GO111MODULE=on make validatemigrationorder
 - env GO111MODULE=on make test
 - env GO111MODULE=on make integrationtest
 deploy:
