@@ -96,15 +96,15 @@ var _ = Describe("Check Migrations", func() {
 			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
 
 			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(MatchRegexp("update your timestamp"))
 		})
 
 		It("does not change the new migrations passed in", func() {
 			originalMigrations := []string{"20200429072513_last.sql"}
 			newMigrations := []string{"20200429072515_newest.sql", "20200429072512_newest.sql"}
 
-			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
+			cmd.CheckNewMigrations(originalMigrations, newMigrations)
 
-			Expect(err).To(HaveOccurred())
 			Expect(newMigrations).To(Equal([]string{"20200429072515_newest.sql", "20200429072512_newest.sql"}))
 		})
 
@@ -115,7 +115,6 @@ var _ = Describe("Check Migrations", func() {
 			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(newMigrations).To(Equal([]string{"20200429072517_newest.sql", "20200429072515_newest.sql"}))
 		})
 
 		It("requires every new migration to start with a 14 digit timestamp", func() {
@@ -125,6 +124,7 @@ var _ = Describe("Check Migrations", func() {
 			err := cmd.CheckNewMigrations(originalMigrations, newMigrations)
 
 			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(MatchRegexp("does not start with a timestamp"))
 		})
 	})
 })
