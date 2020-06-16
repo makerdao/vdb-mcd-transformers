@@ -9,14 +9,14 @@ import (
 type MockMakerStorageRepository struct {
 	Cdpis                            []string
 	DaiKeys                          []string
-	FlapBidIds                       []string
-	FlipBidIds                       []string
-	FlopBidIds                       []string
+	FlapBidIDs                       []string
+	FlipBidIDs                       []string
+	FlopBidIDs                       []string
 	GemKeys                          []storage.Urn
 	Ilks                             []string
 	MedianBudAddresses               []string
 	MedianOrclAddresses              []string
-	MedianSlotIds                    []string
+	MedianSlotIDs                    []string
 	Owners                           []string
 	PotPieUsers                      []string
 	SinKeys                          []string
@@ -27,12 +27,12 @@ type MockMakerStorageRepository struct {
 	GetCdpisError                    error
 	GetDaiKeysCalled                 bool
 	GetDaiKeysError                  error
-	GetFlapBidIdsCalled              bool
-	GetFlapBidIdsError               error
-	GetFlipBidIdsCalledWith          string
-	GetFlipBidIdsError               error
-	GetFlopBidIdsCalledWith          string
-	GetFlopBidIdsError               error
+	GetFlapBidIDsCalled              bool
+	GetFlapBidIDsError               error
+	GetFlipBidIDsCalledWith          string
+	GetFlipBidIDsError               error
+	GetFlopBidIDsCalledWith          string
+	GetFlopBidIDsError               error
 	GetGemKeysCalled                 bool
 	GetGemKeysError                  error
 	GetIlksCalled                    bool
@@ -104,9 +104,9 @@ func (repository *MockMakerStorageRepository) GetMedianOrclAddresses(address str
 	return repository.MedianOrclAddresses, repository.GetMedianOrclAddressesError
 }
 
-func (repository *MockMakerStorageRepository) GetMedianSlotIds() ([]string, error) {
+func (repository *MockMakerStorageRepository) GetMedianSlotIDs() ([]string, error) {
 	repository.GetMedianSlotIdCalled = true
-	return repository.MedianSlotIds, repository.GetMedianSlotIdError
+	return repository.MedianSlotIDs, repository.GetMedianSlotIdError
 }
 
 func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {

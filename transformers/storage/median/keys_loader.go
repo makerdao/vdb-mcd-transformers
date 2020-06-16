@@ -112,7 +112,7 @@ func (loader *keysLoader) loadBudKeys(mappings map[common.Hash]types.ValueMetada
 }
 
 func (loader *keysLoader) loadSlotKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	slotIds, slotErr := loader.storageRepository.GetMedianSlotIds()
+	slotIds, slotErr := loader.storageRepository.GetMedianSlotIDs()
 	if slotErr != nil {
 		return nil, slotErr
 	}

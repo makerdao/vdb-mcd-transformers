@@ -625,7 +625,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertMedianDissSingle(a2, medianAddressID, db)
 			insertMedianKissBatch([]string{a1, a3}, medianAddressID, db)
 			insertMedianDissBatch([]string{a2, a4}, medianAddressID, db)
-			insertMedianKissSingle(a5, addressId, db)
+			insertMedianKissSingle(a5, addressID, db)
 
 			aAddresses, err := repository.GetMedianBudAddresses(test_data.MedianEthAddress())
 			Expect(err).NotTo(HaveOccurred())

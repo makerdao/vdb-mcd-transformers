@@ -143,7 +143,7 @@ var _ = Describe("Median storage keys loader", func() {
 				Keys: map[types.Key]string{constants.SlotId: fakeSlotId},
 				Type: types.Address,
 			}
-			storageRepository.MedianSlotIds = []string{fakeSlotId}
+			storageRepository.MedianSlotIDs = []string{fakeSlotId}
 
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())

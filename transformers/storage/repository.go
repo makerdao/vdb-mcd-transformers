@@ -39,7 +39,7 @@ type IMakerStorageRepository interface {
 	GetIlks() ([]string, error)
 	GetMedianBudAddresses(string) ([]string, error)
 	GetMedianOrclAddresses(string) ([]string, error)
-	GetMedianSlotIds() ([]string, error)
+	GetMedianSlotIDs() ([]string, error)
 	GetOwners() ([]string, error)
 	GetPotPieUsers() ([]string, error)
 	GetUrns() ([]Urn, error)
@@ -54,7 +54,7 @@ type MakerStorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *MakerStorageRepository) GetMedianSlotIds() ([]string, error) {
+func (repository *MakerStorageRepository) GetMedianSlotIDs() ([]string, error) {
 	slotIDs := make([]string, math.MaxUint8)
 	for i := 0; i < math.MaxUint8; i++ {
 		slotIDs[i] = strconv.FormatInt(int64(i+1), 10)

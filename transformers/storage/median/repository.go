@@ -58,7 +58,7 @@ func (repository MedianStorageRepository) insertMedianVal(diffID, headerID int64
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -66,7 +66,7 @@ func (repository MedianStorageRepository) insertMedianVal(diffID, headerID int64
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("val record with address", insertErr.Error())
+			return shared.FormatRollbackError("val record with address", insertErr)
 		}
 		return insertErr
 	}
@@ -83,7 +83,7 @@ func (repository MedianStorageRepository) insertMedianAge(diffID, headerID int64
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -91,7 +91,7 @@ func (repository MedianStorageRepository) insertMedianAge(diffID, headerID int64
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("age record with address", insertErr.Error())
+			return shared.FormatRollbackError("age record with address", insertErr)
 		}
 		return insertErr
 	}
@@ -108,7 +108,7 @@ func (repository MedianStorageRepository) insertMedianBar(diffID, headerID int64
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -116,7 +116,7 @@ func (repository MedianStorageRepository) insertMedianBar(diffID, headerID int64
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("bar record with address", insertErr.Error())
+			return shared.FormatRollbackError("bar record with address", insertErr)
 		}
 		return insertErr
 	}
@@ -156,7 +156,7 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -165,7 +165,7 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 	if orclAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("median orcl address", orclAddressErr.Error())
+			return shared.FormatRollbackError("median orcl address", orclAddressErr)
 		}
 		return addressErr
 	}
@@ -174,7 +174,7 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("bud record with address", insertErr.Error())
+			return shared.FormatRollbackError("bud record with address", insertErr)
 		}
 		return insertErr
 	}
@@ -204,7 +204,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -213,7 +213,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 	if budAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("median bud address", budAddressErr.Error())
+			return shared.FormatRollbackError("median bud address", budAddressErr)
 		}
 		return addressErr
 	}
@@ -222,7 +222,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("bud record with address", insertErr.Error())
+			return shared.FormatRollbackError("bud record with address", insertErr)
 		}
 		return insertErr
 	}
@@ -252,7 +252,7 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("contract address", addressErr.Error())
+			return shared.FormatRollbackError("contract address", addressErr)
 		}
 		return addressErr
 	}
@@ -261,7 +261,7 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 	if slotAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("median slot address", slotAddressErr.Error())
+			return shared.FormatRollbackError("median slot address", slotAddressErr)
 		}
 		return slotAddressErr
 	}
@@ -270,7 +270,7 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return shared.FormatRollbackError("slot record with address", insertErr.Error())
+			return shared.FormatRollbackError("slot record with address", insertErr)
 		}
 		return insertErr
 	}
