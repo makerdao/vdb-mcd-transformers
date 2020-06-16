@@ -132,7 +132,7 @@ var _ = Describe("Executing the median transformer", func() {
 			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
-			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
+			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
 			aAddressID, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
 			Expect(aAddressErr).NotTo(HaveOccurred())
 
@@ -148,7 +148,7 @@ var _ = Describe("Executing the median transformer", func() {
 			insertErr := event.PersistModels([]event.InsertionModel{liftModel}, db)
 			Expect(insertErr).NotTo(HaveOccurred())
 
-			key := common.HexToHash("d96e792a1d8f411d1f279b1c9ea610f0bcad22e8356661708ae9e456b88582f0")
+			key := common.HexToHash("6e8810a330507229748898345becb3182d8632868d2bd2df00dfbd0f623252f9")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
 
@@ -189,7 +189,7 @@ var _ = Describe("Executing the median transformer", func() {
 
 			//key is keccak hash aAddress passed through solidity bitshift uint8(uint256(a[i]) >> 152) + the index
 			key := common.HexToHash("2944b9af8d962e2b5d171cd2b530c03b245945580d9e2a1c9efc472e2e5ec88b")
-			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			value := common.HexToHash("000000000000000000000000ac8519b3495d8a3e3e44c041521cf7ac3f8f63b3")
 			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
 
 			transformErr := transformer.Execute(liftDiff)
