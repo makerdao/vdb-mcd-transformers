@@ -89,6 +89,7 @@ import (
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	median_bat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_bat"
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
+	median_wbtc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc"
 	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
 	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
@@ -187,6 +188,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			jug.StorageTransformerInitializer,
 			median_bat.StorageTransformerInitializer,
 			median_eth.StorageTransformerInitializer,
+			median_wbtc.StorageTransformerInitializer,
 			pot.StorageTransformerInitializer,
 			sai_flip.StorageTransformerInitializer,
 			spot.StorageTransformerInitializer,

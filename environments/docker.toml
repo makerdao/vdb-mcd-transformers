@@ -17,6 +17,7 @@
         "jug",
         "median_bat",
         "median_eth",
+        "median_wbtc",
         "pot",
         "spot",
         "vat",
@@ -175,6 +176,12 @@
         rank = "0"
     [exporter.median_eth]
         path = "transformers/storage/median/initializers/median_eth"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.median_wbtc]
+        path = "transformers/storage/median/initializers/median_wbtc"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
