@@ -63,6 +63,18 @@ For execution on linux, replace instances of `host.docker.internal` with `localh
           --rpc --rpcaddr "0.0.0.0" --ws --wsaddr "0.0.0.0" --statediff --syncmode full --statediff.watchedaddresses <contract address>
           --statediff.watchedaddresses <contract address>
     ```
+  
+## backfillEvents
+Dockerfile for getting events from previously checked headers when adding a new event transformer.
+
+
+### Build
+`docker build -f dockerfiles/backfill_events/Dockerfile . -t backfill_eventslatest`
+
+## Run
+```
+docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://mainnet.infura.io/v3/token -it backfill_events:latest
+```
 
 ## backfillStorage
 Dockerfile for getting storage for all configured transformers in a range of blocks, and persisting them into the

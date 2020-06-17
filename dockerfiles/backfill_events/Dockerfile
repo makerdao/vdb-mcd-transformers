@@ -24,9 +24,8 @@ RUN go build
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
 RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
-    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
+    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/backfill/transformerExporter.go \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
-
 
 # app container
 FROM golang:alpine
@@ -44,7 +43,7 @@ RUN apk update \
 # add go so we can build the plugin
 RUN apk add --update --no-cache git g++ linux-headers
 
-ARG CONFIG_FILE=environments/docker.toml
+ARG CONFIG_FILE=environments/backfillEvents.toml
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
@@ -52,14 +51,11 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 # keep binaries immutable
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/startup_script.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_events/startup_script.sh .
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/run_migrations.sh .
-
-HEALTHCHECK CMD grep -q "event watcher starting" /tmp/execute_health_check && grep -q "storage watcher starting" /tmp/execute_health_check
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]

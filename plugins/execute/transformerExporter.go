@@ -1,6 +1,6 @@
 // This is a plugin generated to export the configured transformer initializers
 
-package execute
+package main
 
 import (
 	auction_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file/initializer"

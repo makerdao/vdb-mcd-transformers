@@ -17,8 +17,9 @@ RUN go build
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
-RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers
-
+RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
+    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
+    OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
 FROM golang:alpine
@@ -45,7 +46,7 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_storage/startup_script.sh .
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.so plugins/execute/transformerExporter.so
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]
