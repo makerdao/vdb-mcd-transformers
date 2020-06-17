@@ -73,7 +73,7 @@ Dockerfile for getting events from previously checked headers when adding a new 
 
 ## Run
 ```
-docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://mainnet.infura.io/v3/token -it backfill_events:latest
+docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://mainnet.infura.io/v3/token -e ENDING_BLOCK_NUMBER=1 -it backfill_event:latest
 ```
 
 ## backfillStorage
