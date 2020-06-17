@@ -45,7 +45,7 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_storage/startup_script.sh .
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.so plugins/execute/transformerExporter.so
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]

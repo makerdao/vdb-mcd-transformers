@@ -157,8 +157,8 @@ import:
 	psql $(NAME) < db/schema.sql
 
 # Build plugin
-TARGET_LOCATION = $(BASE)/plugins/transformerExporter.go
-OUTPUT_LOCATION = $(BASE)/plugins/transformerExporter.so
+TARGET_LOCATION = $(BASE)/plugins/execute/transformerExporter.go
+OUTPUT_LOCATION = $(BASE)/plugins/execute/transformerExporter.so
 
 .PHONY: plugin
 plugin:
