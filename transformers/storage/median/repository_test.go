@@ -120,7 +120,7 @@ var _ = Describe("Median Storage Repository", func() {
 			AssertVariable(ageResult, diffID, fakeHeaderID, fakeAge)
 		})
 
-		It("panics if the packed name is not recognized", func() {
+		It("returns an error if the packed name is not recognized", func() {
 			packedNames := make(map[int]string)
 			packedNames[0] = "notRecognized"
 
@@ -129,10 +129,9 @@ var _ = Describe("Median Storage Repository", func() {
 				PackedNames: packedNames,
 			}
 
-			createFunc := func() {
-				repo.Create(diffID, fakeHeaderID, badMetadata, values)
-			}
-			Expect(createFunc).To(Panic())
+			err := repo.Create(diffID, fakeHeaderID, badMetadata, values)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("unrecognized median contract storage name"))
 		})
 
 		It("returns an error if inserting fails", func() {
@@ -205,8 +204,9 @@ var _ = Describe("Median Storage Repository", func() {
 
 	Describe("orcl mapping", func() {
 		var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
+		var fakeOrclAddress = "0x" + fakes.RandomString(40)
+
 		It("writes a row", func() {
-			fakeOrclAddress := "0x" + fakes.RandomString(40)
 			orclMetadata := types.GetValueMetadata(median.Orcl, map[types.Key]string{constants.Address: fakeOrclAddress}, types.Uint256)
 
 			writeErr := repo.Create(diffID, fakeHeaderID, orclMetadata, fakeUint256)
@@ -224,6 +224,21 @@ var _ = Describe("Median Storage Repository", func() {
 			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(orclAddressID, 10), fakeUint256)
 		})
 
+		It("does not duplicate row", func() {
+			orclMetadata := types.GetValueMetadata(median.Orcl, map[types.Key]string{constants.Address: fakeOrclAddress}, types.Uint256)
+
+			insertOneErr := repo.Create(diffID, fakeHeaderID, orclMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, orclMetadata, fakeUint256)
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianOrclTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
 		It("returns an error if metadata missing 'a' address", func() {
 			malformedOrclMetadata := types.GetValueMetadata(median.Orcl, map[types.Key]string{}, types.Uint256)
 
@@ -234,8 +249,9 @@ var _ = Describe("Median Storage Repository", func() {
 
 	Describe("slot mapping", func() {
 		var fakeUint8 = strconv.Itoa(rand.Intn(255))
+		var fakeSlotAddress = "0x" + fakes.RandomString(40)
+
 		It("writes a row", func() {
-			fakeSlotAddress := "0x" + fakes.RandomString(40)
 			slotMetadata := types.GetValueMetadata(median.Slot, map[types.Key]string{constants.SlotId: fakeUint8}, types.Address)
 
 			writeErr := repo.Create(diffID, fakeHeaderID, slotMetadata, fakeSlotAddress)
@@ -253,8 +269,14 @@ var _ = Describe("Median Storage Repository", func() {
 			AssertMapping(result.MappingRes, diffID, fakeHeaderID, fakeUint8, strconv.FormatInt(slotAddressID, 10))
 		})
 
+		It("returns an error if metadata missing slotID", func() {
+			malformedSlotMetadata := types.GetValueMetadata(median.Slot, map[types.Key]string{}, types.Address)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedSlotMetadata, fakeSlotAddress)
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.SlotId}))
+		})
+
 		It("does not duplicate row", func() {
-			fakeSlotAddress := "0x" + fakes.RandomString(40)
 			slotMetadata := types.GetValueMetadata(median.Slot, map[types.Key]string{constants.SlotId: fakeUint8}, types.Address)
 			insertOneErr := repo.Create(diffID, fakeHeaderID, slotMetadata, fakeSlotAddress)
 			Expect(insertOneErr).NotTo(HaveOccurred())

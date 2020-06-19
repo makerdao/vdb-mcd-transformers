@@ -16585,11 +16585,11 @@ ALTER TABLE ONLY maker.median_lift
 
 
 --
--- Name: median_orcl median_orcl_diff_id_header_id_address_id_a_orcl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_orcl median_orcl_header_id_address_id_a_orcl_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_orcl
-    ADD CONSTRAINT median_orcl_diff_id_header_id_address_id_a_orcl_key UNIQUE (diff_id, header_id, address_id, a, orcl);
+    ADD CONSTRAINT median_orcl_header_id_address_id_a_orcl_key UNIQUE (header_id, address_id, a, orcl);
 
 
 --
@@ -16601,11 +16601,11 @@ ALTER TABLE ONLY maker.median_orcl
 
 
 --
--- Name: median_slot median_slot_diff_id_header_id_address_id_slot_id_slot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_slot median_slot_header_id_address_id_slot_id_slot_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_slot
-    ADD CONSTRAINT median_slot_diff_id_header_id_address_id_slot_id_slot_key UNIQUE (diff_id, header_id, address_id, slot_id, slot);
+    ADD CONSTRAINT median_slot_header_id_address_id_slot_id_slot_key UNIQUE (header_id, address_id, slot_id, slot);
 
 
 --

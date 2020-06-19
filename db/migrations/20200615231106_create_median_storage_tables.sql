@@ -6,7 +6,7 @@ CREATE TABLE maker.median_val
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     val       NUMERIC NOT NULL,
-    UNIQUE (diff_id, header_id, address_id, val)
+    UNIQUE (header_id, address_id, val)
 );
 
 CREATE INDEX median_val_diff_id_index
@@ -23,7 +23,7 @@ CREATE TABLE maker.median_bar
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bar       NUMERIC NOT NULL,
-    UNIQUE (diff_id, header_id, address_id, bar)
+    UNIQUE (header_id, address_id, bar)
 );
 
 CREATE INDEX median_bar_diff_id_index
@@ -40,7 +40,7 @@ CREATE TABLE maker.median_age
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     age       NUMERIC NOT NULL,
-    UNIQUE (diff_id, header_id, address_id, age)
+    UNIQUE (header_id, address_id, age)
 );
 
 CREATE INDEX median_age_diff_id_index
@@ -58,7 +58,7 @@ CREATE TABLE maker.median_orcl
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     a          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     orcl        INTEGER NOT NULL,
-    UNIQUE (diff_id, header_id, address_id, a, orcl)
+    UNIQUE (header_id, address_id, a, orcl)
 );
 
 CREATE INDEX median_orcl_diff_id_index
@@ -78,7 +78,7 @@ CREATE TABLE maker.median_bud
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     a          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     bud        INTEGER NOT NULL,
-    UNIQUE (diff_id, header_id, address_id, a, bud)
+    UNIQUE (header_id, address_id, a, bud)
 );
 
 CREATE INDEX median_bud_header_id_index
@@ -96,7 +96,7 @@ CREATE TABLE maker.median_slot
     address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     slot_id    INTEGER NOT NULL,
     slot       INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    UNIQUE (diff_id, header_id, address_id, slot_id, slot)
+    UNIQUE (header_id, address_id, slot_id, slot)
 );
 
 CREATE INDEX median_slot_header_id_index

@@ -2,7 +2,6 @@ package median
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -29,19 +28,19 @@ type MedianStorageRepository struct {
 func (repository MedianStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Packed:
-		return repository.insertPackedValueRecord(diffID, headerID, repository.ContractAddress, metadata, value.(map[int]string))
+		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case Bar:
-		return repository.insertMedianBar(diffID, headerID, repository.ContractAddress, value.(string))
+		return repository.insertMedianBar(diffID, headerID, value.(string))
 	case Bud:
-		return repository.insertBud(diffID, headerID, metadata, repository.ContractAddress, value.(string))
+		return repository.insertBud(diffID, headerID, metadata, value.(string))
 	case Orcl:
-		return repository.insertOrcl(diffID, headerID, metadata, repository.ContractAddress, value.(string))
+		return repository.insertOrcl(diffID, headerID, metadata, value.(string))
 	case Slot:
-		return repository.insertSlot(diffID, headerID, metadata, repository.ContractAddress, value.(string))
+		return repository.insertSlot(diffID, headerID, metadata, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized median contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized median contract storage name: %s", metadata.Name)
 	}
 }
 func (repository *MedianStorageRepository) SetDB(db *postgres.DB) {
@@ -68,7 +67,8 @@ func (repository MedianStorageRepository) insertMedianVal(diffID, headerID int64
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("val record with address", insertErr)
 		}
-		return insertErr
+		return fmt.Errorf("error inserting median val for address %s: %w", contractAddress, insertErr)
+
 	}
 	return tx.Commit()
 }
@@ -93,18 +93,19 @@ func (repository MedianStorageRepository) insertMedianAge(diffID, headerID int64
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("age record with address", insertErr)
 		}
-		return insertErr
+		return fmt.Errorf("error inserting median age for address %s: %w", contractAddress, insertErr)
+
 	}
 	return tx.Commit()
 }
 
-func (repository MedianStorageRepository) insertMedianBar(diffID, headerID int64, contractAddress, bar string) error {
+func (repository MedianStorageRepository) insertMedianBar(diffID, headerID int64, bar string) error {
 	tx, txErr := repository.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, repository.db)
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -118,21 +119,22 @@ func (repository MedianStorageRepository) insertMedianBar(diffID, headerID int64
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("bar record with address", insertErr)
 		}
-		return insertErr
+		return fmt.Errorf("error inserting median bar for address %s: %w", bar, insertErr)
+
 	}
 	return tx.Commit()
 }
 
-func (repository *MedianStorageRepository) insertPackedValueRecord(diffID, headerID int64, contractAddress string, metadata types.ValueMetadata, packedValues map[int]string) error {
+func (repository *MedianStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case Val:
-			insertErr = repository.insertMedianVal(diffID, headerID, contractAddress, value)
+			insertErr = repository.insertMedianVal(diffID, headerID, repository.ContractAddress, value)
 		case Age:
-			insertErr = repository.insertMedianAge(diffID, headerID, contractAddress, value)
+			insertErr = repository.insertMedianAge(diffID, headerID, repository.ContractAddress, value)
 		default:
-			panic(fmt.Sprintf("unrecognized median contract storage name in packed values: %s", metadata.Name))
+			return fmt.Errorf("unrecognized median contract storage name: in packed values: %s", metadata.PackedNames[order])
 		}
 		if insertErr != nil {
 			return insertErr
@@ -141,7 +143,7 @@ func (repository *MedianStorageRepository) insertPackedValueRecord(diffID, heade
 	return nil
 }
 
-func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, metadata types.ValueMetadata, contractAddress, orcl string) error {
+func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, metadata types.ValueMetadata, orcl string) error {
 	orclAddress, orclErr := getOrclAddress(metadata.Keys)
 	if orclErr != nil {
 		return orclErr
@@ -152,7 +154,7 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 		return txErr
 	}
 
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, repository.db)
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -176,7 +178,8 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("bud record with address", insertErr)
 		}
-		return insertErr
+		return fmt.Errorf("error inserting median orcl for address %s: %w", orclAddress, insertErr)
+
 	}
 	return tx.Commit()
 }
@@ -189,7 +192,7 @@ func getOrclAddress(keys map[types.Key]string) (string, error) {
 	return user, nil
 }
 
-func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, metadata types.ValueMetadata, contractAddress, bud string) error {
+func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, metadata types.ValueMetadata, bud string) error {
 	budAddress, budErr := getBudAddress(metadata.Keys)
 	if budErr != nil {
 		return budErr
@@ -200,7 +203,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 		return txErr
 	}
 
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, repository.db)
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -224,7 +227,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("bud record with address", insertErr)
 		}
-		return insertErr
+		return fmt.Errorf("error inserting median bud for address %s: %w", budAddress, insertErr)
 	}
 	return tx.Commit()
 }
@@ -237,7 +240,7 @@ func getBudAddress(keys map[types.Key]string) (string, error) {
 	return user, nil
 }
 
-func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, metadata types.ValueMetadata, contractAddress, slot string) error {
+func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, metadata types.ValueMetadata, slot string) error {
 	slotID, slotErr := getSlotID(metadata.Keys)
 	if slotErr != nil {
 		return slotErr
@@ -248,7 +251,7 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 		return txErr
 	}
 
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, repository.db)
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -277,10 +280,10 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 	return tx.Commit()
 }
 
-func getSlotID(keys map[types.Key]string) (int, error) {
-	slotID, err := strconv.Atoi(keys[constants.SlotId])
-	if err != nil {
-		return 0, err
+func getSlotID(keys map[types.Key]string) (string, error) {
+	slotIDstr, ok := keys[constants.SlotId]
+	if !ok {
+		return "", types.ErrMetadataMalformed{MissingData: constants.SlotId}
 	}
-	return slotID, nil
+	return slotIDstr, nil
 }
