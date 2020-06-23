@@ -85,4 +85,5 @@ func VatSuckSignature() string            { return getLogNoteTopicZero(vatSuckMe
 func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
 func VowFileSignature() string            { return getLogNoteTopicZero(vowFileMethod()) }
 func VowFlogSignature() string            { return getLogNoteTopicZero(vowFlogMethod()) }
+func VowHealSignature() string            { return getLogNoteTopicZero(vowHealMethod()) }
 func YankSignature() string               { return getLogNoteTopicZero(yankMethod()) }

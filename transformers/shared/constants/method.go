@@ -161,4 +161,5 @@ func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suc
 func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }
 func vowFileMethod() string { return getSolidityFunctionSignature(VowABI(), "file") }
 func vowFlogMethod() string { return getSolidityFunctionSignature(VowABI(), "flog") }
+func vowHealMethod() string { return getSolidityFunctionSignature(VowABI(), "heal") }
 func yankMethod() string    { return getSolidityFunctionSignature(FlipABI(), "yank") }
