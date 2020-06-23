@@ -16441,11 +16441,11 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
--- Name: median_age median_age_diff_id_header_id_address_id_age_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_age median_age_header_id_address_id_age_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_age
-    ADD CONSTRAINT median_age_diff_id_header_id_address_id_age_key UNIQUE (diff_id, header_id, address_id, age);
+    ADD CONSTRAINT median_age_header_id_address_id_age_key UNIQUE (header_id, address_id, age);
 
 
 --
@@ -16457,11 +16457,11 @@ ALTER TABLE ONLY maker.median_age
 
 
 --
--- Name: median_bar median_bar_diff_id_header_id_address_id_bar_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_bar median_bar_header_id_address_id_bar_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_bar
-    ADD CONSTRAINT median_bar_diff_id_header_id_address_id_bar_key UNIQUE (diff_id, header_id, address_id, bar);
+    ADD CONSTRAINT median_bar_header_id_address_id_bar_key UNIQUE (header_id, address_id, bar);
 
 
 --
@@ -16473,11 +16473,11 @@ ALTER TABLE ONLY maker.median_bar
 
 
 --
--- Name: median_bud median_bud_diff_id_header_id_address_id_a_bud_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_bud median_bud_header_id_address_id_a_bud_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_bud
-    ADD CONSTRAINT median_bud_diff_id_header_id_address_id_a_bud_key UNIQUE (diff_id, header_id, address_id, a, bud);
+    ADD CONSTRAINT median_bud_header_id_address_id_a_bud_key UNIQUE (header_id, address_id, a, bud);
 
 
 --
@@ -16617,11 +16617,11 @@ ALTER TABLE ONLY maker.median_slot
 
 
 --
--- Name: median_val median_val_diff_id_header_id_address_id_val_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: median_val median_val_header_id_address_id_val_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.median_val
-    ADD CONSTRAINT median_val_diff_id_header_id_address_id_val_key UNIQUE (diff_id, header_id, address_id, val);
+    ADD CONSTRAINT median_val_header_id_address_id_val_key UNIQUE (header_id, address_id, val);
 
 
 --

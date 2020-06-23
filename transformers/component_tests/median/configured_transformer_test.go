@@ -26,7 +26,6 @@ var _ = Describe("Executing the median transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = test_data.MedianEthAddress()
 		keccakAddress     = types.HexToKeccak256Hash(contractAddress)
-		repository        = median.MedianStorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(median.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -34,6 +33,7 @@ var _ = Describe("Executing the median transformer", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
+		var repository = median.MedianStorageRepository{ContractAddress: contractAddress}
 		transformer = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,

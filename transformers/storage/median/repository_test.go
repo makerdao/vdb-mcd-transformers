@@ -42,6 +42,16 @@ var _ = Describe("Median Storage Repository", func() {
 		diffID = CreateFakeDiffRecord(db)
 	})
 
+	Describe("Repository behavior", func() {
+		It("gets the addressID if it doesn't exist", func() {
+			Expect(repo.ContractAddressID).To(BeZero())
+
+			writeErr := repo.Create(diffID, fakeHeaderID, median.BarMetadata, fakeUint256)
+			Expect(writeErr).NotTo(HaveOccurred())
+			Expect(repo.ContractAddressID).ToNot(BeZero())
+		})
+	})
+
 	Describe("Wards mapping", func() {
 		var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
 
