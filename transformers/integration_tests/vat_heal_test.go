@@ -62,14 +62,10 @@ var _ = Describe("VatHeal Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult vatHealModel
-		err = db.Get(&dbResult, `SELECT rad from maker.vat_heal`)
+		var rad string
+		err = db.Get(&rad, `SELECT rad from maker.vat_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult.Rad).To(Equal("331024328758114038198514075052115218961684178"))
+		Expect(rad).To(Equal("331024328758114038198514075052115218961684178"))
 	})
 })
-
-type vatHealModel struct {
-	Rad string
-}
