@@ -7,47 +7,56 @@ import (
 )
 
 type MockMakerStorageRepository struct {
-	Cdpis                   []string
-	DaiKeys                 []string
-	FlapBidIDs              []string
-	FlipBidIDs              []string
-	FlopBidIDs              []string
-	GemKeys                 []storage.Urn
-	Ilks                    []string
-	Owners                  []string
-	PotPieUsers             []string
-	SinKeys                 []string
-	Urns                    []storage.Urn
-	VatWardsKeys            []string
-	WardsKeys               []string
-	GetCdpisCalled          bool
-	GetCdpisError           error
-	GetDaiKeysCalled        bool
-	GetDaiKeysError         error
-	GetFlapBidIDsCalled     bool
-	GetFlapBidIDsError      error
-	GetFlipBidIDsCalledWith string
-	GetFlipBidIDsError      error
-	GetFlopBidIDsCalledWith string
-	GetFlopBidIDsError      error
-	GetGemKeysCalled        bool
-	GetGemKeysError         error
-	GetIlksCalled           bool
-	GetIlksError            error
-	GetOwnersCalled         bool
-	GetOwnersError          error
-	GetPotPieUsersCalled    bool
-	GetPotPieUsersError     error
-	GetVatSinKeysCalled     bool
-	GetVatSinKeysError      error
-	GetVowSinKeysCalled     bool
-	GetVowSinKeysError      error
-	GetUrnsCalled           bool
-	GetUrnsError            error
-	GetVatWardsKeysCalled   bool
-	GetVatWardsKeysError    error
-	GetWardsKeysCalledWith  string
-	GetWardsKeysError       error
+	Cdpis                            []string
+	DaiKeys                          []string
+	FlapBidIDs                       []string
+	FlipBidIDs                       []string
+	FlopBidIDs                       []string
+	GemKeys                          []storage.Urn
+	Ilks                             []string
+	MedianBudAddresses               []string
+	MedianOrclAddresses              []string
+	MedianSlotIDs                    []string
+	Owners                           []string
+	PotPieUsers                      []string
+	SinKeys                          []string
+	Urns                             []storage.Urn
+	VatWardsKeys                     []string
+	WardsKeys                        []string
+	GetCdpisCalled                   bool
+	GetCdpisError                    error
+	GetDaiKeysCalled                 bool
+	GetDaiKeysError                  error
+	GetFlapBidIDsCalled              bool
+	GetFlapBidIDsError               error
+	GetFlipBidIDsCalledWith          string
+	GetFlipBidIDsError               error
+	GetFlopBidIDsCalledWith          string
+	GetFlopBidIDsError               error
+	GetGemKeysCalled                 bool
+	GetGemKeysError                  error
+	GetIlksCalled                    bool
+	GetIlksError                     error
+	GetMedianBudAddressesCalledWith  string
+	GetMedianBudAddressesError       error
+	GetMedianOrclAddressesCalledWith string
+	GetMedianOrclAddressesError      error
+	GetMedianSlotIdCalled            bool
+	GetMedianSlotIdError             error
+	GetOwnersCalled                  bool
+	GetOwnersError                   error
+	GetPotPieUsersCalled             bool
+	GetPotPieUsersError              error
+	GetVatSinKeysCalled              bool
+	GetVatSinKeysError               error
+	GetVowSinKeysCalled              bool
+	GetVowSinKeysError               error
+	GetUrnsCalled                    bool
+	GetUrnsError                     error
+	GetVatWardsKeysCalled            bool
+	GetVatWardsKeysError             error
+	GetWardsKeysCalledWith           string
+	GetWardsKeysError                error
 }
 
 func (repository *MockMakerStorageRepository) GetCdpis() ([]string, error) {
@@ -83,6 +92,21 @@ func (repository *MockMakerStorageRepository) GetGemKeys() ([]storage.Urn, error
 func (repository *MockMakerStorageRepository) GetIlks() ([]string, error) {
 	repository.GetIlksCalled = true
 	return repository.Ilks, repository.GetIlksError
+}
+
+func (repository *MockMakerStorageRepository) GetMedianBudAddresses(address string) ([]string, error) {
+	repository.GetMedianBudAddressesCalledWith = address
+	return repository.MedianBudAddresses, repository.GetMedianBudAddressesError
+}
+
+func (repository *MockMakerStorageRepository) GetMedianOrclAddresses(address string) ([]string, error) {
+	repository.GetMedianOrclAddressesCalledWith = address
+	return repository.MedianOrclAddresses, repository.GetMedianOrclAddressesError
+}
+
+func (repository *MockMakerStorageRepository) GetMedianSlotIDs() ([]string, error) {
+	repository.GetMedianSlotIdCalled = true
+	return repository.MedianSlotIDs, repository.GetMedianSlotIdError
 }
 
 func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {

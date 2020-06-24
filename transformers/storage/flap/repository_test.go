@@ -104,7 +104,7 @@ var _ = Describe("Flap storage repository", func() {
 			setupErr := repository.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
