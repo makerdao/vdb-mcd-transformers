@@ -65,15 +65,10 @@ var _ = Describe("VowFlog EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vowFlogModel
-		err = db.Select(&dbResult, `SELECT era from maker.vow_flog`)
+		var era string
+		err = db.Get(&era, `SELECT era from maker.vow_flog`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Era).To(Equal("1577965150"))
+		Expect(era).To(Equal("1577965150"))
 	})
 })
-
-type vowFlogModel struct {
-	Era string
-}

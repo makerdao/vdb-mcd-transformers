@@ -66,14 +66,10 @@ var _ = Describe("VowFess EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vowFessModel
-		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
+		var tab string
+		err = db.Get(&tab, `SELECT tab from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
+		Expect(tab).To(Equal("4466031366353941646208178591268931635087392443453"))
 	})
 })
-
-type vowFessModel struct {
-	Tab string
-}

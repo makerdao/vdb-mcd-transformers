@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -39,9 +40,9 @@ var _ = Describe("FlapKick Transformer", func() {
 		ContractAbi:       constants.FlapABI(),
 		Topic:             constants.FlapKickSignature(),
 	}
-	//TODO: There are no flap kick events on mainnet
-	XIt("fetches and transforms a FlapKick event", func() {
-		blockNumber := int64(14883695)
+
+	It("fetches and transforms a FlapKick event", func() {
+		blockNumber := int64(9600250)
 		flapKickConfig.StartingBlockNumber = blockNumber
 		flapKickConfig.EndingBlockNumber = blockNumber
 
@@ -65,21 +66,25 @@ var _ = Describe("FlapKick Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []FlapKickModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, lot FROM maker.flap_kick`)
+		var dbResult FlapKickModel
+		err = db.Get(&dbResult, `SELECT address_id, bid, bid_id, lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("0"))
-		Expect(dbResult[0].BidId).To(Equal("46"))
-		Expect(dbResult[0].Lot).To(Equal("100000000000000000000000000000000000000000000"))
+		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		expectedModel := FlapKickModel{
+			AddressID: flapAddressID,
+			Bid:       "0",
+			BidId:     "39",
+			Lot:       "10000000000000000000000000000000000000000000000000",
+		}
+		Expect(dbResult).To(Equal(expectedModel))
 	})
 })
 
 type FlapKickModel struct {
-	BidId    string `db:"bid_id"`
-	Lot      string
-	Bid      string
-	HeaderID int64 `db:"header_id"`
-	LogID    int64 `db:"log_id"`
+	AddressID int64 `db:"address_id"`
+	Bid       string
+	BidId     string `db:"bid_id"`
+	Lot       string
 }

@@ -100,13 +100,6 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(9529100), test_data.OsmEthAddress(), msgSenderAddress, usrAddress)
 	})
 
-	// "OSM_USDC" is actually just a DS value contract right now and does not have "rely"
-	XContext("OSM USDC rely events", func() {
-		usrAddress := ""
-		msgSenderAddress := ""
-		relyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), msgSenderAddress, usrAddress)
-	})
-
 	Context("OSM WBTC rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"

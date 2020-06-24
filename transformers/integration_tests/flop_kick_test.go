@@ -59,9 +59,9 @@ var _ = Describe("FlopKick Transformer", func() {
 		addresses = event.HexStringsToAddresses(flopKickConfig.ContractAddresses)
 		topics = []common.Hash{common.HexToHash(flopKickConfig.Topic)}
 	})
-	//TODO: There are no flop kick events on Mainnet
-	XIt("fetches and transforms a FlopKick event", func() {
-		blockNumber := int64(15788324)
+
+	It("fetches and transforms a FlopKick event", func() {
+		blockNumber := int64(9724477)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
 
@@ -77,19 +77,21 @@ var _ = Describe("FlopKick Transformer", func() {
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []FlopKickModel
-		err := db.Select(&dbResult, `SELECT bid, bid_id, address_id, gal, lot FROM maker.flop_kick`)
+		var dbResult FlopKickModel
+		err := db.Get(&dbResult, `SELECT bid, bid_id, address_id, gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
 		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
 		Expect(flopAddressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("100000000000000000000000000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("2612"))
-		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))
-		Expect(dbResult[0].Gal).To(Equal("0x0F4Cbe6CBA918b7488C26E29d9ECd7368F38EA3b"))
-		Expect(dbResult[0].Lot).To(Equal("10000000000000000"))
+		expectedModel := FlopKickModel{
+			BidId:     "86",
+			Lot:       "250000000000000000000",
+			Bid:       "50000000000000000000000000000000000000000000000000",
+			Gal:       "0xA950524441892A31ebddF91d3cEEFa04Bf454466",
+			AddressID: strconv.FormatInt(flopAddressID, 10),
+		}
+		Expect(dbResult).To(Equal(expectedModel))
 	})
 })
 
@@ -99,6 +101,4 @@ type FlopKickModel struct {
 	Bid       string
 	Gal       string
 	AddressID string `db:"address_id"`
-	HeaderID  int64  `db:"header_id"`
-	LogID     int64  `db:"log_id"`
 }

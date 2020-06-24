@@ -86,12 +86,6 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8957029), test_data.OsmEthAddress(), usrAddress, usrAddress)
 	})
 
-	// "OSM_USDC" is actually just a DS value contract right now and does not have "deny"
-	XContext("OSM USDC deny events", func() {
-		usrAddress := ""
-		denyIntegrationTest(int64(1), test_data.OsmUsdcAddress(), usrAddress, usrAddress)
-	})
-
 	Context("OSM WBTC events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(9975543), test_data.OsmWbtcAddress(), usrAddress, usrAddress)

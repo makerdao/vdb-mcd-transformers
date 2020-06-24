@@ -59,9 +59,8 @@ var _ = Describe("Dent transformer", func() {
 		}
 	})
 
-	XIt("persists a flop dent log event", func() {
-		//TODO: Add block when there are flop dent events on mainnet
-		blockNumber := int64(15788325)
+	It("persists a flop dent log event", func() {
+		blockNumber := int64(9758937)
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -77,18 +76,20 @@ var _ = Describe("Dent transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []dentModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
+		var dbResult dentModel
+		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
 		flipContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("100000000000000000000000000000000000000000000"))
-		Expect(dbResult[0].BidId).To(Equal("1000"))
-		Expect(dbResult[0].Lot).To(Equal("229531987479152"))
-		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
+		expectedModel := dentModel{
+			BidId:     "90",
+			Lot:       "176522506619593998233",
+			Bid:       "50000000000000000000000000000000000000000000000000",
+			AddressId: flipContractAddressId,
+		}
+		Expect(dbResult).To(Equal(expectedModel))
 	})
 
 	It("persists a flip dent log event", func() {
