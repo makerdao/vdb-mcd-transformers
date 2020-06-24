@@ -67,15 +67,11 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 		})
 
 		It("fetches and transforms a Pot.cage event", func() {
-			var dbResult []potCageModel
-			getFileErr := db.Select(&dbResult, `SELECT id FROM maker.pot_cage`)
+			var id int64
+			err := db.Select(&id, `SELECT id FROM maker.pot_cage`)
+			Expect(err).NotTo(HaveOccurred())
 
-			Expect(getFileErr).NotTo(HaveOccurred())
-			Expect(len(dbResult)).To(Equal(1))
+			Expect(id).To(Equal(1))
 		})
 	})
 })
-
-type potCageModel struct {
-	Id string
-}

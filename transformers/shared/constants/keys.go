@@ -23,6 +23,8 @@ import (
 
 // Storage keys
 const (
+	A         types.Key = "a"
+	Address   types.Key = "address"
 	BidId     types.Key = "bid_id"
 	Cdpi      types.Key = "cdpi"
 	Flip      types.Key = "flip"
@@ -30,6 +32,7 @@ const (
 	Ilk       types.Key = "ilk"
 	MsgSender types.Key = "msg_sender"
 	Owner     types.Key = "owner"
+	SlotId    types.Key = "slot_id"
 	Timestamp types.Key = "timestamp"
 	User      types.Key = "usr"
 )

@@ -49,8 +49,8 @@ var _ = Describe("Vat Rely transformer", func() {
 		transformErr := relyTransformer.Execute(headerSyncLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []vatRelyModel
-		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_rely`)
+		var users []int64
+		err := db.Select(&users, `SELECT usr FROM maker.vat_rely`)
 		Expect(err).NotTo(HaveOccurred())
 
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
@@ -60,11 +60,7 @@ var _ = Describe("Vat Rely transformer", func() {
 		usrAddressID2, usrAddressErr2 := shared.GetOrCreateAddress(usrAddress2, db)
 		Expect(usrAddressErr2).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(2))
-		Expect(dbResult[0].Usr).To(Or(Equal(usrAddressID), Equal(usrAddressID2)))
+		Expect(len(users)).To(Equal(2))
+		Expect(users[0]).To(Or(Equal(usrAddressID), Equal(usrAddressID2)))
 	})
 })
-
-type vatRelyModel struct {
-	Usr int64 `db:"usr"`
-}
