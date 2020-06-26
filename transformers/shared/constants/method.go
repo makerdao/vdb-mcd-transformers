@@ -42,7 +42,7 @@ func OasisABI() string {
 	return GetContractsABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 }
 func OsmABI() string {
-	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT"})
+	return GetContractsABI([]string{"OSM_ETH", "OSM_BAT", "OSM_WBTC"})
 }
 func PotABI() string  { return getContractABI("MCD_POT") }
 func SpotABI() string { return getContractABI("MCD_SPOT") }
