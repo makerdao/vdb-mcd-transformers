@@ -20,7 +20,9 @@ import (
 	"fmt"
 	"math"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -32,7 +34,7 @@ func initConfig() {
 	}
 
 	if err := viper.ReadInConfig(); err == nil {
-		log.Info("Using config file:", viper.ConfigFileUsed())
+		logrus.Info("Using config file:", viper.ConfigFileUsed())
 	} else {
 		panic(fmt.Sprintf("Could not find environment file: %v", err))
 	}
@@ -43,7 +45,7 @@ func getEnvironmentString(key string) string {
 	initConfig()
 	value := viper.GetString(key)
 	if value == "" {
-		log.Fatalf("No environment configuration variable set for key: \"%v\"", key)
+		logrus.Fatalf("No environment configuration variable set for key: \"%v\"", key)
 	}
 	return value
 }
@@ -62,7 +64,7 @@ func GetTransformerContractNames(transformerLabel string) []string {
 	configKey := "exporter." + transformerLabel + ".contracts"
 	contracts := viper.GetStringSlice(configKey)
 	if len(contracts) == 0 {
-		log.Fatalf("No contracts configured for transformer: \"%v\"", transformerLabel)
+		logrus.Fatalf("No contracts configured for transformer: \"%v\"", transformerLabel)
 	}
 	return contracts
 }
@@ -72,30 +74,39 @@ func GetTransformerContractNames(transformerLabel string) []string {
 func GetContractsABI(contractNames []string) string {
 	initConfig()
 	if len(contractNames) < 1 {
-		log.Fatalf("No contracts to get ABI for")
+		logrus.Fatalf("No contracts to get ABI for")
 	}
-	abi := getContractABI(contractNames[0])
-	for _, contractName := range contractNames[:1] {
-		if abi != getContractABI(contractName) {
-			log.WithField("contracts", contractNames).Fatalf("ABIs not consistent between contracts")
+	contractABI := getContractABI(contractNames[0])
+	parsedABI, parseErr := eth.ParseAbi(contractABI)
+	if parseErr != nil {
+		panic(fmt.Sprintf("unable to parse ABI for %s", contractNames[0]))
+	}
+	for _, contractName := range contractNames[1:] {
+		nextABI := getContractABI(contractName)
+		nextParsedABI, nextParseErr := eth.ParseAbi(nextABI)
+		if nextParseErr != nil {
+			panic(fmt.Sprintf("unable to parse ABI for %s", contractName))
+		}
+		if !parsedABIsAreEqual(parsedABI, nextParsedABI) {
+			panic(fmt.Sprintf("ABIs don't match for contracts: %s", contractNames))
 		}
 	}
-	return abi
+	return contractABI
 }
 
 func getContractABI(contractName string) string {
 	configKey := "contract." + contractName + ".abi"
-	abi := viper.GetString(configKey)
-	if abi == "" {
-		log.Fatalf("No ABI configured for contract: \"%v\"", contractName)
+	contractABI := viper.GetString(configKey)
+	if contractABI == "" {
+		logrus.Fatalf("No ABI configured for contract: \"%v\"", contractName)
 	}
-	return abi
+	return contractABI
 }
 
 // Get the minimum deployment block for multiple contracts from config
 func GetMinDeploymentBlock(contractNames []string) int64 {
 	if len(contractNames) < 1 {
-		log.Fatalf("No contracts supplied")
+		logrus.Fatalf("No contracts supplied")
 	}
 	initConfig()
 	minBlock := int64(math.MaxInt64)
@@ -112,7 +123,7 @@ func getDeploymentBlock(contractName string) int64 {
 	configKey := "contract." + contractName + ".deployed"
 	value := viper.GetInt64(configKey)
 	if value == -1 {
-		log.Infof("No deployment block configured for contract \"%v\", defaulting to 0.", contractName)
+		logrus.Infof("No deployment block configured for contract \"%v\", defaulting to 0.", contractName)
 		return 0
 	}
 	return value
@@ -121,7 +132,7 @@ func getDeploymentBlock(contractName string) int64 {
 // Get the addresses for multiple contracts from config
 func GetContractAddresses(contractNames []string) (addresses []string) {
 	if len(contractNames) < 1 {
-		log.Fatalf("No contracts supplied")
+		logrus.Fatalf("No contracts supplied")
 	}
 	initConfig()
 	for _, contractName := range contractNames {
@@ -132,4 +143,31 @@ func GetContractAddresses(contractNames []string) (addresses []string) {
 
 func GetContractAddress(contract string) string {
 	return getEnvironmentString("contract." + contract + ".address")
+}
+
+func parsedABIsAreEqual(a, b abi.ABI) bool {
+	if a.Constructor.String() != b.Constructor.String() {
+		return false
+	}
+OuterMethods:
+	for ak, av := range a.Methods {
+		for bk, bv := range b.Methods {
+			if ak == bk {
+				if av.String() == bv.String() {
+					continue OuterMethods
+				}
+			}
+		}
+		return false
+	}
+OuterEvents:
+	for ak, av := range a.Events {
+		for bk, bv := range b.Events {
+			if ak == bk && av.String() == bv.String() {
+				continue OuterEvents
+			}
+		}
+		return false
+	}
+	return true
 }
