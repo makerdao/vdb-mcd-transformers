@@ -69,9 +69,9 @@ func GetTransformerContractNames(transformerLabel string) []string {
 	return contracts
 }
 
-// Get the ABI for multiple contracts from config
+// GetABIFromContractsWithMatchingABI gets the ABI for multiple contracts from config
 // Makes sure the ABI matches for all, since a single transformer may run against many contracts.
-func GetContractsABI(contractNames []string) string {
+func GetABIFromContractsWithMatchingABI(contractNames []string) string {
 	initConfig()
 	if len(contractNames) < 1 {
 		logrus.Fatalf("No contracts to get ABI for")
@@ -92,6 +92,15 @@ func GetContractsABI(contractNames []string) string {
 		}
 	}
 	return contractABI
+}
+
+// GetFirstABI returns the ABI from the first contract in a collection in config
+func GetFirstABI(contractNames []string) string {
+	initConfig()
+	if len(contractNames) < 1 {
+		logrus.Fatalf("No contracts to get ABI for")
+	}
+	return getContractABI(contractNames[0])
 }
 
 func getContractABI(contractName string) string {
