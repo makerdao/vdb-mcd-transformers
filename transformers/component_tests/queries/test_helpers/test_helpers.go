@@ -758,6 +758,16 @@ type BidEvent struct {
 	ContractAddress string `db:"contract_address"`
 }
 
+type BucketedBidTotals struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	LotStart       string `db:"lot_start"`
+	LotEnd         string `db:"lot_end"`
+	BidAmountStart string `db:"bid_amount_start"`
+	BidAmountEnd   string `db:"bid_amount_end"`
+}
+
 type IlkFileEvent struct {
 	IlkIdentifier sql.NullString `db:"ilk_identifier"`
 	What          string
