@@ -22,6 +22,10 @@ import (
 )
 
 var _ = Describe("Signature constants", func() {
+	It("generates auction file signature", func() {
+		Expect(AuctionFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates bite signature", func() {
 		Expect(BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})

@@ -24,6 +24,7 @@ const (
 
 // event tables
 const (
+	AuctionFileTable        = "auction_file"
 	BiteTable               = "bite"
 	CatFileChopLumpTable    = "cat_file_chop_lump"
 	CatFileFlipTable        = "cat_file_flip"

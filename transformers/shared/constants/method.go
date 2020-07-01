@@ -61,7 +61,8 @@ func SpotABI() string { return getContractABI("MCD_SPOT") }
 func VatABI() string  { return getContractABI("MCD_VAT") }
 func VowABI() string  { return getContractABI("MCD_VOW") }
 
-func biteMethod() string { return getSolidityFunctionSignature(CatABI(), "Bite") }
+func auctionFileMethod() string { return getSolidityFunctionSignature(FlipABI(), "file") }
+func biteMethod() string        { return getSolidityFunctionSignature(CatABI(), "Bite") }
 func catFileChopLumpMethod() string {
 	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }

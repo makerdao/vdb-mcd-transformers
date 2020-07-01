@@ -29,6 +29,7 @@ func FlipAddresses() []string {
 	return addressesResult
 }
 
+func FlipBatAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_BAT_A")) }
 func FlipEthAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A")) }
 func FlipKncAddress() string   { return checksum(constants.GetContractAddress("MCD_FLIP_KNC_A")) }
 func FlipTusdAddress() string  { return checksum(constants.GetContractAddress("MCD_FLIP_TUSD_A")) }

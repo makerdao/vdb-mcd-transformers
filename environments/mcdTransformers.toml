@@ -39,6 +39,7 @@
         "spot",
         "vat",
         "vow",
+        "auction_file",
         "bite",
         "cat_file_chop_lump",
         "cat_file_flip",
@@ -251,6 +252,15 @@
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
+        rank = "0"
+    [exporter.auction_file]
+        path = "transformers/events/auction_file/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_FLAP", "MCD_FLIP_BAT_A", "MCD_FLIP_ETH_A", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A",
+                     "MCD_FLOP"]
         rank = "0"
     [exporter.bite]
         path = "transformers/events/bite/initializer"
