@@ -74,6 +74,7 @@ import (
 	vow_fess "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess/initializer"
 	vow_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/initializer"
 	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
+	vow_heal "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal/initializer"
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
 	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
@@ -176,6 +177,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vow_fess.EventTransformerInitializer,
 			vow_file.EventTransformerInitializer,
 			vow_flog.EventTransformerInitializer,
+			vow_heal.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
 		[]storage.TransformerInitializer{

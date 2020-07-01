@@ -93,6 +93,7 @@
         "vow_fess",
         "vow_file",
         "vow_flog",
+        "vow_heal",
         "yank"
     ]
 
@@ -711,6 +712,13 @@
         rank = "0"
     [exporter.vow_flog]
         path = "transformers/events/vow_flog/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VOW"]
+        rank = "0"
+    [exporter.vow_heal]
+        path = "transformers/events/vow_heal/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

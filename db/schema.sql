@@ -12912,6 +12912,39 @@ ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
 
 
 --
+-- Name: vow_heal; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_heal (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    rad numeric
+);
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_heal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_heal_id_seq OWNED BY maker.vow_heal.id;
+
+
+--
 -- Name: vow_hump; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14761,6 +14794,13 @@ ALTER TABLE ONLY maker.vow_flog ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 --
 
 ALTER TABLE ONLY maker.vow_flopper ALTER COLUMN id SET DEFAULT nextval('maker.vow_flopper_id_seq'::regclass);
+
+
+--
+-- Name: vow_heal id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal ALTER COLUMN id SET DEFAULT nextval('maker.vow_heal_id_seq'::regclass);
 
 
 --
@@ -17718,6 +17758,22 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_heal vow_heal_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_heal vow_heal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_pkey PRIMARY KEY (id);
 
 
 --
@@ -21030,6 +21086,27 @@ CREATE INDEX vow_flog_log_index ON maker.vow_flog USING btree (log_id);
 --
 
 CREATE INDEX vow_flopper_header_id_index ON maker.vow_flopper USING btree (header_id);
+
+
+--
+-- Name: vow_heal_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_header_index ON maker.vow_heal USING btree (header_id);
+
+
+--
+-- Name: vow_heal_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_log_index ON maker.vow_heal USING btree (log_id);
+
+
+--
+-- Name: vow_heal_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_msg_sender ON maker.vow_heal USING btree (msg_sender);
 
 
 --
@@ -25593,6 +25670,30 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

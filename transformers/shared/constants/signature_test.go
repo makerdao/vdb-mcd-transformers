@@ -298,6 +298,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(VowFlogSignature()).To(Equal("0xd7ee674b00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates vow heal signature", func() {
+		Expect(VowHealSignature()).To(Equal("0xf37ac61c00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates yank signature", func() {
 		Expect(YankSignature()).To(Equal("0x26e027f100000000000000000000000000000000000000000000000000000000"))
 	})

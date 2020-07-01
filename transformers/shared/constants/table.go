@@ -95,6 +95,7 @@ const (
 	VowFessTable            = "vow_fess"
 	VowFileTable            = "vow_file"
 	VowFlogTable            = "vow_flog"
+	VowHealTable            = "vow_heal"
 	YankTable               = "yank"
 )
 
