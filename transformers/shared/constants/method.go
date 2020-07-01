@@ -29,20 +29,29 @@ func FlipABI() string {
 		"MCD_FLIP_USDC_A",
 		"MCD_FLIP_USDC_B",
 		"MCD_FLIP_WBTC_A",
+		"MCD_FLIP_ZRX_A",
 	})
 }
 func FlopABI() string { return getContractABI("MCD_FLOP") }
 func JugABI() string  { return getContractABI("MCD_JUG") }
 func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MEDIAN_ETH", "MEDIAN_BAT",
+		"MEDIAN_BAT",
+		"MEDIAN_ETH",
+		"MEDIAN_WBTC",
+		"MEDIAN_ZRX",
 	})
 }
 func OasisABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 }
 func OsmABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{"OSM_ETH", "OSM_BAT", "OSM_WBTC"})
+	return GetABIFromContractsWithMatchingABI([]string{
+		"OSM_BAT",
+		"OSM_ETH",
+		"OSM_WBTC",
+		"OSM_ZRX",
+	})
 }
 func PotABI() string  { return getContractABI("MCD_POT") }
 func SpotABI() string { return getContractABI("MCD_SPOT") }

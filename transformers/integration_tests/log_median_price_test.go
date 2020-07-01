@@ -143,6 +143,47 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		Expect(dbResults[0].Val).To(Equal("8830300000000000000000"))
 		Expect(dbResults[0].Age).To(Equal("1588280393"))
 	})
+
+	It("fetches and transforms a LogMedianPrice event on Median ZRX", func() {
+		blockNumber := int64(10351386)
+		config.StartingBlockNumber = blockNumber
+		config.EndingBlockNumber = blockNumber
+
+		test_config.CleanTestDB(db)
+
+		header, err := persistHeader(db, blockNumber, blockChain)
+		Expect(err).NotTo(HaveOccurred())
+
+		initializer := event.ConfiguredTransformer{
+			Config:      config,
+			Transformer: log_median_price.Transformer{},
+		}
+		transformer := initializer.NewTransformer(db)
+
+		medianZRXAddress := constants.GetContractAddress("MEDIAN_ZRX")
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, err := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(medianZRXAddress)},
+			[]common.Hash{common.HexToHash(config.Topic)},
+			header)
+		Expect(err).NotTo(HaveOccurred())
+
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		err = transformer.Execute(eventLogs)
+		Expect(err).NotTo(HaveOccurred())
+
+		var dbResults []logMedianPriceModel
+		err = db.Select(&dbResults, `SELECT address_id, val, age from maker.log_median_price`)
+		Expect(err).NotTo(HaveOccurred())
+		expectedAddressID, addressErr := shared.GetOrCreateAddress(medianZRXAddress, db)
+		Expect(addressErr).NotTo(HaveOccurred())
+
+		Expect(len(dbResults)).To(Equal(1))
+		Expect(dbResults[0].AddressID).To(Equal(expectedAddressID))
+		Expect(dbResults[0].Val).To(Equal("324434000000000000"))
+		Expect(dbResults[0].Age).To(Equal("1593308874"))
+	})
 })
 
 type logMedianPriceModel struct {
