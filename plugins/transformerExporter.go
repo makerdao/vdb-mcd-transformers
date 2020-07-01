@@ -81,6 +81,7 @@ import (
 	flap_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializer"
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
+	knc_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_flip"
 	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
 	tusd_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_flip"
 	usdc_a_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a_flip"
@@ -91,6 +92,7 @@ import (
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	median_bat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_bat"
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
+	median_knc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_knc"
 	median_wbtc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc"
 	median_zrx "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_zrx"
 	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
@@ -190,8 +192,10 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flap_storage.StorageTransformerInitializer,
 			flop_storage.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
+			knc_flip.StorageTransformerInitializer,
 			median_bat.StorageTransformerInitializer,
 			median_eth.StorageTransformerInitializer,
+			median_knc.StorageTransformerInitializer,
 			median_wbtc.StorageTransformerInitializer,
 			median_zrx.StorageTransformerInitializer,
 			pot.StorageTransformerInitializer,

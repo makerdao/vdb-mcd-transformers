@@ -24,6 +24,7 @@ func FlipABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLIP_BAT_A",
 		"MCD_FLIP_ETH_A",
+		"MCD_FLIP_KNC_A",
 		"MCD_FLIP_SAI",
 		"MCD_FLIP_TUSD_A",
 		"MCD_FLIP_USDC_A",
@@ -38,6 +39,7 @@ func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
 		"MEDIAN_ETH",
+		"MEDIAN_KNC",
 		"MEDIAN_WBTC",
 		"MEDIAN_ZRX",
 	})
@@ -49,6 +51,7 @@ func OsmABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"OSM_BAT",
 		"OSM_ETH",
+		"OSM_KNC",
 		"OSM_WBTC",
 		"OSM_ZRX",
 	})
