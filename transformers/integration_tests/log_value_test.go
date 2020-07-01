@@ -53,8 +53,12 @@ var _ = Describe("LogValue Transformer", func() {
 		transformer := initializer.NewTransformer(db)
 
 		logFetcher := fetcher.NewLogFetcher(blockChain)
+		var addresses []common.Address
+		for _, addr := range logValueConfig.ContractAddresses {
+			addresses = append(addresses, common.HexToAddress(addr))
+		}
 		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(logValueConfig.ContractAddresses[0])},
+			addresses,
 			[]common.Hash{common.HexToHash(logValueConfig.Topic)},
 			header)
 		Expect(err).NotTo(HaveOccurred())
@@ -64,17 +68,11 @@ var _ = Describe("LogValue Transformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []logValueModel
-		err = db.Select(&dbResult, `SELECT val from maker.log_value`)
+		var dbResults []string
+		err = db.Select(&dbResults, `SELECT val from maker.log_value`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Val).To(Equal("160720000000000000000"))
+		Expect(len(dbResults)).To(Equal(2))
+		Expect(dbResults).To(ConsistOf("213417546000000000", "160720000000000000000"))
 	})
 })
-
-type logValueModel struct {
-	Val      string
-	HeaderID int64
-	LogID    int64 `db:"log_id"`
-}

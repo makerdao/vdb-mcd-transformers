@@ -72,10 +72,10 @@ func GetTransformerContractNames(transformerLabel string) []string {
 // GetABIFromContractsWithMatchingABI gets the ABI for multiple contracts from config
 // Makes sure the ABI matches for all, since a single transformer may run against many contracts.
 func GetABIFromContractsWithMatchingABI(contractNames []string) string {
-	initConfig()
 	if len(contractNames) < 1 {
 		logrus.Fatalf("No contracts to get ABI for")
 	}
+	initConfig()
 	contractABI := getContractABI(contractNames[0])
 	parsedABI, parseErr := eth.ParseAbi(contractABI)
 	if parseErr != nil {
@@ -96,10 +96,10 @@ func GetABIFromContractsWithMatchingABI(contractNames []string) string {
 
 // GetFirstABI returns the ABI from the first contract in a collection in config
 func GetFirstABI(contractNames []string) string {
-	initConfig()
 	if len(contractNames) < 1 {
 		logrus.Fatalf("No contracts to get ABI for")
 	}
+	initConfig()
 	return getContractABI(contractNames[0])
 }
 
@@ -161,10 +161,8 @@ func parsedABIsAreEqual(a, b abi.ABI) bool {
 OuterMethods:
 	for ak, av := range a.Methods {
 		for bk, bv := range b.Methods {
-			if ak == bk {
-				if av.String() == bv.String() {
-					continue OuterMethods
-				}
+			if ak == bk && av.String() == bv.String() {
+				continue OuterMethods
 			}
 		}
 		return false
