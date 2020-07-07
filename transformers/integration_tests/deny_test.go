@@ -31,6 +31,11 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), usrAddress, usrAddress)
 	})
 
+	Context("Flip KNC deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10323245), test_data.FlipKncAddress(), usrAddress, usrAddress)
+	})
+
 	Context("Flip TUSD deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		denyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), usrAddress, usrAddress)
@@ -49,6 +54,11 @@ var _ = Describe("Deny transformer", func() {
 	Context("Flip WBTC deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		denyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip ZRX deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flop deny events", func() {
@@ -71,9 +81,19 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8957020), test_data.MedianEthAddress(), usrAddress, usrAddress)
 	})
 
+	Context("Median KNC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.MedianKncAddress(), usrAddress, usrAddress)
+	})
+
 	Context("Median WBTC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(8957027), test_data.MedianWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median ZRX deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.MedianZrxAddress(), usrAddress, usrAddress)
 	})
 
 	Context("OSM BAT deny events", func() {
@@ -86,9 +106,19 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8957029), test_data.OsmEthAddress(), usrAddress, usrAddress)
 	})
 
-	Context("OSM WBTC events", func() {
+	Context("OSM KNC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.OsmKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM WBTC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(9975543), test_data.OsmWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM ZRX deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.OsmZrxAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Pot deny events", func() {
