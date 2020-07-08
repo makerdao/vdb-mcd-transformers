@@ -3,6 +3,7 @@
 package main
 
 import (
+	auction_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file/initializer"
 	deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/deny_initializer"
 	rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/rely_initializer"
 	bite "github.com/makerdao/vdb-mcd-transformers/transformers/events/bite/initializer"
@@ -110,6 +111,7 @@ var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{
+			auction_file.EventTransformerInitializer,
 			bite.EventTransformerInitializer,
 			cat_file_chop_lump.EventTransformerInitializer,
 			cat_file_flip.EventTransformerInitializer,

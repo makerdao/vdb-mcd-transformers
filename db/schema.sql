@@ -7619,6 +7619,41 @@ ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
 
 
 --
+-- Name: auction_file; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.auction_file (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.auction_file_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.auction_file_id_seq OWNED BY maker.auction_file.id;
+
+
+--
 -- Name: bite; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13594,6 +13629,13 @@ ALTER TABLE ONLY api.managed_cdp ALTER COLUMN id SET DEFAULT nextval('api.manage
 
 
 --
+-- Name: auction_file id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file ALTER COLUMN id SET DEFAULT nextval('maker.auction_file_id_seq'::regclass);
+
+
+--
 -- Name: bite id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14967,6 +15009,22 @@ ALTER TABLE ONLY api.managed_cdp
 
 ALTER TABLE ONLY api.urn_snapshot
     ADD CONSTRAINT urn_snapshot_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
+
+
+--
+-- Name: auction_file auction_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: auction_file auction_file_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_pkey PRIMARY KEY (id);
 
 
 --
@@ -18063,6 +18121,34 @@ ALTER TABLE ONLY public.transactions
 
 ALTER TABLE ONLY public.watched_logs
     ADD CONSTRAINT watched_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auction_file_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_address_id_index ON maker.auction_file USING btree (address_id);
+
+
+--
+-- Name: auction_file_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_header_index ON maker.auction_file USING btree (header_id);
+
+
+--
+-- Name: auction_file_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_log_index ON maker.auction_file USING btree (log_id);
+
+
+--
+-- Name: auction_file_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_msg_sender_index ON maker.auction_file USING btree (msg_sender);
 
 
 --
@@ -21647,6 +21733,38 @@ CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE PROCEDURE ma
 --
 
 CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECUTE PROCEDURE public.set_header_updated();
+
+
+--
+-- Name: auction_file auction_file_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
