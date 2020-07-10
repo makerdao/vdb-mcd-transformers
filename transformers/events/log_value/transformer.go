@@ -17,67 +17,48 @@
 package log_value
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
 type Transformer struct{}
 
 const Val event.ColumnName = "val"
 
-func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]LogValueEntity, error) {
-	var entities []LogValueEntity
-	for _, log := range logs {
-		var entity LogValueEntity
-		address := log.Log.Address
-		abi, parseErr := eth.ParseAbi(contractAbi)
-		if parseErr != nil {
-			return nil, parseErr
-		}
-
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		unpackErr := contract.UnpackLog(&entity, "LogValue", log.Log)
-		if unpackErr != nil {
-			return nil, unpackErr
-		}
-
-		entity.HeaderID = log.HeaderID
-		entity.LogID = log.ID
-		entities = append(entities, entity)
-	}
-
-	return entities, nil
-}
-
-func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
-	entities, entityErr := t.toEntities(abi, logs)
-	if entityErr != nil {
-		return nil, fmt.Errorf("transformer couldn't convert logs to entities: %v", entityErr)
-	}
-
+func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
-	for _, logValueEntity := range entities {
-		bigIntVal := new(big.Int).SetBytes(logValueEntity.Val[:])
+	for _, log := range logs {
+
+		err := shared.VerifyLog(log.Log, shared.OneTopicRequired, shared.LogDataRequired)
+		if err != nil {
+			return nil, err
+		}
+
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
+		if contractAddressErr != nil {
+			return nil, err
+		}
+
+		bigIntVal := new(big.Int)
+		bigIntVal.SetBytes(log.Log.Data)
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogValueTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, Val,
+				event.HeaderFK, event.LogFK, event.AddressFK, constants.ValColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK: logValueEntity.HeaderID,
-				event.LogFK:    logValueEntity.LogID,
-				Val:            shared.BigIntToString(bigIntVal),
+				event.AddressFK:     contractAddressID,
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				constants.ValColumn: shared.BigIntToString(bigIntVal),
 			},
 		}
 		models = append(models, model)
