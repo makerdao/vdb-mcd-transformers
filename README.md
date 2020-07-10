@@ -141,7 +141,7 @@ This instruction enables you to point at a fork or the local filesystem for depe
 shell's `$PATH`.
 
 ### Exposing the data
-[Postgraphile](https://www.graphile.org/postgraphile/) is used to expose GraphQL endpoints for our database schemas, this is described in detail [here](documentation/postgraphile.md).
+[Postgraphile](https://www.graphile.org/postgraphile/) is used to expose GraphQL endpoints for our database schemas, this is described in detail [here](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/postgraphile.md).
 
 ### Tests
 - Set the ipc path to a Kovan node either by:
@@ -156,7 +156,7 @@ Contributions are welcome!
 
 VulcanizeDB follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct).
 
-For more information on contributing, please see [here](documentation/contributing.md).
+For more information on contributing, please see [here](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/contributing.md).
 
 ## License
 [AGPL-3.0](LICENSE) © Vulcanize Inc
