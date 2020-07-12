@@ -70,7 +70,7 @@ var _ = Describe("Time Flip Bid Totals query", func() {
 		flipKickEvent.ColumnValues[event.LogFK] = flipKickLog.ID
 		flipKickEvent.ColumnValues[event.AddressFK] = addressId
 		flipKickEvent.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidId)
-		flipKickEvent.ColumnValues[constants.BidColumn] = strconv.Itoa(bid)
+		flipKickEvent.ColumnValues[constants.BidColumn] = strconv.Itoa(0)
 		flipKickEvent.ColumnValues[constants.LotColumn] = strconv.Itoa(lot)
 		flipKickErr := event.PersistModels([]event.InsertionModel{flipKickEvent}, db)
 		Expect(flipKickErr).NotTo(HaveOccurred())
@@ -139,9 +139,6 @@ var _ = Describe("Time Flip Bid Totals query", func() {
 				DealHeaderId:    headerThree.Id,
 			})
 			Expect(flipDealErr).NotTo(HaveOccurred())
-
-			flipStorageValuesBlockThree := test_helpers.GetFlipStorageValues(3, test_helpers.FakeIlk.Hex, bidId)
-			test_helpers.CreateFlip(db, headerThree, flipStorageValuesBlockThree, test_helpers.GetFlipMetadatas(strconv.Itoa(bidId)), contractAddress)
 
 			var actualBidTotals []test_helpers.BucketedBidTotals
 			queryErr := db.Select(&actualBidTotals, `SELECT bucket_start, bucket_end, bucket_interval, lot_start, lot_end, bid_amount_start, bid_amount_end FROM api.time_flip_bid_totals($1, $2, $3, '1 hour'::INTERVAL)`, test_helpers.FakeIlk.Identifier, dateStart, dateEnd)
