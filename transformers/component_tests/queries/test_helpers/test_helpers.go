@@ -782,6 +782,15 @@ type FrobEvent struct {
 	Rate          string `db:"ilk_rate"`
 }
 
+type BucketedBiteTotals struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	Ink            string
+	Art            string
+	Tab            string
+}
+
 type BiteEvent struct {
 	IlkIdentifier string `db:"ilk_identifier"`
 	UrnIdentifier string `db:"urn_identifier"`
