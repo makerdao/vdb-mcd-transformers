@@ -55,8 +55,8 @@ var _ = Describe("VowFileAuctionAddress LogNoteTransformer", func() {
 		executeErr := tr.Execute(eventLogs)
 		Expect(executeErr).NotTo(HaveOccurred())
 
-		var dbResult []vowFileAuctionAddressModel
-		getVowFileErr := db.Select(&dbResult, `SELECT msg_sender, what, data from maker.vow_file_auction_address`)
+		var dbResult vowFileAuctionAddressModel
+		getVowFileErr := db.Get(&dbResult, `SELECT msg_sender, what, data from maker.vow_file_auction_address`)
 		Expect(getVowFileErr).NotTo(HaveOccurred())
 
 		var msgSenderId int64
@@ -69,10 +69,9 @@ var _ = Describe("VowFileAuctionAddress LogNoteTransformer", func() {
 		getDataAddressIdErr := db.Get(&dataAddressId, `SELECT id FROM public.addresses WHERE address = $1`, dataAddress)
 		Expect(getDataAddressIdErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].MsgSender).To(Equal(msgSenderId))
-		Expect(dbResult[0].What).To(Equal("flopper"))
-		Expect(dbResult[0].Data).To(Equal(dataAddressId))
+		Expect(dbResult.MsgSender).To(Equal(msgSenderId))
+		Expect(dbResult.What).To(Equal("flopper"))
+		Expect(dbResult.Data).To(Equal(dataAddressId))
 	})
 })
 

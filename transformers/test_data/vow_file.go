@@ -69,7 +69,7 @@ var VowFileModel = event.InsertionModel{
 var rawVowFileAuctionAddressLog = types.Log{
 	Address: common.HexToAddress(VowAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.VowFileSignature()),
+		common.HexToHash(constants.VowFileAuctionAddressSignature()),
 		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
 		common.HexToHash("0x666c6f7070657200000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x0000000000000000000000004d95a049d5b0b7d32058cd3f2163015747522e99"),

@@ -39,11 +39,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
 				constants.MsgSenderColumn: msgSenderAddressId,
-				constants.WhatColumn: what,
-				constants.DataColumn: dataAddressId,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      dataAddressId,
 			},
 		}
 
