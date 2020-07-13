@@ -77,17 +77,22 @@ var _ = Describe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult dentModel
-		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
+		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, msg_sender, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		msgSender := common.HexToAddress("0xe06ac4777f04ac7638f736a0b95f7bfeadcee556").Hex()
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		expectedModel := dentModel{
 			BidId:     "90",
 			Lot:       "176522506619593998233",
 			Bid:       "50000000000000000000000000000000000000000000000000",
-			AddressId: flipContractAddressId,
+			MsgSender: msgSenderId,
+			AddressId: flopContractAddressId,
 		}
 		Expect(dbResult).To(Equal(expectedModel))
 	})
@@ -109,18 +114,22 @@ var _ = Describe("Dent transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []dentModel
-		err = db.Select(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
+		var dbResult dentModel
+		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, msg_sender, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
 		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("111871106928171434728687324748784117143125320430"))
-		Expect(dbResult[0].BidId).To(Equal("119"))
-		Expect(dbResult[0].Lot).To(Equal("903984178994823415"))
-		Expect(dbResult[0].AddressId).To(Equal(flipContractAddressId))
+		msgSender := common.HexToAddress("0xabe7471ec9b6953a3bd0ed3c06c46f29aa4280").Hex()
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.Bid).To(Equal("111871106928171434728687324748784117143125320430"))
+		Expect(dbResult.BidId).To(Equal("119"))
+		Expect(dbResult.Lot).To(Equal("903984178994823415"))
+		Expect(dbResult.MsgSender).To(Equal(msgSenderId))
+		Expect(dbResult.AddressId).To(Equal(flipContractAddressId))
 	})
 })
 
@@ -129,4 +138,5 @@ type dentModel struct {
 	Lot       string
 	Bid       string
 	AddressId int64 `db:"address_id"`
+	MsgSender int64 `db:"msg_sender"`
 }

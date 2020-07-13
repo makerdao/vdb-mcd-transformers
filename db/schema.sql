@@ -8322,6 +8322,7 @@ CREATE TABLE maker.dent (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
+    msg_sender integer NOT NULL,
     address_id integer NOT NULL
 );
 
@@ -18529,6 +18530,13 @@ CREATE INDEX dent_log_index ON maker.dent USING btree (log_id);
 
 
 --
+-- Name: dent_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dent_msg_sender_index ON maker.dent USING btree (msg_sender);
+
+
+--
 -- Name: deny_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22346,6 +22354,14 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.dent
     ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dent dent_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dent
+    ADD CONSTRAINT dent_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

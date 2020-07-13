@@ -68,7 +68,7 @@ var dentModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DentTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+		event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        DentEventLog.HeaderID,
