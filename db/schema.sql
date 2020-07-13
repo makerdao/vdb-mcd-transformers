@@ -12839,6 +12839,7 @@ CREATE TABLE maker.vow_file_auction_address (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data integer NOT NULL
 );
@@ -21197,6 +21198,13 @@ CREATE INDEX vow_file_auction_address_header_index ON maker.vow_file_auction_add
 
 
 --
+-- Name: vow_file_auction_address_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction_address USING btree (msg_sender);
+
+
+--
 -- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25826,6 +25834,14 @@ ALTER TABLE ONLY maker.vow_file_auction_address
 
 ALTER TABLE ONLY maker.vow_file_auction_address
     ADD CONSTRAINT vow_file_auction_address_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

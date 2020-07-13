@@ -96,7 +96,7 @@ var vowFileAuctionAddressModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFileAuctionAddressTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "flopper",

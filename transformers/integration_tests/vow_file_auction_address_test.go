@@ -1,19 +1,3 @@
-// VulcanizeDB
-// Copyright © 2019 Vulcanize
-
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package integration_tests
 
 import (
@@ -72,21 +56,28 @@ var _ = Describe("VowFileAuctionAddress LogNoteTransformer", func() {
 		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult []vowFileAuctionAddressModel
-		getVowFileErr := db.Select(&dbResult, `SELECT what, data from maker.vow_file_auction_address`)
+		getVowFileErr := db.Select(&dbResult, `SELECT msg_sender, what, data from maker.vow_file_auction_address`)
 		Expect(getVowFileErr).NotTo(HaveOccurred())
 
-		var addressId int64
-		address := common.HexToAddress("0x4d95a049d5b0b7d32058cd3f2163015747522e99").Hex()
-		getAddressIdErr := db.Get(&addressId, `SELECT id FROM public.addresses WHERE address = $1`, address)
-		Expect(getAddressIdErr).NotTo(HaveOccurred())
+		var msgSenderId int64
+		msgSenderAddress := common.HexToAddress("0xbe8e3e3618f7474f8cb1d074a26affef007e98fb").Hex()
+		getMsgSenderIdErr := db.Get(&msgSenderId, `SELECT id FROM public.addresses WHERE address = $1`, msgSenderAddress)
+		Expect(getMsgSenderIdErr).NotTo(HaveOccurred())
+
+		var dataAddressId int64
+		dataAddress := common.HexToAddress("0x4d95a049d5b0b7d32058cd3f2163015747522e99").Hex()
+		getDataAddressIdErr := db.Get(&dataAddressId, `SELECT id FROM public.addresses WHERE address = $1`, dataAddress)
+		Expect(getDataAddressIdErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
+		Expect(dbResult[0].MsgSender).To(Equal(msgSenderId))
 		Expect(dbResult[0].What).To(Equal("flopper"))
-		Expect(dbResult[0].Data).To(Equal(addressId))
+		Expect(dbResult[0].Data).To(Equal(dataAddressId))
 	})
 })
 
 type vowFileAuctionAddressModel struct {
-	What string
-	Data int64
+	MsgSender int64 `db:"msg_sender"`
+	What      string
+	Data      int64
 }

@@ -19,6 +19,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, verifyLogErr
 		}
 
+		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
+		msgSenderAddressId, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		if msgSenderAddressErr != nil {
+			return nil, msgSenderAddressErr
+		}
+
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		dataAddress := common.HexToAddress(log.Log.Topics[3].Hex()).Hex()
 		dataAddressId, dataAddressErr := shared.GetOrCreateAddress(dataAddress, db)
@@ -30,11 +36,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFileAuctionAddressTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+				event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:       log.HeaderID,
 				event.LogFK:          log.ID,
+				constants.MsgSenderColumn: msgSenderAddressId,
 				constants.WhatColumn: what,
 				constants.DataColumn: dataAddressId,
 			},

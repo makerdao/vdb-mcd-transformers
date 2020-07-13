@@ -31,8 +31,14 @@ var _ = Describe("Vow file auction contract transformer", func() {
 			common.HexToAddress(test_data.VowFileAuctionAddressEventLog.Log.Topics[3].Hex()).Hex())
 		Expect(dataAddressErr).NotTo(HaveOccurred())
 
+		var msgSenderAddressID int64
+		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
+			common.HexToAddress(test_data.VowFileAuctionAddressEventLog.Log.Topics[1].Hex()).Hex())
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.VowFileAuctionAddressModel()
 		expectedModel.ColumnValues[constants.DataColumn] = dataAddressID
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 
 		Expect(models).To(ConsistOf(expectedModel))
 	})
