@@ -8,6 +8,7 @@ CREATE TABLE maker.tend
     lot        NUMERIC,
     bid        NUMERIC,
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
@@ -17,11 +18,9 @@ CREATE INDEX tend_log_index
     ON maker.tend (log_id);
 CREATE INDEX tend_address_index
     ON maker.tend (address_id);
+CREATE INDEX tend_msg_sender_index
+    ON maker.tend (msg_sender);
 
 
 -- +goose Down
-DROP INDEX maker.tend_address_index;
-DROP INDEX maker.tend_log_index;
-DROP INDEX maker.tend_header_index;
-
 DROP TABLE maker.tend;

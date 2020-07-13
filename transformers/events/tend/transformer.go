@@ -40,6 +40,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(log.Log.Topics[1].String(), db)
+		if msgSenderAddressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderAddressErr)
+		}
+
 		bidId := log.Log.Topics[2].Big()
 		lot := log.Log.Topics[3].Big().String()
 		rawBid, bidErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
@@ -52,15 +57,16 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TendTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+				event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.AddressFK:       addressID,
-				event.LogFK:           log.ID,
-				constants.BidIDColumn: bidId.String(),
-				constants.LotColumn:   lot,
-				constants.BidColumn:   bidValue,
+				event.HeaderFK:            log.HeaderID,
+				event.AddressFK:           addressID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderAddressID,
+				constants.BidIDColumn:     bidId.String(),
+				constants.LotColumn:       lot,
+				constants.BidColumn:       bidValue,
 			},
 		}
 		models = append(models, model)
