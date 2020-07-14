@@ -634,11 +634,14 @@ func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, db
 func CreateTend(input TendCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
+	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.TendEventLog.Log.Topics[1].Hex(), input.DB)
+	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 	tendModel := test_data.TendModel()
 	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.DB)
 	tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	tendModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
 	tendModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
+	tendModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 	tendModel.ColumnValues[event.AddressFK] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID

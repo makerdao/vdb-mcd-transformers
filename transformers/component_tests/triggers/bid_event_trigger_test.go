@@ -17,6 +17,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -101,11 +102,17 @@ var _ = Describe("Updating bid_event table", func() {
 		address := test_data.FlipEthAddress()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
+
+		fakeMsgSenderAddress := fakes.RandomString(42)
+		fakeMsgSenderAddressID, fakeMsgSenderAddressErr := shared.GetOrCreateAddress(fakeMsgSenderAddress, db)
+		Expect(fakeMsgSenderAddressErr).NotTo(HaveOccurred())
+
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		tendModel := test_data.TendModel()
 		tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		tendModel.ColumnValues[event.AddressFK] = addressID
 		tendModel.ColumnValues[event.LogFK] = logID
+		tendModel.ColumnValues[constants.MsgSenderColumn] = fakeMsgSenderAddressID
 		expectedEvent := expectedBidEvent(tendModel, "tend", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
@@ -342,6 +349,10 @@ var _ = Describe("Updating bid_event table", func() {
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 
+			fakeMsgSenderAddress := fakes.RandomString(42)
+			fakeMsgSenderAddressID, fakeMsgSenderAddressErr := shared.GetOrCreateAddress(fakeMsgSenderAddress, db)
+			Expect(fakeMsgSenderAddressErr).NotTo(HaveOccurred())
+
 			bidOneID = rand.Int()
 			bidTwoID = bidOneID + 1
 			usrOne = common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
@@ -373,6 +384,7 @@ var _ = Describe("Updating bid_event table", func() {
 			tendModel.ColumnValues[event.AddressFK] = ethFlipAddressID
 			tendModel.ColumnValues[event.LogFK] = logTwoID
 			tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidOneID)
+			tendModel.ColumnValues[constants.MsgSenderColumn] = fakeMsgSenderAddressID
 			insertTendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
 			Expect(insertTendErr).NotTo(HaveOccurred())
 

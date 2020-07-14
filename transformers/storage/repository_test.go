@@ -795,9 +795,12 @@ func insertFlopKicks(blockNumber int64, kicks string, contractAddressID int64, d
 func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	tendLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidID, 0, 0, contractAddressID, tendLog.ID,
+	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(tendLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
+		headerID, bidID, 0, 0, contractAddressID, tendLog.ID, msgSenderAddressID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
