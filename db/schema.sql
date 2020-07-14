@@ -8283,8 +8283,9 @@ CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    bid_id numeric NOT NULL
 );
 
 
@@ -18482,6 +18483,13 @@ CREATE INDEX deal_log_index ON maker.deal USING btree (log_id);
 
 
 --
+-- Name: deal_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_msg_sender_index ON maker.deal USING btree (msg_sender);
+
+
+--
 -- Name: dent_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22258,6 +22266,14 @@ ALTER TABLE ONLY maker.deal
 
 ALTER TABLE ONLY maker.deal
     ADD CONSTRAINT deal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deal deal_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deal
+    ADD CONSTRAINT deal_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
