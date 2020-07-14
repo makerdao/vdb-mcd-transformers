@@ -69,6 +69,9 @@ var _ = Describe("Maker storage repository", func() {
 		address             = fakes.FakeAddress.Hex()
 		addressID           int64
 		addressErr          error
+		msgSender           = fakes.FakeAddress.Hex()
+		msgSenderID           int64
+		msgSenderErr          error
 		db                  = test_config.NewTestDB(test_config.NewTestNode())
 		repository          storage.IMakerStorageRepository
 		ilk1                = common.HexToHash("0x494c4b31").Hex()
@@ -90,6 +93,8 @@ var _ = Describe("Maker storage repository", func() {
 		test_config.CleanTestDB(db)
 		repository = &storage.MakerStorageRepository{}
 		repository.SetDB(db)
+		msgSenderID, msgSenderErr = shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 		addressID, addressErr = shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 	})
@@ -537,7 +542,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlipKick(2, bidID2, addressID, db)
 			insertFlipKicks(3, bidID3, addressID, db)
 			insertTend(4, bidID4, addressID, db)
-			insertDent(5, bidID5, addressID, db)
+			insertDent(5, bidID5, msgSenderID, addressID, db)
 			insertDeal(6, bidID6, addressID, db)
 			insertYank(7, bidID7, addressID, db)
 			insertYank(8, duplicateBidID, addressID, db)
@@ -578,7 +583,7 @@ var _ = Describe("Maker storage repository", func() {
 			duplicateBidID := bidID1
 			insertFlopKick(1, bidID1, addressID, db)
 			insertFlopKicks(2, bidID2, addressID, db)
-			insertDent(3, bidID3, addressID, db)
+			insertDent(3, bidID3, msgSenderID, addressID, db)
 			insertDeal(4, bidID4, addressID, db)
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, duplicateBidID, addressID, db)
@@ -595,7 +600,7 @@ var _ = Describe("Maker storage repository", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertFlopKick(1, bidID1, addressID, db)
 			insertFlopKick(2, bidID2, addressID, db)
-			insertDent(3, bidID3, addressID, db)
+			insertDent(3, bidID3, msgSenderID, addressID, db)
 			insertDeal(4, bidID4, addressID, db)
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, bidID6, anotherAddressID, db)
@@ -807,12 +812,12 @@ func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *po
 	Expect(tendErr).NotTo(HaveOccurred())
 }
 
-func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
+func insertDent(blockNumber int64, bidID string, msgSenderID, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dentLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidID, 0, 0, contractAddressID, dentLog.ID,
+	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, msg_sender, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
+		headerID, bidID, 0, 0, msgSenderID, contractAddressID, dentLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }

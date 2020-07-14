@@ -14,6 +14,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -24,6 +25,7 @@ var _ = Describe("Flop bid events query", func() {
 		blockOne, timestampOne int
 		headerOne              core.Header
 		contractAddress        string
+		msgSender              string
 		fakeBidId              int
 		flopKickEvent          event.InsertionModel
 	)
@@ -34,6 +36,7 @@ var _ = Describe("Flop bid events query", func() {
 
 		fakeBidId = rand.Int()
 		contractAddress = "0x763ztv6x68exwqrgtl325e7hrcvavid4e3fcb4g"
+		msgSender = fakes.FakeAddress.Hex()
 
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
@@ -62,6 +65,7 @@ var _ = Describe("Flop bid events query", func() {
 			flopDentErr := test_helpers.CreateDent(test_helpers.DentCreationInput{
 				DB:              db,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				BidId:           fakeBidId,
 				Lot:             fakeLot,
 				BidAmount:       fakeBidAmount,
@@ -121,6 +125,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             lotOne,
 				BidAmount:       bidAmountOne,
 				DentHeaderId:    headerOne.Id,
@@ -133,6 +138,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           bidIdTwo,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             lotTwo,
 				BidAmount:       bidAmountTwo,
 				DentHeaderId:    headerOne.Id,
@@ -194,6 +200,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             lot,
 				BidAmount:       bidAmount,
 				DentHeaderId:    headerOne.Id,
@@ -208,6 +215,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             updatedLot,
 				BidAmount:       updatedBidAmount,
 				DentHeaderId:    headerTwo.Id,
@@ -223,6 +231,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: "flap contract address",
+				MsgSender:       msgSender,
 				Lot:             lot,
 				BidAmount:       bidAmount,
 				DentHeaderId:    headerThree.Id,
@@ -286,6 +295,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             fakeLot,
 				BidAmount:       fakeBidAmount,
 				DentHeaderId:    headerOne.Id,
@@ -430,6 +440,7 @@ var _ = Describe("Flop bid events query", func() {
 				DB:              db,
 				BidId:           fakeBidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             updatedLot,
 				BidAmount:       updatedBidAmount,
 				DentHeaderId:    headerTwo.Id,

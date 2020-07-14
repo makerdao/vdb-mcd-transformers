@@ -62,13 +62,13 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.LogFK:           log.ID,
-				event.AddressFK:       addressID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
-				constants.BidIDColumn: bidId.String(),
-				constants.LotColumn:   lot.String(),
-				constants.BidColumn:   bid.String(),
+				constants.BidIDColumn:     bidId.String(),
+				constants.LotColumn:       lot.String(),
+				constants.BidColumn:       bid.String(),
 			},
 		}
 		models = append(models, model)

@@ -41,6 +41,7 @@ var _ = Describe("All flip bid events query", func() {
 		headerRepo             datastore.HeaderRepository
 		contractAddress        = fakes.FakeAddress.Hex()
 		anotherContractAddress = common.HexToAddress("0xabcdef123456789").Hex()
+		msgSender              = fakes.FakeAddress.Hex()
 		addressId              int64
 		bidId                  int
 		blockOne, timestampOne int
@@ -109,6 +110,7 @@ var _ = Describe("All flip bid events query", func() {
 				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
 				DentHeaderId:    headerOne.Id,
@@ -171,6 +173,7 @@ var _ = Describe("All flip bid events query", func() {
 				DB:              db,
 				BidId:           bidId,
 				ContractAddress: contractAddress,
+				MsgSender:       msgSender,
 				Lot:             dentLot,
 				BidAmount:       dentBidAmount,
 				DentHeaderId:    headerThree.Id,
@@ -405,6 +408,7 @@ var _ = Describe("All flip bid events query", func() {
 					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
+					MsgSender:       msgSender,
 					Lot:             lotOne,
 					BidAmount:       bidAmountOne,
 					DentHeaderId:    headerOne.Id,
@@ -419,6 +423,7 @@ var _ = Describe("All flip bid events query", func() {
 					DB:              db,
 					BidId:           bidId,
 					ContractAddress: contractAddress,
+					MsgSender:       msgSender,
 					Lot:             lotTwo,
 					BidAmount:       bidAmountTwo,
 					DentHeaderId:    headerTwo.Id,
@@ -443,6 +448,7 @@ var _ = Describe("All flip bid events query", func() {
 					DB:              db,
 					BidId:           bidId,
 					ContractAddress: anotherContractAddress,
+					MsgSender:       msgSender,
 					Lot:             rand.Int(),
 					BidAmount:       rand.Int(),
 					DentHeaderId:    headerOne.Id,

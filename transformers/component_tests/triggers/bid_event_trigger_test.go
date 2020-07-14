@@ -17,6 +17,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -123,10 +124,14 @@ var _ = Describe("Updating bid_event table", func() {
 		address := test_data.FlipEthAddress()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
+		msgSender := fakes.FakeAddress.Hex()
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		dentModel := test_data.DentModel()
 		dentModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		dentModel.ColumnValues[event.AddressFK] = addressID
+		dentModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 		dentModel.ColumnValues[event.LogFK] = logID
 		expectedEvent := expectedBidEvent(dentModel, "dent", address, headerOne.BlockNumber)
 
