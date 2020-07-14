@@ -97,6 +97,7 @@
         "vat_suck",
         "vow_fess",
         "vow_file",
+        "vow_file_auction_address",
         "vow_flog",
         "vow_heal",
         "yank"
@@ -745,6 +746,13 @@
         rank = "0"
     [exporter.vow_file]
         path = "transformers/events/vow_file/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_VOW"]
+        rank = "0"
+    [exporter.vow_file_auction_address]
+        path = "transformers/events/vow_file/auction_address/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

@@ -172,7 +172,12 @@ func vatNopeMethod() string { return getSolidityFunctionSignature(VatABI(), "nop
 func vatSlipMethod() string { return getSolidityFunctionSignature(VatABI(), "slip") }
 func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suck") }
 func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }
-func vowFileMethod() string { return getSolidityFunctionSignature(VowABI(), "file") }
+func vowFileMethod() string {
+	return getOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "uint256"})
+}
+func vowFileAuctionAddressMethod() string {
+	return getOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "address"})
+}
 func vowFlogMethod() string { return getSolidityFunctionSignature(VowABI(), "flog") }
 func vowHealMethod() string { return getSolidityFunctionSignature(VowABI(), "heal") }
 func yankMethod() string    { return getSolidityFunctionSignature(FlipABI(), "yank") }

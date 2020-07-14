@@ -12832,6 +12832,40 @@ CREATE TABLE maker.vow_file (
 
 
 --
+-- Name: vow_file_auction_address; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_file_auction_address (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data integer NOT NULL
+);
+
+
+--
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_file_auction_address_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_file_auction_address_id_seq OWNED BY maker.vow_file_auction_address.id;
+
+
+--
 -- Name: vow_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -14816,6 +14850,13 @@ ALTER TABLE ONLY maker.vow_fess ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 --
 
 ALTER TABLE ONLY maker.vow_file ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_id_seq'::regclass);
+
+
+--
+-- Name: vow_file_auction_address id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_address_id_seq'::regclass);
 
 
 --
@@ -17753,6 +17794,22 @@ ALTER TABLE ONLY maker.vow_fess
 
 ALTER TABLE ONLY maker.vow_fess
     ADD CONSTRAINT vow_fess_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_pkey PRIMARY KEY (id);
 
 
 --
@@ -21127,6 +21184,27 @@ CREATE INDEX vow_fess_log_index ON maker.vow_fess USING btree (log_id);
 
 
 --
+-- Name: vow_file_auction_address_data_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_data_index ON maker.vow_file_auction_address USING btree (data);
+
+
+--
+-- Name: vow_file_auction_address_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_header_index ON maker.vow_file_auction_address USING btree (header_id);
+
+
+--
+-- Name: vow_file_auction_address_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction_address USING btree (msg_sender);
+
+
+--
 -- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -21250,6 +21328,13 @@ CREATE INDEX vow_vat_header_id_index ON maker.vow_vat USING btree (header_id);
 --
 
 CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
+
+
+--
+-- Name: vvow_file_auction_address_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vvow_file_auction_address_log_index ON maker.vow_file_auction_address USING btree (log_id);
 
 
 --
@@ -25725,6 +25810,38 @@ ALTER TABLE ONLY maker.vow_fess
 
 ALTER TABLE ONLY maker.vow_fess
     ADD CONSTRAINT vow_fess_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_data_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_data_fkey FOREIGN KEY (data) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
