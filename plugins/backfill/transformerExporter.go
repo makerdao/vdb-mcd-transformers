@@ -3,12 +3,14 @@
 package main
 
 import (
+	auction_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file/initializer"
 	deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/deny_initializer"
 	rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/rely_initializer"
 	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
 	flip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick/initializer"
 	log_kill "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_kill/initializer"
+	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
 	median_diss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch/initializer"
 	median_diss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single/initializer"
 	median_drop "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_drop/initializer"
@@ -30,11 +32,13 @@ var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{
+			auction_file.EventTransformerInitializer,
 			deal.EventTransformerInitializer,
 			dent.EventTransformerInitializer,
 			deny.EventTransformerInitializer,
 			flip_kick.EventTransformerInitializer,
 			log_kill.EventTransformerInitializer,
+			log_value.EventTransformerInitializer,
 			median_diss_batch.EventTransformerInitializer,
 			median_diss_single.EventTransformerInitializer,
 			median_drop.EventTransformerInitializer,
