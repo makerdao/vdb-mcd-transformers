@@ -44,15 +44,12 @@ var _ = Describe("Tend transformer", func() {
 			models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.TendEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
-			var addressID, msgSenderAddressID int64
-
-			addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
-			Expect(addrErr).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.TendEventLog.Log.Address.String(), db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
 			expectedModel := test_data.TendModel()
-			expectedModel.ColumnValues[event.AddressFK] = addressID
+			expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 
-			msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
-				common.HexToAddress(test_data.TendEventLog.Log.Topics[1].Hex()).Hex())
+			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.TendEventLog.Log.Topics[1].Hex(), db)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 

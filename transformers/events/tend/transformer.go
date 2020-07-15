@@ -57,7 +57,13 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TendTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+				event.HeaderFK,
+				event.AddressFK,
+				event.LogFK,
+				constants.MsgSenderColumn,
+				constants.BidIDColumn,
+				constants.LotColumn,
+				constants.BidColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,

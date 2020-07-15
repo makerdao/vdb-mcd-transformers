@@ -18,6 +18,7 @@ package storage_test
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -795,6 +796,13 @@ func insertFlopKicks(blockNumber int64, kicks string, contractAddressID int64, d
 func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	tendLog := test_data.CreateTestLog(headerID, db)
+	tendLog.Log.Topics = []common.Hash{
+		common.HexToHash(constants.TendSignature()),
+		common.HexToHash("0x0000000000000000000000003a673843d27d037b206bb05eb1abbc7288d95e66"),
+		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
+		common.HexToHash("0x000000000000000000000000000000000000000000000000000007bb0f7b0800"),
+	}
+
 	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(tendLog.Log.Topics[1].Hex(), db)
 	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 

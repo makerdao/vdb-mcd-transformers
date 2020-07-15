@@ -23,7 +23,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -66,13 +65,8 @@ func CreateTestHeader(db *postgres.DB) int64 {
 // Create a header sync log to reference in an event, returning inserted header sync log
 func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
 	log := types.Log{
-		Address: common.Address{},
-		Topics: []common.Hash{
-			common.HexToHash(constants.TendSignature()),
-			common.HexToHash("0x0000000000000000000000003a673843d27d037b206bb05eb1abbc7288d95e66"),
-			common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
-			common.HexToHash("0x000000000000000000000000000000000000000000000000000007bb0f7b0800"),
-		},
+		Address:     common.Address{},
+		Topics:      nil,
 		Data:        nil,
 		BlockNumber: 0,
 		TxHash:      common.HexToHash("0x" + RandomString(64)),
