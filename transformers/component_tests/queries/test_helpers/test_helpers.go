@@ -649,7 +649,8 @@ func CreateTend(input TendCreationInput) (err error) {
 func CreateDent(input DentCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(input.MsgSender, input.DB)
+	// TODO: pass the msgSender address in DentCreationInput
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DentMsgSender, input.DB)
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
 	dentModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
@@ -706,7 +707,6 @@ type TendCreationInput struct {
 type DentCreationInput struct {
 	DB              *postgres.DB
 	ContractAddress string
-	MsgSender       string
 	BidId           int
 	Lot             int
 	BidAmount       int

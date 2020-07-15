@@ -22,7 +22,6 @@ var _ = Describe("Flop computed columns", func() {
 	var (
 		headerRepo             datastore.HeaderRepository
 		contractAddress        = fakes.RandomString(42)
-		msgSender              = fakes.RandomString(42)
 		fakeBidId              = rand.Int()
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -153,7 +152,6 @@ var _ = Describe("Flop computed columns", func() {
 					DB:              db,
 					BidId:           fakeBidId,
 					ContractAddress: contractAddress,
-					MsgSender:       msgSender,
 					Lot:             dentLot,
 					BidAmount:       dentBid,
 					DentHeaderId:    headerTwo.Id,

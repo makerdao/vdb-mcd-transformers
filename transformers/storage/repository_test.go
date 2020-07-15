@@ -70,8 +70,8 @@ var _ = Describe("Maker storage repository", func() {
 		addressID           int64
 		addressErr          error
 		msgSender           = fakes.FakeAddress.Hex()
-		msgSenderID           int64
-		msgSenderErr          error
+		msgSenderID         int64
+		msgSenderErr        error
 		db                  = test_config.NewTestDB(test_config.NewTestNode())
 		repository          storage.IMakerStorageRepository
 		ilk1                = common.HexToHash("0x494c4b31").Hex()
