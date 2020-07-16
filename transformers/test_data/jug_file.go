@@ -31,9 +31,9 @@ import (
 )
 
 var (
-	jugFileIlkTopic1              = "0x000000000000000000000000127232c33f9b051e3703294de3c1e03e15f8a33f"
-	JugFileIlkMsgSender       = shared.GetChecksumAddressString(jugFileIlkTopic1)
-	rawJugFileIlkLog = types.Log{
+	jugFileIlkTopic1    = "0x000000000000000000000000127232c33f9b051e3703294de3c1e03e15f8a33f"
+	JugFileIlkMsgSender = shared.GetChecksumAddressString(jugFileIlkTopic1)
+	rawJugFileIlkLog    = types.Log{
 		Address: common.HexToAddress(JugAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.JugFileIlkSignature()),
@@ -49,110 +49,114 @@ var (
 		Index:       1,
 		Removed:     false,
 	}
+
+	JugFileIlkEventLog = core.EventLog{
+		ID:          int64(rand.Int31()),
+		HeaderID:    int64(rand.Int31()),
+		Log:         rawJugFileIlkLog,
+		Transformed: false,
+	}
+
+	jugFileIlkModel = event.InsertionModel{
+		SchemaName: constants.MakerSchema,
+		TableName:  constants.JugFileIlkTable,
+		OrderedColumns: []event.ColumnName{
+			event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
+		},
+		ColumnValues: event.ColumnValues{
+			constants.WhatColumn: "duty",
+			constants.DataColumn: "1000000000937303470807876289",
+			event.HeaderFK:       JugFileIlkEventLog.HeaderID,
+			event.LogFK:          JugFileIlkEventLog.ID,
+			// Ilk ID
+			// MsgSender
+		},
+	}
 )
-
-var JugFileIlkEventLog = core.EventLog{
-	ID:          int64(rand.Int31()),
-	HeaderID:    int64(rand.Int31()),
-	Log:         rawJugFileIlkLog,
-	Transformed: false,
-}
-
-var jugFileIlkModel = event.InsertionModel{
-	SchemaName: constants.MakerSchema,
-	TableName:  constants.JugFileIlkTable,
-	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
-	},
-	ColumnValues: event.ColumnValues{
-		constants.WhatColumn: "duty",
-		constants.DataColumn: "1000000000937303470807876289",
-		event.HeaderFK:       JugFileIlkEventLog.HeaderID,
-		event.LogFK:          JugFileIlkEventLog.ID,
-		// Ilk ID
-		// MsgSender
-	},
-}
 
 func JugFileIlkModel() event.InsertionModel { return CopyModel(jugFileIlkModel) }
 
-var rawJugFileBaseLog = types.Log{
-	Address: common.HexToAddress(JugAddress()),
-	Topics: []common.Hash{
-		common.HexToHash(constants.JugFileBaseSignature()),
-		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
-		common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
-	},
-	Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004429ae811466616b6520776861740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007b"),
-	BlockNumber: 36,
-	TxHash:      common.HexToHash("0xeeaa16de1d91c239b66773e8c2116a26cfeaaf5d962b31466c9bf047a5caa20f"),
-	TxIndex:     13,
-	BlockHash:   fakes.FakeHash,
-	Index:       16,
-	Removed:     false,
-}
+var (
+	rawJugFileBaseLog = types.Log{
+		Address: common.HexToAddress(JugAddress()),
+		Topics: []common.Hash{
+			common.HexToHash(constants.JugFileBaseSignature()),
+			common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
+			common.HexToHash("0x66616b6520776861740000000000000000000000000000000000000000000000"),
+			common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000007b"),
+		},
+		Data:        hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004429ae811466616b6520776861740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007b"),
+		BlockNumber: 36,
+		TxHash:      common.HexToHash("0xeeaa16de1d91c239b66773e8c2116a26cfeaaf5d962b31466c9bf047a5caa20f"),
+		TxIndex:     13,
+		BlockHash:   fakes.FakeHash,
+		Index:       16,
+		Removed:     false,
+	}
 
-var JugFileBaseEventLog = core.EventLog{
-	ID:          int64(rand.Int31()),
-	HeaderID:    int64(rand.Int31()),
-	Log:         rawJugFileBaseLog,
-	Transformed: false,
-}
+	JugFileBaseEventLog = core.EventLog{
+		ID:          int64(rand.Int31()),
+		HeaderID:    int64(rand.Int31()),
+		Log:         rawJugFileBaseLog,
+		Transformed: false,
+	}
 
-var jugFileBaseModel = event.InsertionModel{
-	SchemaName: constants.MakerSchema,
-	TableName:  constants.JugFileBaseTable,
-	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
-	},
-	ColumnValues: event.ColumnValues{
-		event.HeaderFK:       JugFileBaseEventLog.HeaderID,
-		event.LogFK:          JugFileBaseEventLog.ID,
-		constants.WhatColumn: "fake what",
-		constants.DataColumn: big.NewInt(123).String(),
-		// constants.MsgSender
-	},
-}
+	jugFileBaseModel = event.InsertionModel{
+		SchemaName: constants.MakerSchema,
+		TableName:  constants.JugFileBaseTable,
+		OrderedColumns: []event.ColumnName{
+			event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
+		},
+		ColumnValues: event.ColumnValues{
+			event.HeaderFK:       JugFileBaseEventLog.HeaderID,
+			event.LogFK:          JugFileBaseEventLog.ID,
+			constants.WhatColumn: "fake what",
+			constants.DataColumn: big.NewInt(123).String(),
+			// constants.MsgSender
+		},
+	}
+)
 
 func JugFileBaseModel() event.InsertionModel { return CopyModel(jugFileBaseModel) }
 
-var rawJugFileVowLog = types.Log{
-	Address: common.HexToAddress(JugAddress()),
-	Topics: []common.Hash{
-		common.HexToHash(constants.JugFileVowSignature()),
-		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
-		common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x00000000000000000000000017560834075da3db54f737db74377e799c865821"),
-	},
-	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000044e9b674b9766f77000000000000000000000000000000000000000000000000000000000017560834075da3db54f737db74377e799c86582100000000000000000000000000000000000000000000000000000000000000000000000000000000"),
-	BlockNumber: 51,
-	TxHash:      common.HexToHash("0x586e26b71b41fcd6905044dbe8f0cca300517542278f74a9b925c4f800fed85c"),
-	TxIndex:     14,
-	BlockHash:   fakes.FakeHash,
-	Index:       17,
-	Removed:     false,
-}
+var (
+	rawJugFileVowLog = types.Log{
+		Address: common.HexToAddress(JugAddress()),
+		Topics: []common.Hash{
+			common.HexToHash(constants.JugFileVowSignature()),
+			common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
+			common.HexToHash("0x766f770000000000000000000000000000000000000000000000000000000000"),
+			common.HexToHash("0x00000000000000000000000017560834075da3db54f737db74377e799c865821"),
+		},
+		Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000044e9b674b9766f77000000000000000000000000000000000000000000000000000000000017560834075da3db54f737db74377e799c86582100000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		BlockNumber: 51,
+		TxHash:      common.HexToHash("0x586e26b71b41fcd6905044dbe8f0cca300517542278f74a9b925c4f800fed85c"),
+		TxIndex:     14,
+		BlockHash:   fakes.FakeHash,
+		Index:       17,
+		Removed:     false,
+	}
 
-var JugFileVowEventLog = core.EventLog{
-	ID:          int64(rand.Int31()),
-	HeaderID:    int64(rand.Int31()),
-	Log:         rawJugFileVowLog,
-	Transformed: false,
-}
+	JugFileVowEventLog = core.EventLog{
+		ID:          int64(rand.Int31()),
+		HeaderID:    int64(rand.Int31()),
+		Log:         rawJugFileVowLog,
+		Transformed: false,
+	}
 
-var jugFileVowModel = event.InsertionModel{
-	SchemaName: constants.MakerSchema,
-	TableName:  constants.JugFileVowTable,
-	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
-	},
-	ColumnValues: event.ColumnValues{
-		constants.WhatColumn: "vow",
-		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
-		event.HeaderFK:       JugFileVowEventLog.HeaderID,
-		event.LogFK:          JugFileVowEventLog.ID,
-	},
-}
+	jugFileVowModel = event.InsertionModel{
+		SchemaName: constants.MakerSchema,
+		TableName:  constants.JugFileVowTable,
+		OrderedColumns: []event.ColumnName{
+			event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
+		},
+		ColumnValues: event.ColumnValues{
+			constants.WhatColumn: "vow",
+			constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
+			event.HeaderFK:       JugFileVowEventLog.HeaderID,
+			event.LogFK:          JugFileVowEventLog.ID,
+		},
+	}
+)
 
 func JugFileVowModel() event.InsertionModel { return CopyModel(jugFileVowModel) }
