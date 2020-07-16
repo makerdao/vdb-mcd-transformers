@@ -23,28 +23,33 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
-var rawJugFileIlkLog = types.Log{
-	Address: common.HexToAddress(JugAddress()),
-	Topics: []common.Hash{
-		common.HexToHash(constants.JugFileIlkSignature()),
-		common.HexToHash("0x000000000000000000000000127232c33f9b051e3703294de3c1e03e15f8a33f"),
-		common.HexToHash("0x434f4c322d410000000000000000000000000000000000000000000000000000"),
-		common.HexToHash("0x6475747900000000000000000000000000000000000000000000000000000000"),
-	},
-	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e01a0b287e434f4c322d41000000000000000000000000000000000000000000000000000064757479000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000033b2e3cacd278c7503e82c100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
-	BlockNumber: 10980334,
-	TxHash:      common.HexToHash("0xa38f6bb83ae8c1bd239c883e3553e71d712db77bb3954851cc6ed5468a821613"),
-	TxIndex:     2,
-	BlockHash:   fakes.FakeHash,
-	Index:       1,
-	Removed:     false,
-}
+var (
+	jugFileIlkTopic1              = "0x000000000000000000000000127232c33f9b051e3703294de3c1e03e15f8a33f"
+	JugFileIlkMsgSender       = shared.GetChecksumAddressString(jugFileIlkTopic1)
+	rawJugFileIlkLog = types.Log{
+		Address: common.HexToAddress(JugAddress()),
+		Topics: []common.Hash{
+			common.HexToHash(constants.JugFileIlkSignature()),
+			common.HexToHash(jugFileIlkTopic1),
+			common.HexToHash("0x434f4c322d410000000000000000000000000000000000000000000000000000"),
+			common.HexToHash("0x6475747900000000000000000000000000000000000000000000000000000000"),
+		},
+		Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e01a0b287e434f4c322d41000000000000000000000000000000000000000000000000000064757479000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000033b2e3cacd278c7503e82c100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		BlockNumber: 10980334,
+		TxHash:      common.HexToHash("0xa38f6bb83ae8c1bd239c883e3553e71d712db77bb3954851cc6ed5468a821613"),
+		TxIndex:     2,
+		BlockHash:   fakes.FakeHash,
+		Index:       1,
+		Removed:     false,
+	}
+)
 
 var JugFileIlkEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
@@ -57,14 +62,15 @@ var jugFileIlkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileIlkTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "duty",
 		constants.DataColumn: "1000000000937303470807876289",
+		event.HeaderFK:       JugFileIlkEventLog.HeaderID,
+		event.LogFK:          JugFileIlkEventLog.ID,
 		// Ilk ID
-		event.HeaderFK: JugFileIlkEventLog.HeaderID,
-		event.LogFK:    JugFileIlkEventLog.ID,
+		// MsgSender
 	},
 }
 
