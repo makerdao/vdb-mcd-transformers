@@ -165,8 +165,8 @@ var _ = Describe("Cat File transformer", func() {
 
 	It("persists a vow event", func() {
 		vowBlockNumber := int64(8928165)
-		header, err := persistHeader(db, vowBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, vowBlockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 		catFileConfig.TransformerName = constants.CatFileVowTable
 		catFileConfig.Topic = constants.CatFileVowSignature()
 		catFileConfig.StartingBlockNumber = vowBlockNumber
@@ -178,24 +178,25 @@ var _ = Describe("Cat File transformer", func() {
 		}
 		t := initializer.NewTransformer(db)
 
-		logs, err := logFetcher.FetchLogs(
+		logs, logsErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
 			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
 			header)
-		Expect(err).NotTo(HaveOccurred())
+		Expect(logsErr).NotTo(HaveOccurred())
 
 		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = t.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, vowBlockNumber)
-		Expect(err).NotTo(HaveOccurred())
+		executeErr := t.Execute(eventLogs)
+		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult catFileVowModel
-		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
-		Expect(err).NotTo(HaveOccurred())
+		getErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.cat_file_vow`)
+		Expect(getErr).NotTo(HaveOccurred())
+
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		Expect(dbResult.What).To(Equal("vow"))
 		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
 	})
@@ -214,6 +215,7 @@ type catFileFlipModel struct {
 }
 
 type catFileVowModel struct {
-	What string
-	Data string
+	MsgSender int64 `db:"msg_sender"`
+	What      string
+	Data      string
 }
