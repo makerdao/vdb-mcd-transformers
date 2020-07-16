@@ -27,12 +27,18 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
+		}
+
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, msgSenderErr
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
@@ -42,13 +48,14 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugFileVowTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+				event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.WhatColumn: what,
-				constants.DataColumn: data,
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderId,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data,
 			},
 		}
 		models = append(models, model)
