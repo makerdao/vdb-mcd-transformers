@@ -18,7 +18,9 @@ package vow_fess_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -27,7 +29,14 @@ import (
 )
 
 var _ = Describe("Vow fess transformer", func() {
-	var transformer = vow_fess.Transformer{}
+	var (
+		transformer = vow_fess.Transformer{}
+		db = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.EventLog{
@@ -35,15 +44,21 @@ var _ = Describe("Vow fess transformer", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFessEventLog}, nil)
-
+		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFessEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
+
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VowFessModel()
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VowFessModel))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

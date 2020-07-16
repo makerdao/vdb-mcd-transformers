@@ -36,16 +36,25 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		tab := log.Log.Topics[2].Big()
 
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFessTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.TabColumn,
+				event.HeaderFK,
+				event.LogFK,
+				constants.MsgSenderColumn,
+				constants.TabColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      log.HeaderID,
-				event.LogFK:         log.ID,
-				constants.TabColumn: tab.String(),
+				event.HeaderFK:      		log.HeaderID,
+				event.LogFK:         		log.ID,
+				constants.MsgSenderColumn:	msgSenderID,
+				constants.TabColumn: 		tab.String(),
 			},
 		}
 		models = append(models, model)
