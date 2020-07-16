@@ -25,5 +25,5 @@ import (
 
 func TestFlopKick(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "FlopKick Suite")
+	RunSpecs(t, "FlopKick Event Transformer Suite")
 }

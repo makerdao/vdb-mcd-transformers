@@ -13,16 +13,17 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Urn view", func() {
+var _ = Describe("All Urns function", func() {
 	var (
-		vatRepo                vat.VatStorageRepository
-		headerRepo             repositories.HeaderRepository
+		vatRepo                vat.StorageRepository
+		headerRepo             datastore.HeaderRepository
 		headerOne              core.Header
 		blockOne, timestampOne int
 		urnOne                 string
@@ -35,7 +36,7 @@ var _ = Describe("Urn view", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatRepo = vat.VatStorageRepository{}
+		vatRepo = vat.StorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 
@@ -49,7 +50,7 @@ var _ = Describe("Urn view", func() {
 		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
-	It("gets an urn", func() {
+	It("returns one urn", func() {
 		setupData := helper.GetUrnSetupData()
 		metadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
 		helper.CreateUrn(db, setupData, headerOne, metadata, vatRepo)
@@ -85,7 +86,7 @@ var _ = Describe("Urn view", func() {
 		expectedUrnOne := helper.UrnState{
 			UrnIdentifier: urnOne,
 			IlkIdentifier: helper.FakeIlk.Identifier,
-			BlockHeight:   blockTwo,
+			BlockHeight:   blockOne,
 			Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
 			Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
 			Created:       helper.GetValidNullString(expectedTimestamp),
@@ -113,6 +114,39 @@ var _ = Describe("Urn view", func() {
 
 		helper.AssertUrn(result[0], expectedUrnOne)
 		helper.AssertUrn(result[1], expectedUrnTwo)
+	})
+
+	It("returns only the most recent urn for multiple snapshots of the same urn", func() {
+		oldUrnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		oldUrnSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(db, oldUrnSetupData, headerOne, oldUrnMetadata, vatRepo)
+
+		newUrnBlock := blockOne + 1
+		newUrnTimestamp := timestampOne + 1
+		newUrnHeader := createHeader(newUrnBlock, newUrnTimestamp, headerRepo)
+
+		newUrnMetadata := helper.GetUrnMetadata(helper.FakeIlk.Hex, urnOne)
+		newUrnSetupData := helper.GetUrnSetupData()
+		helper.CreateUrn(db, newUrnSetupData, newUrnHeader, newUrnMetadata, vatRepo)
+
+		createdTimestamp := helper.GetExpectedTimestamp(timestampOne)
+		expectedTimestamp := helper.GetExpectedTimestamp(newUrnTimestamp)
+		expectedUrn := helper.UrnState{
+			UrnIdentifier: urnOne,
+			IlkIdentifier: helper.FakeIlk.Identifier,
+			BlockHeight:   newUrnBlock,
+			Ink:           strconv.Itoa(newUrnSetupData[vat.UrnInk].(int)),
+			Art:           strconv.Itoa(newUrnSetupData[vat.UrnArt].(int)),
+			Created:       helper.GetValidNullString(createdTimestamp),
+			Updated:       helper.GetValidNullString(expectedTimestamp),
+		}
+
+		var result []helper.UrnState
+		err = db.Select(&result, allUrnsQuery, newUrnBlock)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(result)).To(Equal(1))
+		helper.AssertUrn(result[0], expectedUrn)
 	})
 
 	It("returns available data if urn has ink but no art", func() {
@@ -163,46 +197,26 @@ var _ = Describe("Urn view", func() {
 		})
 
 		It("limits results if max_results argument is provided", func() {
-			expectedTimestamp := helper.GetExpectedTimestamp(timestampTwo)
-			expectedUrn := helper.UrnState{
-				UrnIdentifier: urnTwo,
-				IlkIdentifier: helper.AnotherFakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnTwoSetupData[vat.UrnInk].(int)),
-				Art:           strconv.Itoa(urnTwoSetupData[vat.UrnArt].(int)),
-				Created:       helper.GetValidNullString(expectedTimestamp),
-				Updated:       helper.GetValidNullString(expectedTimestamp),
-			}
-
 			maxResults := 1
 			var result []helper.UrnState
+
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
 			FROM api.all_urns($1, $2)`, blockTwo, maxResults)
+
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(len(result)).To(Equal(maxResults))
-			helper.AssertUrn(result[0], expectedUrn)
 		})
 
 		It("offsets results if offset is provided", func() {
-			expectedTimestamp := helper.GetExpectedTimestamp(timestampOne)
-			expectedUrn := helper.UrnState{
-				UrnIdentifier: urnOne,
-				IlkIdentifier: helper.FakeIlk.Identifier,
-				Ink:           strconv.Itoa(urnOneSetupData[vat.UrnInk].(int)),
-				Art:           strconv.Itoa(urnOneSetupData[vat.UrnArt].(int)),
-				Created:       helper.GetValidNullString(expectedTimestamp),
-				Updated:       helper.GetValidNullString(expectedTimestamp),
-			}
-
-			maxResults := 1
+			maxResults := 2 // We'll only get 1 because of the offset of 1, and a total of 2
 			resultOffset := 1
+
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
 			FROM api.all_urns($1, $2, $3)`, blockTwo, maxResults, resultOffset)
-			Expect(err).NotTo(HaveOccurred())
 
-			Expect(len(result)).To(Equal(maxResults))
-			helper.AssertUrn(result[0], expectedUrn)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(result)).To(Equal(1))
 		})
 	})
 

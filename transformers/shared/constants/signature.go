@@ -16,6 +16,7 @@
 
 package constants
 
+func AuctionFileSignature() string        { return getLogNoteTopicZero(auctionFileMethod()) }
 func BiteSignature() string               { return getEventTopicZero(biteMethod()) }
 func CatFileChopLumpSignature() string    { return getLogNoteTopicZero(catFileChopLumpMethod()) }
 func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFlipMethod()) }
@@ -32,9 +33,14 @@ func JugFileIlkSignature() string         { return getLogNoteTopicZero(jugFileIl
 func JugFileVowSignature() string         { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string            { return getLogNoteTopicZero(jugInitMethod()) }
 func LogBumpSignature() string            { return getEventTopicZero(logBumpEvent()) }
+func LogBuyEnabledSignature() string      { return getEventTopicZero(logBuyEnabledEvent()) }
+func LogDeleteSignature() string          { return getEventTopicZero(logDeleteEvent()) }
+func LogInsertSignature() string          { return getEventTopicZero(logInsertEvent()) }
 func LogItemUpdateSignature() string      { return getEventTopicZero(logItemUpdateEvent()) }
 func LogKillSignature() string            { return getEventTopicZero(logKillEvent()) }
 func LogMakeSignature() string            { return getEventTopicZero(logMakeEvent()) }
+func LogMatchingEnabledSignature() string { return getEventTopicZero(logMatchingEnabledEvent()) }
+func LogMedianPriceSignature() string     { return getEventTopicZero(logMedianPriceEvent()) }
 func LogMinSellSignature() string         { return getEventTopicZero(logMinSellEvent()) }
 func LogSortedOfferSignature() string     { return getEventTopicZero(logSortedOfferMethod()) }
 func LogTakeSignature() string            { return getEventTopicZero(logTakeEvent()) }
@@ -56,6 +62,7 @@ func PotFileDSRSignature() string         { return getLogNoteTopicZero(potFileDS
 func PotFileVowSignature() string         { return getLogNoteTopicZero(potFileVowMethod()) }
 func PotJoinSignature() string            { return getLogNoteTopicZero(potJoinMethod()) }
 func RelySignature() string               { return getLogNoteTopicZero(relyMethod()) }
+func SetMinSellSignature() string         { return getLogNoteTopicZero(setMinSellMethod()) }
 func SpotFileMatSignature() string        { return getLogNoteTopicZero(spotFileMatMethod()) }
 func SpotFileParSignature() string        { return getLogNoteTopicZero(spotFileParMethod()) }
 func SpotFilePipSignature() string        { return getLogNoteTopicZero(spotFilePipMethod()) }
@@ -78,5 +85,9 @@ func VatSlipSignature() string            { return getLogNoteTopicZero(vatSlipMe
 func VatSuckSignature() string            { return getLogNoteTopicZero(vatSuckMethod()) }
 func VowFessSignature() string            { return getLogNoteTopicZero(vowFessMethod()) }
 func VowFileSignature() string            { return getLogNoteTopicZero(vowFileMethod()) }
-func VowFlogSignature() string            { return getLogNoteTopicZero(vowFlogMethod()) }
-func YankSignature() string               { return getLogNoteTopicZero(yankMethod()) }
+func VowFileAuctionAddressSignature() string {
+	return getLogNoteTopicZero(vowFileAuctionAddressMethod())
+}
+func VowFlogSignature() string { return getLogNoteTopicZero(vowFlogMethod()) }
+func VowHealSignature() string { return getLogNoteTopicZero(vowHealMethod()) }
+func YankSignature() string    { return getLogNoteTopicZero(yankMethod()) }

@@ -1,6 +1,8 @@
 package integration_tests
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
@@ -24,9 +26,39 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8928163), test_data.FlapAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Flip deny events", func() {
-		usrAddress := "0xbab4fbea257abbfe84f4588d4eedc43656e46fc5"
-		denyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), usrAddress, usrAddress)
+	Context("Flip ETH deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip KNC deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10323245), test_data.FlipKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip TUSD deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-B deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10144450), test_data.FlipUsdcBAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip WBTC deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip ZRX deny events", func() {
+		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		denyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Flop deny events", func() {
@@ -37,6 +69,56 @@ var _ = Describe("Deny transformer", func() {
 	Context("Jug deny events", func() {
 		usrAddress := "0x45f0a929889ec8cc2d5b8cd79ab55e3279945cde"
 		denyIntegrationTest(int64(8928160), test_data.JugAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median BAT deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957024), test_data.MedianBatAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median ETH deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957020), test_data.MedianEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median KNC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.MedianKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median WBTC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957027), test_data.MedianWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median ZRX deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.MedianZrxAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM BAT deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957031), test_data.OsmBatAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM ETH deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(8957029), test_data.OsmEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM KNC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.OsmKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM WBTC deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(9975543), test_data.OsmWbtcAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM ZRX deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10350821), test_data.OsmZrxAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Pot deny events", func() {
@@ -98,10 +180,16 @@ func denyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddress
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddressHex, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
-		Expect(dbResult[0].MsgSender).To(Equal(msgSenderAddressID))
-		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
+		var matchFound bool
+		for _, result := range dbResult {
+			if result.AddressID == contractAddressID &&
+				result.MsgSender == msgSenderAddressID &&
+				result.Usr == usrAddressID {
+				matchFound = true
+			}
+		}
+
+		Expect(matchFound).To(BeTrue(), getDenyFailureMessage(contractAddressHex, blockNumber))
 	})
 }
 
@@ -109,4 +197,9 @@ type denyModel struct {
 	Usr       int64 `db:"usr"`
 	MsgSender int64 `db:"msg_sender"`
 	AddressID int64 `db:"address_id"`
+}
+
+func getDenyFailureMessage(contractAddress string, blockNumber int64) string {
+	failureMsgToFmt := "no matching deny event found for contract %s at block %d"
+	return fmt.Sprintf(failureMsgToFmt, contractAddress, blockNumber)
 }

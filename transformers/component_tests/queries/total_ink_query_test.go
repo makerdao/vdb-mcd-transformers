@@ -17,7 +17,7 @@ import (
 
 var _ = Describe("total ink query", func() {
 	var (
-		vatRepo                vat.VatStorageRepository
+		vatRepo                vat.StorageRepository
 		headerRepo             datastore.HeaderRepository
 		urnOne                 string
 		urnTwo                 string
@@ -27,7 +27,7 @@ var _ = Describe("total ink query", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatRepo = vat.VatStorageRepository{}
+		vatRepo = vat.StorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

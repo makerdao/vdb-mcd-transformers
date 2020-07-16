@@ -28,6 +28,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -37,7 +38,7 @@ import (
 var _ = Describe("flip_bid_snapshot computed columns", func() {
 	var (
 		headerOne              core.Header
-		headerRepository       repositories.HeaderRepository
+		headerRepository       datastore.HeaderRepository
 		logId                  int64
 		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              int
@@ -96,7 +97,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 		It("returns urn_state for a flip_bid_snapshot", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
-			vatRepository := vat.VatStorageRepository{}
+			vatRepository := vat.StorageRepository{}
 			vatRepository.SetDB(db)
 			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 

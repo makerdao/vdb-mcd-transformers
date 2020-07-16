@@ -40,16 +40,16 @@ const (
 	insertLiveQuery       = `INSERT INTO maker.vow_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
-type VowStorageRepository struct {
+type StorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
 
-func (repository *VowStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository VowStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
@@ -82,80 +82,106 @@ func (repository VowStorageRepository) Create(diffID, headerID int64, metadata t
 	}
 }
 
-func (repository VowStorageRepository) insertVowVat(diffID, headerID int64, vat string) error {
+func (repository StorageRepository) insertVowVat(diffID, headerID int64, vat string) error {
 	_, err := repository.db.Exec(insertVatQuery, diffID, headerID, vat)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow vat %s from diff ID %d: %w", vat, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowFlapper(diffID, headerID int64, flapper string) error {
+func (repository StorageRepository) insertVowFlapper(diffID, headerID int64, flapper string) error {
 	_, err := repository.db.Exec(insertFlapperQuery, diffID, headerID, flapper)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow flapper %s from diff ID %d: %w", flapper, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowFlopper(diffID, headerID int64, flopper string) error {
+func (repository StorageRepository) insertVowFlopper(diffID, headerID int64, flopper string) error {
 	_, err := repository.db.Exec(insertFlopperQuery, diffID, headerID, flopper)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow flopper %s from diff ID %d: %w", flopper, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertSinInteger(diffID, headerID int64, sin string) error {
+func (repository StorageRepository) insertSinInteger(diffID, headerID int64, sin string) error {
 	_, err := repository.db.Exec(insertSinIntegerQuery, diffID, headerID, sin)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow sin integer %s, from diff ID %d: %w", sin, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertSinMapping(diffID, headerID int64, metadata types.ValueMetadata, sin string) error {
+func (repository StorageRepository) insertSinMapping(diffID, headerID int64, metadata types.ValueMetadata, sin string) error {
 	timestamp, err := getTimestamp(metadata.Keys)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting timestamp for vow sin mapping: %w", err)
 	}
-	_, writeErr := repository.db.Exec(insertSinMappingQuery, diffID, headerID, timestamp, sin)
-
-	return writeErr
+	_, insertErr := repository.db.Exec(insertSinMappingQuery, diffID, headerID, timestamp, sin)
+	if insertErr != nil {
+		msgToFormat := "error inserting vow sin mapping with timestamp %s and sin %s from diff ID %d"
+		msg := fmt.Sprintf(msgToFormat, timestamp, sin, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowAsh(diffID, headerID int64, ash string) error {
+func (repository StorageRepository) insertVowAsh(diffID, headerID int64, ash string) error {
 	_, err := repository.db.Exec(insertAshQuery, diffID, headerID, ash)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow ash %s from diff ID %d: %w", ash, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowWait(diffID, headerID int64, wait string) error {
+func (repository StorageRepository) insertVowWait(diffID, headerID int64, wait string) error {
 	_, err := repository.db.Exec(insertWaitQuery, diffID, headerID, wait)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow wait %s from diff ID %d: %w", wait, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowDump(diffID, headerID int64, dump string) error {
+func (repository StorageRepository) insertVowDump(diffID, headerID int64, dump string) error {
 	_, err := repository.db.Exec(insertDumpQuery, diffID, headerID, dump)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow dump %s from diff ID %d: %w", dump, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowSump(diffID, headerID int64, sump string) error {
+func (repository StorageRepository) insertVowSump(diffID, headerID int64, sump string) error {
 	_, err := repository.db.Exec(insertSumpQuery, diffID, headerID, sump)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow sump %s from diff ID %d: %w", sump, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowBump(diffID, headerID int64, bump string) error {
+func (repository StorageRepository) insertVowBump(diffID, headerID int64, bump string) error {
 	_, err := repository.db.Exec(insertBumpQuery, diffID, headerID, bump)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow bump %s from diff ID %d: %w", bump, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowHump(diffID, headerID int64, hump string) error {
+func (repository StorageRepository) insertVowHump(diffID, headerID int64, hump string) error {
 	_, err := repository.db.Exec(insertHumpQuery, diffID, headerID, hump)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow hump %s from diff ID %d: %w", hump, diffID, err)
+	}
+	return nil
 }
 
-func (repository VowStorageRepository) insertVowLive(diffID, headerID int64, live string) error {
+func (repository StorageRepository) insertVowLive(diffID, headerID int64, live string) error {
 	_, err := repository.db.Exec(insertLiveQuery, diffID, headerID, live)
-
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting vow live %s from diff ID %d: %w", live, diffID, err)
+	}
+	return nil
 }
 
 func getTimestamp(keys map[types.Key]string) (string, error) {

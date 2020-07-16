@@ -19,7 +19,7 @@ import (
 var _ = XDescribe("OsmChange EventTransformer", func() {
 	osmChangeConfig := event.TransformerConfig{
 		TransformerName:   constants.OsmChangeTable,
-		ContractAddresses: []string{test_data.EthOsmAddress()},
+		ContractAddresses: []string{test_data.OsmEthAddress()},
 		ContractAbi:       constants.OsmABI(),
 		Topic:             constants.OsmChangeSignature(),
 	}

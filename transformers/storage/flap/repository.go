@@ -15,7 +15,7 @@ const (
 	insertVatQuery    = `INSERT INTO maker.flap_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertGemQuery    = `INSERT INTO maker.flap_gem (diff_id, header_id, address_id, gem) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertBegQuery    = `INSERT INTO maker.flap_beg (diff_id, header_id, address_id, beg) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertTtlQuery    = `INSERT INTO maker.flap_ttl (diff_id, header_id, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertTTLQuery    = `INSERT INTO maker.flap_ttl (diff_id, header_id, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertTauQuery    = `INSERT INTO maker.flap_tau (diff_id, header_id, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertKicksQuery  = `INSERT INTO maker.flap_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertLiveQuery   = `INSERT INTO maker.flap_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -26,12 +26,12 @@ const (
 	insertBidEndQuery = `INSERT INTO maker.flap_bid_end (diff_id, header_id, address_id, bid_id, "end") VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
-type FlapStorageRepository struct {
+type StorageRepository struct {
 	db              *postgres.DB
 	ContractAddress string
 }
 
-func (repository *FlapStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
@@ -56,84 +56,137 @@ func (repository *FlapStorageRepository) Create(diffID, headerID int64, metadata
 	}
 }
 
-func (repository *FlapStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *FlapStorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertVatQuery, vat)
-}
-
-func (repository *FlapStorageRepository) insertGem(diffID, headerID int64, gem string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertGemQuery, gem)
-}
-
-func (repository *FlapStorageRepository) insertBeg(diffID, headerID int64, beg string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertBegQuery, beg)
-}
-
-func (repository *FlapStorageRepository) insertTtl(diffID, headerID int64, ttl string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertTtlQuery, ttl)
-}
-
-func (repository *FlapStorageRepository) insertTau(diffID, headerID int64, tau string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertTauQuery, tau)
-}
-
-func (repository *FlapStorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, InsertKicksQuery, kicks)
-}
-
-func (repository *FlapStorageRepository) insertLive(diffID, headerID int64, live string) error {
-	return repository.insertRecordWithAddress(diffID, headerID, insertLiveQuery, live)
-}
-
-func (repository *FlapStorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
-	bidId, err := getBidId(metadata.Keys)
+func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertVatQuery, vat, repository.ContractAddress, repository.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting flap vat %s from diff ID %d: %w", vat, diffID, err)
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidBidQuery, bidId, bid)
+	return nil
 }
 
-func (repository *FlapStorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
-	bidId, err := getBidId(metadata.Keys)
+func (repository *StorageRepository) insertGem(diffID, headerID int64, gem string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertGemQuery, gem, repository.ContractAddress, repository.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting flap gem %s from diff ID %d: %w", gem, diffID, err)
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidLotQuery, bidId, lot)
+	return nil
 }
 
-func (repository *FlapStorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
-	bidId, err := getBidId(metadata.Keys)
+func (repository *StorageRepository) insertBeg(diffID, headerID int64, beg string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertBegQuery, beg, repository.ContractAddress, repository.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting flap beg %s from diff ID %d: %w", beg, diffID, err)
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidGuyQuery, bidId, guy)
+	return nil
 }
 
-func (repository *FlapStorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
-	bidId, err := getBidId(metadata.Keys)
+func (repository *StorageRepository) insertTTL(diffID, headerID int64, ttl string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertTTLQuery, ttl, repository.ContractAddress, repository.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting flap ttl %s from diff ID %d: %w", ttl, diffID, err)
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidTicQuery, bidId, tic)
+	return nil
 }
 
-func (repository *FlapStorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
-	bidId, err := getBidId(metadata.Keys)
+func (repository *StorageRepository) insertTau(diffID, headerID int64, tau string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertTauQuery, tau, repository.ContractAddress, repository.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting flap tau %s from diff ID %d: %w", tau, diffID, err)
 	}
-	return repository.insertRecordWithAddressAndBidId(diffID, headerID, insertBidEndQuery, bidId, end)
+	return nil
 }
 
-func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+func (repository *StorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, InsertKicksQuery, kicks, repository.ContractAddress, repository.db)
+	if err != nil {
+		return fmt.Errorf("error inserting flap kicks %s from diff ID %d: %w", kicks, diffID, err)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {
+	err := shared.InsertRecordWithAddress(diffID, headerID, insertLiveQuery, live, repository.ContractAddress, repository.db)
+	if err != nil {
+		return fmt.Errorf("error inserting flap live %s from diff ID %d: %w", live, diffID, err)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
+	bidID, err := getBidID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting bid ID for flap bid bid: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidBidQuery, bidID, bid, repository.ContractAddress, repository.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting flap bid %s bid %s from diff ID %d", bidID, bid, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
+	bidID, err := getBidID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting bid ID for flap bid lot: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidLotQuery, bidID, lot, repository.ContractAddress, repository.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting flap bid %s lot %s from diff ID %d", bidID, lot, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
+	bidID, err := getBidID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting bid ID for flap bid guy: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidGuyQuery, bidID, guy, repository.ContractAddress, repository.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting flap bid %s guy %s from diff ID %d", bidID, guy, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
+	bidID, err := getBidID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting bid ID for flap bid tic: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidTicQuery, bidID, tic, repository.ContractAddress, repository.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting flap bid %s tic %s from diff ID %d", bidID, tic, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
+	bidID, err := getBidID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting bid ID for flap bid end: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertBidEndQuery, bidID, end, repository.ContractAddress, repository.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting flap bid %s end %s from diff ID %d", bidID, end, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			insertErr = repository.insertTtl(diffID, headerID, value)
+			insertErr = repository.insertTTL(diffID, headerID, value)
 		case storage.Tau:
 			insertErr = repository.insertTau(diffID, headerID, value)
 		case storage.BidGuy:
@@ -146,67 +199,16 @@ func (repository *FlapStorageRepository) insertPackedValueRecord(diffID, headerI
 			panic(fmt.Sprintf("unrecognized flap contract storage name in packed values: %s", metadata.Name))
 		}
 		if insertErr != nil {
-			return insertErr
+			return fmt.Errorf("error inserting flap packed value from diff ID %d: %w", diffID, insertErr)
 		}
 	}
 	return nil
 }
 
-func getBidId(keys map[types.Key]string) (string, error) {
+func getBidID(keys map[types.Key]string) (string, error) {
 	bid, ok := keys[constants.BidId]
 	if !ok {
 		return "", types.ErrMetadataMalformed{MissingData: constants.BidId}
 	}
 	return bid, nil
-}
-
-func (repository *FlapStorageRepository) insertRecordWithAddress(diffID, headerID int64, query, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap field with address", insertErr.Error())
-		}
-		return insertErr
-	}
-
-	return tx.Commit()
-}
-
-func (repository *FlapStorageRepository) insertRecordWithAddressAndBidId(diffID, headerID int64, query, bidId, value string) error {
-	tx, txErr := repository.db.Beginx()
-	if txErr != nil {
-		return txErr
-	}
-	addressId, addressErr := shared.GetOrCreateAddressInTransaction(repository.ContractAddress, tx)
-	if addressErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			return shared.FormatRollbackError("flap address", addressErr.Error())
-		}
-		return addressErr
-	}
-	_, insertErr := tx.Exec(query, diffID, headerID, addressId, bidId, value)
-	if insertErr != nil {
-		rollbackErr := tx.Rollback()
-		if rollbackErr != nil {
-			errorString := fmt.Sprintf("flap field with address for bid id %s", bidId)
-			return shared.FormatRollbackError(errorString, insertErr.Error())
-		}
-		return insertErr
-	}
-	return tx.Commit()
 }

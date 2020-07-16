@@ -42,7 +42,7 @@ var _ = Describe("Executing the transformer", func() {
 		vowAddress        = test_data.VowAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(vowAddress)
 		storageKeysLookup = storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, vowAddress))
-		repository        = vow.VowStorageRepository{ContractAddress: vowAddress}
+		repository        = vow.StorageRepository{ContractAddress: vowAddress}
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(vowAddress),
 			StorageKeysLookup: storageKeysLookup,
@@ -91,7 +91,7 @@ var _ = Describe("Executing the transformer", func() {
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vowAddressID, 10)))

@@ -23,6 +23,8 @@ import (
 
 // Storage keys
 const (
+	A         types.Key = "a"
+	Address   types.Key = "address"
 	BidId     types.Key = "bid_id"
 	Cdpi      types.Key = "cdpi"
 	Flip      types.Key = "flip"
@@ -30,6 +32,7 @@ const (
 	Ilk       types.Key = "ilk"
 	MsgSender types.Key = "msg_sender"
 	Owner     types.Key = "owner"
+	SlotId    types.Key = "slot_id"
 	Timestamp types.Key = "timestamp"
 	User      types.Key = "usr"
 )
@@ -38,6 +41,7 @@ const (
 const (
 	AColumn         event.ColumnName = "a"
 	ALengthColumn   event.ColumnName = "a_length"
+	AgeColumn       event.ColumnName = "age"
 	ArtColumn       event.ColumnName = "art"
 	BidColumn       event.ColumnName = "bid"
 	BidIDColumn     event.ColumnName = "bid_id"
@@ -47,6 +51,7 @@ const (
 	DartColumn      event.ColumnName = "dart"
 	DataColumn      event.ColumnName = "data"
 	DinkColumn      event.ColumnName = "dink"
+	DustColumn      event.ColumnName = "dust"
 	DstColumn       event.ColumnName = "dst"
 	EndColumn       event.ColumnName = "end"
 	EraColumn       event.ColumnName = "era"
@@ -56,6 +61,8 @@ const (
 	GuyColumn       event.ColumnName = "guy"
 	IlkColumn       event.ColumnName = "ilk_id"
 	InkColumn       event.ColumnName = "ink"
+	IsEnabled       event.ColumnName = "is_enabled"
+	KeeperColumn    event.ColumnName = "keeper"
 	LotColumn       event.ColumnName = "lot"
 	MakerColumn     event.ColumnName = "maker"
 	MinAmountColumn event.ColumnName = "min_amount"
@@ -79,6 +86,7 @@ const (
 	UrnColumn       event.ColumnName = "urn_id"
 	UsrColumn       event.ColumnName = "usr"
 	VColumn         event.ColumnName = "v"
+	ValColumn       event.ColumnName = "val"
 	WColumn         event.ColumnName = "w"
 	WadColumn       event.ColumnName = "wad"
 	WhatColumn      event.ColumnName = "what"

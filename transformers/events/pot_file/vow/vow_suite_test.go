@@ -9,5 +9,5 @@ import (
 
 func TestVow(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotFileVow Suite")
+	RunSpecs(t, "PotFileVow Event Transformer Suite")
 }

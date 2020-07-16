@@ -39,9 +39,9 @@ import (
 var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.EthFlipAddress()
+		contractAddress   = test_data.FlipEthAddress()
 		keccakAddress     = types.HexToKeccak256Hash(contractAddress)
-		repository        = flip.FlipStorageRepository{ContractAddress: contractAddress}
+		repository        = flip.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -148,7 +148,7 @@ var _ = Describe("Executing the flip transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.EthFlipAddress(), db)
+			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
 			Expect(flipAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -174,7 +174,7 @@ var _ = Describe("Executing the flip transformer", func() {
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flipAddressID, 10)))

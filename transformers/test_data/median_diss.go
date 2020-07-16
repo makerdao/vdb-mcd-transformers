@@ -13,7 +13,7 @@ import (
 )
 
 var rawMedianDissSingleLog = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianDissSingleSignature()),
 		common.HexToHash("0x000000000000000000000000ddb108893104de4e1c6d0e47c42237db4e617acc"),
@@ -55,7 +55,7 @@ var medianDissSingleModel = event.InsertionModel{
 }
 
 var rawMedianDissBatchLogOneAddress = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianDissBatchSignature()),
 		common.HexToHash("0x000000000000000000000000e87f55af91068a1da44095138f3d37c45894eb21"),
@@ -101,7 +101,7 @@ var medianDissBatchModelOneAddress = event.InsertionModel{
 }
 
 var RawMedianDissBatchLogFiveAddresses = types.Log{
-	Address: common.HexToAddress(EthMedianAddress()),
+	Address: common.HexToAddress(MedianEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.MedianDissBatchSignature()),
 		common.HexToHash("0x000000000000000000000000e87f55af91068a1da44095138f3d37c45894eb21"),

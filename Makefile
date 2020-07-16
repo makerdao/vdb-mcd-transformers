@@ -71,7 +71,17 @@ integrationtest: | $(GINKGO) $(LINT)
 	make migrate NAME=$(TEST_DB)
 	$(GINKGO) -r transformers/integration_tests/
 
+.PHONY: validatemigrationorder
+validatemigrationorder: vdb-mcd-transformers
+	./vdb-mcd-transformers checkMigrations
+
+vdb-mcd-transformers:
+	go build
+
+# Build is really "clean/rebuild"
+.PHONY: build
 build:
+	- rm vdb-mcd-transformers
 	go fmt ./...
 	go build
 
@@ -147,9 +157,6 @@ import:
 	psql $(NAME) < db/schema.sql
 
 # Build plugin
-TARGET_LOCATION = $(BASE)/plugins/transformerExporter.go
-OUTPUT_LOCATION = $(BASE)/plugins/transformerExporter.so
-
 .PHONY: plugin
 plugin:
 	go build -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)

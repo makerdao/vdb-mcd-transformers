@@ -1,6 +1,8 @@
 package pot
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -63,20 +65,28 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
 	mappings := getStaticMappings()
+	mappings, userPieErr := loader.addUserPieKeys(mappings)
+	if userPieErr != nil {
+		return nil, fmt.Errorf("error adding user pie keys in pot keys loader: %w", userPieErr)
+	}
+	mappings, wardsErr := loader.addWardsKeys(mappings)
+	if wardsErr != nil {
+		return nil, fmt.Errorf("error adding wards keys in pot keys loader: %w", wardsErr)
+	}
+	return mappings, nil
+}
+
+func (loader *keysLoader) addUserPieKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	users, err := loader.storageRepository.GetPotPieUsers()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting pot pie users: %w", err)
 	}
 	for _, user := range users {
 		paddedUser, padErr := utilities.PadAddress(user)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[getUserPieKey(paddedUser)] = getUserPieMetadata(user)
-	}
-	mappings, wardsErr := loader.addWardsKeys(mappings)
-	if wardsErr != nil {
-		return nil, wardsErr
 	}
 	return mappings, nil
 }
@@ -84,7 +94,7 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
 	}
 	return wards.AddWardsKeys(mappings, addresses)
 }

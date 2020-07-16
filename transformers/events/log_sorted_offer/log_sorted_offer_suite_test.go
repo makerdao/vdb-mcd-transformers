@@ -9,5 +9,5 @@ import (
 
 func TestLogSortedOffer(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LogSortedOffer Suite")
+	RunSpecs(t, "LogSortedOffer Event Transformer Suite")
 }

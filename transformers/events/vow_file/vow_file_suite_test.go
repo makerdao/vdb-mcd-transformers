@@ -17,19 +17,13 @@
 package vow_file_test
 
 import (
-	"io/ioutil"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 )
 
 func TestVowFile(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VowFile Suite")
+	RunSpecs(t, "VowFile Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	logrus.SetOutput(ioutil.Discard)
-})

@@ -9,5 +9,5 @@ import (
 
 func TestDsr(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotFileDsr Suite")
+	RunSpecs(t, "PotFileDsr Event Transformer Suite")
 }

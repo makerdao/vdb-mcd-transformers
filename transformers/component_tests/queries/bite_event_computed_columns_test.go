@@ -12,6 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -25,8 +26,8 @@ var _ = Describe("Bite event computed columns", func() {
 		headerOne              core.Header
 		biteGethLog            types.Log
 		biteEvent              event.InsertionModel
-		vatRepository          vat.VatStorageRepository
-		headerRepository       repositories.HeaderRepository
+		vatRepository          vat.StorageRepository
+		headerRepository       datastore.HeaderRepository
 	)
 
 	BeforeEach(func() {

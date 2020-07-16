@@ -27,7 +27,7 @@ func GetEventTransformerConfig(transformerLabel, signature string) event.Transfo
 	return event.TransformerConfig{
 		TransformerName:     transformerLabel,
 		ContractAddresses:   constants.GetContractAddresses(contractNames),
-		ContractAbi:         constants.GetContractsABI(contractNames),
+		ContractAbi:         constants.GetFirstABI(contractNames),
 		Topic:               signature,
 		StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
 		EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber

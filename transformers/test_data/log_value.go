@@ -39,7 +39,7 @@ const (
 var logValueVal, _ = new(big.Int).SetString("183430000000000000000", 10)
 
 var rawLogValueLog = types.Log{
-	Address:     common.HexToAddress(EthOsmAddress()),
+	Address:     common.HexToAddress(OsmEthAddress()),
 	Topics:      []common.Hash{common.HexToHash(constants.LogValueSignature())},
 	Data:        hexutil.MustDecode(logValueData),
 	BlockNumber: uint64(TemporaryLogValueBlockNumber),

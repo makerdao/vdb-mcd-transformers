@@ -17,6 +17,8 @@
 package vow
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -134,7 +136,7 @@ func NewKeysLoader(storageRepository mcdStorage.IMakerStorageRepository, contrac
 }
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
-	mappings := addStaticMappings(make(map[common.Hash]types.ValueMetadata))
+	mappings := getStaticMappings()
 	return loader.addDynamicMappings(mappings)
 }
 
@@ -145,11 +147,11 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	mappings, wardsErr := loader.addWardsKeys(mappings)
 	if wardsErr != nil {
-		return nil, wardsErr
+		return nil, fmt.Errorf("error adding wards keys to vow keys loader: %w", wardsErr)
 	}
 	mappings, sinErr := loader.addVowSinKeys(mappings)
 	if sinErr != nil {
-		return nil, sinErr
+		return nil, fmt.Errorf("error adding sin keys to vow keys loader: %w", sinErr)
 	}
 	return mappings, nil
 }
@@ -157,7 +159,7 @@ func (loader *keysLoader) addDynamicMappings(mappings map[common.Hash]types.Valu
 func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
 	}
 	return wards.AddWardsKeys(mappings, addresses)
 }
@@ -165,19 +167,20 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetad
 func (loader *keysLoader) addVowSinKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	sinKeys, getErr := loader.storageRepository.GetVowSinKeys()
 	if getErr != nil {
-		return nil, getErr
+		return nil, fmt.Errorf("error getting vow sin keys: %w", getErr)
 	}
 	for _, timestamp := range sinKeys {
 		hexTimestamp, convertErr := shared.ConvertIntStringToHex(timestamp)
 		if convertErr != nil {
-			return nil, convertErr
+			return nil, fmt.Errorf("error converting int string to hex: %w", convertErr)
 		}
 		mappings[getSinKey(hexTimestamp)] = getSinMetadata(timestamp)
 	}
 	return mappings, nil
 }
 
-func addStaticMappings(mappings map[common.Hash]types.ValueMetadata) map[common.Hash]types.ValueMetadata {
+func getStaticMappings() map[common.Hash]types.ValueMetadata {
+	mappings := make(map[common.Hash]types.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[FlapperKey] = FlapperMetadata
 	mappings[FlopperKey] = FlopperMetadata

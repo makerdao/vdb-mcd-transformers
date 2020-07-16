@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -18,8 +19,8 @@ import (
 
 var _ = Describe("Single urn view", func() {
 	var (
-		vatRepo                vat.VatStorageRepository
-		headerRepo             repositories.HeaderRepository
+		vatRepo                vat.StorageRepository
+		headerRepo             datastore.HeaderRepository
 		urnOne, urnTwo         string
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -30,7 +31,7 @@ var _ = Describe("Single urn view", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatRepo = vat.VatStorageRepository{}
+		vatRepo = vat.StorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

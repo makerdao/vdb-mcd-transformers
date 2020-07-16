@@ -49,19 +49,15 @@ var _ = Describe("Vat Nope transformer", func() {
 		transformErr := hopeTransformer.Execute(headerSyncLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []vatNopeModel
-		err := db.Select(&dbResult, `SELECT usr FROM maker.vat_nope`)
+		var users []int64
+		err := db.Select(&users, `SELECT usr FROM maker.vat_nope`)
 		Expect(err).NotTo(HaveOccurred())
 
 		usrAddress := "0x0000000000000000000000000000000000000000"
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Usr).To(Or(Equal(usrAddressID), Equal(usrAddressID)))
+		Expect(len(users)).To(Equal(1))
+		Expect(users[0]).To(Or(Equal(usrAddressID), Equal(usrAddressID)))
 	})
 })
-
-type vatNopeModel struct {
-	Usr int64 `db:"usr"`
-}

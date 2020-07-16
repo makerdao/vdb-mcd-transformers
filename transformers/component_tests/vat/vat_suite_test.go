@@ -9,5 +9,5 @@ import (
 
 func TestVat(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Vat Suite")
+	RunSpecs(t, "Vat Component Test Suite")
 }

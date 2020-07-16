@@ -276,21 +276,6 @@ CREATE TYPE api.tx AS (
 
 
 --
--- Name: urn_state; Type: TYPE; Schema: api; Owner: -
---
-
-CREATE TYPE api.urn_state AS (
-	urn_identifier text,
-	ilk_identifier text,
-	block_height bigint,
-	ink numeric,
-	art numeric,
-	created timestamp without time zone,
-	updated timestamp without time zone
-);
-
-
---
 -- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -951,104 +936,38 @@ $$;
 
 
 --
--- Name: all_urn_states(text, text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: urn_snapshot; Type: TABLE; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urn_states(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
-    LANGUAGE plpgsql STABLE STRICT
-    AS $$
-BEGIN
-    RETURN QUERY (
-        WITH urn_id AS (
-            SELECT id
-            FROM maker.urns
-            WHERE urns.identifier = all_urn_states.urn_identifier
-              AND urns.ilk_id = (SELECT id
-                                 FROM maker.ilks
-                                 WHERE ilks.identifier = all_urn_states.ilk_identifier)
-        ),
-             relevant_blocks AS (
-                 SELECT block_number
-                 FROM maker.vat_urn_ink
-                          LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-                 WHERE vat_urn_ink.urn_id = (SELECT * FROM urn_id)
-                   AND block_number <= all_urn_states.block_height
-                 UNION
-                 SELECT block_number
-                 FROM maker.vat_urn_art
-                          LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
-                 WHERE vat_urn_art.urn_id = (SELECT * FROM urn_id)
-                   AND block_number <= all_urn_states.block_height)
-        SELECT r.*
-        FROM relevant_blocks,
-             LATERAL api.get_urn(ilk_identifier, urn_identifier, relevant_blocks.block_number) r
-        ORDER BY relevant_blocks.block_number DESC
-        LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
-        OFFSET
-        all_urn_states.result_offset
-    );
-END;
-$$;
+CREATE TABLE api.urn_snapshot (
+    urn_identifier text NOT NULL,
+    ilk_identifier text NOT NULL,
+    block_height bigint NOT NULL,
+    ink numeric,
+    art numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone NOT NULL
+);
 
 
 --
 -- Name: all_urns(bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-WITH urns AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
-              FROM maker.urns urns
-                       LEFT JOIN maker.ilks ilks ON urns.ilk_id = ilks.id),
-     inks AS ( -- Latest ink for each urn
-         SELECT DISTINCT ON (urn_id) urn_id, ink, block_number
-         FROM maker.vat_urn_ink
-                  LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-         WHERE block_number <= all_urns.block_height
-         ORDER BY urn_id, block_number DESC),
-     arts AS ( -- Latest art for each urn
-         SELECT DISTINCT ON (urn_id) urn_id, art, block_number
-         FROM maker.vat_urn_art
-                  LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
-         WHERE block_number <= all_urns.block_height
-         ORDER BY urn_id, block_number DESC),
-     created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM (SELECT DISTINCT ON (urn_id) urn_id, block_timestamp
-                       FROM maker.vat_urn_ink
-                                LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-                       ORDER BY urn_id, block_number ASC) earliest_blocks),
-     updated AS (SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM ((SELECT DISTINCT ON (urn_id) urn_id, block_timestamp
-                        FROM maker.vat_urn_ink
-                                 LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-                        WHERE block_number <= block_height
-                        ORDER BY urn_id, block_number DESC)
-                       UNION
-                       (SELECT DISTINCT ON (urn_id) urn_id, block_timestamp
-                        FROM maker.vat_urn_art
-                                 LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
-                        WHERE block_number <= block_height
-                        ORDER BY urn_id, block_number DESC)) last_blocks
-                 ORDER BY urn_id, block_timestamp DESC)
-
-SELECT urns.identifier,
-       ilks.identifier,
-       all_urns.block_height,
-       inks.ink,
-       COALESCE(arts.art, 0),
-       created.datetime,
-       updated.datetime
-FROM inks
-         LEFT JOIN arts ON arts.urn_id = inks.urn_id
-         LEFT JOIN urns ON inks.urn_id = urns.urn_id
-         LEFT JOIN created ON created.urn_id = urns.urn_id
-         LEFT JOIN updated ON updated.urn_id = urns.urn_id
-         LEFT JOIN maker.ilks ON ilks.id = urns.ilk_id
-ORDER BY updated DESC
-LIMIT all_urns.max_results
-OFFSET
-all_urns.result_offset
+WITH distinct_urn_snapshots AS (SELECT urn_identifier, ilk_identifier, MAX(block_height) AS block_height
+                                FROM api.urn_snapshot
+                                WHERE block_height <= all_urns.block_height
+                                GROUP BY urn_identifier, ilk_identifier)
+SELECT us.urn_identifier, us.ilk_identifier, us.block_height, us.ink, coalesce(us.art, 0), us.created, us.updated
+    FROM api.urn_snapshot AS us, distinct_urn_snapshots AS dus
+    WHERE us.urn_identifier = dus.urn_identifier
+    AND us.ilk_identifier = dus.ilk_identifier
+    AND us.block_height = dus.block_height
+    LIMIT all_urns.max_results
+    OFFSET all_urns.result_offset
 $$;
 
 
@@ -1096,7 +1015,7 @@ $$;
 -- Name: bite_event_urn(api.bite_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_state
+CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1237,12 +1156,14 @@ $$;
 -- Name: flip_bid_snapshot_urn(api.flip_bid_snapshot); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_urn((SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
-                 (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id), flip.block_height)
+FROM api.get_urn(
+     (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
+     (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
+     flip.block_height)
 $$;
 
 
@@ -1319,7 +1240,7 @@ $$;
 -- Name: frob_event_urn(api.frob_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1546,59 +1467,18 @@ $$;
 -- Name: get_urn(text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_state
+CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE STRICT
-    AS $_$
-WITH urn AS (SELECT urns.id AS urn_id, ilks.id AS ilk_id, ilks.ilk, urns.identifier
-             FROM maker.urns urns
-                      LEFT JOIN maker.ilks ilks ON urns.ilk_id = ilks.id
-             WHERE ilks.identifier = ilk_identifier
-               AND urns.identifier = urn_identifier),
-     ink AS ( -- Latest ink
-         SELECT DISTINCT ON (urn_id) urn_id, ink, block_number, block_timestamp
-         FROM maker.vat_urn_ink
-                  LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-         WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
-           AND block_number <= get_urn.block_height
-         ORDER BY urn_id, block_number DESC),
-     art AS ( -- Latest art
-         SELECT DISTINCT ON (urn_id) urn_id, art, block_number, block_timestamp
-         FROM maker.vat_urn_art
-                  LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
-         WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
-           AND block_number <= get_urn.block_height
-         ORDER BY urn_id, block_number DESC),
-     created AS (SELECT urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM (SELECT DISTINCT ON (urn_id) urn_id,
-                                                   block_timestamp
-                                                   -- TODO: should we be using urn ink for created?
-                                                   -- Can a CDP exist before collateral is locked?
-                       FROM maker.vat_urn_ink
-                                LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
-                       WHERE urn_id = (SELECT urn_id from urn where identifier = urn_identifier)
-                       ORDER BY urn_id, block_number ASC) earliest_blocks),
-     updated AS (SELECT DISTINCT ON (urn_id) urn_id, api.epoch_to_datetime(block_timestamp) AS datetime
-                 FROM (SELECT urn_id, block_number, block_timestamp
-                       FROM ink
-                       UNION
-                       SELECT urn_id, block_number, block_timestamp
-                       FROM art) last_blocks
-                 ORDER BY urn_id, block_timestamp DESC)
+    AS $$
 
-SELECT get_urn.urn_identifier,
-       ilk_identifier,
-       $3,
-       ink.ink,
-       COALESCE(art.art, 0),
-       created.datetime,
-       updated.datetime
-FROM ink
-         LEFT JOIN art ON art.urn_id = ink.urn_id
-         LEFT JOIN urn ON urn.urn_id = ink.urn_id
-         LEFT JOIN created ON created.urn_id = art.urn_id
-         LEFT JOIN updated ON updated.urn_id = art.urn_id
-WHERE ink.urn_id IS NOT NULL
-$_$;
+SELECT urn_identifier, ilk_identifier, get_urn.block_height, ink, art, created, updated
+    FROM api.urn_snapshot
+    WHERE ilk_identifier = get_urn.ilk_identifier
+    AND urn_identifier = get_urn.urn_identifier
+    AND block_height <= get_urn.block_height
+    ORDER BY updated DESC
+    LIMIT 1
+$$;
 
 
 --
@@ -1709,11 +1589,11 @@ $$;
 -- Name: managed_cdp_urn(api.managed_cdp); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS SETOF api.urn_state
+CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier)
+FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier, api.max_block())
 $$;
 
 
@@ -1904,21 +1784,6 @@ $$;
 
 
 --
--- Name: urn_snapshot; Type: TABLE; Schema: api; Owner: -
---
-
-CREATE TABLE api.urn_snapshot (
-    urn_identifier text NOT NULL,
-    ilk_identifier text NOT NULL,
-    block_height bigint NOT NULL,
-    ink numeric,
-    art numeric,
-    created timestamp without time zone,
-    updated timestamp without time zone NOT NULL
-);
-
-
---
 -- Name: urn_snapshot_bites(api.urn_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1955,54 +1820,6 @@ $$;
 --
 
 CREATE FUNCTION api.urn_snapshot_ilk(state api.urn_snapshot) RETURNS api.ilk_snapshot
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.ilk_snapshot i
-WHERE i.ilk_identifier = state.ilk_identifier
-  AND i.block_number <= state.block_height
-ORDER BY i.block_number DESC
-LIMIT 1
-$$;
-
-
---
--- Name: urn_state_bites(api.urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.urn_state_bites(state api.urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.bite_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.urn_bites(state.ilk_identifier, state.urn_identifier)
-WHERE block_height <= state.block_height
-LIMIT urn_state_bites.max_results
-OFFSET
-urn_state_bites.result_offset
-$$;
-
-
---
--- Name: urn_state_frobs(api.urn_state, integer, integer); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.urn_state_frobs(state api.urn_state, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.frob_event
-    LANGUAGE sql STABLE
-    AS $$
-SELECT *
-FROM api.urn_frobs(state.ilk_identifier, state.urn_identifier)
-WHERE block_height <= state.block_height
-LIMIT urn_state_frobs.max_results
-OFFSET
-urn_state_frobs.result_offset
-$$;
-
-
---
--- Name: urn_state_ilk(api.urn_state); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.urn_state_ilk(state api.urn_state) RETURNS api.ilk_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -2344,14 +2161,14 @@ COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id intege
 
 
 --
--- Name: delete_obsolete_urn_state(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_urn_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) RETURNS api.urn_snapshot
+CREATE FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) RETURNS api.urn_snapshot
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    urn_state_block_number BIGINT := (
+    urn_snapshot_block_number BIGINT := (
         SELECT block_number
         FROM public.headers
         WHERE id = header_id);
@@ -2362,27 +2179,27 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urns.identifier
       AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
-      AND urn_snapshot.block_height = urn_state_block_number
+      AND urn_snapshot.block_height = urn_snapshot_block_number
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_ink
-            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_ink.header_id = delete_obsolete_urn_state.header_id))
+            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_ink.header_id = delete_obsolete_urn_snapshot.header_id))
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_art
-            WHERE vat_urn_art.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_art.header_id = delete_obsolete_urn_state.header_id));
+            WHERE vat_urn_art.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_art.header_id = delete_obsolete_urn_snapshot.header_id));
     RETURN NULL;
 END
 $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_urn_state(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_obsolete_urn_snapshot(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_obsolete_urn_state(urn_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) IS '@omit';
 
 
 --
@@ -6533,7 +6350,7 @@ BEGIN
         PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -6626,7 +6443,7 @@ BEGIN
         PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;
@@ -7799,6 +7616,41 @@ CREATE SEQUENCE api.managed_cdp_id_seq
 --
 
 ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
+
+
+--
+-- Name: auction_file; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.auction_file (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.auction_file_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.auction_file_id_seq OWNED BY maker.auction_file.id;
 
 
 --
@@ -10087,6 +9939,107 @@ ALTER SEQUENCE maker.log_bump_id_seq OWNED BY maker.log_bump.id;
 
 
 --
+-- Name: log_buy_enabled; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_buy_enabled (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    is_enabled boolean
+);
+
+
+--
+-- Name: log_buy_enabled_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_buy_enabled_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_buy_enabled_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_buy_enabled_id_seq OWNED BY maker.log_buy_enabled.id;
+
+
+--
+-- Name: log_delete; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_delete (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    keeper integer NOT NULL,
+    offer_id numeric
+);
+
+
+--
+-- Name: log_delete_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_delete_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_delete_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_delete_id_seq OWNED BY maker.log_delete.id;
+
+
+--
+-- Name: log_insert; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_insert (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    keeper integer NOT NULL,
+    offer_id numeric
+);
+
+
+--
+-- Name: log_insert_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_insert_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_insert_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_insert_id_seq OWNED BY maker.log_insert.id;
+
+
+--
 -- Name: log_item_update; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10197,6 +10150,73 @@ CREATE SEQUENCE maker.log_make_id_seq
 --
 
 ALTER SEQUENCE maker.log_make_id_seq OWNED BY maker.log_make.id;
+
+
+--
+-- Name: log_matching_enabled; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_matching_enabled (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    is_enabled boolean
+);
+
+
+--
+-- Name: log_matching_enabled_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_matching_enabled_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_matching_enabled_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_matching_enabled_id_seq OWNED BY maker.log_matching_enabled.id;
+
+
+--
+-- Name: log_median_price; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.log_median_price (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    val numeric,
+    age numeric
+);
+
+
+--
+-- Name: log_median_price_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.log_median_price_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_median_price_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.log_median_price_id_seq OWNED BY maker.log_median_price.id;
 
 
 --
@@ -10409,6 +10429,106 @@ ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
 
 
 --
+-- Name: median_age; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_age (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    age numeric NOT NULL
+);
+
+
+--
+-- Name: median_age_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_age_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_age_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_age_id_seq OWNED BY maker.median_age.id;
+
+
+--
+-- Name: median_bar; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_bar (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    bar numeric NOT NULL
+);
+
+
+--
+-- Name: median_bar_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_bar_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_bar_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_bar_id_seq OWNED BY maker.median_bar.id;
+
+
+--
+-- Name: median_bud; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_bud (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    a integer NOT NULL,
+    bud integer NOT NULL
+);
+
+
+--
+-- Name: median_bud_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_bud_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_bud_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_bud_id_seq OWNED BY maker.median_bud.id;
+
+
+--
 -- Name: median_diss_batch; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -10614,6 +10734,107 @@ CREATE SEQUENCE maker.median_lift_id_seq
 --
 
 ALTER SEQUENCE maker.median_lift_id_seq OWNED BY maker.median_lift.id;
+
+
+--
+-- Name: median_orcl; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_orcl (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    a integer NOT NULL,
+    orcl integer NOT NULL
+);
+
+
+--
+-- Name: median_orcl_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_orcl_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_orcl_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_orcl_id_seq OWNED BY maker.median_orcl.id;
+
+
+--
+-- Name: median_slot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_slot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    slot_id integer NOT NULL,
+    slot integer NOT NULL
+);
+
+
+--
+-- Name: median_slot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_slot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_slot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_slot_id_seq OWNED BY maker.median_slot.id;
+
+
+--
+-- Name: median_val; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.median_val (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    val numeric NOT NULL
+);
+
+
+--
+-- Name: median_val_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.median_val_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: median_val_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.median_val_id_seq OWNED BY maker.median_val.id;
 
 
 --
@@ -11168,6 +11389,41 @@ CREATE SEQUENCE maker.rely_id_seq
 --
 
 ALTER SEQUENCE maker.rely_id_seq OWNED BY maker.rely.id;
+
+
+--
+-- Name: set_min_sell; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.set_min_sell (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    pay_gem integer NOT NULL,
+    msg_sender integer NOT NULL,
+    dust numeric
+);
+
+
+--
+-- Name: set_min_sell_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.set_min_sell_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: set_min_sell_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.set_min_sell_id_seq OWNED BY maker.set_min_sell.id;
 
 
 --
@@ -12576,6 +12832,40 @@ CREATE TABLE maker.vow_file (
 
 
 --
+-- Name: vow_file_auction_address; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_file_auction_address (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data integer NOT NULL
+);
+
+
+--
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_file_auction_address_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_file_auction_address_id_seq OWNED BY maker.vow_file_auction_address.id;
+
+
+--
 -- Name: vow_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -12689,6 +12979,39 @@ CREATE SEQUENCE maker.vow_flopper_id_seq
 --
 
 ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
+
+
+--
+-- Name: vow_heal; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_heal (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    rad numeric
+);
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_heal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_heal_id_seq OWNED BY maker.vow_heal.id;
 
 
 --
@@ -13340,6 +13663,13 @@ ALTER TABLE ONLY api.managed_cdp ALTER COLUMN id SET DEFAULT nextval('api.manage
 
 
 --
+-- Name: auction_file id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file ALTER COLUMN id SET DEFAULT nextval('maker.auction_file_id_seq'::regclass);
+
+
+--
 -- Name: bite id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13886,6 +14216,27 @@ ALTER TABLE ONLY maker.log_bump ALTER COLUMN id SET DEFAULT nextval('maker.log_b
 
 
 --
+-- Name: log_buy_enabled id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled ALTER COLUMN id SET DEFAULT nextval('maker.log_buy_enabled_id_seq'::regclass);
+
+
+--
+-- Name: log_delete id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete ALTER COLUMN id SET DEFAULT nextval('maker.log_delete_id_seq'::regclass);
+
+
+--
+-- Name: log_insert id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert ALTER COLUMN id SET DEFAULT nextval('maker.log_insert_id_seq'::regclass);
+
+
+--
 -- Name: log_item_update id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13904,6 +14255,20 @@ ALTER TABLE ONLY maker.log_kill ALTER COLUMN id SET DEFAULT nextval('maker.log_k
 --
 
 ALTER TABLE ONLY maker.log_make ALTER COLUMN id SET DEFAULT nextval('maker.log_make_id_seq'::regclass);
+
+
+--
+-- Name: log_matching_enabled id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled ALTER COLUMN id SET DEFAULT nextval('maker.log_matching_enabled_id_seq'::regclass);
+
+
+--
+-- Name: log_median_price id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price ALTER COLUMN id SET DEFAULT nextval('maker.log_median_price_id_seq'::regclass);
 
 
 --
@@ -13949,6 +14314,27 @@ ALTER TABLE ONLY maker.log_value ALTER COLUMN id SET DEFAULT nextval('maker.log_
 
 
 --
+-- Name: median_age id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age ALTER COLUMN id SET DEFAULT nextval('maker.median_age_id_seq'::regclass);
+
+
+--
+-- Name: median_bar id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar ALTER COLUMN id SET DEFAULT nextval('maker.median_bar_id_seq'::regclass);
+
+
+--
+-- Name: median_bud id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud ALTER COLUMN id SET DEFAULT nextval('maker.median_bud_id_seq'::regclass);
+
+
+--
 -- Name: median_diss_batch id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13988,6 +14374,27 @@ ALTER TABLE ONLY maker.median_kiss_single ALTER COLUMN id SET DEFAULT nextval('m
 --
 
 ALTER TABLE ONLY maker.median_lift ALTER COLUMN id SET DEFAULT nextval('maker.median_lift_id_seq'::regclass);
+
+
+--
+-- Name: median_orcl id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl ALTER COLUMN id SET DEFAULT nextval('maker.median_orcl_id_seq'::regclass);
+
+
+--
+-- Name: median_slot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot ALTER COLUMN id SET DEFAULT nextval('maker.median_slot_id_seq'::regclass);
+
+
+--
+-- Name: median_val id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val ALTER COLUMN id SET DEFAULT nextval('maker.median_val_id_seq'::regclass);
 
 
 --
@@ -14107,6 +14514,13 @@ ALTER TABLE ONLY maker.pot_vow ALTER COLUMN id SET DEFAULT nextval('maker.pot_vo
 --
 
 ALTER TABLE ONLY maker.rely ALTER COLUMN id SET DEFAULT nextval('maker.rely_id_seq'::regclass);
+
+
+--
+-- Name: set_min_sell id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell ALTER COLUMN id SET DEFAULT nextval('maker.set_min_sell_id_seq'::regclass);
 
 
 --
@@ -14439,6 +14853,13 @@ ALTER TABLE ONLY maker.vow_file ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 
 
 --
+-- Name: vow_file_auction_address id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_address_id_seq'::regclass);
+
+
+--
 -- Name: vow_flapper id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14457,6 +14878,13 @@ ALTER TABLE ONLY maker.vow_flog ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 --
 
 ALTER TABLE ONLY maker.vow_flopper ALTER COLUMN id SET DEFAULT nextval('maker.vow_flopper_id_seq'::regclass);
+
+
+--
+-- Name: vow_heal id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal ALTER COLUMN id SET DEFAULT nextval('maker.vow_heal_id_seq'::regclass);
 
 
 --
@@ -14622,6 +15050,22 @@ ALTER TABLE ONLY api.managed_cdp
 
 ALTER TABLE ONLY api.urn_snapshot
     ADD CONSTRAINT urn_snapshot_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
+
+
+--
+-- Name: auction_file auction_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: auction_file auction_file_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_pkey PRIMARY KEY (id);
 
 
 --
@@ -15913,6 +16357,54 @@ ALTER TABLE ONLY maker.log_bump
 
 
 --
+-- Name: log_buy_enabled log_buy_enabled_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_delete log_delete_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_delete log_delete_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_insert log_insert_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_insert log_insert_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: log_item_update log_item_update_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15958,6 +16450,38 @@ ALTER TABLE ONLY maker.log_make
 
 ALTER TABLE ONLY maker.log_make
     ADD CONSTRAINT log_make_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_median_price log_median_price_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: log_median_price log_median_price_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_pkey PRIMARY KEY (id);
 
 
 --
@@ -16057,6 +16581,54 @@ ALTER TABLE ONLY maker.log_value
 
 
 --
+-- Name: median_age median_age_header_id_address_id_age_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_header_id_address_id_age_key UNIQUE (header_id, address_id, age);
+
+
+--
+-- Name: median_age median_age_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_bar median_bar_header_id_address_id_bar_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_header_id_address_id_bar_key UNIQUE (header_id, address_id, bar);
+
+
+--
+-- Name: median_bar median_bar_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_bud median_bud_header_id_address_id_a_bud_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_header_id_address_id_a_bud_key UNIQUE (header_id, address_id, a, bud);
+
+
+--
+-- Name: median_bud median_bud_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: median_diss_batch median_diss_batch_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -16150,6 +16722,54 @@ ALTER TABLE ONLY maker.median_lift
 
 ALTER TABLE ONLY maker.median_lift
     ADD CONSTRAINT median_lift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_orcl median_orcl_header_id_address_id_a_orcl_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_header_id_address_id_a_orcl_key UNIQUE (header_id, address_id, a, orcl);
+
+
+--
+-- Name: median_orcl median_orcl_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_slot median_slot_header_id_address_id_slot_id_slot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_header_id_address_id_slot_id_slot_key UNIQUE (header_id, address_id, slot_id, slot);
+
+
+--
+-- Name: median_slot median_slot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: median_val median_val_header_id_address_id_val_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_header_id_address_id_val_key UNIQUE (header_id, address_id, val);
+
+
+--
+-- Name: median_val median_val_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_pkey PRIMARY KEY (id);
 
 
 --
@@ -16422,6 +17042,22 @@ ALTER TABLE ONLY maker.rely
 
 ALTER TABLE ONLY maker.rely
     ADD CONSTRAINT rely_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: set_min_sell set_min_sell_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: set_min_sell set_min_sell_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_pkey PRIMARY KEY (id);
 
 
 --
@@ -17161,6 +17797,22 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vow_file vow_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17222,6 +17874,22 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_heal vow_heal_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_heal vow_heal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_pkey PRIMARY KEY (id);
 
 
 --
@@ -17510,6 +18178,34 @@ ALTER TABLE ONLY public.transactions
 
 ALTER TABLE ONLY public.watched_logs
     ADD CONSTRAINT watched_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auction_file_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_address_id_index ON maker.auction_file USING btree (address_id);
+
+
+--
+-- Name: auction_file_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_header_index ON maker.auction_file USING btree (header_id);
+
+
+--
+-- Name: auction_file_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_log_index ON maker.auction_file USING btree (log_id);
+
+
+--
+-- Name: auction_file_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_msg_sender_index ON maker.auction_file USING btree (msg_sender);
 
 
 --
@@ -18808,6 +19504,83 @@ CREATE INDEX log_bump_pay_gem_index ON maker.log_bump USING btree (pay_gem);
 
 
 --
+-- Name: log_buy_enabled_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_address_index ON maker.log_buy_enabled USING btree (address_id);
+
+
+--
+-- Name: log_buy_enabled_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_header_index ON maker.log_buy_enabled USING btree (header_id);
+
+
+--
+-- Name: log_buy_enabled_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_buy_enabled_log_index ON maker.log_buy_enabled USING btree (log_id);
+
+
+--
+-- Name: log_delete_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_address_index ON maker.log_delete USING btree (address_id);
+
+
+--
+-- Name: log_delete_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_header_index ON maker.log_delete USING btree (header_id);
+
+
+--
+-- Name: log_delete_keeper_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_keeper_index ON maker.log_delete USING btree (keeper);
+
+
+--
+-- Name: log_delete_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_delete_log_index ON maker.log_delete USING btree (log_id);
+
+
+--
+-- Name: log_insert_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_address_index ON maker.log_insert USING btree (address_id);
+
+
+--
+-- Name: log_insert_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_header_index ON maker.log_insert USING btree (header_id);
+
+
+--
+-- Name: log_insert_keeper_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_keeper_index ON maker.log_insert USING btree (keeper);
+
+
+--
+-- Name: log_insert_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_insert_log_index ON maker.log_insert USING btree (log_id);
+
+
+--
 -- Name: log_item_update_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18910,6 +19683,48 @@ CREATE INDEX log_make_maker_index ON maker.log_make USING btree (maker);
 --
 
 CREATE INDEX log_make_pay_gem_index ON maker.log_make USING btree (pay_gem);
+
+
+--
+-- Name: log_matching_enabled_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_address_index ON maker.log_matching_enabled USING btree (address_id);
+
+
+--
+-- Name: log_matching_enabled_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_header_index ON maker.log_matching_enabled USING btree (header_id);
+
+
+--
+-- Name: log_matching_enabled_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_matching_enabled_log_index ON maker.log_matching_enabled USING btree (log_id);
+
+
+--
+-- Name: log_median_price_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_address_index ON maker.log_median_price USING btree (address_id);
+
+
+--
+-- Name: log_median_price_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_header_index ON maker.log_median_price USING btree (header_id);
+
+
+--
+-- Name: log_median_price_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_median_price_log_index ON maker.log_median_price USING btree (log_id);
 
 
 --
@@ -19078,6 +19893,69 @@ CREATE INDEX log_value_header_index ON maker.log_value USING btree (header_id);
 --
 
 CREATE INDEX log_value_log_index ON maker.log_value USING btree (log_id);
+
+
+--
+-- Name: median_age_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_age_address_id_index ON maker.median_age USING btree (address_id);
+
+
+--
+-- Name: median_age_diff_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_age_diff_id_index ON maker.median_age USING btree (diff_id);
+
+
+--
+-- Name: median_age_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_age_header_id_index ON maker.median_age USING btree (header_id);
+
+
+--
+-- Name: median_bar_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bar_address_id_index ON maker.median_bar USING btree (address_id);
+
+
+--
+-- Name: median_bar_diff_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bar_diff_id_index ON maker.median_bar USING btree (diff_id);
+
+
+--
+-- Name: median_bar_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bar_header_id_index ON maker.median_bar USING btree (header_id);
+
+
+--
+-- Name: median_bud_a_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_a_index ON maker.median_bud USING btree (a);
+
+
+--
+-- Name: median_bud_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_address_index ON maker.median_bud USING btree (address_id);
+
+
+--
+-- Name: median_bud_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_bud_header_id_index ON maker.median_bud USING btree (header_id);
 
 
 --
@@ -19260,6 +20138,76 @@ CREATE INDEX median_lift_log_index ON maker.median_lift USING btree (log_id);
 --
 
 CREATE INDEX median_lift_msg_sender_index ON maker.median_lift USING btree (msg_sender);
+
+
+--
+-- Name: median_orcl_a_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_orcl_a_index ON maker.median_orcl USING btree (a);
+
+
+--
+-- Name: median_orcl_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_orcl_address_id_index ON maker.median_orcl USING btree (address_id);
+
+
+--
+-- Name: median_orcl_diff_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_orcl_diff_id_index ON maker.median_orcl USING btree (diff_id);
+
+
+--
+-- Name: median_orcl_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_orcl_header_id_index ON maker.median_orcl USING btree (header_id);
+
+
+--
+-- Name: median_slot_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_address_index ON maker.median_slot USING btree (address_id);
+
+
+--
+-- Name: median_slot_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_header_id_index ON maker.median_slot USING btree (header_id);
+
+
+--
+-- Name: median_slot_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_id_index ON maker.median_slot USING btree (slot_id);
+
+
+--
+-- Name: median_val_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_val_address_id_index ON maker.median_val USING btree (address_id);
+
+
+--
+-- Name: median_val_diff_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_val_diff_id_index ON maker.median_val USING btree (diff_id);
+
+
+--
+-- Name: median_val_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_val_header_id_index ON maker.median_val USING btree (header_id);
 
 
 --
@@ -19519,6 +20467,41 @@ CREATE INDEX rely_msg_sender_index ON maker.rely USING btree (msg_sender);
 --
 
 CREATE INDEX rely_usr_index ON maker.rely USING btree (usr);
+
+
+--
+-- Name: set_min_sell_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_address_index ON maker.set_min_sell USING btree (address_id);
+
+
+--
+-- Name: set_min_sell_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_header_index ON maker.set_min_sell USING btree (header_id);
+
+
+--
+-- Name: set_min_sell_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_log_index ON maker.set_min_sell USING btree (log_id);
+
+
+--
+-- Name: set_min_sell_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_msg_sender ON maker.set_min_sell USING btree (msg_sender);
+
+
+--
+-- Name: set_min_sell_pay_gem_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX set_min_sell_pay_gem_index ON maker.set_min_sell USING btree (pay_gem);
 
 
 --
@@ -20201,6 +21184,27 @@ CREATE INDEX vow_fess_log_index ON maker.vow_fess USING btree (log_id);
 
 
 --
+-- Name: vow_file_auction_address_data_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_data_index ON maker.vow_file_auction_address USING btree (data);
+
+
+--
+-- Name: vow_file_auction_address_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_header_index ON maker.vow_file_auction_address USING btree (header_id);
+
+
+--
+-- Name: vow_file_auction_address_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction_address USING btree (msg_sender);
+
+
+--
 -- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20247,6 +21251,27 @@ CREATE INDEX vow_flog_log_index ON maker.vow_flog USING btree (log_id);
 --
 
 CREATE INDEX vow_flopper_header_id_index ON maker.vow_flopper USING btree (header_id);
+
+
+--
+-- Name: vow_heal_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_header_index ON maker.vow_heal USING btree (header_id);
+
+
+--
+-- Name: vow_heal_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_log_index ON maker.vow_heal USING btree (log_id);
+
+
+--
+-- Name: vow_heal_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_msg_sender ON maker.vow_heal USING btree (msg_sender);
 
 
 --
@@ -20303,6 +21328,13 @@ CREATE INDEX vow_vat_header_id_index ON maker.vow_vat USING btree (header_id);
 --
 
 CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
+
+
+--
+-- Name: vvow_file_auction_address_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vvow_file_auction_address_log_index ON maker.vow_file_auction_address USING btree (log_id);
 
 
 --
@@ -20380,6 +21412,13 @@ CREATE INDEX event_logs_untransformed ON public.event_logs USING btree (transfor
 --
 
 CREATE INDEX headers_block_number ON public.headers USING btree (block_number);
+
+
+--
+-- Name: headers_block_timestamp_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX headers_block_timestamp_index ON public.headers USING btree (block_timestamp);
 
 
 --
@@ -20779,6 +21818,38 @@ CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE PROCEDURE ma
 --
 
 CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECUTE PROCEDURE public.set_header_updated();
+
+
+--
+-- Name: auction_file auction_file_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -22566,6 +23637,94 @@ ALTER TABLE ONLY maker.log_bump
 
 
 --
+-- Name: log_buy_enabled log_buy_enabled_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_buy_enabled log_buy_enabled_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_buy_enabled
+    ADD CONSTRAINT log_buy_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_keeper_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_keeper_fkey FOREIGN KEY (keeper) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_delete log_delete_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_delete
+    ADD CONSTRAINT log_delete_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_keeper_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_keeper_fkey FOREIGN KEY (keeper) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_insert log_insert_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_insert
+    ADD CONSTRAINT log_insert_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
 -- Name: log_item_update log_item_update_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22683,6 +23842,54 @@ ALTER TABLE ONLY maker.log_make
 
 ALTER TABLE ONLY maker.log_make
     ADD CONSTRAINT log_make_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_matching_enabled log_matching_enabled_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_matching_enabled
+    ADD CONSTRAINT log_matching_enabled_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_median_price log_median_price_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_median_price
+    ADD CONSTRAINT log_median_price_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
@@ -22875,6 +24082,86 @@ ALTER TABLE ONLY maker.log_value
 
 ALTER TABLE ONLY maker.log_value
     ADD CONSTRAINT log_value_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_age median_age_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_age median_age_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_age median_age_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_age
+    ADD CONSTRAINT median_age_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bar median_bar_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bar median_bar_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bar median_bar_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bar
+    ADD CONSTRAINT median_bar_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_a_fkey FOREIGN KEY (a) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_bud median_bud_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_bud
+    ADD CONSTRAINT median_bud_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
@@ -23083,6 +24370,94 @@ ALTER TABLE ONLY maker.median_lift
 
 ALTER TABLE ONLY maker.median_lift
     ADD CONSTRAINT median_lift_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_orcl median_orcl_a_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_a_fkey FOREIGN KEY (a) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_orcl median_orcl_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_orcl median_orcl_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_orcl median_orcl_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_orcl
+    ADD CONSTRAINT median_orcl_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_slot median_slot_slot_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_slot
+    ADD CONSTRAINT median_slot_slot_fkey FOREIGN KEY (slot) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_val median_val_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_val median_val_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: median_val median_val_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.median_val
+    ADD CONSTRAINT median_val_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
@@ -23451,6 +24826,46 @@ ALTER TABLE ONLY maker.rely
 
 ALTER TABLE ONLY maker.rely
     ADD CONSTRAINT rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: set_min_sell set_min_sell_pay_gem_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.set_min_sell
+    ADD CONSTRAINT set_min_sell_pay_gem_fkey FOREIGN KEY (pay_gem) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -24398,6 +25813,38 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
+-- Name: vow_file_auction_address vow_file_auction_address_data_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_data_fkey FOREIGN KEY (data) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_file vow_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24459,6 +25906,30 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

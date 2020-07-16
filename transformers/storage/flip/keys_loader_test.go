@@ -42,7 +42,7 @@ var _ = Describe("Flip storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = flip.NewKeysLoader(storageRepository, test_data.EthFlipAddress())
+		storageKeysLoader = flip.NewKeysLoader(storageRepository, test_data.FlipEthAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -52,7 +52,7 @@ var _ = Describe("Flip storage keys loader", func() {
 		Expect(mappings[flip.VatKey]).To(Equal(flip.VatMetadata))
 		Expect(mappings[flip.IlkKey]).To(Equal(flip.IlkMetadata))
 		Expect(mappings[flip.BegKey]).To(Equal(flip.BegMetadata))
-		Expect(mappings[flip.TtlAndTauStorageKey]).To(Equal(flip.TtlAndTauMetadata))
+		Expect(mappings[flip.TTLAndTauStorageKey]).To(Equal(flip.TTLAndTauMetadata))
 		Expect(mappings[flip.KicksKey]).To(Equal(flip.KicksMetadata))
 	})
 
@@ -71,7 +71,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.EthFlipAddress()))
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.FlipEthAddress()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 
@@ -90,7 +90,7 @@ var _ = Describe("Flip storage keys loader", func() {
 	Describe("bid", func() {
 		Describe("when loading bid IDs fails", func() {
 			It("returns error", func() {
-				storageRepository.GetFlipBidIdsError = fakes.FakeError
+				storageRepository.GetFlipBidIDsError = fakes.FakeError
 
 				_, err := storageKeysLoader.LoadMappings()
 
@@ -108,7 +108,7 @@ var _ = Describe("Flip storage keys loader", func() {
 			)
 
 			BeforeEach(func() {
-				storageRepository.FlipBidIds = []string{fakeBidId}
+				storageRepository.FlipBidIDs = []string{fakeBidId}
 				var err error
 				mappings, err = storageKeysLoader.LoadMappings()
 				Expect(err).NotTo(HaveOccurred())

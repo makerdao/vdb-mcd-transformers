@@ -9,5 +9,5 @@ import (
 
 func TestPotDrip(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PotDrip Suite")
+	RunSpecs(t, "PotDrip Event Transformer Suite")
 }

@@ -30,6 +30,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 	"github.com/makerdao/vulcanizedb/libraries/shared/watcher"
 	"github.com/makerdao/vulcanizedb/pkg/config"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	p2 "github.com/makerdao/vulcanizedb/pkg/plugin"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/helpers"
@@ -138,18 +139,21 @@ type Exporter interface {
 }
 
 var _ = Describe("Plugin test", func() {
-	var g p2.Generator
-	var goPath, soPath string
-	var hr repositories.HeaderRepository
-	var headerID int64
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	var ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
-	var blockNumber = int64(8928180) //needs a mainnet block with a cat file flip
-	var maxConsecutiveUnexpectedErrs = 0
-	var retryInterval = 2 * time.Second
-	var delegator logs.ILogDelegator
-	var extractor logs.ILogExtractor
+
+	var (
+		g                            p2.Generator
+		goPath, soPath               string
+		hr                           datastore.HeaderRepository
+		headerID                     int64
+		ilk                          = "0x4554482d41000000000000000000000000000000000000000000000000000000"
+		blockNumber                  = int64(8928180) //needs a mainnet block with a cat file flip
+		maxConsecutiveUnexpectedErrs = 0
+		retryInterval                = 2 * time.Second
+		delegator                    logs.ILogDelegator
+		extractor                    logs.ILogExtractor
+	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
@@ -230,7 +234,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.EthFlipAddress()))
+				}).Should(Equal(test_data.FlipEthAddress()))
 			})
 
 			It("rechecks checked headers for event logs", func() {
@@ -306,7 +310,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, time.Nanosecond)
+				w := watcher.NewStorageWatcher(db, -1)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -390,9 +394,9 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.EthFlipAddress()))
+				}).Should(Equal(test_data.FlipEthAddress()))
 
-				sw := watcher.NewStorageWatcher(db, time.Nanosecond)
+				sw := watcher.NewStorageWatcher(db, -1)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

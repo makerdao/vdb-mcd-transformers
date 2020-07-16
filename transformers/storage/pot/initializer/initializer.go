@@ -12,5 +12,5 @@ var potAddress = constants.GetContractAddress("MCD_POT")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("MCD_POT")),
 	StorageKeysLookup: storage.NewKeysLookup(pot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, potAddress)),
-	Repository:        &pot.PotStorageRepository{},
+	Repository:        &pot.StorageRepository{},
 }.NewTransformer

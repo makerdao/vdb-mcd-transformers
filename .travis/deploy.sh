@@ -20,7 +20,7 @@ else
 fi
 
 if [ -z "$ENVIRONMENT" ]; then
-    echo 'You must specifiy an envionrment (bash deploy.sh <ENVIRONMENT>).'
+    echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
     echo 'Allowed values are "staging" or "prod"'
     exit 1
 fi
@@ -31,6 +31,9 @@ docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG
 message BUILDING BACKFILL-STORAGE DOCKER IMAGE
 docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG
 
+message BUILDING BACKFILL-EVENTS DOCKER IMAGE
+docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG
+
 message LOGGING INTO DOCKERHUB
 echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
 
@@ -39,6 +42,9 @@ docker push makerdao/vdb-execute:$TAG
 
 message PUSHING BACKFILL-STORAGE DOCKER IMAGE
 docker push makerdao/vdb-backfill-storage:$TAG
+
+message PUSHING BACKFILL-EVENTS DOCKER IMAGE
+docker push makerdao/vdb-backfill-events:$TAG
 
 # service deploy
 if [ "$ENVIRONMENT" == "prod" ]; then

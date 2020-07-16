@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_lift"
@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -23,8 +24,8 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		Topic:             constants.MedianLiftSignature(),
 	}
 
-	XIt("transforms Median Lift log events", func() {
-		blockNumber := int64(8936530)
+	It("transforms Median Lift log events from Median ETH", func() {
+		blockNumber := int64(8934004)
 		medianLiftConfig.StartingBlockNumber = blockNumber
 		medianLiftConfig.EndingBlockNumber = blockNumber
 
@@ -33,15 +34,15 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		// TODO: fetch event from blockchain once one exists
-		// logFetcher := fetcher.NewLogFetcher(blockChain)
-		// logs, logErr := logFetcher.FetchLogs(
-		// 	event.HexStringsToAddresses(medianLiftConfig.ContractAddresses),
-		// 	[]common.Hash{common.HexToHash(medianLiftConfig.Topic)},
-		// 	header)
-		// Expect(logErr).NotTo(HaveOccurred())
+		medianEthAddress := constants.GetContractAddress("MEDIAN_ETH")
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, logErr := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(medianEthAddress)},
+			[]common.Hash{common.HexToHash(medianLiftConfig.Topic)},
+			header)
+		Expect(logErr).NotTo(HaveOccurred())
 
-		eventLogs := test_data.CreateLogs(header.Id, []types.Log{test_data.RawMedianLiftLogWithFiveAccounts}, db)
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
 		transformer := event.ConfiguredTransformer{
 			Config:      medianLiftConfig,
@@ -58,24 +59,80 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.EthMedianAddress(), db)
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
 
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0xc45E7858EEf1318337A803Ede8C5A9bE12E2B40f", db)
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc", db)
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderAddressID, 10)))
 
-		Expect(dbResult.ALength).To(Equal("5"))
+		Expect(dbResult.ALength).To(Equal("20"))
 
 		var addresses []string
 		addressesError := db.Get(pq.Array(&addresses), `SELECT a FROM maker.median_lift ORDER BY id`)
 		Expect(addressesError).NotTo(HaveOccurred())
 		Expect(addresses).To(ConsistOf(
-			"0x6bDbc0ccC17d72a33Bf72a4657781a37DC2aa94E",
-			"0x26c45f7B0E456E36fC85781488A3CD42A57CcbD2",
-			"0x20c576F989EE94E571F027b30314aCF709267F7C",
-			"0xFCb1fB52E114b364B3Aab63d8a6f65Fe8dcbeF9D",
+			"0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3",
+			"0x4f95d9B4D842B2E2B1d1AC3f2Cf548B93Fd77c67",
+			"0xE6367a7Da2b20ecB94A25Ef06F3b551baB2682e6",
+			"0x238A3F4C923B75F3eF8cA3473A503073f0530801",
+		))
+	})
+
+	It("transforms Median Lift log events from Median WBTC", func() {
+		blockNumber := int64(8934019)
+		medianLiftConfig.StartingBlockNumber = blockNumber
+		medianLiftConfig.EndingBlockNumber = blockNumber
+
+		test_config.CleanTestDB(db)
+
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
+
+		medianWbtcAddress := constants.GetContractAddress("MEDIAN_WBTC")
+		logFetcher := fetcher.NewLogFetcher(blockChain)
+		logs, logErr := logFetcher.FetchLogs(
+			[]common.Address{common.HexToAddress(medianWbtcAddress)},
+			[]common.Hash{common.HexToHash(medianLiftConfig.Topic)},
+			header)
+		Expect(logErr).NotTo(HaveOccurred())
+
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		transformer := event.ConfiguredTransformer{
+			Config:      medianLiftConfig,
+			Transformer: median_lift.Transformer{},
+		}.NewTransformer(db)
+
+		transformErr := transformer.Execute(eventLogs)
+		Expect(transformErr).NotTo(HaveOccurred())
+
+		var dbResults []MedianLiftModel
+		err := db.Select(&dbResults, `SELECT address_id, msg_sender, a_length FROM maker.median_lift`)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(len(dbResults)).To(Equal(1))
+		dbResult := dbResults[0]
+
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianWbtcAddress(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc", db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderAddressID, 10)))
+
+		Expect(dbResult.ALength).To(Equal("20"))
+
+		var addresses []string
+		addressesError := db.Get(pq.Array(&addresses), `SELECT a FROM maker.median_lift ORDER BY id`)
+		Expect(addressesError).NotTo(HaveOccurred())
+		Expect(addresses).To(ConsistOf(
+			"0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3",
+			"0x4f95d9B4D842B2E2B1d1AC3f2Cf548B93Fd77c67",
+			"0xE6367a7Da2b20ecB94A25Ef06F3b551baB2682e6",
+			"0x238A3F4C923B75F3eF8cA3473A503073f0530801",
 		))
 	})
 })

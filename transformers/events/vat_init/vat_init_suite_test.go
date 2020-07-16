@@ -17,10 +17,7 @@
 package vat_init_test
 
 import (
-	"io/ioutil"
 	"testing"
-
-	log "github.com/sirupsen/logrus"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,9 +25,5 @@ import (
 
 func TestVatInit(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "VatInit Suite")
+	RunSpecs(t, "VatInit Event Transformer Suite")
 }
-
-var _ = BeforeSuite(func() {
-	log.SetOutput(ioutil.Discard)
-})

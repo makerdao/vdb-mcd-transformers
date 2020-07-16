@@ -24,7 +24,7 @@ import (
 var _ = Describe("Flop storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 = &flop.FlopStorageRepository{ContractAddress: test_data.FlopAddress()}
+		repo                 = &flop.StorageRepository{ContractAddress: test_data.FlopAddress()}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)
@@ -238,7 +238,7 @@ var _ = Describe("Flop storage repository", func() {
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())

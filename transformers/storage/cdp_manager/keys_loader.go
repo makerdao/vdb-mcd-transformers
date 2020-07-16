@@ -17,6 +17,8 @@
 package cdp_manager
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -78,23 +80,27 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 }
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
-	mappings := loadStaticMappings()
+	mappings := getStaticMappings()
 	mappings, cdpiErr := loader.loadCdpiKeyMappings(mappings)
 	if cdpiErr != nil {
-		return nil, cdpiErr
+		return nil, fmt.Errorf("error adding cdpi key mappings to cdp manager keys loader: %w", cdpiErr)
 	}
-	return loader.loadOwnsKeyMappings(mappings)
+	mappings, ownsErr := loader.loadOwnsKeyMappings(mappings)
+	if ownsErr != nil {
+		return nil, fmt.Errorf("error adding owns keys to cdp manager keys loader: %w", ownsErr)
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	cdpis, cdpiErr := loader.storageRepository.GetCdpis()
 	if cdpiErr != nil {
-		return nil, cdpiErr
+		return nil, fmt.Errorf("error getting cdpis: %w", cdpiErr)
 	}
 	for _, cdpi := range cdpis {
 		hexCdpi, hexErr := shared.ConvertIntStringToHex(cdpi)
 		if hexErr != nil {
-			return nil, hexErr
+			return nil, fmt.Errorf("error converting int string to hex: %w", hexErr)
 		}
 		mappings[getUrnsKey(hexCdpi)] = getUrnsMetadata(cdpi)
 		mappings[getListPrevKey(hexCdpi)] = getListPrevMetadata(cdpi)
@@ -108,12 +114,12 @@ func (loader *keysLoader) loadCdpiKeyMappings(mappings map[common.Hash]types.Val
 func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	owners, ownersErr := loader.storageRepository.GetOwners()
 	if ownersErr != nil {
-		return nil, ownersErr
+		return nil, fmt.Errorf("error getting owners: %w", ownersErr)
 	}
 	for _, owner := range owners {
 		paddedOwner, padErr := utilities.PadAddress(owner)
 		if padErr != nil {
-			return nil, padErr
+			return nil, fmt.Errorf("error padding address: %w", padErr)
 		}
 		mappings[getFirstKey(paddedOwner)] = getFirstMetadata(owner)
 		mappings[getLastKey(paddedOwner)] = getLastMetadata(owner)
@@ -122,7 +128,7 @@ func (loader *keysLoader) loadOwnsKeyMappings(mappings map[common.Hash]types.Val
 	return mappings, nil
 }
 
-func loadStaticMappings() map[common.Hash]types.ValueMetadata {
+func getStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings := make(map[common.Hash]types.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[CdpiKey] = CdpiMetadata

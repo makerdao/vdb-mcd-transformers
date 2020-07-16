@@ -8,6 +8,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -16,8 +17,8 @@ import (
 
 var _ = Describe("All flops query", func() {
 	var (
-		flopRepo               flop.FlopStorageRepository
-		headerRepo             repositories.HeaderRepository
+		flopRepo               flop.StorageRepository
+		headerRepo             datastore.HeaderRepository
 		contractAddress        = fakes.RandomString(42)
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -25,7 +26,7 @@ var _ = Describe("All flops query", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		flopRepo = flop.FlopStorageRepository{}
+		flopRepo = flop.StorageRepository{}
 		flopRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

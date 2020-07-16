@@ -27,5 +27,5 @@ import (
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(constants.GetContractAddress("CDP_MANAGER")),
 	StorageKeysLookup: storage.NewKeysLookup(cdp_manager.NewKeysLoader(&mcdStorage.MakerStorageRepository{})),
-	Repository:        &cdp_manager.CdpManagerStorageRepository{},
+	Repository:        &cdp_manager.StorageRepository{},
 }.NewTransformer

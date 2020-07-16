@@ -23,7 +23,9 @@ RUN go build
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
-RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers
+RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
+    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
+    OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 
 # app container
@@ -55,6 +57,9 @@ COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/run_migrations.sh .
+
+HEALTHCHECK CMD grep -q "event watcher starting" /tmp/execute_health_check && grep -q "storage watcher starting" /tmp/execute_health_check
 
 # need to execute with a shell to access env variables
 CMD ["./startup_script.sh"]

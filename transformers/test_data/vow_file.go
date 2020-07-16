@@ -65,3 +65,43 @@ var VowFileModel = event.InsertionModel{
 		event.LogFK:          VowFileEventLog.ID,
 	},
 }
+
+var rawVowFileAuctionAddressLog = types.Log{
+	Address: common.HexToAddress(VowAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.VowFileAuctionAddressSignature()),
+		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
+		common.HexToHash("0x666c6f7070657200000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x0000000000000000000000004d95a049d5b0b7d32058cd3f2163015747522e99"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e0d4e8be83666c6f70706572000000000000000000000000000000000000000000000000000000000000000000000000004d95a049d5b0b7d32058cd3f2163015747522e99000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 9017707,
+	TxHash:      common.HexToHash("0x6fd3b8c2873015db136ae6ade1d7941642b9d2e8e6a70d2f624d48981d154be3"),
+	TxIndex:     11,
+	BlockHash:   common.Hash{},
+	Index:       12,
+	Removed:     false,
+}
+
+var VowFileAuctionAddressEventLog = core.EventLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawVowFileAuctionAddressLog,
+	Transformed: false,
+}
+
+func VowFileAuctionAddressModel() event.InsertionModel { return vowFileAuctionAddressModel }
+
+var vowFileAuctionAddressModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.VowFileAuctionAddressTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
+	},
+	ColumnValues: event.ColumnValues{
+		constants.WhatColumn: "flopper",
+		constants.DataColumn: "0x4d95a049d5b0b7d32058cd3f2163015747522e99",
+		event.HeaderFK:       VowFileAuctionAddressEventLog.HeaderID,
+		event.LogFK:          VowFileAuctionAddressEventLog.ID,
+	},
+}

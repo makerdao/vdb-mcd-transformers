@@ -1,6 +1,8 @@
 package integration_tests
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auth"
@@ -26,14 +28,49 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928163), test_data.FlapAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip rely events", func() {
+	Context("Flip ETH rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		relyIntegrationTest(int64(8928180), test_data.EthFlipAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip KNC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10323433), test_data.FlipKncAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip TUSD rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A rely events", func() {
+		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDC-B rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(10144450), test_data.FlipUsdcBAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip WBTC rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip ZRX rely events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
+		relyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flop rely events", func() {
-
 		usrAddress := "0xbe8e3e3618f7474f8cb1d074a26affef007e98fb"
 		msgSenderAddress := "0xddb108893104de4e1c6d0e47c42237db4e617acc"
 		relyIntegrationTest(int64(9008136), test_data.FlopAddress(), msgSenderAddress, usrAddress)
@@ -43,6 +80,66 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		msgSenderAddress := "0x45f0a929889ec8cc2d5b8cd79ab55e3279945cde"
 		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median BAT rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956961), test_data.MedianBatAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median ETH rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956896), test_data.MedianEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median KNC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10323303), test_data.MedianKncAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(8956963), test_data.MedianWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median ZRX rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10323394), test_data.MedianZrxAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM BAT rely events", func() {
+		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(9529100), test_data.OsmBatAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM ETH rely events", func() {
+		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(9529100), test_data.OsmEthAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM KNC rely events", func() {
+		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(10352556), test_data.OsmKncAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM WBTC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(9975536), test_data.OsmWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM ZRX rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10323394), test_data.OsmZrxAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Pot rely events", func() {
@@ -107,9 +204,16 @@ func relyIntegrationTest(blockNumber int64, contractAddressHex, msgSenderAddress
 		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddressHex, db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].AddressID).To(Equal(contractAddressID))
-		Expect(dbResult[0].MsgSender).To(Equal(msgSenderAddressID))
-		Expect(dbResult[0].Usr).To(Equal(usrAddressID))
+		var matchFound bool
+		for _, result := range dbResult {
+			if result.AddressID == contractAddressID &&
+				result.MsgSender == msgSenderAddressID &&
+				result.Usr == usrAddressID {
+				matchFound = true
+			}
+		}
+
+		Expect(matchFound).To(BeTrue(), getRelyFailureMessage(contractAddressHex, blockNumber))
 	})
 }
 
@@ -117,4 +221,9 @@ type relyModel struct {
 	Usr       int64 `db:"usr"`
 	MsgSender int64 `db:"msg_sender"`
 	AddressID int64 `db:"address_id"`
+}
+
+func getRelyFailureMessage(contractAddress string, blockNumber int64) string {
+	failureMsgToFmt := "no matching rely event found for contract %s at block %d"
+	return fmt.Sprintf(failureMsgToFmt, contractAddress, blockNumber)
 }

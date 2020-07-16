@@ -41,7 +41,7 @@ var _ = Describe("Executing the flap transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = test_data.FlapAddress()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = flap.FlapStorageRepository{ContractAddress: contractAddress}
+		repository        = flap.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -186,7 +186,7 @@ var _ = Describe("Executing the flap transformer", func() {
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flapAddressID, 10)))

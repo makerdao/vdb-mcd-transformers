@@ -196,24 +196,24 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 	}
 }
 
-func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.VatStorageRepository) {
+func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.CatStorageRepository) {
+func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository jug.JugStorageRepository) {
+func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository jug.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository spot.SpotStorageRepository) {
+func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository spot.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
+func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.StorageRepository) {
 	// This also creates the ilk if it doesn't exist
 	urnMetadata := []types.ValueMetadata{metadata.UrnInk, metadata.UrnArt}
 	InsertValues(db, &vatRepo, header, setupData, urnMetadata)
@@ -221,10 +221,10 @@ func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.He
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
 	var (
-		vatRepo  vat.VatStorageRepository
-		catRepo  cat.CatStorageRepository
-		jugRepo  jug.JugStorageRepository
-		spotRepo spot.SpotStorageRepository
+		vatRepo  vat.StorageRepository
+		catRepo  cat.StorageRepository
+		jugRepo  jug.StorageRepository
+		spotRepo spot.StorageRepository
 	)
 	vatRepo.SetDB(db)
 	catRepo.SetDB(db)
@@ -286,13 +286,13 @@ type UrnState struct {
 }
 
 func AssertUrn(actual, expected UrnState) {
-	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier))
-	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier))
-	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
-	Expect(actual.Ink).To(Equal(expected.Ink))
-	Expect(actual.Art).To(Equal(expected.Art))
-	Expect(actual.Created).To(Equal(expected.Created))
-	Expect(actual.Updated).To(Equal(expected.Updated))
+	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier), "Urn Identifier")
+	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier), "Ilk Identifier")
+	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight), "Block Height")
+	Expect(actual.Ink).To(Equal(expected.Ink), "Ink")
+	Expect(actual.Art).To(Equal(expected.Art), "Art")
+	Expect(actual.Created).To(Equal(expected.Created), "Created")
+	Expect(actual.Updated).To(Equal(expected.Updated), "Updated")
 }
 
 func GetCommonBidMetadatas(bidId string) []types.ValueMetadata {
@@ -404,25 +404,25 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 }
 
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []types.ValueMetadata, contractAddress string) {
-	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
+	flopRepo := flop.StorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
 	InsertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []types.ValueMetadata, contractAddress string) {
-	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
+	flapRepo := flap.StorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
 	InsertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
 }
 
 func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []types.ValueMetadata, contractAddress string) {
-	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
+	flipRepo := flip.StorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
 	InsertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
 }
 
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
-	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
+	cdpManagerRepo := cdp_manager.StorageRepository{}
 	cdpManagerRepo.SetDB(db)
 	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {

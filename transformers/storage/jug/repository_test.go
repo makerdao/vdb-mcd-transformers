@@ -42,13 +42,13 @@ var _ = Describe("Jug storage repository", func() {
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
 		fakeAddress          = "0x12345"
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
-		repo                 jug.JugStorageRepository
+		repo                 jug.StorageRepository
 		diffID, fakeHeaderID int64
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = jug.JugStorageRepository{ContractAddress: test_data.JugAddress()}
+		repo = jug.StorageRepository{ContractAddress: test_data.JugAddress()}
 		repo.SetDB(db)
 
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -67,7 +67,7 @@ var _ = Describe("Jug storage repository", func() {
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())

@@ -41,7 +41,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		db                     = test_config.NewTestDB(test_config.NewTestNode())
 		flopperContractAddress = test_data.FlopAddress()
 		keccakOfAddress        = types.HexToKeccak256Hash(flopperContractAddress)
-		repository             = flop.FlopStorageRepository{ContractAddress: flopperContractAddress}
+		repository             = flop.StorageRepository{ContractAddress: flopperContractAddress}
 		storageKeysLookup      = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
 		header                 = fakes.FakeHeader
 		transformer            storage.Transformer
@@ -209,7 +209,7 @@ var _ = Describe("Executing the flop transformer", func() {
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))

@@ -27,7 +27,7 @@ import (
 
 func TestConstants(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Constants Suite")
+	RunSpecs(t, "Transformers Shared Constants Suite")
 }
 
 // Because tests in this package depend on reading values from config, it is necessary to setup a config file to

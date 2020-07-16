@@ -13,7 +13,7 @@ import (
 )
 
 var rawOsmChangeLog = types.Log{
-	Address: common.HexToAddress(EthOsmAddress()),
+	Address: common.HexToAddress(OsmEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.OsmChangeSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
