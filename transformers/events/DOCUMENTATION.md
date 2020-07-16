@@ -154,7 +154,7 @@ configuration, and creating an initializer for the transformer.
 
     Simply replace the constants and package names with your transformer.
 
-1. Finally add your package to the list of transformerExporters in `plugins/transformerExporter.go`. Again alphabetically. This can also be generated using the `./vulcanizedb compose --config=/path/to/config.toml` command.
+1. Finally add your package to the list of transformerExporters in `plugins/execute/transformerExporter.go`. Again alphabetically. This can also be generated using the `./vulcanizedb compose --config=/path/to/config.toml` command.
 
 ### Fetching Logs
 

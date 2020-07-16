@@ -17,8 +17,9 @@ RUN go build
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
-RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers
-
+RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
+    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
+    OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
 FROM golang:alpine
