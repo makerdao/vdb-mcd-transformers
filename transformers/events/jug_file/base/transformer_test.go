@@ -55,7 +55,7 @@ var _ = Describe("Jug file base transformer", func() {
 		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileBaseEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSender := common.HexToAddress(test_data.JugFileBaseEventLog.Log.Topics[1].Hex()).Hex()
+		msgSender := shared.GetChecksumAddressString(test_data.JugFileBaseEventLog.Log.Topics[1].Hex())
 		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
