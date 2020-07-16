@@ -19,7 +19,9 @@ package base_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/base"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -29,7 +31,14 @@ import (
 )
 
 var _ = Describe("Jug file base transformer", func() {
-	var transformer = base.Transformer{}
+	var (
+		transformer = base.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log missing topics", func() {
 		badLog := core.EventLog{
@@ -43,9 +52,15 @@ var _ = Describe("Jug file base transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileBaseEventLog}, nil)
-
+		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileBaseEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]event.InsertionModel{test_data.JugFileBaseModel()}))
+
+		msgSender := common.HexToAddress(test_data.JugFileBaseEventLog.Log.Topics[1].Hex()).Hex()
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.JugFileBaseModel()
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderId
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

@@ -98,13 +98,14 @@ var jugFileBaseModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugFileBaseTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		constants.WhatColumn: "fake what",
-		constants.DataColumn: big.NewInt(123).String(),
 		event.HeaderFK:       JugFileBaseEventLog.HeaderID,
 		event.LogFK:          JugFileBaseEventLog.ID,
+		constants.WhatColumn: "fake what",
+		constants.DataColumn: big.NewInt(123).String(),
+		// constants.MsgSender
 	},
 }
 

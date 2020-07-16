@@ -9674,6 +9674,7 @@ CREATE TABLE maker.jug_file_base (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -19398,6 +19399,13 @@ CREATE INDEX jug_file_base_log_index ON maker.jug_file_base USING btree (log_id)
 
 
 --
+-- Name: jug_file_base_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_base_msg_sender_index ON maker.jug_file_base USING btree (msg_sender);
+
+
+--
 -- Name: jug_file_ilk_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -23522,6 +23530,14 @@ ALTER TABLE ONLY maker.jug_file_base
 
 ALTER TABLE ONLY maker.jug_file_base
     ADD CONSTRAINT jug_file_base_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_base jug_file_base_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_base
+    ADD CONSTRAINT jug_file_base_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

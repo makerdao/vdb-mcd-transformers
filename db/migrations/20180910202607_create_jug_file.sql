@@ -1,11 +1,12 @@
 -- +goose Up
 CREATE TABLE maker.jug_file_base
 (
-    id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    what      TEXT,
-    data      NUMERIC,
+    id         SERIAL PRIMARY KEY,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    what       TEXT,
+    data       NUMERIC,
     UNIQUE (header_id, log_id)
 );
 
@@ -49,14 +50,6 @@ CREATE INDEX jug_file_vow_log_index
 
 
 -- +goose Down
-DROP INDEX maker.jug_file_base_header_index;
-DROP INDEX maker.jug_file_base_log_index;
-DROP INDEX maker.jug_file_ilk_header_index;
-DROP INDEX maker.jug_file_ilk_log_index;
-DROP INDEX maker.jug_file_ilk_ilk_index;
-DROP INDEX maker.jug_file_vow_header_index;
-DROP INDEX maker.jug_file_vow_log_index;
-
 DROP TABLE maker.jug_file_ilk;
 DROP TABLE maker.jug_file_base;
 DROP TABLE maker.jug_file_vow;
