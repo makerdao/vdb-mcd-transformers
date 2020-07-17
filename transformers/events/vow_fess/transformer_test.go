@@ -31,7 +31,7 @@ import (
 var _ = Describe("Vow fess transformer", func() {
 	var (
 		transformer = vow_fess.Transformer{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {

@@ -51,10 +51,10 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				constants.TabColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      		log.HeaderID,
-				event.LogFK:         		log.ID,
-				constants.MsgSenderColumn:	msgSenderID,
-				constants.TabColumn: 		tab.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.TabColumn:       tab.String(),
 			},
 		}
 		models = append(models, model)

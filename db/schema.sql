@@ -12804,6 +12804,7 @@ CREATE TABLE maker.vow_fess (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     tab numeric NOT NULL
 );
 
@@ -21265,6 +21266,13 @@ CREATE INDEX vow_fess_log_index ON maker.vow_fess USING btree (log_id);
 
 
 --
+-- Name: vow_fess_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_fess_msg_sender_index ON maker.vow_fess USING btree (msg_sender);
+
+
+--
 -- Name: vow_file_auction_address_data_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25978,6 +25986,14 @@ ALTER TABLE ONLY maker.vow_fess
 
 ALTER TABLE ONLY maker.vow_fess
     ADD CONSTRAINT vow_fess_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_fess vow_fess_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

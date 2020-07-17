@@ -65,8 +65,8 @@ var vowFessModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		constants.TabColumn: "1337",
 		// msg sender ID
-		event.HeaderFK:      VowFessEventLog.HeaderID,
-		event.LogFK:         VowFessEventLog.ID,
+		event.HeaderFK: VowFessEventLog.HeaderID,
+		event.LogFK:    VowFessEventLog.ID,
 	},
 }
 
