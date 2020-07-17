@@ -76,6 +76,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
+
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -107,6 +109,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -131,6 +134,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -163,6 +167,7 @@ var _ = Describe("Sin queue events query", func() {
 				vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 				vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 				vowFlogEvent.ColumnValues[event.LogFK] = logTwoId
+				test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})

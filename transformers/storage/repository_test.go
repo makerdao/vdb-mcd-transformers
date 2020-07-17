@@ -925,11 +925,15 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFlogEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	vowFlogLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_flog (header_id, era, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, era, vowFlogLog.ID,
+		`INSERT INTO maker.vow_flog (header_id, era, log_id, msg_sender)
+			VALUES($1, $2, $3, $4)`,
+		headerID, era, vowFlogLog.ID, msgSenderID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

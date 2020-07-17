@@ -12927,6 +12927,7 @@ ALTER SEQUENCE maker.vow_flapper_id_seq OWNED BY maker.vow_flapper.id;
 CREATE TABLE maker.vow_flog (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     log_id bigint NOT NULL,
     era integer NOT NULL
 );
@@ -21271,6 +21272,13 @@ CREATE INDEX vow_flog_log_index ON maker.vow_flog USING btree (log_id);
 
 
 --
+-- Name: vow_flog_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flog_msg_sender_index ON maker.vow_flog USING btree (msg_sender);
+
+
+--
 -- Name: vow_flopper_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25938,6 +25946,14 @@ ALTER TABLE ONLY maker.vow_flog
 
 ALTER TABLE ONLY maker.vow_flog
     ADD CONSTRAINT vow_flog_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_flog vow_flog_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flog
+    ADD CONSTRAINT vow_flog_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
