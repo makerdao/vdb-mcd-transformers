@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package vow_file
+package auction_attributes
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -39,7 +39,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.VowFileTable,
+			TableName:  constants.VowFileAuctionAttributesTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
 			},
