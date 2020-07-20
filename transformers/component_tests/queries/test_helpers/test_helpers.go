@@ -592,6 +592,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
 	dealModel.ColumnValues[event.AddressFK] = addressID
+	test_data.AssignMessageSenderID(test_data.DealEventLog, dealModel, input.DB)
 	deals := []event.InsertionModel{dealModel}
 	return event.PersistModels(deals, input.DB)
 }

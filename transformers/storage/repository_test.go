@@ -815,9 +815,11 @@ func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dealLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidID, contractAddressID, dealLog.ID,
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DealEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, dealLog.ID, msgSenderID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }

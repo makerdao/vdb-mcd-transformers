@@ -59,11 +59,13 @@ var dealModel = event.InsertionModel{
 		event.HeaderFK,
 		event.AddressFK,
 		event.LogFK,
+		constants.MsgSenderColumn,
 		constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        DealEventLog.HeaderID,
-		event.LogFK:           DealEventLog.ID,
+		event.HeaderFK: DealEventLog.HeaderID,
+		event.LogFK:    DealEventLog.ID,
+		// msg sender ID
 		constants.BidIDColumn: "10000000000000000",
 	},
 }

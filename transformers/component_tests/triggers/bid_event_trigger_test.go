@@ -166,6 +166,7 @@ var _ = Describe("Updating bid_event table", func() {
 		dealModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		dealModel.ColumnValues[event.AddressFK] = addressID
 		dealModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.DealEventLog, dealModel, db)
 		expectedEvent := expectedBidEventNullStrings(dealModel, "deal", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{dealModel}, db)
