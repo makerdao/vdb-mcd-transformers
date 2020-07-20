@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -47,11 +46,8 @@ var _ = Describe("Vow flog transformer", func() {
 	It("converts a log to a model", func() {
 		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFlogEventLog}, db)
 
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFlogEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.VowFlogModel
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+		test_data.AssignMessageSenderID(test_data.VowFlogEventLog, expectedModel, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
