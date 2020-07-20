@@ -23,6 +23,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -113,6 +115,13 @@ func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventL
 		}
 	}
 	return results
+}
+
+func AssignMessageSenderID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	Expect(len(log.Log.Topics)).Should(BeNumerically(">=", 2))
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 }
 
 func getLogCount(db *postgres.DB) int {
