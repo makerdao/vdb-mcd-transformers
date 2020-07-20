@@ -21,9 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -42,7 +42,7 @@ var _ = Describe("Cat file flip transformer", func() {
 	It("returns err if log is missing topics", func() {
 		badLog := core.EventLog{
 			Log: types.Log{
-				Data: []byte{1, 1, 1, 1, 1},
+				Data: []byte{1, 1, 1, 1, 2},
 			},
 		}
 
@@ -65,12 +65,17 @@ var _ = Describe("Cat file flip transformer", func() {
 		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileFlipEventLog.Log.Topics[2].Hex())
-		Expect(ilkErr).NotTo(HaveOccurred())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.CatFileFlipEventLog.Log.Topics[1].Hex(), db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		ilkID, ilkIDErr := shared.GetOrCreateIlk(test_data.CatFileFlipEventLog.Log.Topics[2].Hex(), db)
+		Expect(ilkIDErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.CatFileFlipModel()
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
-		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

@@ -156,6 +156,7 @@ var catFileFlipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.FlipColumn,
+		constants.MsgSenderColumn,
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
