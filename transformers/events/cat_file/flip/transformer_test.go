@@ -65,14 +65,11 @@ var _ = Describe("Cat file flip transformer", func() {
 		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.CatFileFlipEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		ilkID, ilkIDErr := shared.GetOrCreateIlk(test_data.CatFileFlipEventLog.Log.Topics[2].Hex(), db)
 		Expect(ilkIDErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.CatFileFlipModel()
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+		test_data.AssignMessageSenderID(test_data.CatFileFlipEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
 		Expect(len(models)).To(Equal(1))
