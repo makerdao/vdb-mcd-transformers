@@ -36,13 +36,13 @@ func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgr
 		}
 
 		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		if msgSenderErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 
 		ilk := log.Log.Topics[2].Hex()
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
@@ -62,8 +62,8 @@ func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgr
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
-				constants.MsgSenderColumn: msgSenderId,
-				constants.IlkColumn:       ilkId,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.IlkColumn:       ilkID,
 				constants.WhatColumn:      what,
 				constants.DataColumn:      data.String(),
 			},

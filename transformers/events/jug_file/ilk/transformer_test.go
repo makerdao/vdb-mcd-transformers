@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -64,8 +65,7 @@ var _ = Describe("Jug file ilk transformer", func() {
 		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileIlkEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugFileIlkEventLog.Log.Topics[2].Hex())
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.JugFileIlkEventLog.Log.Topics[2].Hex(), db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.JugFileIlkModel()

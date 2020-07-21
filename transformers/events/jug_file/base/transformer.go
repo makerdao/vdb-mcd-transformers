@@ -38,7 +38,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		if msgSenderErr != nil {
 			return nil, msgSenderErr
 		}
@@ -52,7 +52,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
-				constants.MsgSenderColumn: msgSenderId,
+				constants.MsgSenderColumn: msgSenderID,
 				constants.WhatColumn:      what,
 				constants.DataColumn:      data.String(),
 			},
