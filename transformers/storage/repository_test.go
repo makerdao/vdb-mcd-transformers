@@ -18,7 +18,6 @@ package storage_test
 
 import (
 	"fmt"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -29,12 +28,14 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -795,22 +796,15 @@ func insertFlopKicks(blockNumber int64, kicks string, contractAddressID int64, d
 
 func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-	tendLog := test_data.CreateTestLog(headerID, db)
-	tendLog.Log.Topics = []common.Hash{
-		common.HexToHash(constants.TendSignature()),
-		common.HexToHash("0x0000000000000000000000003a673843d27d037b206bb05eb1abbc7288d95e66"),
-		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000000000a"),
-		common.HexToHash("0x000000000000000000000000000000000000000000000000000007bb0f7b0800"),
-	}
-
-	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(tendLog.Log.Topics[1].Hex(), db)
-	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id, msg_sender)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
-		headerID, bidID, 0, 0, contractAddressID, tendLog.ID, msgSenderAddressID,
-	)
-	Expect(err).NotTo(HaveOccurred())
+	tendLog := test_data.CreateTestLogFromEventLog(headerID, test_data.TendEventLog.Log, db)
+	tendModel := test_data.TendModel()
+	tendModel.ColumnValues[event.HeaderFK] = headerID
+	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	tendModel.ColumnValues[constants.BidIDColumn] = bidID
+	tendModel.ColumnValues[event.AddressFK] = contractAddressID
+	test_data.AssignMessageSenderID(tendLog, tendModel, db)
+	tendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
+	Expect(tendErr).NotTo(HaveOccurred())
 }
 
 func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {

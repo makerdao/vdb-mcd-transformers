@@ -49,9 +49,7 @@ var _ = Describe("Tend transformer", func() {
 			expectedModel := test_data.TendModel()
 			expectedModel.ColumnValues[event.AddressFK] = contractAddressID
 
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.TendEventLog.Log.Topics[1].Hex(), db)
-			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			test_data.AssignMessageSenderID(test_data.TendEventLog, expectedModel, db)
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
