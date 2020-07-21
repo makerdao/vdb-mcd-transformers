@@ -35,7 +35,7 @@ import (
 
 var _ = Describe("Ilk File Events Query", func() {
 	var (
-		logOneId               int64
+		logOneID               int64
 		blockOne, timestampOne int
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
@@ -48,11 +48,11 @@ var _ = Describe("Ilk File Events Query", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
+		logOneID = test_data.CreateTestLog(headerOne.Id, db).ID
 	})
 
 	It("returns all ilk file events for ilk", func() {
-		catFileChopLumpLog := test_data.CreateTestLog(headerOne.Id, db)
+		catFileChopLumpLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.CatFileChopEventLog.Log, db)
 		catFileChopLump := test_data.CatFileChopModel()
 		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 		Expect(createIlkError).NotTo(HaveOccurred())
@@ -60,6 +60,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkID
 		catFileChopLump.ColumnValues[event.HeaderFK] = headerOne.Id
 		catFileChopLump.ColumnValues[event.LogFK] = catFileChopLumpLog.ID
+		test_data.AssignMessageSenderID(catFileChopLumpLog, catFileChopLump, db)
 		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
@@ -149,7 +150,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		fileBlockOne.ColumnValues[constants.IlkColumn] = ilkID
 		fileBlockOne.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
 		fileBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
-		fileBlockOne.ColumnValues[event.LogFK] = logOneId
+		fileBlockOne.ColumnValues[event.LogFK] = logOneID
 		fileBlockOneErr := event.PersistModels([]event.InsertionModel{fileBlockOne}, db)
 		Expect(fileBlockOneErr).NotTo(HaveOccurred())
 
@@ -193,7 +194,7 @@ var _ = Describe("Ilk File Events Query", func() {
 			fileBlockOne.ColumnValues[constants.IlkColumn] = ilkID
 			fileBlockOne.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
 			fileBlockOne.ColumnValues[event.HeaderFK] = headerOne.Id
-			fileBlockOne.ColumnValues[event.LogFK] = logOneId
+			fileBlockOne.ColumnValues[event.LogFK] = logOneID
 			fileBlockOneErr := event.PersistModels([]event.InsertionModel{fileBlockOne}, db)
 			Expect(fileBlockOneErr).NotTo(HaveOccurred())
 
@@ -251,7 +252,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		relevantFile.ColumnValues[constants.IlkColumn] = ilkID
 		relevantFile.ColumnValues[constants.DataColumn] = strconv.Itoa(rand.Int())
 		relevantFile.ColumnValues[event.HeaderFK] = headerOne.Id
-		relevantFile.ColumnValues[event.LogFK] = logOneId
+		relevantFile.ColumnValues[event.LogFK] = logOneID
 
 		irrelevantLog := test_data.CreateTestLog(headerOne.Id, db)
 		irrelevantFile := test_data.VatFileIlkDustModel()

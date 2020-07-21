@@ -34,8 +34,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
-		ilk := log.Log.Topics[2].Hex()
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+		ilkID, ilkErr := shared.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
@@ -45,22 +49,25 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, parseErr
 		}
 		data := shared.ConvertUint256HexToBigInt(hexutil.Encode(dataBytes))
+
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.CatFileChopLumpTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
+				event.LogFK,
+				constants.MsgSenderColumn,
 				constants.IlkColumn,
 				constants.WhatColumn,
 				constants.DataColumn,
-				event.LogFK,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       log.HeaderID,
-				constants.IlkColumn:  ilkId,
-				constants.WhatColumn: what,
-				constants.DataColumn: data.String(),
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.IlkColumn:       ilkID,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data.String(),
 			},
 		}
 		results = append(results, result)

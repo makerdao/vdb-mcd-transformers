@@ -94,6 +94,10 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
 	panic("couldn't find inserted test log")
 }
 
+func CreateTestLogFromEventLog(headerID int64, log types.Log, db *postgres.DB) core.EventLog {
+	return CreateLogs(headerID, []types.Log{log}, db)[0]
+}
+
 func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventLog {
 	headerRepo := repositories.NewHeaderRepository(db)
 	for _, log := range logs {
