@@ -13298,8 +13298,9 @@ CREATE TABLE maker.yank (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    bid_id numeric NOT NULL
 );
 
 
@@ -13361,7 +13362,6 @@ ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 CREATE TABLE public.checked_headers (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    yank integer DEFAULT 0 NOT NULL,
     new_cdp integer DEFAULT 0 NOT NULL
 );
 
@@ -21523,6 +21523,13 @@ CREATE INDEX yank_log_index ON maker.yank USING btree (log_id);
 
 
 --
+-- Name: yank_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_msg_sender ON maker.yank USING btree (msg_sender);
+
+
+--
 -- Name: event_logs_address; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -26370,6 +26377,14 @@ ALTER TABLE ONLY maker.yank
 
 ALTER TABLE ONLY maker.yank
     ADD CONSTRAINT yank_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: yank yank_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

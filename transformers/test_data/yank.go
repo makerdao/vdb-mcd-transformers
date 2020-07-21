@@ -55,11 +55,17 @@ var yankModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.YankTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn,
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        YankEventLog.HeaderID,
-		event.LogFK:           YankEventLog.ID,
+		event.HeaderFK: YankEventLog.HeaderID,
+		event.LogFK:    YankEventLog.ID,
+		// contract address ID
+		// msg.sender
 		constants.BidIDColumn: "10000000000000000",
 	},
 }
