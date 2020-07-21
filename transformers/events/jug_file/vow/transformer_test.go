@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -56,12 +55,8 @@ var _ = Describe("Jug file vow transformer", func() {
 		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileVowEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSender := test_data.JugFileVowEventLog.Log.Topics[1].Hex()
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.JugFileVowModel()
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderId
+		test_data.AssignMessageSenderID(test_data.JugFileVowEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

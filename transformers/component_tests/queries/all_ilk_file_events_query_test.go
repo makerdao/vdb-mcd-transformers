@@ -77,9 +77,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		jugFile.ColumnValues[constants.IlkColumn] = ilkID
 		jugFile.ColumnValues[event.HeaderFK] = headerOne.Id
 		jugFile.ColumnValues[event.LogFK] = jugFileLog.ID
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(test_data.JugFileIlkMsgSender, db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-		jugFile.ColumnValues[constants.MsgSenderColumn] = msgSenderId
+		test_data.AssignMessageSenderID(test_data.JugFileIlkEventLog, jugFile, db)
 		jugErr := event.PersistModels([]event.InsertionModel{jugFile}, db)
 		Expect(jugErr).NotTo(HaveOccurred())
 

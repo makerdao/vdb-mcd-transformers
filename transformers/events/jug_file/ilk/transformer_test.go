@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -69,13 +68,9 @@ var _ = Describe("Jug file ilk transformer", func() {
 		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.JugFileIlkEventLog.Log.Topics[2].Hex())
 		Expect(ilkErr).NotTo(HaveOccurred())
 
-		msgSender := shared.GetChecksumAddressString(test_data.JugFileIlkEventLog.Log.Topics[1].Hex())
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.JugFileIlkModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderId
+		test_data.AssignMessageSenderID(test_data.JugFileIlkEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
