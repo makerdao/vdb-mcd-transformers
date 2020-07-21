@@ -649,17 +649,14 @@ func CreateTend(input TendCreationInput) (err error) {
 func CreateDent(input DentCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
-	// TODO: pass the msgSender address in DentCreationInput
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DentMsgSender, input.DB)
-	Expect(msgSenderErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
 	dentModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	dentModel.ColumnValues[constants.LotColumn] = strconv.Itoa(input.Lot)
 	dentModel.ColumnValues[constants.BidColumn] = strconv.Itoa(input.BidAmount)
 	dentModel.ColumnValues[event.AddressFK] = addressID
-	dentModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
+	test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
