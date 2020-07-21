@@ -680,6 +680,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	tickModel.ColumnValues[event.AddressFK] = addressID
 	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[event.LogFK] = tickLog.ID
+	test_data.AssignMessageSenderID(test_data.FlipTickEventLog, tickModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)
 }
 

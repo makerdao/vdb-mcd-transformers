@@ -11752,7 +11752,8 @@ CREATE TABLE maker.tick (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL
 );
 
 
@@ -20770,6 +20771,13 @@ CREATE INDEX tick_log_index ON maker.tick USING btree (log_id);
 
 
 --
+-- Name: tick_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_msg_sender_index ON maker.tick USING btree (msg_sender);
+
+
+--
 -- Name: urn_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25290,6 +25298,14 @@ ALTER TABLE ONLY maker.tick
 
 ALTER TABLE ONLY maker.tick
     ADD CONSTRAINT tick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tick tick_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

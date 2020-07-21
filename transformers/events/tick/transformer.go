@@ -39,17 +39,24 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TickTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK,
+				event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK, constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:        log.HeaderID,
 				event.LogFK:           log.ID,
 				constants.BidIDColumn: log.Log.Topics[2].Big().String(),
 				event.AddressFK:       addressID,
+				constants.MsgSenderColumn: msgSenderID,
 			},
 		}
 		models = append(models, model)
