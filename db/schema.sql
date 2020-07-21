@@ -7766,6 +7766,7 @@ CREATE TABLE maker.cat_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data text
 );
@@ -18301,6 +18302,13 @@ CREATE INDEX cat_file_vow_log_index ON maker.cat_file_vow USING btree (log_id);
 
 
 --
+-- Name: cat_file_vow_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_msg_sender ON maker.cat_file_vow USING btree (msg_sender);
+
+
+--
 -- Name: cat_ilk_chop_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -21954,6 +21962,14 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 ALTER TABLE ONLY maker.cat_file_vow
     ADD CONSTRAINT cat_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_vow cat_file_vow_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
