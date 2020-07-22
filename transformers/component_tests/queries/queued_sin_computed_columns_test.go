@@ -66,11 +66,12 @@ var _ = Describe("Queued sin computed columns", func() {
 			insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
-			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
+			vowFlogLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFlogEventLog.Log, db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(vowFlogLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 		})
