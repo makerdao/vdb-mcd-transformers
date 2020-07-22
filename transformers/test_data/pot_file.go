@@ -63,7 +63,7 @@ var potFileDSRModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.PotFileDSRTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+		event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       PotFileDSREventLog.HeaderID,
