@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/base"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -66,17 +67,22 @@ var _ = Describe("Jug File Base EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []jugFileBaseModel
-		err = db.Select(&dbResult, `SELECT what, data FROM maker.jug_file_base`)
+		var dbResult jugFileBaseModel
+		err = db.Get(&dbResult, `SELECT what, data, msg_sender FROM maker.jug_file_base`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("base"))
-		Expect(dbResult[0].Data).To(Equal("0"))
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb")
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.What).To(Equal("base"))
+		Expect(dbResult.Data).To(Equal("0"))
+		Expect(dbResult.MsgSender).To(Equal(msgSenderId))
 	})
 })
 
 type jugFileBaseModel struct {
-	What string
-	Data string
+	What      string
+	Data      string
+	MsgSender int64 `db:"msg_sender"`
 }
