@@ -11117,6 +11117,7 @@ CREATE TABLE maker.pot_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data text
 );
@@ -20443,6 +20444,13 @@ CREATE INDEX pot_file_vow_log_index ON maker.pot_file_vow USING btree (log_id);
 
 
 --
+-- Name: pot_file_vow_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_file_vow_msg_sender_index ON maker.pot_file_vow USING btree (msg_sender);
+
+
+--
 -- Name: pot_join_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -24850,6 +24858,14 @@ ALTER TABLE ONLY maker.pot_file_vow
 
 ALTER TABLE ONLY maker.pot_file_vow
     ADD CONSTRAINT pot_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_file_vow pot_file_vow_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_file_vow
+    ADD CONSTRAINT pot_file_vow_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

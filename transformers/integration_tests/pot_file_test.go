@@ -126,9 +126,14 @@ var _ = Describe("PotFile EventTransformers", func() {
 
 		It("fetches and transforms a Pot.file vow event", func() {
 			var dbResult potFileModel
-			getFileErr := db.Get(&dbResult, `SELECT what, data FROM maker.pot_file_vow`)
+			getFileErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.pot_file_vow`)
 			Expect(getFileErr).NotTo(HaveOccurred())
 
+			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 			Expect(dbResult.What).To(Equal("vow"))
 			Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
 		})

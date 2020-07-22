@@ -27,6 +27,7 @@ var _ = Describe("Pot file vow transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotFileVowModel()
+		test_data.AssignMessageSenderID(test_data.PotFileVowEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

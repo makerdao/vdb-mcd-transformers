@@ -76,7 +76,7 @@ var potFileDSRModel = event.InsertionModel{
 var potFileVowModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotFileVowTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       PotFileVowEventLog.HeaderID,
 		event.LogFK:          PotFileVowEventLog.ID,
