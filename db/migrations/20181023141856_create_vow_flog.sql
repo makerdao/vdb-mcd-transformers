@@ -20,8 +20,5 @@ CREATE INDEX vow_flog_msg_sender_index
 
 
 -- +goose Down
-DROP INDEX maker.vow_flog_era_index;
-DROP INDEX maker.vow_flog_log_index;
-DROP INDEX maker.vow_flog_header_index;
 
 DROP TABLE maker.vow_flog;
