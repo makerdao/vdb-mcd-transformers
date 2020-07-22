@@ -656,6 +656,7 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues[event.AddressFK] = addressID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
+	test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 

@@ -128,6 +128,7 @@ var _ = Describe("Updating bid_event table", func() {
 		dentModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		dentModel.ColumnValues[event.AddressFK] = addressID
 		dentModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, db)
 		expectedEvent := expectedBidEvent(dentModel, "dent", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{dentModel}, db)

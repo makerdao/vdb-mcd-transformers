@@ -34,13 +34,15 @@ var (
 	dentBidId           = "10000000000000000"
 	dentLot             = "20000000000000000"
 	dentBid             = "30000000000000000"
+	topic1              = "0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092" // msg.sender
+	DentMsgSender       = common.HexToAddress(topic1).Hex()
 )
 
 var rawDentLog = types.Log{
 	Address: common.HexToAddress(FlipEthAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DentSignature()),
-		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
+		common.HexToHash(topic1),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000002386f26fc10000"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000000000470de4df820000"),
 	},
@@ -68,7 +70,7 @@ var dentModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.DentTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+		event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        DentEventLog.HeaderID,
@@ -77,5 +79,6 @@ var dentModel = event.InsertionModel{
 		constants.LotColumn:   dentLot,
 		constants.BidColumn:   dentBid,
 		// event.AddressFK
+		// constants.MsgSender
 	},
 }
