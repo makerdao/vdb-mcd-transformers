@@ -11711,7 +11711,8 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL
 );
 
 
@@ -20677,6 +20678,13 @@ CREATE INDEX tend_log_index ON maker.tend USING btree (log_id);
 
 
 --
+-- Name: tend_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tend_msg_sender_index ON maker.tend USING btree (msg_sender);
+
+
+--
 -- Name: tick_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25130,6 +25138,14 @@ ALTER TABLE ONLY maker.tend
 
 ALTER TABLE ONLY maker.tend
     ADD CONSTRAINT tend_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tend tend_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tend
+    ADD CONSTRAINT tend_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

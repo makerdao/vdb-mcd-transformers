@@ -642,6 +642,7 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues[event.AddressFK] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	test_data.AssignMessageSenderID(test_data.TendEventLog, tendModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
 }
 

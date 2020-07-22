@@ -101,11 +101,13 @@ var _ = Describe("Updating bid_event table", func() {
 		address := test_data.FlipEthAddress()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
-		logID := test_data.CreateTestLog(headerOne.Id, db).ID
+
+		tendLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.TendEventLog.Log, db)
 		tendModel := test_data.TendModel()
 		tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		tendModel.ColumnValues[event.AddressFK] = addressID
-		tendModel.ColumnValues[event.LogFK] = logID
+		tendModel.ColumnValues[event.LogFK] = tendLog.ID
+		test_data.AssignMessageSenderID(tendLog, tendModel, db)
 		expectedEvent := expectedBidEvent(tendModel, "tend", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
@@ -368,11 +370,13 @@ var _ = Describe("Updating bid_event table", func() {
 			insertKickErrOne := event.PersistModels([]event.InsertionModel{flipKickModelOne}, db)
 			Expect(insertKickErrOne).NotTo(HaveOccurred())
 
+			tendLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.TendEventLog.Log, db)
 			tendModel = test_data.TendModel()
 			tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 			tendModel.ColumnValues[event.AddressFK] = ethFlipAddressID
 			tendModel.ColumnValues[event.LogFK] = logTwoID
 			tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidOneID)
+			test_data.AssignMessageSenderID(tendLog, tendModel, db)
 			insertTendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
 			Expect(insertTendErr).NotTo(HaveOccurred())
 
