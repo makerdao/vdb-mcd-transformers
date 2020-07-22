@@ -64,11 +64,12 @@ var _ = Describe("Ilk File Events Query", func() {
 		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
-		catFileFlipLog := test_data.CreateTestLog(headerOne.Id, db)
+		catFileFlipLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.CatFileFlipEventLog.Log, db)
 		catFileFlip := test_data.CatFileFlipModel()
 		catFileFlip.ColumnValues[constants.IlkColumn] = ilkID
 		catFileFlip.ColumnValues[event.HeaderFK] = headerOne.Id
 		catFileFlip.ColumnValues[event.LogFK] = catFileFlipLog.ID
+		test_data.AssignMessageSenderID(catFileFlipLog, catFileFlip, db)
 		flipErr := event.PersistModels([]event.InsertionModel{catFileFlip}, db)
 		Expect(flipErr).NotTo(HaveOccurred())
 
