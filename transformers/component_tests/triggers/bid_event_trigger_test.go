@@ -78,7 +78,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a flap_kick event triggers a bid_event insertion", func() {
-		flapAddress := test_data.FlapAddress()
+		flapAddress := test_data.FlapV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(flapAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID

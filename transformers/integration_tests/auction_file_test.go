@@ -20,7 +20,7 @@ var _ = Describe("Auction file transformer", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "beg"
 		data := "1020000000000000000"
-		auctionFileIntegrationTest(int64(9529100), test_data.FlapAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9529100), test_data.FlapV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip BAT file events", func() {

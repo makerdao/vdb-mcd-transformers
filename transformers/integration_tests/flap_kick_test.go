@@ -36,7 +36,7 @@ var _ = Describe("FlapKick Transformer", func() {
 
 	flapKickConfig := event.TransformerConfig{
 		TransformerName:   constants.FlapKickTable,
-		ContractAddresses: []string{test_data.FlapAddress()},
+		ContractAddresses: []string{test_data.FlapV100Address()},
 		ContractAbi:       constants.FlapABI(),
 		Topic:             constants.FlapKickSignature(),
 	}
@@ -70,7 +70,7 @@ var _ = Describe("FlapKick Transformer", func() {
 		err = db.Get(&dbResult, `SELECT address_id, bid, bid_id, lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedModel := FlapKickModel{
 			AddressID: flapAddressID,

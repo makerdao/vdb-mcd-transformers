@@ -43,7 +43,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		tendConfig = event.TransformerConfig{
 			TransformerName:   constants.TendTable,
-			ContractAddresses: []string{test_data.FlipEthAddress(), test_data.FlapAddress()},
+			ContractAddresses: []string{test_data.FlipEthAddress(), test_data.FlapV100Address()},
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TendSignature(),
 		}
@@ -111,7 +111,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = db.Get(&flapTend, `SELECT address_id, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
 		expectedFlapTend := tendModel{
 			AddressID: flapAddressID,

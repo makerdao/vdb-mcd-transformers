@@ -21,9 +21,14 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(8928165), test_data.CatAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Flap deny events", func() {
+	Context("Flap v1.0.0 deny events", func() {
 		usrAddress := "0xd27a5f3416d8791fc238c148c93630d9e3c882e5"
-		denyIntegrationTest(int64(8928163), test_data.FlapAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(8928163), test_data.FlapV100Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flap v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlapV109Address(), usrAddress, usrAddress)
 	})
 
 	Context("Flip ETH deny events", func() {
