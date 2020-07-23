@@ -103,7 +103,8 @@ services:
       # awk -F= '/CONTRACT_.+_ADDRESS/{print "\"--statediff.watchedaddresses\", " "\""$2 "\", # " $1}' dockerfiles/mainnet-1.0.1.env
       "--statediff.watchedaddresses", "0xd8a04f5412223f513dc55f839574430f5ec15531", # CONTRACT_MCD_FLIP_ETH_A_1.0.0_ADDRESS
       "--statediff.watchedaddresses", "0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1", # CONTRACT_MCD_FLIP_ETH_A_1.0.9_ADDRESS
-      "--statediff.watchedaddresses", "0xaa745404d55f88c108a28c86abe7b5a1e7817c07", # CONTRACT_MCD_FLIP_BAT_A_ADDRESS
+      "--statediff.watchedaddresses", "0xaa745404d55f88c108a28c86abe7b5a1e7817c07", # CONTRACT_MCD_FLIP_BAT_A_1.0.0_ADDRESS
+      "--statediff.watchedaddresses", "0x5EdF770FC81E7b8C2c89f71F30f211226a4d7495", # CONTRACT_MCD_FLIP_BAT_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0x5432b2f3c0dff95aa191c45e5cbd539e2820ae72", # CONTRACT_MCD_FLIP_SAI_ADDRESS
       "--statediff.watchedaddresses", "0x78f2c2af65126834c51822f56be0d7469d7a523e", # CONTRACT_MCD_CAT_ADDRESS
       "--statediff.watchedaddresses", "0x5ef30b9986345249bc32d8928b7ee64de9435e39", # CONTRACT_CDP_MANAGER_ADDRESS

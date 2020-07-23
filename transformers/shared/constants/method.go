@@ -27,7 +27,8 @@ func FlapABI() string {
 }
 func FlipABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLIP_BAT_A",
+		"MCD_FLIP_BAT_A_1.0.0",
+		"MCD_FLIP_BAT_A_1.0.9",
 		"MCD_FLIP_ETH_A_1.0.0",
 		"MCD_FLIP_ETH_A_1.0.9",
 		"MCD_FLIP_KNC_A",

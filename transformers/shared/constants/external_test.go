@@ -11,7 +11,7 @@ var _ = Describe("External constants", func() {
 
 	Describe("GetABIFromContractsWithMatchingABI", func() {
 		It("returns parsed ABI for contract", func() {
-			abi := constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_BAT_A"})
+			abi := constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_BAT_A_1.0.0"})
 
 			Expect(abi).To(Equal(flipABI))
 		})
