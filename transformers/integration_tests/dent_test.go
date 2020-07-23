@@ -44,7 +44,7 @@ var _ = Describe("Dent transformer", func() {
 
 		dentConfig = event.TransformerConfig{
 			TransformerName:   constants.DentTable,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.DentSignature(),
 		}
@@ -84,7 +84,7 @@ var _ = Describe("Dent transformer", func() {
 		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		expectedModel := dentModel{

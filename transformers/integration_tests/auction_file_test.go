@@ -69,7 +69,7 @@ var _ = Describe("Auction file transformer", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "pad"
 		data := "1200000000000000000"
-		auctionFileIntegrationTest(int64(9017707), test_data.FlopAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9017707), test_data.FlopV101Address(), msgSender, what, data)
 	})
 })
 

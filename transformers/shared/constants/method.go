@@ -38,8 +38,13 @@ func FlipABI() string {
 		"MCD_FLIP_ZRX_A",
 	})
 }
-func FlopABI() string { return getContractABI("MCD_FLOP") }
-func JugABI() string  { return getContractABI("MCD_JUG") }
+func FlopABI() string {
+	return GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLOP_1.0.1",
+		"MCD_FLOP_1.0.9",
+	})
+}
+func JugABI() string { return getContractABI("MCD_JUG") }
 func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",

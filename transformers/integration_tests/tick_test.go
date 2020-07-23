@@ -45,7 +45,7 @@ var _ = Describe("Tick EventTransformer", func() {
 
 		tickConfig = event.TransformerConfig{
 			TransformerName:   constants.TickTable,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TickSignature(),
 		}
@@ -142,7 +142,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(flopAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

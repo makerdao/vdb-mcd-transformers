@@ -108,7 +108,8 @@ services:
       "--statediff.watchedaddresses", "0x5ef30b9986345249bc32d8928b7ee64de9435e39", # CONTRACT_CDP_MANAGER_ADDRESS
       "--statediff.watchedaddresses", "0xdfe0fb1be2a52cdbf8fb962d5701d7fd0902db9f", # CONTRACT_MCD_FLAP_1.0.0_ADDRESS
       "--statediff.watchedaddresses", "0xC4269cC7acDEdC3794b221aA4D9205F564e27f0d", # CONTRACT_MCD_FLAP_1.0.9_ADDRESS
-      "--statediff.watchedaddresses", "0x4d95a049d5b0b7d32058cd3f2163015747522e99", # CONTRACT_MCD_FLOP_ADDRESS
+      "--statediff.watchedaddresses", "0x4d95a049d5b0b7d32058cd3f2163015747522e99", # CONTRACT_MCD_FLOP_1.0.1_ADDRESS
+      "--statediff.watchedaddresses", "0xA41B6EF151E06da0e34B009B86E828308986736D", # CONTRACT_MCD_FLOP_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0x19c0976f590d67707e62397c87829d896dc0f1f1", # CONTRACT_MCD_JUG_ADDRESS
       "--statediff.watchedaddresses", "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7", # CONTRACT_MCD_POT_ADDRESS
       "--statediff.watchedaddresses", "0x65c79fcb50ca1594b025960e539ed7a9a6d434a3", # CONTRACT_MCD_SPOT_ADDRESS

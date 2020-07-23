@@ -24,7 +24,7 @@ import (
 var _ = Describe("Flop storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 = &flop.StorageRepository{ContractAddress: test_data.FlopAddress()}
+		repo                 = &flop.StorageRepository{ContractAddress: test_data.FlopV101Address()}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)

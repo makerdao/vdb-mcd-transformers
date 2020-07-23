@@ -45,7 +45,7 @@ var _ = Describe("FlopKick Transformer", func() {
 
 		flopKickConfig = event.TransformerConfig{
 			TransformerName:   constants.FlopKickTable,
-			ContractAddresses: []string{test_data.FlopAddress()},
+			ContractAddresses: []string{test_data.FlopV101Address()},
 			ContractAbi:       constants.FlopABI(),
 			Topic:             constants.FlopKickSignature(),
 		}
@@ -81,7 +81,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid, bid_id, address_id, gal, lot FROM maker.flop_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(flopAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := FlopKickModel{

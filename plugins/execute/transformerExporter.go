@@ -80,8 +80,8 @@ import (
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
 	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	flap_v1_0_0_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
-	flap_v1_0_9_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
+	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
+	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
 	knc_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_flip"
@@ -91,7 +91,8 @@ import (
 	usdc_b_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b_flip"
 	wbtc_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_flip"
 	zrx_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_flip"
-	flop_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializer"
+	flop_v1_0_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_1"
+	flop_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_9"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	median_bat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_bat"
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
@@ -194,9 +195,10 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			cat.StorageTransformerInitializer,
 			cdp_manager.StorageTransformerInitializer,
 			eth_flip_a.StorageTransformerInitializer,
-			flap_v1_0_0_storage.StorageTransformerInitializer,
-			flap_v1_0_9_storage.StorageTransformerInitializer,
-			flop_storage.StorageTransformerInitializer,
+			flap_v1_0_0.StorageTransformerInitializer,
+			flap_v1_0_9.StorageTransformerInitializer,
+			flop_v1_0_1.StorageTransformerInitializer,
+			flop_v1_0_9.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
 			knc_flip.StorageTransformerInitializer,
 			median_bat.StorageTransformerInitializer,

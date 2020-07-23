@@ -58,7 +58,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a flop_kick event triggers a bid_event insertion", func() {
-		flopAddress := test_data.FlopAddress()
+		flopAddress := test_data.FlopV101Address()
 		addressID, addressErr := shared.GetOrCreateAddress(flopAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
