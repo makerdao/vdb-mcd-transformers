@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow"
@@ -81,12 +80,9 @@ var _ = Describe("Queued sin computed columns", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 			vowFessEvent := test_data.VowFessModel()
 
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
-
+			test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
-			vowFessEvent.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 

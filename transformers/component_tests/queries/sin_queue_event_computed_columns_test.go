@@ -24,8 +24,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -56,13 +54,9 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeGethLog = fakeEventLog.Log
 
 		vowFessEvent := test_data.VowFessModel()
-
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
+		test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 		vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		vowFessEvent.ColumnValues[event.LogFK] = fakeEventLog.ID
-		vowFessEvent.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 		vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 		Expect(vowFessErr).NotTo(HaveOccurred())
 	})

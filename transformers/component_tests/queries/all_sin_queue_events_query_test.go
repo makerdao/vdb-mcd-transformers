@@ -22,7 +22,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -54,13 +53,10 @@ var _ = Describe("Sin queue events query", func() {
 			fakeEra := strconv.Itoa(timestampOne)
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
-
 			vowFessEvent := test_data.VowFessModel()
+			test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
-			vowFessEvent.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -98,15 +94,12 @@ var _ = Describe("Sin queue events query", func() {
 		It("returns events from multiple blocks", func() {
 			fakeEra := strconv.Itoa(timestampOne)
 
-			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
+			vowFessLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFessEventLog.Log, db)
 			vowFessEvent := test_data.VowFessModel()
-
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
+			test_data.AssignMessageSenderID(vowFessLog, vowFessEvent, db)
 
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
-			vowFessEvent.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 			Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -160,16 +153,12 @@ var _ = Describe("Sin queue events query", func() {
 
 			BeforeEach(func() {
 				fakeEra = strconv.Itoa(timestampOne)
-				logId := test_data.CreateTestLog(headerOne.Id, db).ID
-
+				vowFessEventLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFessEventLog.Log, db)
 				vowFessEvent := test_data.VowFessModel()
-
-				msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-				Expect(msgSenderErr).NotTo(HaveOccurred())
+				test_data.AssignMessageSenderID(vowFessEventLog, vowFessEvent, db)
 
 				vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-				vowFessEvent.ColumnValues[event.LogFK] = logId
-				vowFessEvent.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+				vowFessEvent.ColumnValues[event.LogFK] = vowFessEventLog.ID
 				vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 				Expect(vowFessErr).NotTo(HaveOccurred())
 

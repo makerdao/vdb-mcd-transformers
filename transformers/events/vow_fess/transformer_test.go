@@ -20,7 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -52,11 +51,8 @@ var _ = Describe("Vow fess transformer", func() {
 		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFessEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.VowFessModel()
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+		test_data.AssignMessageSenderID(test_data.VowFessEventLog, expectedModel, db)
 
 		Expect(len(models)).To(Equal(1))
 		Expect(models[0]).To(Equal(expectedModel))
