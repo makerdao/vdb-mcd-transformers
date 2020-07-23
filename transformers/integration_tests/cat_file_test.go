@@ -17,8 +17,6 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
@@ -153,16 +151,21 @@ var _ = Describe("Cat File transformer", func() {
 		err = t.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []catFileFlipModel
-		err = db.Select(&dbResult, `SELECT ilk_id, what, flip FROM maker.cat_file_flip`)
+		var dbResult catFileFlipModel
+		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, what, flip FROM maker.cat_file_flip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal(test_data.FlipEthAddress()))
+
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+		Expect(dbResult.Ilk).To(Equal(ilkID))
+		Expect(dbResult.What).To(Equal("flip"))
+		Expect(dbResult.Flip).To(Equal(test_data.FlipEthAddress()))
 	})
 
 	It("persists a vow event", func() {
@@ -212,9 +215,10 @@ type catFileChopLumpModel struct {
 }
 
 type catFileFlipModel struct {
-	Ilk  string `db:"ilk_id"`
-	What string
-	Flip string
+	MsgSender int64 `db:"msg_sender"`
+	Ilk       int64 `db:"ilk_id"`
+	What      string
+	Flip      string
 }
 
 type catFileVowModel struct {
