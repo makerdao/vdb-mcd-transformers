@@ -80,7 +80,8 @@ import (
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
 	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	flap_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializer"
+	flap_v1_0_0_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
+	flap_v1_0_9_storage "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	bat_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_flip"
 	eth_flip_a "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_flip_a"
 	knc_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_flip"
@@ -193,7 +194,8 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			cat.StorageTransformerInitializer,
 			cdp_manager.StorageTransformerInitializer,
 			eth_flip_a.StorageTransformerInitializer,
-			flap_storage.StorageTransformerInitializer,
+			flap_v1_0_0_storage.StorageTransformerInitializer,
+			flap_v1_0_9_storage.StorageTransformerInitializer,
 			flop_storage.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
 			knc_flip.StorageTransformerInitializer,

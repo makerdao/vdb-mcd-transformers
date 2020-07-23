@@ -113,7 +113,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(flapAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

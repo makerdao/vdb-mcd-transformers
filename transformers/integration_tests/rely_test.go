@@ -22,10 +22,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928165), test_data.CatAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flap rely events", func() {
+	Context("Flap v1.0.0 rely events", func() {
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		msgSenderAddress := "0xd27a5f3416d8791fc238c148c93630d9e3c882e5"
-		relyIntegrationTest(int64(8928163), test_data.FlapAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928163), test_data.FlapV100Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flap v1.0.9 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10510870), test_data.FlapV109Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip ETH rely events", func() {
