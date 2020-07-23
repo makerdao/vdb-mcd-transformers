@@ -27,7 +27,7 @@ var _ = Describe("Auction file transformer", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "tau"
 		data := "259200"
-		auctionFileIntegrationTest(int64(8928412), test_data.FlipBatAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(8928412), test_data.FlipBatV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip ETH file events", func() {
