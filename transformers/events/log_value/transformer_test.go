@@ -17,8 +17,11 @@
 package log_value_test
 
 import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -35,12 +38,28 @@ var _ = Describe("LogValue Transformer", func() {
 		models, err := transformer.ToModels(constants.OsmABI(), []core.EventLog{test_data.LogValueEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(models).To(Equal([]event.InsertionModel{test_data.LogValueModel()}))
+		expectedModel := test_data.LogValueModel()
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.LogValueEventLog.Log.Address.String(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
+		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
+
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 
-	It("returns an error if converting log to entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.LogValueEventLog}, db)
+	It("returns an error if the log is missing a topic", func() {
+		incompleteLog := core.EventLog{}
+		_, err := transformer.ToModels(constants.OsmABI(), []core.EventLog{incompleteLog}, db)
+		Expect(err).To(HaveOccurred())
+	})
 
+	It("returns err if log is missing data", func() {
+		badLog := core.EventLog{
+			Log: types.Log{
+				Topics: []common.Hash{{}, {}, {}, {}},
+			}}
+
+		_, err := transformer.ToModels(constants.OsmABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })

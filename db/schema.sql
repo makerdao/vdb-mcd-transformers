@@ -10412,6 +10412,7 @@ CREATE TABLE maker.log_value (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     val numeric
 );
 
@@ -19948,6 +19949,13 @@ CREATE INDEX log_unsorted_offer_log_index ON maker.log_unsorted_offer USING btre
 
 
 --
+-- Name: log_value_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_value_address_index ON maker.log_value USING btree (address_id);
+
+
+--
 -- Name: log_value_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -24210,6 +24218,14 @@ ALTER TABLE ONLY maker.log_unsorted_offer
 
 ALTER TABLE ONLY maker.log_unsorted_offer
     ADD CONSTRAINT log_unsorted_offer_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: log_value log_value_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
