@@ -43,7 +43,7 @@ var _ = Describe("Dent Transformer", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DentEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		address := common.HexToAddress(test_data.FlipEthAddress()).Hex()
+		address := common.HexToAddress(test_data.FlipEthV100Address()).Hex()
 		addressID, addrErr := shared.GetOrCreateAddress(address, db)
 		Expect(addrErr).NotTo(HaveOccurred())
 
