@@ -30,6 +30,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})
 
+	It("generates cat file box signature", func() {
+		Expect(CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates cat file chop lump dunk signature", func() {
 		Expect(CatFileChopLumpDunkSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})
@@ -40,10 +44,6 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates cat file vow signature", func() {
 		Expect(CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates cat file box signature", func() {
-		Expect(CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates cat claw signature", func() {
