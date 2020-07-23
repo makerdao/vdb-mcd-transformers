@@ -153,9 +153,9 @@ var _ = Describe("Tick EventTransformer", func() {
 
 type tickModel struct {
 	BidID            string `db:"bid_id"`
-	AddressID        int64 `db:"address_id"`
+	AddressID        int64  `db:"address_id"`
 	LogIndex         uint   `db:"log_idx"`
-	MsgSender        int64 `db:"msg_sender"`
+	MsgSender        int64  `db:"msg_sender"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`
 }

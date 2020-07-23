@@ -54,10 +54,10 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK, constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.LogFK:           log.ID,
-				constants.BidIDColumn: log.Log.Topics[2].Big().String(),
-				event.AddressFK:       addressID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.BidIDColumn:     log.Log.Topics[2].Big().String(),
+				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
 			},
 		}
