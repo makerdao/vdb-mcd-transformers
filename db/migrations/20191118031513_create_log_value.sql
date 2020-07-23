@@ -1,11 +1,11 @@
 -- +goose Up
 CREATE TABLE maker.log_value
 (
-    id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    address_id BIGINT NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    val       NUMERIC,
+    id         SERIAL PRIMARY KEY,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    val        NUMERIC,
     UNIQUE (header_id, log_id)
 );
 

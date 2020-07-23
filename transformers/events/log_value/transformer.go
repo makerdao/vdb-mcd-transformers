@@ -17,21 +17,17 @@
 package log_value
 
 import (
-	"math/big"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"math/big"
 )
 
 type Transformer struct{}
 
-const Val event.ColumnName = "val"
-
-func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
+func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 
