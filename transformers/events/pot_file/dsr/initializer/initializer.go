@@ -7,6 +7,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
+// EventTransformerInitializer is the ConfiguredTransformer for pot_file_dsr events
 var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
 	Config:      shared.GetEventTransformerConfig(constants.PotFileDSRTable, constants.PotFileDSRSignature()),
 	Transformer: dsr.Transformer{},
