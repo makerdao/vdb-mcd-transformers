@@ -29,7 +29,7 @@ import (
 )
 
 var rawDealLog = types.Log{
-	Address: common.HexToAddress(FlipEthAddress()),
+	Address: common.HexToAddress(FlipEthV100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DealSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),

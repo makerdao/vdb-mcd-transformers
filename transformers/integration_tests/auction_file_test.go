@@ -34,7 +34,7 @@ var _ = Describe("Auction file transformer", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "ttl"
 		data := "600"
-		auctionFileIntegrationTest(int64(8928402), test_data.FlipEthAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(8928402), test_data.FlipEthV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip TUSD file events", func() {

@@ -36,7 +36,7 @@ var (
 )
 
 var rawFlipTickLog = types.Log{
-	Address: common.HexToAddress(FlipEthAddress()),
+	Address: common.HexToAddress(FlipEthV100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.TickSignature()),
 		common.HexToHash("0x000000000000000000000000da198bfdd2671d7ad4614c9cf2beb87cdfec1460"),

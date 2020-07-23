@@ -113,7 +113,7 @@ var _ = Describe("Dent transformer", func() {
 		err = db.Select(&dbResult, `SELECT bid, bid_id, lot, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
