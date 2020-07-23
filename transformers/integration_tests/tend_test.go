@@ -76,13 +76,19 @@ var _ = Describe("Tend EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var flipTend tendModel
-		err = db.Get(&flipTend, `SELECT address_id, bid, bid_id, lot FROM maker.tend`)
+		err = db.Get(&flipTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
 		flipAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
+
+		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000000abe7471ec9b6953a3bd0ed3c06c46f29aa4280")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
 		expectedFlipTend := tendModel{
 			AddressID: flipAddressID,
+			MsgSender: msgSenderID,
 			Bid:       "76840636079422693500873675445736719538580144543",
 			BidId:     "121",
 			Lot:       "700000000000000000",
@@ -108,13 +114,19 @@ var _ = Describe("Tend EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var flapTend tendModel
-		err = db.Get(&flapTend, `SELECT address_id, bid, bid_id, lot FROM maker.tend`)
+		err = db.Get(&flapTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
 		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
+
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000d9d1e81bb35db066986fa441113a27708663d70b")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
 		expectedFlapTend := tendModel{
 			AddressID: flapAddressID,
+			MsgSender: msgSenderID,
 			Bid:       "22836140232828485845",
 			BidId:     "55",
 			Lot:       "10000000000000000000000000000000000000000000000000",
@@ -125,6 +137,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 type tendModel struct {
 	AddressID int64 `db:"address_id"`
+	MsgSender int64 `db:"msg_sender"`
 	Bid       string
 	BidId     string `db:"bid_id"`
 	Lot       string
