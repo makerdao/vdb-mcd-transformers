@@ -76,10 +76,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flop rely events", func() {
-		usrAddress := "0xbe8e3e3618f7474f8cb1d074a26affef007e98fb"
-		msgSenderAddress := "0xddb108893104de4e1c6d0e47c42237db4e617acc"
-		relyIntegrationTest(int64(9008136), test_data.FlopAddress(), msgSenderAddress, usrAddress)
+	Context("Flop v1.0.1 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(9008136), test_data.FlopV101Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flop v1.0.9 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10510871), test_data.FlopV109Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Jug rely events", func() {

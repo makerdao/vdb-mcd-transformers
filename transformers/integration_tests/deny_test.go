@@ -66,9 +66,14 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), usrAddress, usrAddress)
 	})
 
-	Context("Flop deny events", func() {
-		usrAddress := "0xddb108893104de4e1c6d0e47c42237db4e617acc"
-		denyIntegrationTest(int64(9008144), test_data.FlopAddress(), usrAddress, usrAddress)
+	Context("Flop v1.0.1 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(9008144), test_data.FlopV101Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flop v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlopV109Address(), usrAddress, usrAddress)
 	})
 
 	Context("Jug deny events", func() {
