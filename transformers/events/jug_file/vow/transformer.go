@@ -38,7 +38,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		if msgSenderErr != nil {
-			return nil, msgSenderErr
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
