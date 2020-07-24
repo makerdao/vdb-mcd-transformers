@@ -953,12 +953,15 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, blockNumber)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
 	vowFessLog := test_data.CreateTestLog(headerID, db)
-
 	Expect(err).NotTo(HaveOccurred())
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_fess (header_id, tab, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, tab, vowFessLog.ID,
+		`INSERT INTO maker.vow_fess (header_id, msg_sender, tab, log_id)
+			VALUES($1, $2, $3, $4)`,
+		headerID, msgSenderID, tab, vowFessLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

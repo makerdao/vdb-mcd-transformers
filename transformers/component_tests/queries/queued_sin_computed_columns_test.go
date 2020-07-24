@@ -78,7 +78,9 @@ var _ = Describe("Queued sin computed columns", func() {
 
 		It("returns sin queue events for queued sin", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
-			vowFessEvent := test_data.VowFessModel
+			vowFessEvent := test_data.VowFessModel()
+
+			test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
