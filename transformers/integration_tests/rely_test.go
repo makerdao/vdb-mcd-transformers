@@ -64,10 +64,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip USDC-A rely events", func() {
+	Context("Flip USDC-A v1.0.4 rely events", func() {
 		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
-		relyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(9686502), test_data.FlipUsdcAV104Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A v1.0.9 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10510885), test_data.FlipUsdcAV109Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip USDC-B rely events", func() {
