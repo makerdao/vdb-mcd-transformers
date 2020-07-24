@@ -31,7 +31,8 @@
         "tusd_flip",
         "flip_usdc_a_v1_0_4",
         "flip_usdc_a_v1_0_9",
-        "usdc_b_flip",
+        "flip_usdc_b_v1_0_7",
+        "flip_usdc_b_v1_0_9",
         "wbtc_flip",
         "zrx_flip",
         "jug",
@@ -211,8 +212,14 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         rank = "0"
-    [exporter.usdc_b_flip]
-        path = "transformers/storage/flip/initializers/usdc_b_flip"
+    [exporter.flip_usdc_b_v1_0_7]
+        path = "transformers/storage/flip/initializers/usdc_b/v1_0_7"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_usdc_b_v1_0_9]
+        path = "transformers/storage/flip/initializers/usdc_b/v1_0_9"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
@@ -294,9 +301,10 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A",
-                     "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A",
-                     "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.bite]
         path = "transformers/events/bite/initializer"
@@ -331,29 +339,32 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLAP_1.0.0",
-                     "MCD_FLAP_1.0.9", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0","MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.dent]
         path = "transformers/events/dent/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1",
-                     "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
+                     "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4",
+                     "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A",
+                     "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.deny]
         path = "transformers/events/auth/deny_initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_CAT", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
-                     "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B",
-                     "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG", "MCD_POT",
-                     "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_WBTC", "MEDIAN_ZRX",
-                     "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_WBTC", "OSM_ZRX"]
+        contracts = ["MCD_CAT", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9",
+                     "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC",
+                     "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_WBTC", "OSM_ZRX"]
         rank = "0"
     [exporter.flap_kick]
         path = "transformers/events/flap_kick/initializer"
@@ -367,8 +378,10 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A"]
+        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
+                     "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4",
+                     "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A",
+                     "MCD_FLIP_ZRX_A"]
         rank = "0"
     [exporter.flop_kick]
         path = "transformers/events/flop_kick/initializer"
@@ -620,11 +633,12 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_CAT", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
-                     "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B",
-                     "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG", "MCD_POT",
-                     "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_WBTC", "MEDIAN_ZRX",
-                     "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_WBTC", "OSM_ZRX"]
+        contracts = ["MCD_CAT", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9",
+                     "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC",
+                     "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_WBTC", "OSM_ZRX"]
         rank = "0"
     [exporter.set_min_sell]
         path = "transformers/events/set_min_sell/initializer"
@@ -666,18 +680,20 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLAP_1.0.0",
-                     "MCD_FLAP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A"]
         rank = "0"
     [exporter.tick]
         path = "transformers/events/tick/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLAP_1.0.0",
-                     "MCD_FLAP_1.0.9", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.vat_deny]
         path = "transformers/events/vat_auth/deny_initializer"
@@ -831,9 +847,10 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI", "MCD_FLIP_TUSD_A",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLAP_1.0.0",
-                     "MCD_FLAP_1.0.9", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_KNC_A", "MCD_FLIP_SAI",
+                     "MCD_FLIP_TUSD_A", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_B_1.0.7",
+                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_WBTC_A", "MCD_FLIP_ZRX_A", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
 
 [contract]
@@ -889,10 +906,14 @@
         address  = "0x545521e0105C5698f75D6b3C3050CfCC62FB0C12"
         abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
         deployed = 10505188
-    [contract.MCD_FLIP_USDC_B]
+    [contract.MCD_FLIP_USDC_B_1.0.7]
         address  = "0xec25Ca3fFa512afbb1784E17f1D414E16D01794F"
         abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
         deployed = 10144450
+    [contract.MCD_FLIP_USDC_B_1.0.9]
+        address  = "0x6002d3B769D64A9909b0B26fC00361091786fe48"
+        abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+        deployed = 10505193
     [contract.MCD_FLIP_WBTC_A]
         address  = "0x3E115d85D4d7253b05fEc9C0bB5b08383C2b0603"
         abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
