@@ -88,7 +88,8 @@ import (
 	flip_eth_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_9"
 	knc_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_flip"
 	sai_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai_flip"
-	tusd_flip "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_flip"
+	flip_tusd_a_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_7"
+	flip_tusd_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_9"
 	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
 	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
 	flip_usdc_b_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_7"
@@ -204,6 +205,8 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_bat_a_v1_0_9.StorageTransformerInitializer,
 			flip_eth_a_v1_0_0.StorageTransformerInitializer,
 			flip_eth_a_v1_0_9.StorageTransformerInitializer,
+			flip_tusd_a_v1_0_7.StorageTransformerInitializer,
+			flip_tusd_a_v1_0_9.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_4.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_9.StorageTransformerInitializer,
 			flip_usdc_b_v1_0_7.StorageTransformerInitializer,
@@ -222,7 +225,6 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			pot.StorageTransformerInitializer,
 			sai_flip.StorageTransformerInitializer,
 			spot.StorageTransformerInitializer,
-			tusd_flip.StorageTransformerInitializer,
 			vat.StorageTransformerInitializer,
 			vow.StorageTransformerInitializer,
 			zrx_flip.StorageTransformerInitializer,
