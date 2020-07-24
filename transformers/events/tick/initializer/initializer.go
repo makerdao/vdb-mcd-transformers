@@ -23,6 +23,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
+// EventTransformerInitializer is the ConfiguredTransformer for tick events
 var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
 	Config:      shared.GetEventTransformerConfig(constants.TickTable, constants.TickSignature()),
 	Transformer: tick.Transformer{},

@@ -149,6 +149,7 @@ var _ = Describe("Updating bid_event table", func() {
 		tickModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		tickModel.ColumnValues[event.AddressFK] = addressID
 		tickModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.FlipTickEventLog, tickModel, db)
 		expectedEvent := expectedBidEventNullStrings(tickModel, "tick", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{tickModel}, db)
