@@ -17,6 +17,7 @@
 package auction_attributes
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -26,12 +27,18 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
-		if err != nil {
-			return nil, err
+		verifyLogErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
+		if verifyLogErr != nil {
+			return nil, verifyLogErr
+		}
+
+		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
+		msgSenderAddressId, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		if msgSenderAddressErr != nil {
+			return nil, msgSenderAddressErr
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
@@ -41,13 +48,18 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFileAuctionAttributesTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+				event.HeaderFK,
+				event.LogFK,
+				constants.MsgSenderColumn,
+				constants.WhatColumn,
+				constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
-				constants.WhatColumn: what,
-				constants.DataColumn: data.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderAddressId,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data.String(),
 			},
 		}
 

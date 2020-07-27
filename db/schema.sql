@@ -12878,6 +12878,7 @@ CREATE TABLE maker.vow_file_auction_attributes (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -21343,6 +21344,13 @@ CREATE INDEX vow_file_auction_address_header_index ON maker.vow_file_auction_add
 
 
 --
+-- Name: vow_file_auction_address_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_log_index ON maker.vow_file_auction_address USING btree (log_id);
+
+
+--
 -- Name: vow_file_auction_address_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -21350,17 +21358,24 @@ CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction
 
 
 --
--- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_header_index ON maker.vow_file_auction_attributes USING btree (header_id);
+CREATE INDEX vow_file_auction_attributes_header_index ON maker.vow_file_auction_attributes USING btree (header_id);
 
 
 --
--- Name: vow_file_log_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_log_index ON maker.vow_file_auction_attributes USING btree (log_id);
+CREATE INDEX vow_file_auction_attributes_log_index ON maker.vow_file_auction_attributes USING btree (log_id);
+
+
+--
+-- Name: vow_file_auction_attributes_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_attributes_msg_sender_index ON maker.vow_file_auction_attributes USING btree (msg_sender);
 
 
 --
@@ -21480,13 +21495,6 @@ CREATE INDEX vow_vat_header_id_index ON maker.vow_vat USING btree (header_id);
 --
 
 CREATE INDEX vow_wait_header_id_index ON maker.vow_wait USING btree (header_id);
-
-
---
--- Name: vvow_file_auction_address_log_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX vvow_file_auction_address_log_index ON maker.vow_file_auction_address USING btree (log_id);
 
 
 --
@@ -26161,6 +26169,14 @@ ALTER TABLE ONLY maker.vow_file_auction_attributes
 
 ALTER TABLE ONLY maker.vow_file_auction_attributes
     ADD CONSTRAINT vow_file_auction_attributes_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
