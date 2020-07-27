@@ -10,12 +10,18 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
 		verifyErr := shared.VerifyLog(log.Log, shared.TwoTopicsRequired, shared.LogDataNotRequired)
 		if verifyErr != nil {
 			return nil, verifyErr
+		}
+
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
@@ -23,10 +29,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
+				constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK: log.HeaderID,
-				event.LogFK:    log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderId,
 			},
 		}
 		results = append(results, result)
