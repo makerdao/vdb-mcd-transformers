@@ -8,8 +8,10 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
+// Transformer implements the VDB event Transformer interface
 type Transformer struct{}
 
+// ToModels transforms log data into general InsertionModels the Repository can persist
 func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
@@ -19,7 +21,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		if msgSenderErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
@@ -34,7 +36,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
-				constants.MsgSenderColumn: msgSenderId,
+				constants.MsgSenderColumn: msgSenderID,
 			},
 		}
 		results = append(results, result)
