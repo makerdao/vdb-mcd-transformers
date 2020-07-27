@@ -11518,6 +11518,7 @@ CREATE TABLE maker.spot_file_pip (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     pip text
 );
@@ -20694,6 +20695,13 @@ CREATE INDEX spot_file_pip_log_index ON maker.spot_file_pip USING btree (log_id)
 
 
 --
+-- Name: spot_file_pip_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_pip_msg_sender_index ON maker.spot_file_pip USING btree (msg_sender);
+
+
+--
 -- Name: spot_ilk_mat_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25233,6 +25241,14 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_pip spot_file_pip_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_pip
+    ADD CONSTRAINT spot_file_pip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

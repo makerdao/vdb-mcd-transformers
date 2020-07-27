@@ -151,11 +151,13 @@ var spotFilePipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.PipColumn,
+		constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       SpotFilePipEventLog.HeaderID,
 		event.LogFK:          SpotFilePipEventLog.ID,
 		constants.WhatColumn: "pip",
 		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
+		// MsgSender
 	},
 }
