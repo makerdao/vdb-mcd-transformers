@@ -9643,6 +9643,7 @@ CREATE TABLE maker.jug_drip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -19373,6 +19374,13 @@ CREATE INDEX flop_vow_header_id_index ON maker.flop_vow USING btree (header_id);
 
 
 --
+-- Name: jog_drip_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jog_drip_msg_sender ON maker.jug_drip USING btree (msg_sender);
+
+
+--
 -- Name: jug_base_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -23594,6 +23602,14 @@ ALTER TABLE ONLY maker.jug_drip
 
 ALTER TABLE ONLY maker.jug_drip
     ADD CONSTRAINT jug_drip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_drip jug_drip_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

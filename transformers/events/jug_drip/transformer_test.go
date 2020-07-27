@@ -53,6 +53,7 @@ var _ = Describe("Jug drip transformer", func() {
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.JugDripModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		test_data.AssignMessageSenderID(test_data.JugDripEventLog, expectedModel, db)
 		Expect(model).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

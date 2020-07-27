@@ -68,13 +68,24 @@ var _ = Describe("JugDrip Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		err = db.Get(&ilkID, `SELECT ilk_id from maker.jug_drip`)
+		var result jugDripModel
+		err = db.Get(&result, `SELECT msg_sender, ilk_id from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedIlkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+		ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedResult := jugDripModel{
+			IlkID:     ilkID,
+			MsgSender: msgSenderID,
+		}
 
-		Expect(ilkID).To(Equal(expectedIlkID))
+		Expect(result).To(Equal(expectedResult))
 	})
 })
+
+type jugDripModel struct {
+	IlkID     int64 `db:"ilk_id"`
+	MsgSender int64 `db:"msg_sender"`
+}
