@@ -17,7 +17,6 @@ before_install:
 script:
 - set -e
 - scripts/check_config.sh
-- env GO111MODULE=on make validatemigrationorder
 - env GO111MODULE=on make test
 - env GO111MODULE=on make integrationtest
 deploy:
