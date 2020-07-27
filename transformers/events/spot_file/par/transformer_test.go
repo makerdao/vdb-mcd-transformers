@@ -24,7 +24,7 @@ var _ = Describe("Spot file par transformer", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 

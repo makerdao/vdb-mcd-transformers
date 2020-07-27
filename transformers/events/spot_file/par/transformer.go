@@ -18,7 +18,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, err
 		}
 
-		msgSenderID, _ := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
