@@ -28,7 +28,8 @@ func FlipAddresses() []string {
 		"MCD_FLIP_USDC_B_1.0.9",
 		"MCD_FLIP_WBTC_A_1.0.6",
 		"MCD_FLIP_WBTC_A_1.0.9",
-		"MCD_FLIP_ZRX_A",
+		"MCD_FLIP_ZRX_A_1.0.8",
+		"MCD_FLIP_ZRX_A_1.0.9",
 	})
 
 	for _, address := range flipAddresses {
@@ -79,7 +80,12 @@ func FlipWbtcAV106Address() string {
 func FlipWbtcAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A_1.0.9"))
 }
-func FlipZrxAddress() string  { return checksum(constants.GetContractAddress("MCD_FLIP_ZRX_A")) }
+func FlipZrxAV108Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_ZRX_A_1.0.8"))
+}
+func FlipZrxAV109Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_ZRX_A_1.0.9"))
+}
 func FlopV101Address() string { return checksum(constants.GetContractAddress("MCD_FLOP_1.0.1")) }
 func FlopV109Address() string { return checksum(constants.GetContractAddress("MCD_FLOP_1.0.9")) }
 func JugAddress() string      { return checksum(constants.GetContractAddress("MCD_JUG")) }

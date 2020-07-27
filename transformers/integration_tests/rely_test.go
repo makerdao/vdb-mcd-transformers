@@ -112,10 +112,16 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510885), test_data.FlipWbtcAV109Address(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip ZRX rely events", func() {
+	Context("Flip ZRX-A v1.0.8 rely events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		relyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(10323245), test_data.FlipZrxAV108Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip ZRX-A v1.0.9 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10510886), test_data.FlipZrxAV109Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flop v1.0.1 rely events", func() {
