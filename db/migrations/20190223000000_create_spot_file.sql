@@ -22,11 +22,12 @@ CREATE INDEX spot_file_mat_msg_sender_index
 
 CREATE TABLE maker.spot_file_par
 (
-    id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    what      TEXT,
-    data      NUMERIC,
+    id          SERIAL PRIMARY KEY,
+    header_id   INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    log_id      BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    msg_sender  INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    what        TEXT,
+    data        NUMERIC,
     UNIQUE (header_id, log_id)
 );
 
@@ -34,6 +35,8 @@ CREATE INDEX spot_file_par_header_index
     ON maker.spot_file_par (header_id);
 CREATE INDEX spot_file_par_log_index
     ON maker.spot_file_par (log_id);
+CREATE INDEX spot_file_par_msg_sender_index
+    ON maker.spot_file_par (msg_sender);
 
 CREATE TABLE maker.spot_file_pip
 (
@@ -55,8 +58,6 @@ CREATE INDEX spot_file_pip_header_index
 
 
 -- +goose Down
-DROP INDEX maker.spot_file_par_header_index;
-DROP INDEX maker.spot_file_par_log_index;
 DROP INDEX maker.spot_file_pip_header_index;
 DROP INDEX maker.spot_file_pip_log_index;
 DROP INDEX maker.spot_file_pip_ilk_index;
