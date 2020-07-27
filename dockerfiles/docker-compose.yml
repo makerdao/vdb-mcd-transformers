@@ -109,7 +109,8 @@ services:
       "--statediff.watchedaddresses", "0x5EdF770FC81E7b8C2c89f71F30f211226a4d7495", # CONTRACT_MCD_FLIP_BAT_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0xd8a04F5412223F513DC55F839574430f5EC15531", # CONTRACT_MCD_FLIP_ETH_A_1.0.0_ADDRESS
       "--statediff.watchedaddresses", "0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1", # CONTRACT_MCD_FLIP_ETH_A_1.0.9_ADDRESS
-      "--statediff.watchedaddresses", "0xAbBCB9Ae89cDD3C27E02D279480C7fF33083249b", # CONTRACT_MCD_FLIP_KNC_A_ADDRESS
+      "--statediff.watchedaddresses", "0xAbBCB9Ae89cDD3C27E02D279480C7fF33083249b", # CONTRACT_MCD_FLIP_KNC_A_1.0.8_ADDRESS
+      "--statediff.watchedaddresses", "0xAD4a0B5F3c6Deb13ADE106Ba6E80Ca6566538eE6", # CONTRACT_MCD_FLIP_KNC_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0x5432b2f3c0DFf95AA191C45E5cbd539E2820aE72", # CONTRACT_MCD_FLIP_SAI_ADDRESS
       "--statediff.watchedaddresses", "0xba3f6a74BD12Cf1e48d4416c7b50963cA98AfD61", # CONTRACT_MCD_FLIP_TUSD_A_1.0.7_ADDRESS
       "--statediff.watchedaddresses", "0x04C42fAC3e29Fd27118609a5c36fD0b3Cb8090b3", # CONTRACT_MCD_FLIP_TUSD_A_1.0.9_ADDRESS
