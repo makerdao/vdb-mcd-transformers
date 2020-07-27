@@ -19,6 +19,7 @@ func FlipAddresses() []string {
 		"MCD_FLIP_ETH_A_1.0.9",
 		"MCD_FLIP_KNC_A_1.0.8",
 		"MCD_FLIP_KNC_A_1.0.9",
+		"MCD_FLIP_MANA_A_1.0.9",
 		"MCD_FLIP_SAI",
 		"MCD_FLIP_TUSD_A_1.0.7",
 		"MCD_FLIP_TUSD_A_1.0.9",
@@ -55,6 +56,9 @@ func FlipKncAV108Address() string {
 }
 func FlipKncAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_KNC_A_1.0.9"))
+}
+func FlipManaAV109Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_MANA_A_1.0.9"))
 }
 func FlipTusdAV107Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_TUSD_A_1.0.7"))
