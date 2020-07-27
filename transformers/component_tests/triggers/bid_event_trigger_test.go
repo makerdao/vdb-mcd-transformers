@@ -191,6 +191,7 @@ var _ = Describe("Updating bid_event table", func() {
 		yankModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		yankModel.ColumnValues[event.AddressFK] = addressID
 		yankModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.YankEventLog, yankModel, db)
 		expectedEvent := expectedBidEventNullStrings(yankModel, "yank", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{yankModel}, db)

@@ -37,12 +37,13 @@ var _ = Describe("Yank Transformer", func() {
 
 	It("converts logs to models", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.YankEventLog}, db)
-		var addressID int64
-		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
-		Expect(addrErr).NotTo(HaveOccurred())
-		expectedModel := test_data.YankModel()
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+
 		Expect(err).NotTo(HaveOccurred())
+		expectedModel := test_data.YankModel()
+		addrID, addrErr := shared.GetOrCreateAddress(test_data.YankEventLog.Log.Address.Hex(), db)
+		Expect(addrErr).NotTo(HaveOccurred())
+		expectedModel.ColumnValues[event.AddressFK] = addrID
+		test_data.AssignMessageSenderID(test_data.YankEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
