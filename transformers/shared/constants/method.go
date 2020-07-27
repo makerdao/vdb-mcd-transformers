@@ -34,7 +34,7 @@ func FlipABI() string {
 		"MCD_FLIP_KNC_A_1.0.8",
 		"MCD_FLIP_KNC_A_1.0.9",
 		"MCD_FLIP_MANA_A_1.0.9",
-		"MCD_FLIP_SAI",
+		"MCD_FLIP_SAI_1.0.0",
 		"MCD_FLIP_TUSD_A_1.0.7",
 		"MCD_FLIP_TUSD_A_1.0.9",
 		"MCD_FLIP_USDC_A_1.0.4",
