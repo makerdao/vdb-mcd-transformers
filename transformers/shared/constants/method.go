@@ -59,6 +59,7 @@ func MedianABI() string {
 		"MEDIAN_BAT",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
+		"MEDIAN_MANA",
 		"MEDIAN_WBTC",
 		"MEDIAN_ZRX",
 	})
@@ -71,6 +72,7 @@ func OsmABI() string {
 		"OSM_BAT",
 		"OSM_ETH",
 		"OSM_KNC",
+		"OSM_MANA",
 		"OSM_WBTC",
 		"OSM_ZRX",
 	})
