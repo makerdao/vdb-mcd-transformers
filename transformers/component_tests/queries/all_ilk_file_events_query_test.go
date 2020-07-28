@@ -82,11 +82,12 @@ var _ = Describe("Ilk File Events Query", func() {
 		jugErr := event.PersistModels([]event.InsertionModel{jugFile}, db)
 		Expect(jugErr).NotTo(HaveOccurred())
 
-		spotFileMatLog := test_data.CreateTestLog(headerOne.Id, db)
+		spotFileMatLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.SpotFileMatEventLog.Log, db)
 		spotFileMat := test_data.SpotFileMatModel()
 		spotFileMat.ColumnValues[event.HeaderFK] = headerOne.Id
 		spotFileMat.ColumnValues[event.LogFK] = spotFileMatLog.ID
 		spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
+		test_data.AssignMessageSenderID(spotFileMatLog, spotFileMat, db)
 		spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 

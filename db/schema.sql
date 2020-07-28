@@ -11449,6 +11449,7 @@ CREATE TABLE maker.spot_file_mat (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -20642,6 +20643,13 @@ CREATE INDEX spot_file_mat_log_index ON maker.spot_file_mat USING btree (log_id)
 
 
 --
+-- Name: spot_file_mat_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_mat_msg_sender_index ON maker.spot_file_mat USING btree (msg_sender);
+
+
+--
 -- Name: spot_file_par_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -25153,6 +25161,14 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 ALTER TABLE ONLY maker.spot_file_mat
     ADD CONSTRAINT spot_file_mat_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_mat spot_file_mat_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_mat
+    ADD CONSTRAINT spot_file_mat_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

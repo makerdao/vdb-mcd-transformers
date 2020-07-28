@@ -64,12 +64,14 @@ var spotFileMatModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
+		constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       SpotFileMatEventLog.HeaderID,
 		event.LogFK:          SpotFileMatEventLog.ID,
 		constants.WhatColumn: "mat",
 		constants.DataColumn: "1500000000000000000000000000",
+		// msgSenderId
 	},
 }
 
