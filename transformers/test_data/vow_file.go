@@ -45,25 +45,33 @@ var rawVowFileAuctionAttributesLog = types.Log{
 	Removed:     false,
 }
 
-var VowFileEventLog = core.EventLog{
+var VowFileAuctionAttributesEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
 	Log:         rawVowFileAuctionAttributesLog,
 	Transformed: false,
 }
 
-var VowFileModel = event.InsertionModel{
+var vowFileAuctionAttributesModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFileAuctionAttributesTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "wait",
 		constants.DataColumn: "100000000000000000000000",
-		event.HeaderFK:       VowFileEventLog.HeaderID,
-		event.LogFK:          VowFileEventLog.ID,
+		event.HeaderFK:       VowFileAuctionAttributesEventLog.HeaderID,
+		event.LogFK:          VowFileAuctionAttributesEventLog.ID,
 	},
+}
+
+func VowFileAuctionAttributesModel() event.InsertionModel {
+	return CopyModel(vowFileAuctionAttributesModel)
 }
 
 var rawVowFileAuctionAddressLog = types.Log{

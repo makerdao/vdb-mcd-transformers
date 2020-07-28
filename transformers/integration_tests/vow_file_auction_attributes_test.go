@@ -37,23 +37,23 @@ var _ = Describe("VowFileAuctionAttributes LogNoteTransformer", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vowFileConfig := event.TransformerConfig{
+		vowFileAuctionAttributesConfig := event.TransformerConfig{
 			TransformerName:   constants.VowFileAuctionAttributesTable,
 			ContractAddresses: []string{test_data.VowAddress()},
 			ContractAbi:       constants.VowABI(),
 			Topic:             constants.VowFileAuctionAttributesSignature(),
 		}
 
-		addresses = event.HexStringsToAddresses(vowFileConfig.ContractAddresses)
-		topics = []common.Hash{common.HexToHash(vowFileConfig.Topic)}
+		addresses = event.HexStringsToAddresses(vowFileAuctionAttributesConfig.ContractAddresses)
+		topics = []common.Hash{common.HexToHash(vowFileAuctionAttributesConfig.Topic)}
 
 		initializer = event.ConfiguredTransformer{
-			Config:      vowFileConfig,
+			Config:      vowFileAuctionAttributesConfig,
 			Transformer: auction_attributes.Transformer{},
 		}
 	})
 
-	It("fetches and transforms a Vow.file event", func() {
+	It("fetches and transforms a Vow.file auction attributes event", func() {
 		blockNumber := int64(8928291)
 		initializer.Config.StartingBlockNumber = blockNumber
 		initializer.Config.EndingBlockNumber = blockNumber
@@ -71,17 +71,24 @@ var _ = Describe("VowFileAuctionAttributes LogNoteTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vowFileModel
-		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file_auction_attributes`)
+		var msgSenderId int64
+		msgSenderAddress := common.HexToAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB").Hex()
+		getMsgSenderIdErr := db.Get(&msgSenderId, `SELECT id FROM public.addresses WHERE address = $1`, msgSenderAddress)
+		Expect(getMsgSenderIdErr).NotTo(HaveOccurred())
+
+		var dbResult []vowFileAuctionAttributesModel
+		err = db.Select(&dbResult, `SELECT what, data, msg_sender from maker.vow_file_auction_attributes`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("sump"))
 		Expect(dbResult[0].Data).To(Equal("50000000000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].MsgSender).To(Equal(msgSenderId))
 	})
 })
 
-type vowFileModel struct {
-	What string
-	Data string
+type vowFileAuctionAttributesModel struct {
+	What      string
+	Data      string
+	MsgSender int64 `db:"msg_sender"`
 }

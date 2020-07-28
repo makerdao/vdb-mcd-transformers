@@ -19,7 +19,9 @@ package auction_attributes_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -28,7 +30,14 @@ import (
 )
 
 var _ = Describe("Vow file auction attributes transformer", func() {
-	var transformer = auction_attributes.Transformer{}
+	var (
+		transformer = auction_attributes.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log missing topics", func() {
 		badLog := core.EventLog{
@@ -42,10 +51,16 @@ var _ = Describe("Vow file auction attributes transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFileEventLog}, nil)
+		models, toModelsErr := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFileAuctionAttributesEventLog}, db)
+		Expect(toModelsErr).NotTo(HaveOccurred())
 
-		Expect(err).NotTo(HaveOccurred())
-		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VowFileModel))
+		var msgSenderAddressID int64
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.VowFileAuctionAttributesEventLog.Log.Topics[1].Hex(), db)
+		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+		expectedModel := test_data.VowFileAuctionAttributesModel()
+		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 })

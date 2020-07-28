@@ -83,6 +83,6 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 })
 
 type potCage struct {
-	ID int64
+	ID        int64
 	MsgSender int64 `db:"msg_sender"`
 }
