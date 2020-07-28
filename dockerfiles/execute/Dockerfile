@@ -8,7 +8,7 @@ RUN GO111MODULE=auto go get -u -d github.com/pressly/goose/cmd/goose
 WORKDIR /go/src/github.com/pressly/goose/cmd/goose
 RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
 
-ARG VDB_VERSION=staging
+ARG VDB_VERSION=beta
 ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers

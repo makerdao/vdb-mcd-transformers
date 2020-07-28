@@ -48,7 +48,7 @@ var checkMigrationsCmd = &cobra.Command{
 	PreRun: initGithubParams,
 	Short:  "Check that the migrations in this repository are properly timestamped for a merge.",
 	Long: `Check that any new migrations in this branch will run after all the migrations in the
-target branch, staging by default`,
+target branch, beta by default`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := checkMigrations()
 
@@ -62,7 +62,7 @@ target branch, staging by default`,
 func init() {
 	rootCmd.AddCommand(checkMigrationsCmd)
 	checkMigrationsCmd.Flags().String("repo", "makerdao/vdb-mcd-transformers", "Github Repository to check against, must be public")
-	checkMigrationsCmd.Flags().String("branch", "staging", "Branch to check against")
+	checkMigrationsCmd.Flags().String("branch", "beta", "Branch to check against")
 
 	viper.BindPFlag("repo", checkMigrationsCmd.Flags().Lookup("repo"))
 	viper.BindPFlag("branch", checkMigrationsCmd.Flags().Lookup("branch"))
