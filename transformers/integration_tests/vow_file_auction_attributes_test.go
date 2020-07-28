@@ -72,7 +72,7 @@ var _ = Describe("VowFileAuctionAttributes LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var msgSenderId int64
-		msgSenderAddress := common.HexToAddress(eventLogs[0].Log.Topics[1].String()).Hex()
+		msgSenderAddress := common.HexToAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB").Hex()
 		getMsgSenderIdErr := db.Get(&msgSenderId, `SELECT id FROM public.addresses WHERE address = $1`, msgSenderAddress)
 		Expect(getMsgSenderIdErr).NotTo(HaveOccurred())
 

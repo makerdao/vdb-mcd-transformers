@@ -36,9 +36,9 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
-		msgSenderAddressId, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
 		if msgSenderAddressErr != nil {
-			return nil, msgSenderAddressErr
+			return nil, shared.ErrCouldNotCreateFK(msgSenderAddressErr)
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
@@ -57,7 +57,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            log.HeaderID,
 				event.LogFK:               log.ID,
-				constants.MsgSenderColumn: msgSenderAddressId,
+				constants.MsgSenderColumn: msgSenderAddressID,
 				constants.WhatColumn:      what,
 				constants.DataColumn:      data.String(),
 			},

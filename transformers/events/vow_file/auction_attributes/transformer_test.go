@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -54,8 +55,7 @@ var _ = Describe("Vow file auction attributes transformer", func() {
 		Expect(toModelsErr).NotTo(HaveOccurred())
 
 		var msgSenderAddressID int64
-		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id from addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VowFileAuctionAttributesEventLog.Log.Topics[1].Hex()).Hex())
+		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.VowFileAuctionAttributesEventLog.Log.Topics[1].Hex(), db)
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VowFileAuctionAttributesModel()
