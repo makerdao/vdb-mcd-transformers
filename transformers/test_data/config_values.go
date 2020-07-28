@@ -99,6 +99,7 @@ func MedianAddresses() []string {
 		"MEDIAN_BAT",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
+		"MEDIAN_MANA",
 		"MEDIAN_WBTC",
 		"MEDIAN_ZRX",
 	})
@@ -111,6 +112,7 @@ func MedianAddresses() []string {
 func MedianBatAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
 func MedianEthAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
 func MedianKncAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_KNC")) }
+func MedianManaAddress() string { return checksum(constants.GetContractAddress("MEDIAN_MANA")) }
 func MedianWbtcAddress() string { return checksum(constants.GetContractAddress("MEDIAN_WBTC")) }
 func MedianZrxAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ZRX")) }
 func OasisAddresses() []string {
@@ -130,6 +132,7 @@ func OsmAddresses() []string {
 		"OSM_BAT",
 		"OSM_ETH",
 		"OSM_KNC",
+		"OSM_MANA",
 		"OSM_WBTC",
 		"OSM_ZRX",
 	})
@@ -142,6 +145,7 @@ func OsmAddresses() []string {
 func OsmBatAddress() string     { return checksum(constants.GetContractAddress("OSM_BAT")) }
 func OsmEthAddress() string     { return checksum(constants.GetContractAddress("OSM_ETH")) }
 func OsmKncAddress() string     { return checksum(constants.GetContractAddress("OSM_KNC")) }
+func OsmManaAddress() string    { return checksum(constants.GetContractAddress("OSM_MANA")) }
 func OsmWbtcAddress() string    { return checksum(constants.GetContractAddress("OSM_WBTC")) }
 func OsmZrxAddress() string     { return checksum(constants.GetContractAddress("OSM_ZRX")) }
 func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }

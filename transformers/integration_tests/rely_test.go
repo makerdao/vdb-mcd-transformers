@@ -166,6 +166,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10323303), test_data.MedianKncAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median MANA rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(10511187), test_data.MedianManaAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median WBTC rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
@@ -194,6 +200,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(10352556), test_data.OsmKncAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM MANA rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		relyIntegrationTest(int64(10516692), test_data.OsmManaAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM WBTC rely events", func() {

@@ -141,6 +141,11 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(10350821), test_data.MedianKncAddress(), usrAddress, usrAddress)
 	})
 
+	Context("Median MANA deny events", func() {
+		usrAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		denyIntegrationTest(int64(10542736), test_data.MedianManaAddress(), usrAddress, usrAddress)
+	})
+
 	Context("Median WBTC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(8957027), test_data.MedianWbtcAddress(), usrAddress, usrAddress)
@@ -164,6 +169,11 @@ var _ = Describe("Deny transformer", func() {
 	Context("OSM KNC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(10350821), test_data.OsmKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM MANA deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10524041), test_data.OsmManaAddress(), usrAddress, usrAddress)
 	})
 
 	Context("OSM WBTC deny events", func() {
