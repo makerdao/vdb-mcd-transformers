@@ -14,8 +14,14 @@ import (
 )
 
 var _ = Describe("Spot file par transformer", func() {
-	var transformer = par.Transformer{}
-	db := test_config.NewTestDB(test_config.NewTestNode())
+	var (
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+		transformer = par.Transformer{}
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log missing topics", func() {
 		badLog := core.EventLog{
