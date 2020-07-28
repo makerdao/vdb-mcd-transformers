@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package vow_file_test
+package auction_attributes_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -27,8 +27,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Vow file transformer", func() {
-	var transformer = vow_file.Transformer{}
+var _ = Describe("Vow file auction attributes transformer", func() {
+	var transformer = auction_attributes.Transformer{}
 
 	It("returns err if log missing topics", func() {
 		badLog := core.EventLog{

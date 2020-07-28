@@ -12836,19 +12836,6 @@ ALTER SEQUENCE maker.vow_fess_id_seq OWNED BY maker.vow_fess.id;
 
 
 --
--- Name: vow_file; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.vow_file (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    log_id bigint NOT NULL,
-    what text,
-    data numeric
-);
-
-
---
 -- Name: vow_file_auction_address; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12883,10 +12870,23 @@ ALTER SEQUENCE maker.vow_file_auction_address_id_seq OWNED BY maker.vow_file_auc
 
 
 --
--- Name: vow_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.vow_file_id_seq
+CREATE TABLE maker.vow_file_auction_attributes (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: vow_file_auction_attributes_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_file_auction_attributes_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -12896,10 +12896,10 @@ CREATE SEQUENCE maker.vow_file_id_seq
 
 
 --
--- Name: vow_file_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.vow_file_id_seq OWNED BY maker.vow_file.id;
+ALTER SEQUENCE maker.vow_file_auction_attributes_id_seq OWNED BY maker.vow_file_auction_attributes.id;
 
 
 --
@@ -14864,17 +14864,17 @@ ALTER TABLE ONLY maker.vow_fess ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 
 
 --
--- Name: vow_file id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.vow_file ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_id_seq'::regclass);
-
-
---
 -- Name: vow_file_auction_address id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.vow_file_auction_address ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_address_id_seq'::regclass);
+
+
+--
+-- Name: vow_file_auction_attributes id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_attributes_id_seq'::regclass);
 
 
 --
@@ -17831,19 +17831,19 @@ ALTER TABLE ONLY maker.vow_file_auction_address
 
 
 --
--- Name: vow_file vow_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_header_id_log_id_key UNIQUE (header_id, log_id);
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
--- Name: vow_file vow_file_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_pkey PRIMARY KEY (id);
 
 
 --
@@ -21345,14 +21345,14 @@ CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction
 -- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
+CREATE INDEX vow_file_header_index ON maker.vow_file_auction_attributes USING btree (header_id);
 
 
 --
 -- Name: vow_file_log_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_log_index ON maker.vow_file USING btree (log_id);
+CREATE INDEX vow_file_log_index ON maker.vow_file_auction_attributes USING btree (log_id);
 
 
 --
@@ -26132,19 +26132,19 @@ ALTER TABLE ONLY maker.vow_file_auction_address
 
 
 --
--- Name: vow_file vow_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
--- Name: vow_file vow_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --

@@ -19,7 +19,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -28,7 +28,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("VowFile LogNoteTransformer", func() {
+var _ = Describe("VowFileAuctionAttributes LogNoteTransformer", func() {
 	var (
 		initializer event.ConfiguredTransformer
 		addresses   []common.Address
@@ -38,10 +38,10 @@ var _ = Describe("VowFile LogNoteTransformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		vowFileConfig := event.TransformerConfig{
-			TransformerName:   constants.VowFileTable,
+			TransformerName:   constants.VowFileAuctionAttributesTable,
 			ContractAddresses: []string{test_data.VowAddress()},
 			ContractAbi:       constants.VowABI(),
-			Topic:             constants.VowFileSignature(),
+			Topic:             constants.VowFileAuctionAttributesSignature(),
 		}
 
 		addresses = event.HexStringsToAddresses(vowFileConfig.ContractAddresses)
@@ -49,7 +49,7 @@ var _ = Describe("VowFile LogNoteTransformer", func() {
 
 		initializer = event.ConfiguredTransformer{
 			Config:      vowFileConfig,
-			Transformer: vow_file.Transformer{},
+			Transformer: auction_attributes.Transformer{},
 		}
 	})
 
@@ -72,7 +72,7 @@ var _ = Describe("VowFile LogNoteTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult []vowFileModel
-		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file`)
+		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file_auction_attributes`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))

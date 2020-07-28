@@ -28,10 +28,10 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
-var rawVowFileLog = types.Log{
+var rawVowFileAuctionAttributesLog = types.Log{
 	Address: common.HexToAddress(VowAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.VowFileSignature()),
+		common.HexToHash(constants.VowFileAuctionAttributesSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x7761697400000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000152d02c7e14af6800000"),
@@ -48,13 +48,13 @@ var rawVowFileLog = types.Log{
 var VowFileEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:         rawVowFileLog,
+	Log:         rawVowFileAuctionAttributesLog,
 	Transformed: false,
 }
 
 var VowFileModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.VowFileTable,
+	TableName:  constants.VowFileAuctionAttributesTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
 	},

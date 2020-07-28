@@ -74,7 +74,7 @@ import (
 	vat_suck "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_suck/initializer"
 	vow_fess "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess/initializer"
 	vow_file_auction_address "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_address/initializer"
-	vow_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/initializer"
+	vow_file_auction_attributes "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes/initializer"
 	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
 	vow_heal "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal/initializer"
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
@@ -182,7 +182,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vat_slip.EventTransformerInitializer,
 			vat_suck.EventTransformerInitializer,
 			vow_fess.EventTransformerInitializer,
-			vow_file.EventTransformerInitializer,
+			vow_file_auction_attributes.EventTransformerInitializer,
 			vow_file_auction_address.EventTransformerInitializer,
 			vow_flog.EventTransformerInitializer,
 			vow_heal.EventTransformerInitializer,

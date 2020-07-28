@@ -14,6 +14,8 @@ fi
 
 for ((i=0; i<${#exportedTransformers[@]}; i++)); do
   if [ ${exportedTransformers[$i]} != ${configTransformers[$i]} ]; then
+    echo config contains: ${configTransformers[$i]}
+    echo exporter contains: ${exportedTransformers[$i]}
     echo "execute/transformerExporter and config transformers don't match"
     exit 1
   fi

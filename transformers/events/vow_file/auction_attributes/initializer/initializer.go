@@ -17,13 +17,13 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
 var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
-	Config:      shared.GetEventTransformerConfig(constants.VowFileTable, constants.VowFileSignature()),
-	Transformer: vow_file.Transformer{},
+	Config:      shared.GetEventTransformerConfig(constants.VowFileAuctionAttributesTable, constants.VowFileAuctionAttributesSignature()),
+	Transformer: auction_attributes.Transformer{},
 }.NewTransformer
