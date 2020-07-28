@@ -71,17 +71,24 @@ var _ = Describe("VowFileAuctionAttributes LogNoteTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
+		var msgSenderId int64
+		msgSenderAddress := common.HexToAddress(eventLogs[0].Log.Topics[1].String()).Hex()
+		getMsgSenderIdErr := db.Get(&msgSenderId, `SELECT id FROM public.addresses WHERE address = $1`, msgSenderAddress)
+		Expect(getMsgSenderIdErr).NotTo(HaveOccurred())
+
 		var dbResult []vowFileAuctionAttributesModel
-		err = db.Select(&dbResult, `SELECT what, data from maker.vow_file_auction_attributes`)
+		err = db.Select(&dbResult, `SELECT what, data, msg_sender from maker.vow_file_auction_attributes`)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
 		Expect(dbResult[0].What).To(Equal("sump"))
 		Expect(dbResult[0].Data).To(Equal("50000000000000000000000000000000000000000000000000"))
+		Expect(dbResult[0].MsgSender).To(Equal(msgSenderId))
 	})
 })
 
 type vowFileAuctionAttributesModel struct {
-	What string
-	Data string
+	What      string
+	Data      string
+	MsgSender int64 `db:"msg_sender"`
 }
