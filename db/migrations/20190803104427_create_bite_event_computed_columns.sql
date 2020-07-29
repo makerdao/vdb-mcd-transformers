@@ -16,17 +16,6 @@ $$
     STABLE;
 
 
--- Extend type bite_event with urn field
-CREATE FUNCTION api.bite_event_urn(event api.bite_event)
-    RETURNS api.urn_state AS
-$$
-SELECT *
-FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
-$$
-    LANGUAGE sql
-    STABLE;
-
-
 -- Extend type bite_event with bid field
 CREATE FUNCTION api.bite_event_bid(event api.bite_event)
     RETURNS api.flip_bid_snapshot AS
@@ -52,5 +41,4 @@ $$
 -- SQL in this section is executed when the migration is rolled back.
 DROP FUNCTION api.bite_event_tx(api.bite_event);
 DROP FUNCTION api.bite_event_bid(api.bite_event);
-DROP FUNCTION api.bite_event_urn(api.bite_event);
 DROP FUNCTION api.bite_event_ilk(api.bite_event);
