@@ -35,8 +35,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, err
 		}
 
-		ilk := log.Log.Topics[2].Hex()
-		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
+		ilkID, ilkErr := shared.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
@@ -58,13 +62,15 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				constants.IlkColumn,
 				constants.WhatColumn,
 				constants.PipColumn,
+				constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
-				constants.IlkColumn:  ilkID,
-				constants.WhatColumn: what,
-				constants.PipColumn:  pip.Hex(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.IlkColumn:       ilkID,
+				constants.WhatColumn:      what,
+				constants.PipColumn:       pip.Hex(),
+				constants.MsgSenderColumn: msgSenderID,
 			},
 		}
 		models = append(models, model)

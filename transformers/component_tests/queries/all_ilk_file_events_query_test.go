@@ -91,11 +91,12 @@ var _ = Describe("Ilk File Events Query", func() {
 		spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 		Expect(spotFileMatErr).NotTo(HaveOccurred())
 
-		spotFilePipLog := test_data.CreateTestLog(headerOne.Id, db)
+		spotFilePipLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.SpotFilePipEventLog.Log, db)
 		spotFilePip := test_data.SpotFilePipModel()
 		spotFilePip.ColumnValues[event.HeaderFK] = headerOne.Id
 		spotFilePip.ColumnValues[event.LogFK] = spotFilePipLog.ID
 		spotFilePip.ColumnValues[constants.IlkColumn] = ilkID
+		test_data.AssignMessageSenderID(spotFilePipLog, spotFilePip, db)
 		spotFilePipErr := event.PersistModels([]event.InsertionModel{spotFilePip}, db)
 		Expect(spotFilePipErr).NotTo(HaveOccurred())
 
