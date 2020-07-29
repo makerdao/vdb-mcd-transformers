@@ -103,13 +103,14 @@ var spotFileParModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFileParTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK, constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "fake what",
 		constants.DataColumn: big.NewInt(123).String(),
 		event.HeaderFK:       SpotFileParEventLog.HeaderID,
 		event.LogFK:          SpotFileParEventLog.ID,
+		// MsgSenderColumn
 	},
 }
 
