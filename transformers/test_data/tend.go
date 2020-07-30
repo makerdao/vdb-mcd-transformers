@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	tendAddress         = common.HexToAddress(FlapAddress())
+	tendAddress         = common.HexToAddress(FlapV100Address())
 	tendBidId           = "10"
 	tendLot             = "8500000000000"
 	tendBid             = "100000000000"

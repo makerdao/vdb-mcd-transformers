@@ -44,9 +44,9 @@ var _ = Describe("Deal transformer", func() {
 		dealConfig = event.TransformerConfig{
 			TransformerName: constants.DealTable,
 			ContractAddresses: []string{
-				test_data.FlapAddress(),
-				test_data.FlipEthAddress(),
-				test_data.FlopAddress(),
+				test_data.FlapV100Address(),
+				test_data.FlipEthV100Address(),
+				test_data.FlopV101Address(),
 			},
 			Topic: constants.DealSignature(),
 		}
@@ -82,7 +82,7 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(flipAddressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x00aBe7471ec9b6953A3BD0ed3C06c46F29Aa4280", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
@@ -113,7 +113,7 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x06C36BEA54A74dB813Af0fc136c2E8d0B08e2FB1", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
@@ -144,7 +144,7 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal ORDER BY log_id`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xFDc7768e92B479F27dD11635c9207d542177ae72", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())

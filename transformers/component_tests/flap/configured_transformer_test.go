@@ -39,7 +39,7 @@ import (
 var _ = Describe("Executing the flap transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.FlapAddress()
+		contractAddress   = test_data.FlapV100Address()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		repository        = flap.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
@@ -160,7 +160,7 @@ var _ = Describe("Executing the flap transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 			Expect(flapAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"

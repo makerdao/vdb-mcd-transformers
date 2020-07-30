@@ -16,6 +16,6 @@ var _ = Describe("flop created trigger", func() {
 	})
 
 	Describe("updating flop created", func() {
-		bid_creation.SharedBidCreationTriggerTests(constants.FlopTable, test_data.FlopAddress(), &flopKickModel)
+		bid_creation.SharedBidCreationTriggerTests(constants.FlopTable, test_data.FlopV101Address(), &flopKickModel)
 	})
 })

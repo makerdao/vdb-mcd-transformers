@@ -44,7 +44,7 @@ var _ = Describe("Dent transformer", func() {
 
 		dentConfig = event.TransformerConfig{
 			TransformerName:   constants.DentTable,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.DentSignature(),
 		}
@@ -84,7 +84,7 @@ var _ = Describe("Dent transformer", func() {
 		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		expectedModel := dentModel{
@@ -118,7 +118,7 @@ var _ = Describe("Dent transformer", func() {
 		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, msg_sender, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		msgSender := common.HexToAddress("0xabe7471ec9b6953a3bd0ed3c06c46f29aa4280").Hex()

@@ -43,7 +43,7 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		tendConfig = event.TransformerConfig{
 			TransformerName:   constants.TendTable,
-			ContractAddresses: []string{test_data.FlipEthAddress(), test_data.FlapAddress()},
+			ContractAddresses: []string{test_data.FlipEthV100Address(), test_data.FlapV100Address()},
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TendSignature(),
 		}
@@ -79,7 +79,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = db.Get(&flipTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
 
 		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000000abe7471ec9b6953a3bd0ed3c06c46f29aa4280")
@@ -117,7 +117,7 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = db.Get(&flapTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
 
 		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000d9d1e81bb35db066986fa441113a27708663d70b")
