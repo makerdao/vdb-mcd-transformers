@@ -46,7 +46,20 @@ $$
     LANGUAGE sql
     STABLE;
 
+--- Extend managed_cdp with urn_snapshot
+CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS api.urn_snapshot
+       LANGUAGE sql STABLE
+       AS $$
+SELECT *
+FROM api.get_urn(
+     (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
+     (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
+     flip.block_height)
+$$;
+
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP FUNCTION api.flip_bid_snapshot_bid_events(api.flip_bid_snapshot, INTEGER, INTEGER);
 DROP FUNCTION api.flip_bid_snapshot_ilk(api.flip_bid_snapshot);
+DROP FUNCTION api.flip_bid_snapshot_urn(api.flip_bid_snapshot);

@@ -94,7 +94,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 	})
 
 	Describe("flip_bid_snapshot_urn", func() {
-		It("returns urn_state for a flip_bid_snapshot", func() {
+		It("returns urn_snapshot for a flip_bid_snapshot", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
 			vatRepository := vat.StorageRepository{}
