@@ -39,7 +39,7 @@ import (
 var _ = Describe("Executing the flop transformer", func() {
 	var (
 		db                     = test_config.NewTestDB(test_config.NewTestNode())
-		flopperContractAddress = test_data.FlopAddress()
+		flopperContractAddress = test_data.FlopV101Address()
 		keccakOfAddress        = types.HexToKeccak256Hash(flopperContractAddress)
 		repository             = flop.StorageRepository{ContractAddress: flopperContractAddress}
 		storageKeysLookup      = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
@@ -183,7 +183,7 @@ var _ = Describe("Executing the flop transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+			flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 			Expect(flopAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"

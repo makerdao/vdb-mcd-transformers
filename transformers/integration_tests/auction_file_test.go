@@ -20,56 +20,56 @@ var _ = Describe("Auction file transformer", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "beg"
 		data := "1020000000000000000"
-		auctionFileIntegrationTest(int64(9529100), test_data.FlapAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9529100), test_data.FlapV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip BAT file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "tau"
 		data := "259200"
-		auctionFileIntegrationTest(int64(8928412), test_data.FlipBatAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(8928412), test_data.FlipBatV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip ETH file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "ttl"
 		data := "600"
-		auctionFileIntegrationTest(int64(8928402), test_data.FlipEthAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(8928402), test_data.FlipEthV100Address(), msgSender, what, data)
 	})
 
 	Context("Flip TUSD file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "ttl"
 		data := "21600"
-		auctionFileIntegrationTest(int64(10201136), test_data.FlipTusdAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(10201136), test_data.FlipTusdAV107Address(), msgSender, what, data)
 	})
 
 	Context("Flip USDC-A file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "beg"
 		data := "1030000000000000000"
-		auctionFileIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9686502), test_data.FlipUsdcAV104Address(), msgSender, what, data)
 	})
 
 	Context("Flip USDC-B file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "beg"
 		data := "1030000000000000000"
-		auctionFileIntegrationTest(int64(10201136), test_data.FlipUsdcBAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(10201136), test_data.FlipUsdcBV107Address(), msgSender, what, data)
 	})
 
 	Context("Flip WBTC file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "beg"
 		data := "1030000000000000000"
-		auctionFileIntegrationTest(int64(9990976), test_data.FlipWbtcAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9990976), test_data.FlipWbtcAV106Address(), msgSender, what, data)
 	})
 
 	Context("Flop file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "pad"
 		data := "1200000000000000000"
-		auctionFileIntegrationTest(int64(9017707), test_data.FlopAddress(), msgSender, what, data)
+		auctionFileIntegrationTest(int64(9017707), test_data.FlopV101Address(), msgSender, what, data)
 	})
 })
 

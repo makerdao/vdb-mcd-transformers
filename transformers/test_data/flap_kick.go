@@ -30,7 +30,7 @@ import (
 )
 
 var rawFlapKickLog = types.Log{
-	Address:     common.HexToAddress(FlapAddress()),
+	Address:     common.HexToAddress(FlapV100Address()),
 	Topics:      []common.Hash{common.HexToHash(constants.FlapKickSignature())},
 	Data:        hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000001312d00"),
 	BlockNumber: 65,

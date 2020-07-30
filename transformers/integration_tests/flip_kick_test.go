@@ -32,7 +32,7 @@ import (
 var _ = Describe("FlipKick Transformer", func() {
 	flipKickConfig := event.TransformerConfig{
 		TransformerName:   constants.FlipKickTable,
-		ContractAddresses: []string{test_data.FlipEthAddress()},
+		ContractAddresses: []string{test_data.FlipEthV100Address()},
 		ContractAbi:       constants.FlipABI(),
 		Topic:             constants.FlipKickSignature(),
 	}
@@ -67,7 +67,7 @@ var _ = Describe("FlipKick Transformer", func() {
 		err = db.Select(&dbResult, `SELECT bid_id, lot, bid, tab, usr, gal, address_id FROM maker.flip_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
