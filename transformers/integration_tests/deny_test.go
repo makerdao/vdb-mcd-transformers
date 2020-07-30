@@ -32,6 +32,11 @@ var _ = Describe("Deny transformer", func() {
 	})
 
 	Context("Flip BAT v1.0.0 deny events", func() {
+		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
+		denyIntegrationTest(int64(8928267), test_data.FlipBatV100Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip BAT v1.0.9 deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(10510886), test_data.FlipBatV109Address(), usrAddress, usrAddress)
 	})
