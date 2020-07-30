@@ -18,7 +18,7 @@ RUN go build
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 RUN go mod edit -replace=github.com/makerdao/vulcanizedb=/go/src/github.com/makerdao/vulcanizedb/
 RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
-    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
+    TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/backfill/storage/transformerExporter.go \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
@@ -37,7 +37,7 @@ RUN apk update \
 # add go so we can build the plugin
 RUN apk add --update --no-cache git g++ linux-headers
 
-ARG CONFIG_FILE=environments/docker.toml
+ARG CONFIG_FILE=environments/backfillStorage.toml
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
