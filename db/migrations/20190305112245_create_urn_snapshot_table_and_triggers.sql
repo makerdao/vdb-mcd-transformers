@@ -11,6 +11,16 @@ CREATE TABLE api.urn_snapshot
     PRIMARY KEY (urn_identifier, ilk_identifier, block_height)
 );
 
+CREATE FUNCTION api.max_block()
+    RETURNS BIGINT AS
+$$
+SELECT max(block_number)
+FROM public.headers
+$$
+    LANGUAGE SQL
+    STABLE;
+
+
 CREATE FUNCTION urn_ink_before_block(urn_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
 WITH passed_block_number AS (
@@ -341,5 +351,7 @@ DROP FUNCTION maker.delete_obsolete_urn_snapshot(INTEGER, INTEGER);
 DROP FUNCTION urn_time_created(INTEGER);
 DROP FUNCTION urn_art_before_block(INTEGER, INTEGER);
 DROP FUNCTION urn_ink_before_block(INTEGER, INTEGER);
+
+DROP FUNCTION api.max_block();
 
 DROP TABLE api.urn_snapshot;
