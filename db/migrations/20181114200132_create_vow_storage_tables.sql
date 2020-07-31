@@ -134,20 +134,19 @@ CREATE TABLE maker.vow_hump
 CREATE INDEX vow_hump_header_id_index
     ON maker.vow_hump (header_id);
 
--- +goose Down
-DROP INDEX maker.vow_vat_header_id_index;
-DROP INDEX maker.vow_flapper_header_id_index;
-DROP INDEX maker.vow_flopper_header_id_index;
-DROP INDEX maker.vow_sin_integer_header_id_index;
-DROP INDEX maker.vow_sin_mapping_header_id_index;
-DROP INDEX maker.vow_sin_mapping_era_index;
-DROP INDEX maker.vow_ash_header_id_index;
-DROP INDEX maker.vow_wait_header_id_index;
-DROP INDEX maker.vow_dump_header_id_index;
-DROP INDEX maker.vow_sump_header_id_index;
-DROP INDEX maker.vow_bump_header_id_index;
-DROP INDEX maker.vow_hump_header_id_index;
+CREATE TABLE maker.vow_live
+(
+    id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    live      NUMERIC NOT NULL,
+    UNIQUE (diff_id, header_id, live)
+);
 
+CREATE INDEX vow_live_header_id_index
+    ON maker.vow_live (header_id);
+
+-- +goose Down
 DROP TABLE maker.vow_vat;
 DROP TABLE maker.vow_flapper;
 DROP TABLE maker.vow_flopper;
@@ -159,3 +158,4 @@ DROP TABLE maker.vow_dump;
 DROP TABLE maker.vow_sump;
 DROP TABLE maker.vow_bump;
 DROP TABLE maker.vow_hump;
+DROP TABLE maker.vow_live;
