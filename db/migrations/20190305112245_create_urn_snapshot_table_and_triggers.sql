@@ -11,6 +11,16 @@ CREATE TABLE api.urn_snapshot
     PRIMARY KEY (urn_identifier, ilk_identifier, block_height)
 );
 
+CREATE FUNCTION api.max_block()
+    RETURNS BIGINT AS
+$$
+SELECT max(block_number)
+FROM public.headers
+$$
+    LANGUAGE SQL
+    STABLE;
+
+
 CREATE FUNCTION urn_ink_before_block(urn_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
 WITH passed_block_number AS (
@@ -65,12 +75,12 @@ COMMENT ON FUNCTION urn_time_created
 
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.delete_obsolete_urn_state(urn_id INTEGER, header_id INTEGER) RETURNS api.urn_snapshot
+CREATE OR REPLACE FUNCTION maker.delete_obsolete_urn_snapshot(urn_id INTEGER, header_id INTEGER) RETURNS api.urn_snapshot
     -- deletes row if there are no longer any diffs in that block for the associated urn
 AS
 $$
 DECLARE
-    urn_state_block_number BIGINT := (
+    urn_snapshot_block_number BIGINT := (
         SELECT block_number
         FROM public.headers
         WHERE id = header_id);
@@ -81,24 +91,25 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urns.identifier
       AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
-      AND urn_snapshot.block_height = urn_state_block_number
+      AND urn_snapshot.block_height = urn_snapshot_block_number
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_ink
-            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_ink.header_id = delete_obsolete_urn_state.header_id))
+            WHERE vat_urn_ink.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_ink.header_id = delete_obsolete_urn_snapshot.header_id))
       AND NOT (EXISTS(
             SELECT *
             FROM maker.vat_urn_art
-            WHERE vat_urn_art.urn_id = delete_obsolete_urn_state.urn_id
-              AND vat_urn_art.header_id = delete_obsolete_urn_state.header_id));
+            WHERE vat_urn_art.urn_id = delete_obsolete_urn_snapshot.urn_id
+              AND vat_urn_art.header_id = delete_obsolete_urn_snapshot.header_id));
     RETURN NULL;
 END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
-COMMENT ON FUNCTION maker.delete_obsolete_urn_state
+
+COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot
     IS E'@omit';
 
 
@@ -207,7 +218,7 @@ BEGIN
         PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;
@@ -306,7 +317,7 @@ BEGIN
         PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
     END IF;
     RETURN NULL;
 END
@@ -335,10 +346,12 @@ DROP FUNCTION maker.update_urn_inks_until_next_diff(maker.vat_urn_ink, NUMERIC);
 DROP FUNCTION maker.insert_urn_art(maker.vat_urn_art);
 DROP FUNCTION maker.insert_urn_ink(maker.vat_urn_ink);
 
-DROP FUNCTION maker.delete_obsolete_urn_state(INTEGER, INTEGER);
+DROP FUNCTION maker.delete_obsolete_urn_snapshot(INTEGER, INTEGER);
 
 DROP FUNCTION urn_time_created(INTEGER);
 DROP FUNCTION urn_art_before_block(INTEGER, INTEGER);
 DROP FUNCTION urn_ink_before_block(INTEGER, INTEGER);
+
+DROP FUNCTION api.max_block();
 
 DROP TABLE api.urn_snapshot;
