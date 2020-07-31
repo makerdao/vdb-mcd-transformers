@@ -58,7 +58,7 @@ elif [ "$ENVIRONMENT" == "staging" ]; then
   aws ecs run-task --cluster vdb-cluster-$ENVIRONMENT \
    --launch-type FARGATE \
    --task-definition vdb-backfill-events-$ENVIRONMENT \
-   --network-configuration "awsvpcConfiguration={subnets=[$STAGING_SUBNETS],securityGroups=[$STAGING_SG],assignPublicIp=ENABLED}" \
+   --network-configuration "$STAGING_NETWORK_CONFIG" \
    --region $STAGING_REGION
 else
    message UNKNOWN ENVIRONMENT
