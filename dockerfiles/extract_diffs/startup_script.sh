@@ -38,6 +38,4 @@ fi
 
 # Run extractDiffs
 echo "Running extractDiffs..."
-./vulcanizedb extractDiffs --watchedAddresses \
-    0x7382c066801E7Acb2299aC8562847B9883f5CD3c \ #OSM_WBTC
-    0xf185d0682d50819263941e5f4EacC763CC5C6C42 \ #OSM_ZRX
+./vulcanizedb extractDiffs --config config.toml
