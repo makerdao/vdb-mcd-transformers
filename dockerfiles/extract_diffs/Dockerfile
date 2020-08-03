@@ -11,6 +11,9 @@ RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goo
 ARG VDB_VERSION=staging
 ENV GO111MODULE on
 
+WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
+COPY . .
+
 # Get and build VulcanizeDB
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
@@ -38,7 +41,7 @@ ARG CONFIG_FILE=environments/docker.toml
 
 # Add required files
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
-COPY --from=builder /go/src/github.com/makerdao/vulcanizedb/dockerfiles/extract_diffs/startup_script.sh .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/extract_diffs/startup_script.sh .
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 # needed for waiting until postgres is ready before starting from docker-compose
