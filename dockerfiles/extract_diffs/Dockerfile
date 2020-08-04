@@ -34,13 +34,16 @@ RUN apk update \
 	    bash \
         && update-ca-certificates 2>/dev/null || true
 
+ARG CONFIG_FILE=environments/extractDiffs.toml
+
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 
-ARG CONFIG_FILE=environments/docker.toml
+ARG CONFIG_FILE=environments/extractDiffs.toml
 
 # Add required files
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/extract_diffs/startup_script.sh .
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
