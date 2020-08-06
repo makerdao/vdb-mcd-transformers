@@ -106,6 +106,8 @@ const (
 	CatIlkChopTable         = "cat_ilk_chop"
 	CatIlkFlipTable         = "cat_ilk_flip"
 	CatIlkLumpTable         = "cat_ilk_lump"
+	CatBoxTable             = "cat_box"
+	CatLitterTable          = "cat_litter"
 	CatLiveTable            = "cat_live"
 	CatVatTable             = "cat_vat"
 	CatVowTable             = "cat_vow"

@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cat_test
+package v1_0_10_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_10"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -40,16 +40,18 @@ var _ = Describe("Cat storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = cat.NewKeysLoader(storageRepository, test_data.CatAddress())
+		storageKeysLoader = v1_0_10.NewKeysLoader(storageRepository, test_data.CatAddress())
 	})
 
 	It("returns value metadata for static keys", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(mappings[cat.LiveKey]).To(Equal(cat.LiveMetadata))
-		Expect(mappings[cat.VatKey]).To(Equal(cat.VatMetadata))
-		Expect(mappings[cat.VowKey]).To(Equal(cat.VowMetadata))
+		Expect(mappings[v1_0_10.BoxKey]).To(Equal(v1_0_10.BoxMetadata))
+		Expect(mappings[v1_0_10.LitterKey]).To(Equal(v1_0_10.LitterMetadata))
+		Expect(mappings[v1_0_10.LiveKey]).To(Equal(v1_0_10.LiveMetadata))
+		Expect(mappings[v1_0_10.VatKey]).To(Equal(v1_0_10.VatMetadata))
+		Expect(mappings[v1_0_10.VowKey]).To(Equal(v1_0_10.VowMetadata))
 	})
 
 	Describe("ilk", func() {
@@ -66,7 +68,7 @@ var _ = Describe("Cat storage keys loader", func() {
 
 		Describe("when getting ilks succeeds", func() {
 			var (
-				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + cat.IlksMappingIndex)))
+				ilkFlipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + v1_0_10.IlksMappingIndex)))
 				mappings   map[common.Hash]types.ValueMetadata
 			)
 
@@ -79,7 +81,7 @@ var _ = Describe("Cat storage keys loader", func() {
 
 			It("returns value metadata for ilk flip", func() {
 				expectedMetadata := types.ValueMetadata{
-					Name: cat.IlkFlip,
+					Name: v1_0_10.IlkFlip,
 					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: types.Address,
 				}
@@ -90,7 +92,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			It("returns value metadata for ilk chop", func() {
 				ilkChopKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 1)
 				expectedMetadata := types.ValueMetadata{
-					Name: cat.IlkChop,
+					Name: v1_0_10.IlkChop,
 					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: types.Uint256,
 				}
@@ -101,7 +103,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			It("returns value metadata for ilk lump", func() {
 				ilkLumpKey := vdbStorage.GetIncrementedKey(ilkFlipKey, 2)
 				expectedMetadata := types.ValueMetadata{
-					Name: cat.IlkLump,
+					Name: v1_0_10.IlkLump,
 					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
 					Type: types.Uint256,
 				}

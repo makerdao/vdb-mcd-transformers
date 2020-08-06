@@ -11,7 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
@@ -393,8 +393,8 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 		vat.InsertIlkDustQuery,
 		jug.InsertJugIlkDutyQuery,
 		jug.InsertJugIlkRhoQuery,
-		cat.InsertCatIlkChopQuery,
-		cat.InsertCatIlkLumpQuery,
+		v1_0_0.InsertCatIlkChopQuery,
+		v1_0_0.InsertCatIlkLumpQuery,
 	}
 
 	for _, intInsertSql := range intInsertions {
@@ -403,7 +403,7 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 			return fmt.Errorf("error inserting initial ilk data: %v", err)
 		}
 	}
-	_, flipErr := state.pgTx.Exec(cat.InsertCatIlkFlipQuery,
+	_, flipErr := state.pgTx.Exec(v1_0_0.InsertCatIlkFlipQuery,
 		state.currentDiffID, state.currentHeader.Id, ilkId, test_data.AlreadySeededRandomString(10))
 
 	if flipErr != nil {

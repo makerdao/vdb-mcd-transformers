@@ -1,4 +1,4 @@
-package cat
+package v1_0_10
 
 import (
 	"fmt"
@@ -15,9 +15,11 @@ const (
 	InsertCatIlkFlipQuery = `INSERT INTO maker.cat_ilk_flip (diff_id, header_id, ilk_id, flip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertCatIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (diff_id, header_id, ilk_id, lump) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
-	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	insertCatVowQuery  = `INSERT INTO maker.cat_vow (diff_id, header_id, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatBoxQuery    = `INSERT INTO maker.cat_box (diff_id, header_id, box) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatLitterQuery = `INSERT INTO maker.cat_litter (diff_id, header_id, litter) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatLiveQuery   = `INSERT INTO maker.cat_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatVatQuery    = `INSERT INTO maker.cat_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatVowQuery    = `INSERT INTO maker.cat_vow (diff_id, header_id, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -27,6 +29,10 @@ type StorageRepository struct {
 
 func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
+	case Box:
+		return repository.insertBox(diffID, headerID, value.(string))
+	case Litter:
+		return repository.insertLitter(diffID, headerID, value.(string))
 	case Live:
 		return repository.insertLive(diffID, headerID, value.(string))
 	case Vat:
@@ -48,6 +54,22 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 
 func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
+}
+
+func (repository *StorageRepository) insertBox(diffID, headerID int64, box string) error {
+	_, err := repository.db.Exec(insertCatBoxQuery, diffID, headerID, box)
+	if err != nil {
+		return fmt.Errorf("error inserting cat box %s from diff ID %d: %w", box, diffID, err)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertLitter(diffID, headerID int64, litter string) error {
+	_, err := repository.db.Exec(insertCatLitterQuery, diffID, headerID, litter)
+	if err != nil {
+		return fmt.Errorf("error inserting cat litter %s from diff ID %d: %w", litter, diffID, err)
+	}
+	return nil
 }
 
 func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {

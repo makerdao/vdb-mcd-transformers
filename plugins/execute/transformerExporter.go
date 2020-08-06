@@ -78,7 +78,7 @@ import (
 	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
 	vow_heal "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal/initializer"
 	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
-	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/initializer"
+	cat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_10/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
 	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"

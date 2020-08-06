@@ -102,7 +102,7 @@ services:
       # The following can be re-generated from another env file with:
       # awk -F= '/CONTRACT_.+_ADDRESS/{print "\"--statediff.watchedaddresses\", " "\""$2 "\", # " $1}' dockerfiles/mainnet-1.0.1.env
       "--statediff.watchedaddresses", "0x5ef30b9986345249bc32d8928b7ee64de9435e39", # CONTRACT_CDP_MANAGER_ADDRESS
-      "--statediff.watchedaddresses", "0x78f2c2af65126834c51822f56be0d7469d7a523e", # CONTRACT_MCD_CAT_ADDRESS
+      "--statediff.watchedaddresses", "0x78f2c2af65126834c51822f56be0d7469d7a523e", # CONTRACT_MCD_CAT_1.0.0_ADDRESS
       "--statediff.watchedaddresses", "0xdfe0fb1be2a52cdbf8fb962d5701d7fd0902db9f", # CONTRACT_MCD_FLAP_1.0.0_ADDRESS
       "--statediff.watchedaddresses", "0xC4269cC7acDEdC3794b221aA4D9205F564e27f0d", # CONTRACT_MCD_FLAP_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0xaA745404d55f88C108A28c86abE7b5A1E7817c07", # CONTRACT_MCD_FLIP_BAT_A_1.0.0_ADDRESS

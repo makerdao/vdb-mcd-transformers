@@ -19,6 +19,7 @@ package test_helpers
 import (
 	"database/sql"
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_10"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -28,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
@@ -64,9 +64,9 @@ var (
 	FakeIlkSpotMetadata = types.GetValueMetadata(vat.IlkSpot, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	FakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	FakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
-	fakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
-	fakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
-	fakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
+	fakeIlkChopMetadata = types.GetValueMetadata(v1_0_10.IlkChop, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
+	fakeIlkLumpMetadata = types.GetValueMetadata(v1_0_10.IlkLump, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
+	fakeIlkFlipMetadata = types.GetValueMetadata(v1_0_10.IlkFlip, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkTaxMetadata  = types.GetValueMetadata(jug.IlkDuty, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkPipMetadata  = types.GetValueMetadata(spot.IlkPip, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Address)
@@ -98,9 +98,9 @@ var (
 	anotherFakeIlkSpotMetadata = types.GetValueMetadata(vat.IlkSpot, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
-	anotherFakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
-	anotherFakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
-	anotherFakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Address)
+	anotherFakeIlkChopMetadata = types.GetValueMetadata(v1_0_10.IlkChop, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
+	anotherFakeIlkLumpMetadata = types.GetValueMetadata(v1_0_10.IlkLump, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
+	anotherFakeIlkFlipMetadata = types.GetValueMetadata(v1_0_10.IlkFlip, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Address)
 	anotherFakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkTaxMetadata  = types.GetValueMetadata(jug.IlkDuty, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkPipMetadata  = types.GetValueMetadata(spot.IlkPip, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Address)
@@ -159,9 +159,9 @@ func GetIlkValues(seed int) map[string]interface{} {
 	valuesMap[vat.IlkSpot] = strconv.Itoa(3 + seed)
 	valuesMap[vat.IlkLine] = strconv.Itoa(4 + seed)
 	valuesMap[vat.IlkDust] = strconv.Itoa(5 + seed)
-	valuesMap[cat.IlkChop] = strconv.Itoa(6 + seed)
-	valuesMap[cat.IlkLump] = strconv.Itoa(7 + seed)
-	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
+	valuesMap[v1_0_10.IlkChop] = strconv.Itoa(6 + seed)
+	valuesMap[v1_0_10.IlkLump] = strconv.Itoa(7 + seed)
+	valuesMap[v1_0_10.IlkFlip] = "an address" + strconv.Itoa(seed)
 	valuesMap[jug.IlkRho] = strconv.Itoa(8 + seed)
 	valuesMap[jug.IlkDuty] = strconv.Itoa(9 + seed)
 	valuesMap[spot.IlkPip] = "an address2" + strconv.Itoa(seed)
@@ -184,9 +184,9 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 		Spot:          ilkValues[vat.IlkSpot].(string),
 		Line:          ilkValues[vat.IlkLine].(string),
 		Dust:          ilkValues[vat.IlkDust].(string),
-		Chop:          ilkValues[cat.IlkChop].(string),
-		Lump:          ilkValues[cat.IlkLump].(string),
-		Flip:          ilkValues[cat.IlkFlip].(string),
+		Chop:          ilkValues[v1_0_10.IlkChop].(string),
+		Lump:          ilkValues[v1_0_10.IlkLump].(string),
+		Flip:          ilkValues[v1_0_10.IlkFlip].(string),
 		Rho:           ilkValues[jug.IlkRho].(string),
 		Duty:          ilkValues[jug.IlkDuty].(string),
 		Pip:           ilkValues[spot.IlkPip].(string),
@@ -200,7 +200,7 @@ func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.StorageRepository) {
+func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository v1_0_10.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
@@ -222,7 +222,7 @@ func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.He
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
 	var (
 		vatRepo  vat.StorageRepository
-		catRepo  cat.StorageRepository
+		catRepo  v1_0_10.StorageRepository
 		jugRepo  jug.StorageRepository
 		spotRepo spot.StorageRepository
 	)

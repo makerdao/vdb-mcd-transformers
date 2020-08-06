@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cat
+package v1_0_10
 
 import (
 	"fmt"
@@ -30,9 +30,11 @@ import (
 )
 
 const (
-	Live = "live"
-	Vat  = "vat"
-	Vow  = "vow"
+	Box    = "box"
+	Litter = "litter"
+	Live   = "live"
+	Vat    = "vat"
+	Vow    = "vow"
 
 	IlkFlip = "flip"
 	IlkChop = "chop"
@@ -42,13 +44,19 @@ const (
 var (
 	IlksMappingIndex = vdbStorage.IndexOne // bytes32 => flip address; chop (ray), lump (wad) uint256
 
-	LiveKey      = common.HexToHash(vdbStorage.IndexTwo)
+	BoxKey      = common.HexToHash(vdbStorage.IndexTwo)
+	BoxMetadata = types.GetValueMetadata(Box, nil, types.Uint256)
+
+	LitterKey      = common.HexToHash(vdbStorage.IndexThree)
+	LitterMetadata = types.GetValueMetadata(Litter, nil, types.Uint256)
+
+	LiveKey      = common.HexToHash(vdbStorage.IndexFour)
 	LiveMetadata = types.GetValueMetadata(Live, nil, types.Uint256)
 
-	VatKey      = common.HexToHash(vdbStorage.IndexThree)
+	VatKey      = common.HexToHash(vdbStorage.IndexFive)
 	VatMetadata = types.GetValueMetadata(Vat, nil, types.Address)
 
-	VowKey      = common.HexToHash(vdbStorage.IndexFour)
+	VowKey      = common.HexToHash(vdbStorage.IndexSix)
 	VowMetadata = types.GetValueMetadata(Vow, nil, types.Address)
 )
 
@@ -101,6 +109,8 @@ func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetad
 
 func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings := make(map[common.Hash]types.ValueMetadata)
+	mappings[BoxKey] = BoxMetadata
+	mappings[LitterKey] = LitterMetadata
 	mappings[LiveKey] = LiveMetadata
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata

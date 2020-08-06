@@ -1,4 +1,4 @@
-package cat_test
+package v1_0_10_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestCat(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Cat Storage Transformer Suite")
+	RunSpecs(t, "Cat v1.0.10 Storage Transformer Suite")
 }

@@ -17,13 +17,13 @@
 package queries
 
 import (
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_10"
 	"math/rand"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -48,7 +48,7 @@ var _ = Describe("urn_snapshot computed columns", func() {
 		logIdOne,
 		logIdTwo int64
 		vatRepository    vat.StorageRepository
-		catRepository    cat.StorageRepository
+		catRepository    v1_0_10.StorageRepository
 		jugRepository    jug.StorageRepository
 		headerRepository datastore.HeaderRepository
 	)

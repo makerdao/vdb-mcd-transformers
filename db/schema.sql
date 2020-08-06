@@ -7698,6 +7698,38 @@ ALTER SEQUENCE maker.bite_id_seq OWNED BY maker.bite.id;
 
 
 --
+-- Name: cat_box; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_box (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    box numeric NOT NULL
+);
+
+
+--
+-- Name: cat_box_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_box_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_box_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_box_id_seq OWNED BY maker.cat_box.id;
+
+
+--
 -- Name: cat_file_chop_lump; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7859,6 +7891,38 @@ CREATE SEQUENCE maker.cat_ilk_lump_id_seq
 --
 
 ALTER SEQUENCE maker.cat_ilk_lump_id_seq OWNED BY maker.cat_ilk_lump.id;
+
+
+--
+-- Name: cat_litter; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_litter (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    litter numeric NOT NULL
+);
+
+
+--
+-- Name: cat_litter_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_litter_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_litter_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_litter_id_seq OWNED BY maker.cat_litter.id;
 
 
 --
@@ -13706,6 +13770,13 @@ ALTER TABLE ONLY maker.bite ALTER COLUMN id SET DEFAULT nextval('maker.bite_id_s
 
 
 --
+-- Name: cat_box id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box ALTER COLUMN id SET DEFAULT nextval('maker.cat_box_id_seq'::regclass);
+
+
+--
 -- Name: cat_file_chop_lump id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13745,6 +13816,13 @@ ALTER TABLE ONLY maker.cat_ilk_flip ALTER COLUMN id SET DEFAULT nextval('maker.c
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump ALTER COLUMN id SET DEFAULT nextval('maker.cat_ilk_lump_id_seq'::regclass);
+
+
+--
+-- Name: cat_litter id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter ALTER COLUMN id SET DEFAULT nextval('maker.cat_litter_id_seq'::regclass);
 
 
 --
@@ -15122,6 +15200,22 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: cat_box cat_box_diff_id_header_id_box_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_diff_id_header_id_box_key UNIQUE (diff_id, header_id, box);
+
+
+--
+-- Name: cat_box cat_box_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cat_file_chop_lump cat_file_chop_lump_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15215,6 +15309,22 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_litter cat_litter_diff_id_header_id_litter_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_diff_id_header_id_litter_key UNIQUE (diff_id, header_id, litter);
+
+
+--
+-- Name: cat_litter cat_litter_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_pkey PRIMARY KEY (id);
 
 
 --
@@ -18273,6 +18383,13 @@ CREATE INDEX bite_urn_index ON maker.bite USING btree (urn_id);
 
 
 --
+-- Name: cat_box_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_box_header_id_index ON maker.cat_box USING btree (header_id);
+
+
+--
 -- Name: cat_file_cho_lump_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18389,6 +18506,13 @@ CREATE INDEX cat_ilk_lump_header_id_index ON maker.cat_ilk_lump USING btree (hea
 --
 
 CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
+
+
+--
+-- Name: cat_litter_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_litter_header_id_index ON maker.cat_litter USING btree (header_id);
 
 
 --
@@ -22075,6 +22199,22 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: cat_box cat_box_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_box cat_box_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_chop_lump cat_file_chop_lump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22232,6 +22372,22 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_litter cat_litter_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_litter cat_litter_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
