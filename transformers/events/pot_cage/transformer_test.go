@@ -27,6 +27,7 @@ var _ = Describe("Pot cage transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotCageModel()
+		test_data.AssignMessageSenderID(test_data.PotCageEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

@@ -59,17 +59,19 @@ var catFileChopModel = event.InsertionModel{
 	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
-		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileChopEventLog.HeaderID,
-		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		event.LogFK:    CatFileChopEventLog.ID,
+		// msg.sender
+		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "chop",
 		constants.DataColumn: "1000000000000000000000000000",
-		event.LogFK:          CatFileChopEventLog.ID,
 	},
 }
 
@@ -104,17 +106,19 @@ var catFileLumpModel = event.InsertionModel{
 	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
-		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileLumpEventLog.HeaderID,
-		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		event.LogFK:    CatFileLumpEventLog.ID,
+		// msg.sender
+		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "lump",
 		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
-		event.LogFK:          CatFileLumpEventLog.ID,
 	},
 }
 
@@ -152,6 +156,7 @@ var catFileFlipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.FlipColumn,
+		constants.MsgSenderColumn,
 		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
@@ -192,7 +197,11 @@ var catFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileVowTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileVowEventLog.HeaderID,

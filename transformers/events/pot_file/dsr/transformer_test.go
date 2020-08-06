@@ -27,6 +27,7 @@ var _ = Describe("Pot file dsr transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.PotFileDSRModel()
+		test_data.AssignMessageSenderID(test_data.PotFileDSREventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

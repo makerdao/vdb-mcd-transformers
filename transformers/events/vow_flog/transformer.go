@@ -26,7 +26,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.ThreeTopicsRequired, shared.LogDataNotRequired)
@@ -34,18 +34,23 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 			return nil, err
 		}
 
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
 		era := log.Log.Topics[2].Big()
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.VowFlogTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.EraColumn,
+				event.HeaderFK, event.LogFK, constants.EraColumn, constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      log.HeaderID,
-				event.LogFK:         log.ID,
-				constants.EraColumn: era.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.EraColumn:       era.String(),
 			},
 		}
 		models = append(models, model)

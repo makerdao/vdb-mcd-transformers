@@ -44,6 +44,7 @@ var _ = Describe("Tick transformer", func() {
 
 			expectedModel := test_data.TickModel()
 			expectedModel.ColumnValues[event.AddressFK] = addressID
+			test_data.AssignMessageSenderID(test_data.FlipTickEventLog, expectedModel, db)
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})

@@ -64,12 +64,14 @@ var spotFileMatModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
+		constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       SpotFileMatEventLog.HeaderID,
 		event.LogFK:          SpotFileMatEventLog.ID,
 		constants.WhatColumn: "mat",
 		constants.DataColumn: "1500000000000000000000000000",
+		// msgSenderId
 	},
 }
 
@@ -101,13 +103,14 @@ var spotFileParModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.SpotFileParTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK, constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "fake what",
 		constants.DataColumn: big.NewInt(123).String(),
 		event.HeaderFK:       SpotFileParEventLog.HeaderID,
 		event.LogFK:          SpotFileParEventLog.ID,
+		// MsgSenderColumn
 	},
 }
 
@@ -148,11 +151,13 @@ var spotFilePipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.PipColumn,
+		constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       SpotFilePipEventLog.HeaderID,
 		event.LogFK:          SpotFilePipEventLog.ID,
 		constants.WhatColumn: "pip",
 		constants.PipColumn:  "0x75dD74e8afE8110C8320eD397CcCff3B8134d981",
+		// MsgSender
 	},
 }

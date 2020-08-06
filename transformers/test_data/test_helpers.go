@@ -23,6 +23,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -92,6 +94,10 @@ func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
 	panic("couldn't find inserted test log")
 }
 
+func CreateTestLogFromEventLog(headerID int64, log types.Log, db *postgres.DB) core.EventLog {
+	return CreateLogs(headerID, []types.Log{log}, db)[0]
+}
+
 func CreateLogs(headerID int64, logs []types.Log, db *postgres.DB) []core.EventLog {
 	headerRepo := repositories.NewHeaderRepository(db)
 	for _, log := range logs {
@@ -121,4 +127,11 @@ func getLogCount(db *postgres.DB) int {
 	Expect(logCountErr).NotTo(HaveOccurred())
 
 	return logCount
+}
+
+func AssignMessageSenderID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	Expect(len(log.Log.Topics)).Should(BeNumerically(">=", 2))
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 }

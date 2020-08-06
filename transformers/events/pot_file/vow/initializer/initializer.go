@@ -7,6 +7,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
+// EventTransformerInitializer is the ConfiguredTransformer for pot_file_vow events
 var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
 	Config:      shared.GetEventTransformerConfig(constants.PotFileVowTable, constants.PotFileVowSignature()),
 	Transformer: vow.Transformer{},

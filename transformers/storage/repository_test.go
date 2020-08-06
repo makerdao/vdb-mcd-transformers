@@ -28,12 +28,14 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -749,9 +751,14 @@ func insertTick(blockNumber int64, bidID string, contractAddressID int64, db *po
 	// tick event record
 	headerID := insertHeader(db, blockNumber)
 	flapTickLog := test_data.CreateTestLog(headerID, db)
-	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id)
-				VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidID, contractAddressID, flapTickLog.ID,
+
+	msgSender := shared.GetChecksumAddressString(test_data.FlipTickEventLog.Log.Topics[1].Hex())
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
+	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id, msg_sender)
+				VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, flapTickLog.ID, msgSenderID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
@@ -794,20 +801,28 @@ func insertFlopKicks(blockNumber int64, kicks string, contractAddressID int64, d
 
 func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-	tendLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidID, 0, 0, contractAddressID, tendLog.ID,
-	)
-	Expect(err).NotTo(HaveOccurred())
+	tendLog := test_data.CreateTestLogFromEventLog(headerID, test_data.TendEventLog.Log, db)
+	tendModel := test_data.TendModel()
+	tendModel.ColumnValues[event.HeaderFK] = headerID
+	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	tendModel.ColumnValues[constants.BidIDColumn] = bidID
+	tendModel.ColumnValues[event.AddressFK] = contractAddressID
+	test_data.AssignMessageSenderID(tendLog, tendModel, db)
+	tendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
+	Expect(tendErr).NotTo(HaveOccurred())
 }
 
 func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dentLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidID, 0, 0, contractAddressID, dentLog.ID,
+
+	msgSender := shared.GetChecksumAddressString(test_data.DentEventLog.Log.Topics[1].Hex())
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
+	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, msg_sender, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
+		headerID, bidID, 0, 0, msgSenderID, contractAddressID, dentLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
@@ -815,9 +830,11 @@ func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dealLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidID, contractAddressID, dealLog.ID,
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DealEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, dealLog.ID, msgSenderID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
@@ -825,9 +842,11 @@ func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertYank(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	yankLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidID, contractAddressID, yankLog.ID,
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.YankEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, yankLog.ID, msgSenderID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
@@ -923,11 +942,15 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFlogEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	vowFlogLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_flog (header_id, era, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, era, vowFlogLog.ID,
+		`INSERT INTO maker.vow_flog (header_id, era, log_id, msg_sender)
+			VALUES($1, $2, $3, $4)`,
+		headerID, era, vowFlogLog.ID, msgSenderID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
@@ -937,12 +960,15 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, blockNumber)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
 	vowFessLog := test_data.CreateTestLog(headerID, db)
-
 	Expect(err).NotTo(HaveOccurred())
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_fess (header_id, tab, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, tab, vowFessLog.ID,
+		`INSERT INTO maker.vow_fess (header_id, msg_sender, tab, log_id)
+			VALUES($1, $2, $3, $4)`,
+		headerID, msgSenderID, tab, vowFessLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

@@ -27,6 +27,7 @@ import (
 )
 
 const (
+	OneTopicRequired    = 1
 	TwoTopicsRequired   = 2
 	ThreeTopicsRequired = 3
 	FourTopicsRequired  = 4

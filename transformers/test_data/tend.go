@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	tendAddress         = common.HexToAddress(FlapAddress())
+	tendAddress         = common.HexToAddress(FlapV100Address())
 	tendBidId           = "10"
 	tendLot             = "8500000000000"
 	tendBid             = "100000000000"
@@ -65,7 +65,7 @@ var tendModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.TendTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+		event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:        TendEventLog.HeaderID,

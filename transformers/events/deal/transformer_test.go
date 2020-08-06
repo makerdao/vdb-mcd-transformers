@@ -42,11 +42,13 @@ var _ = Describe("Flip Deal Transformer", func() {
 	It("converts logs to models", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DealEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		var addressID int64
-		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
+
+		addrID, addrErr := shared.GetOrCreateAddress(test_data.DealEventLog.Log.Address.Hex(), db)
 		Expect(addrErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.DealModel()
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		expectedModel.ColumnValues[event.AddressFK] = addrID
+		test_data.AssignMessageSenderID(test_data.DealEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

@@ -96,6 +96,8 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = logId
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
+
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 

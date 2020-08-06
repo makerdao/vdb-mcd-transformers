@@ -53,7 +53,8 @@ var _ = Describe("Sin queue event computed columns", func() {
 		fakeEventLog := test_data.CreateTestLog(headerOne.Id, db)
 		fakeGethLog = fakeEventLog.Log
 
-		vowFessEvent := test_data.VowFessModel
+		vowFessEvent := test_data.VowFessModel()
+		test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 		vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 		vowFessEvent.ColumnValues[event.LogFK] = fakeEventLog.ID
 		vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)

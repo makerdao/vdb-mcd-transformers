@@ -28,10 +28,10 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
 
-var rawVowFileLog = types.Log{
+var rawVowFileAuctionAttributesLog = types.Log{
 	Address: common.HexToAddress(VowAddress()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.VowFileSignature()),
+		common.HexToHash(constants.VowFileAuctionAttributesSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
 		common.HexToHash("0x7761697400000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x00000000000000000000000000000000000000000000152d02c7e14af6800000"),
@@ -45,25 +45,33 @@ var rawVowFileLog = types.Log{
 	Removed:     false,
 }
 
-var VowFileEventLog = core.EventLog{
+var VowFileAuctionAttributesEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:         rawVowFileLog,
+	Log:         rawVowFileAuctionAttributesLog,
 	Transformed: false,
 }
 
-var VowFileModel = event.InsertionModel{
+var vowFileAuctionAttributesModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.VowFileTable,
+	TableName:  constants.VowFileAuctionAttributesTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.WhatColumn, constants.DataColumn,
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.WhatColumn: "wait",
 		constants.DataColumn: "100000000000000000000000",
-		event.HeaderFK:       VowFileEventLog.HeaderID,
-		event.LogFK:          VowFileEventLog.ID,
+		event.HeaderFK:       VowFileAuctionAttributesEventLog.HeaderID,
+		event.LogFK:          VowFileAuctionAttributesEventLog.ID,
 	},
+}
+
+func VowFileAuctionAttributesModel() event.InsertionModel {
+	return CopyModel(vowFileAuctionAttributesModel)
 }
 
 var rawVowFileAuctionAddressLog = types.Log{

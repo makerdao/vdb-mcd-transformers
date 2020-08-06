@@ -55,9 +55,14 @@ var JugInitEventLog = core.EventLog{
 func JugInitModel() event.InsertionModel { return CopyModel(jugInitModel) }
 
 var jugInitModel = event.InsertionModel{
-	SchemaName:     constants.MakerSchema,
-	TableName:      constants.JugInitTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.IlkColumn},
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.JugInitTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.IlkColumn,
+	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: JugInitEventLog.HeaderID,
 		event.LogFK:    JugInitEventLog.ID,

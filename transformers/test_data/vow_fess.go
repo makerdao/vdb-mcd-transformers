@@ -53,15 +53,23 @@ var VowFessEventLog = core.EventLog{
 	Transformed: false,
 }
 
-var VowFessModel = event.InsertionModel{
+var vowFessModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFessTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.TabColumn,
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.TabColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		constants.TabColumn: "1337",
-		event.HeaderFK:      VowFessEventLog.HeaderID,
-		event.LogFK:         VowFessEventLog.ID,
+		// msg sender ID
+		event.HeaderFK: VowFessEventLog.HeaderID,
+		event.LogFK:    VowFessEventLog.ID,
 	},
+}
+
+func VowFessModel() event.InsertionModel {
+	return CopyModel(vowFessModel)
 }

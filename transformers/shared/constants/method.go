@@ -19,27 +19,47 @@ package constants
 // TODO Figure out signatures automatically from config somehow :(
 func CatABI() string        { return getContractABI("MCD_CAT") }
 func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
-func FlapABI() string       { return getContractABI("MCD_FLAP") }
-func FlipABI() string {
+func FlapABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLIP_BAT_A",
-		"MCD_FLIP_ETH_A",
-		"MCD_FLIP_KNC_A",
-		"MCD_FLIP_SAI",
-		"MCD_FLIP_TUSD_A",
-		"MCD_FLIP_USDC_A",
-		"MCD_FLIP_USDC_B",
-		"MCD_FLIP_WBTC_A",
-		"MCD_FLIP_ZRX_A",
+		"MCD_FLAP_1.0.0",
+		"MCD_FLAP_1.0.9",
 	})
 }
-func FlopABI() string { return getContractABI("MCD_FLOP") }
-func JugABI() string  { return getContractABI("MCD_JUG") }
+func FlipABI() string {
+	return GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLIP_BAT_A_1.0.0",
+		"MCD_FLIP_BAT_A_1.0.9",
+		"MCD_FLIP_ETH_A_1.0.0",
+		"MCD_FLIP_ETH_A_1.0.9",
+		"MCD_FLIP_KNC_A_1.0.8",
+		"MCD_FLIP_KNC_A_1.0.9",
+		"MCD_FLIP_MANA_A_1.0.9",
+		"MCD_FLIP_SAI_1.0.0",
+		"MCD_FLIP_TUSD_A_1.0.7",
+		"MCD_FLIP_TUSD_A_1.0.9",
+		"MCD_FLIP_USDC_A_1.0.4",
+		"MCD_FLIP_USDC_A_1.0.9",
+		"MCD_FLIP_USDC_B_1.0.7",
+		"MCD_FLIP_USDC_B_1.0.9",
+		"MCD_FLIP_WBTC_A_1.0.6",
+		"MCD_FLIP_WBTC_A_1.0.9",
+		"MCD_FLIP_ZRX_A_1.0.8",
+		"MCD_FLIP_ZRX_A_1.0.9",
+	})
+}
+func FlopABI() string {
+	return GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLOP_1.0.1",
+		"MCD_FLOP_1.0.9",
+	})
+}
+func JugABI() string { return getContractABI("MCD_JUG") }
 func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
+		"MEDIAN_MANA",
 		"MEDIAN_WBTC",
 		"MEDIAN_ZRX",
 	})
@@ -52,6 +72,7 @@ func OsmABI() string {
 		"OSM_BAT",
 		"OSM_ETH",
 		"OSM_KNC",
+		"OSM_MANA",
 		"OSM_WBTC",
 		"OSM_ZRX",
 	})
@@ -172,7 +193,7 @@ func vatNopeMethod() string { return getSolidityFunctionSignature(VatABI(), "nop
 func vatSlipMethod() string { return getSolidityFunctionSignature(VatABI(), "slip") }
 func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suck") }
 func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }
-func vowFileMethod() string {
+func vowFileAuctionAttributesMethod() string {
 	return getOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "uint256"})
 }
 func vowFileAuctionAddressMethod() string {

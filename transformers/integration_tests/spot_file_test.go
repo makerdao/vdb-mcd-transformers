@@ -87,14 +87,19 @@ var _ = Describe("SpotFile EventTransformers", func() {
 
 		It("fetches and transforms a Spot.file mat event", func() {
 			var dbResult spotFileMatModel
-			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data FROM maker.spot_file_mat`)
+			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, what, data, msg_sender FROM maker.spot_file_mat`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbe8e3e3618f7474f8cb1d074a26affef007e98fb", db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbResult.What).To(Equal("mat"))
 			Expect(dbResult.Data).To(Equal("1500000000000000000000000000"))
+			Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderID, 10)))
 		})
 	})
 
@@ -150,24 +155,30 @@ var _ = Describe("SpotFile EventTransformers", func() {
 
 		It("fetches and transforms a Spot.file pip event", func() {
 			var dbResult spotFilePipModel
-			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip from maker.spot_file_pip`)
+			getSpotErr := db.Get(&dbResult, `SELECT ilk_id, pip, msg_sender from maker.spot_file_pip`)
 			Expect(getSpotErr).NotTo(HaveOccurred())
 
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2fa2baacb2cb550ba051525a480d3f4", db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbResult.Pip).To(Equal("0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763"))
+			Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderID, 10)))
 		})
 	})
 })
 
 type spotFileMatModel struct {
-	Ilk  string `db:"ilk_id"`
-	What string
-	Data string
+	Ilk       string `db:"ilk_id"`
+	MsgSender string `db:"msg_sender"`
+	What      string
+	Data      string
 }
 
 type spotFilePipModel struct {
-	Ilk string `db:"ilk_id"`
-	Pip string
+	Ilk       string `db:"ilk_id"`
+	MsgSender string `db:"msg_sender"`
+	Pip       string
 }

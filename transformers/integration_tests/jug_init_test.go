@@ -64,13 +64,22 @@ var _ = Describe("JugInit EventTransformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		err = db.Get(&ilkID, `SELECT ilk_id from maker.jug_init`)
+		var dbResult jugInitModel
+		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender from maker.jug_init`)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedIlkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 
-		Expect(ilkID).To(Equal(expectedIlkID))
+		expectedMsgSenderID, msgSenderErr := shared.GetOrCreateAddress(eventLogs[0].Log.Topics[1].Hex(), db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.MsgSenderID).To(Equal(expectedMsgSenderID))
+		Expect(dbResult.IlkID).To(Equal(expectedIlkID))
 	})
 })
+
+type jugInitModel struct {
+	IlkID       int64 `db:"ilk_id"`
+	MsgSenderID int64 `db:"msg_sender"`
+}

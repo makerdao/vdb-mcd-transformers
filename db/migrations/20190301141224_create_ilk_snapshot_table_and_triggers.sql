@@ -20,6 +20,14 @@ CREATE TABLE api.ilk_snapshot
     PRIMARY KEY (ilk_identifier, block_number)
 );
 
+CREATE FUNCTION api.epoch_to_datetime(epoch NUMERIC)
+    RETURNS TIMESTAMP AS
+$$
+SELECT TIMESTAMP 'epoch' + epoch * INTERVAL '1 second' AS datetime
+$$
+    LANGUAGE SQL
+    IMMUTABLE;
+
 CREATE FUNCTION ilk_rate_before_block(ilk_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
 $$
 WITH passed_block_number AS (
@@ -1768,6 +1776,7 @@ DROP FUNCTION maker.insert_new_rate(maker.vat_ilk_rate);
 
 DROP FUNCTION maker.delete_redundant_ilk_snapshot(INTEGER, INTEGER);
 
+DROP FUNCTION api.epoch_to_datetime(NUMERIC);
 DROP FUNCTION ilk_time_created(INTEGER);
 DROP FUNCTION ilk_mat_before_block(INTEGER, INTEGER);
 DROP FUNCTION ilk_pip_before_block(INTEGER, INTEGER);
