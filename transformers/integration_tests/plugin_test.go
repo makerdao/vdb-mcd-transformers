@@ -32,6 +32,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	p2 "github.com/makerdao/vulcanizedb/pkg/plugin"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/helpers"
 	. "github.com/onsi/ginkgo"
@@ -153,6 +154,7 @@ var _ = Describe("Plugin test", func() {
 		retryInterval                = 2 * time.Second
 		delegator                    logs.ILogDelegator
 		extractor                    logs.ILogExtractor
+		statusWriter                 fakes.MockStatusWriter
 	)
 
 	BeforeEach(func() {
@@ -170,6 +172,7 @@ var _ = Describe("Plugin test", func() {
 			Expect(generateErr).ToNot(HaveOccurred())
 			extractor = logs.NewLogExtractor(db, blockChain)
 			delegator = logs.NewLogDelegator(db)
+			statusWriter = fakes.MockStatusWriter{}
 		})
 
 		AfterEach(func() {
@@ -205,7 +208,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -252,7 +255,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -310,7 +313,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, -1)
+				w := watcher.NewStorageWatcher(db, -1, &statusWriter)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -365,7 +368,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
@@ -396,7 +399,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.FlipEthV100Address()))
 
-				sw := watcher.NewStorageWatcher(db, -1)
+				sw := watcher.NewStorageWatcher(db, -1, &statusWriter)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

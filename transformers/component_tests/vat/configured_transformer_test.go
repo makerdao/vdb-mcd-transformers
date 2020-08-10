@@ -193,24 +193,6 @@ var _ = Describe("Executing the transformer", func() {
 			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
 		})
 
-		It("reads in a Vat ilk spot storage diff with a hashed storage key", func() {
-			anotherIlk := "0x474e542d41000000000000000000000000000000000000000000000000000000"
-			anotherIlkID, err := shared.GetOrCreateIlk(anotherIlk, db)
-			Expect(err).NotTo(HaveOccurred())
-
-			key := common.HexToHash("2165edb4e1c37b99b60fa510d84f939dd35d5cd1d1c8f299d6456ea09df65a76")
-			value := common.HexToHash("00000000000000000000000000000000000000008b1bb2b1a88f91522d765555")
-			ilkSpotDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
-
-			err = transformer.Execute(ilkSpotDiff)
-			Expect(err).NotTo(HaveOccurred())
-
-			var spotResult test_helpers.MappingRes
-			err = db.Get(&spotResult, `SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
-			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(anotherIlkID, 10), "43051901220750297886077900117")
-		})
-
 		It("reads in a Vat ilk line storage diff row and persists it", func() {
 			key := common.HexToHash("5cd43a2b0a7e767504a508ed07c6f6d26130368a2a5ce573193b4c24eba603be")
 			value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
