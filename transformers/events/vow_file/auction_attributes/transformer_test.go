@@ -21,7 +21,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_attributes"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -54,12 +53,8 @@ var _ = Describe("Vow file auction attributes transformer", func() {
 		models, toModelsErr := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFileAuctionAttributesEventLog}, db)
 		Expect(toModelsErr).NotTo(HaveOccurred())
 
-		var msgSenderAddressID int64
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.VowFileAuctionAttributesEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.VowFileAuctionAttributesModel()
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignMessageSenderID(test_data.VowFileAuctionAttributesEventLog, expectedModel, db)
 
 		Expect(models).To(ConsistOf(expectedModel))
 	})

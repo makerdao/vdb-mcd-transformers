@@ -21,10 +21,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -39,10 +37,7 @@ var _ = Describe("LogValue Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogValueModel()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.LogValueEventLog.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
+		test_data.AssignAddressID(test_data.LogValueEventLog, expectedModel, db)
 
 		Expect(models[0]).To(Equal(expectedModel))
 	})

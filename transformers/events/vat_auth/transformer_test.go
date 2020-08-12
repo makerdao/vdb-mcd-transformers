@@ -25,9 +25,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels("", []core.EventLog{test_data.VatRelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var usrAddressID int64
-		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatRelyEventLog.Log.Topics[1].Hex()).Hex())
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(test_data.VatRelyEventLog.Log.Topics[1].Hex(), db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatRelyModel()
@@ -41,9 +39,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels("", []core.EventLog{test_data.VatDenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var usrAddressID int64
-		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatDenyEventLog.Log.Topics[1].Hex()).Hex())
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(test_data.VatDenyEventLog.Log.Topics[1].Hex(), db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatDenyModel()
@@ -57,9 +53,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels("", []core.EventLog{test_data.VatHopeEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var usrAddressID int64
-		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatHopeEventLog.Log.Topics[1].Hex()).Hex())
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(test_data.VatHopeEventLog.Log.Topics[1].Hex(), db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatHopeModel()
@@ -73,9 +67,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 		models, err := converter.ToModels("", []core.EventLog{test_data.VatNopeEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var usrAddressID int64
-		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.VatNopeEventLog.Log.Topics[1].Hex()).Hex())
+		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(test_data.VatNopeEventLog.Log.Topics[1].Hex(), db)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.VatNopeModel()

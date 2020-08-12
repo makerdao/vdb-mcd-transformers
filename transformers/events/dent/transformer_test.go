@@ -43,13 +43,9 @@ var _ = Describe("Dent Transformer", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DentEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		address := common.HexToAddress(test_data.FlipEthV100Address()).Hex()
-		addressID, addrErr := shared.GetOrCreateAddress(address, db)
-		Expect(addrErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.DentModel()
+		test_data.AssignAddressID(test_data.DentEventLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.DentEventLog, expectedModel, db)
-		expectedModel.ColumnValues[event.AddressFK] = addressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

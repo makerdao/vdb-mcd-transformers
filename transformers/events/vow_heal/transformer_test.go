@@ -5,8 +5,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
@@ -25,9 +23,7 @@ var _ = Describe("VowHeal transformer", func() {
 
 	It("converts log to a model", func() {
 		expectedModel := test_data.VowHealModel()
-		msgSenderAddressID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowHealEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignMessageSenderID(test_data.VowHealEventLog, expectedModel, db)
 
 		models, err := transformer.ToModels("", []core.EventLog{test_data.VowHealEventLog}, db)
 

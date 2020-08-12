@@ -28,9 +28,7 @@ var _ = Describe("LogMake Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogMakeModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogMakeEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.LogMakeEventLog, expectedModel, db)
 		makerID, makerErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.LogMakeEventLog.Log.Topics[3].Hex()).Hex(), db)
 		Expect(makerErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[constants.MakerColumn] = makerID

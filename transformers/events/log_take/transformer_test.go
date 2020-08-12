@@ -28,8 +28,7 @@ var _ = Describe("LogTake Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogTakeModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogTakeEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
+		test_data.AssignAddressID(test_data.LogTakeEventLog, expectedModel, db)
 		makerID, makerErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.LogTakeEventLog.Log.Topics[2].Hex()).Hex(), db)
 		Expect(makerErr).NotTo(HaveOccurred())
 		takerID, takerErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.LogTakeEventLog.Log.Topics[3].Hex()).Hex(), db)
@@ -39,7 +38,6 @@ var _ = Describe("LogTake Transformer", func() {
 		buyGemID, buyGemErr := shared.GetOrCreateAddress(test_data.LogTakeBuyGemAddress.Hex(), db)
 		Expect(buyGemErr).NotTo(HaveOccurred())
 
-		expectedModel.ColumnValues[event.AddressFK] = addressID
 		expectedModel.ColumnValues[constants.MakerColumn] = makerID
 		expectedModel.ColumnValues[constants.TakerColumn] = takerID
 		expectedModel.ColumnValues[constants.PayGemColumn] = payGemID

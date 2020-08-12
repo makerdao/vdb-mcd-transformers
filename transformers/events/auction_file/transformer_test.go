@@ -5,7 +5,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -39,12 +38,8 @@ var _ = Describe("Flip file transformer", func() {
 		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.AuctionFileEventLog}, db)
 
 		expectedModel := test_data.AuctionFileModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.AuctionFileEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.AuctionFileEventLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignAddressID(test_data.AuctionFileEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.AuctionFileEventLog, expectedModel, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
