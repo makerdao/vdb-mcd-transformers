@@ -7906,6 +7906,7 @@ CREATE TABLE maker.cat_vat (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
+    address_id integer NOT NULL,
     vat text
 );
 
@@ -18440,6 +18441,13 @@ CREATE INDEX cat_live_header_id_index ON maker.cat_live USING btree (header_id);
 
 
 --
+-- Name: cat_vat_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_vat_address_id_index ON maker.cat_vat USING btree (address_id);
+
+
+--
 -- Name: cat_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22336,6 +22344,14 @@ ALTER TABLE ONLY maker.cat_live
 
 ALTER TABLE ONLY maker.cat_live
     ADD CONSTRAINT cat_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_vat cat_vat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vat
+    ADD CONSTRAINT cat_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

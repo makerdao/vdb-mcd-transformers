@@ -16,7 +16,7 @@ const (
 	InsertCatIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (diff_id, header_id, ilk_id, lump) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
 	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertCatVowQuery  = `INSERT INTO maker.cat_vow (diff_id, header_id, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
 
@@ -36,7 +36,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case Live:
 		return repository.insertLive(diffID, headerID, addressID, value.(string))
 	case Vat:
-		return repository.insertVat(diffID, headerID, value.(string))
+		return repository.insertVat(diffID, headerID, addressID, value.(string))
 	case Vow:
 		return repository.insertVow(diffID, headerID, value.(string))
 	case wards.Wards:
@@ -56,7 +56,7 @@ func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *StorageRepository) insertLive(diffID, headerID int64, addressID int64, live string) error {
+func (repository *StorageRepository) insertLive(diffID, headerID, addressID int64, live string) error {
 	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
 	if err != nil {
 		return fmt.Errorf("error inserting cat live %s from diff ID %d: %w", live, diffID, err)
@@ -64,8 +64,8 @@ func (repository *StorageRepository) insertLive(diffID, headerID int64, addressI
 	return nil
 }
 
-func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	_, err := repository.db.Exec(insertCatVatQuery, diffID, headerID, vat)
+func (repository *StorageRepository) insertVat(diffID, headerID, addressID int64, vat string) error {
+	_, err := repository.db.Exec(insertCatVatQuery, diffID, headerID, addressID, vat)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vat %s from diff ID %d: %w", vat, diffID, err)
 	}
