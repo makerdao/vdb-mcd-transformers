@@ -135,3 +135,9 @@ func AssignMessageSenderID(log core.EventLog, insertionModel event.InsertionMode
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 }
+
+func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	addressID, addressIDErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
+	Expect(addressIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[event.AddressFK] = addressID
+}
