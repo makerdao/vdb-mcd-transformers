@@ -99,13 +99,16 @@ var _ = Describe("Executing the transformer", func() {
 		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
 		catVowDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
 		err := transformer.Execute(catVowDiff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var vowResult test_helpers.VariableRes
-		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.cat_vow`)
+		var vowResult test_helpers.VariableResWithAddress
+		err = db.Get(&vowResult, `SELECT diff_id, header_id, address_id, vow AS value FROM maker.cat_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, catVowDiff.ID, header.Id, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
+		test_helpers.AssertVariableWithAddress(vowResult, catVowDiff.ID, header.Id, contractAddressID, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
 	})
 
 	Describe("wards", func() {

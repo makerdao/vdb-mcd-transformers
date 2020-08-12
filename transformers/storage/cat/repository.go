@@ -17,7 +17,7 @@ const (
 
 	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertCatVowQuery  = `INSERT INTO maker.cat_vow (diff_id, header_id, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatVowQuery  = `INSERT INTO maker.cat_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -38,7 +38,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case Vat:
 		return repository.insertVat(diffID, headerID, addressID, value.(string))
 	case Vow:
-		return repository.insertVow(diffID, headerID, value.(string))
+		return repository.insertVow(diffID, headerID, addressID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case IlkChop:
@@ -72,8 +72,8 @@ func (repository *StorageRepository) insertVat(diffID, headerID, addressID int64
 	return nil
 }
 
-func (repository *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	_, err := repository.db.Exec(insertCatVowQuery, diffID, headerID, vow)
+func (repository *StorageRepository) insertVow(diffID, headerID, addressID int64, vow string) error {
+	_, err := repository.db.Exec(insertCatVowQuery, diffID, headerID, addressID, vow)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vow %s from diff ID %d: %w", vow, diffID, err)
 	}
