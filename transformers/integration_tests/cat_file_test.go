@@ -205,12 +205,16 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult catFileVowModel
-		getErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.cat_file_vow`)
+		getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_vow`)
 		Expect(getErr).NotTo(HaveOccurred())
+
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		Expect(dbResult.What).To(Equal("vow"))
 		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
@@ -234,6 +238,7 @@ type catFileFlipModel struct {
 }
 
 type catFileVowModel struct {
+	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	What      string
 	Data      string

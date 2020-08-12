@@ -205,6 +205,7 @@ var catFileVowModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
@@ -214,5 +215,7 @@ var catFileVowModel = event.InsertionModel{
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
 		event.LogFK:          CatFileVowEventLog.ID,
+		//event.AddressFK
+		//constants.MsgSenderColumn
 	},
 }

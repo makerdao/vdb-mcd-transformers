@@ -52,6 +52,7 @@ CREATE TABLE maker.cat_file_vow
     id         SERIAL PRIMARY KEY,
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     msg_sender INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     what       TEXT,
     data       TEXT,
@@ -62,6 +63,8 @@ CREATE INDEX cat_file_vow_header_index
     ON maker.cat_file_vow (header_id);
 CREATE INDEX cat_file_vow_log_index
     ON maker.cat_file_vow (log_id);
+CREATE INDEX cat_file_vow_address_index
+    ON maker.cat_file_vow (address_id);
 CREATE INDEX cat_file_vow_msg_sender
     ON maker.cat_file_vow (msg_sender);
 
