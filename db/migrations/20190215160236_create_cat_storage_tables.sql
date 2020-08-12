@@ -16,15 +16,18 @@ CREATE INDEX cat_live_address_id_index
 
 CREATE TABLE maker.cat_vat
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    vat       TEXT,
+    id          SERIAL PRIMARY KEY,
+    diff_id     BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id   INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id  INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    vat         TEXT,
     UNIQUE (diff_id, header_id, vat)
 );
 
 CREATE INDEX cat_vat_header_id_index
     ON maker.cat_vat (header_id);
+CREATE INDEX cat_vat_address_id_index
+    ON maker.cat_vat (address_id);
 
 CREATE TABLE maker.cat_vow
 (

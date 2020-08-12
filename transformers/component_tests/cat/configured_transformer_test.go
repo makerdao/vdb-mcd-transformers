@@ -82,13 +82,16 @@ var _ = Describe("Executing the transformer", func() {
 		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
 		catVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
 
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
 		err := transformer.Execute(catVatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.cat_vat`)
+		var vatResult test_helpers.VariableResWithAddress
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, address_id, vat AS value FROM maker.cat_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, catVatDiff.ID, header.Id, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
+		test_helpers.AssertVariableWithAddress(vatResult, catVatDiff.ID, header.Id, contractAddressID, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
 	})
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
