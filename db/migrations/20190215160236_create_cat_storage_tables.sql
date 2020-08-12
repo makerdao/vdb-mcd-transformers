@@ -1,15 +1,18 @@
 -- +goose Up
 CREATE TABLE maker.cat_live
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    live      NUMERIC NOT NULL,
+    id          SERIAL PRIMARY KEY,
+    diff_id     BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id   INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id  INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    live        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, live)
 );
 
 CREATE INDEX cat_live_header_id_index
     ON maker.cat_live (header_id);
+CREATE INDEX cat_live_address_id_index
+    ON maker.cat_live (address_id);
 
 CREATE TABLE maker.cat_vat
 (

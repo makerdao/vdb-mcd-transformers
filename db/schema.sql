@@ -7873,6 +7873,7 @@ CREATE TABLE maker.cat_live (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
+    address_id integer NOT NULL,
     live numeric NOT NULL
 );
 
@@ -18425,6 +18426,13 @@ CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
 
 
 --
+-- Name: cat_live_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_live_address_id_index ON maker.cat_live USING btree (address_id);
+
+
+--
 -- Name: cat_live_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22304,6 +22312,14 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_live cat_live_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_live
+    ADD CONSTRAINT cat_live_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
