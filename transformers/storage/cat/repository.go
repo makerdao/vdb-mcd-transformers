@@ -15,7 +15,7 @@ const (
 	InsertCatIlkFlipQuery = `INSERT INTO maker.cat_ilk_flip (diff_id, header_id, ilk_id, flip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertCatIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (diff_id, header_id, ilk_id, lump) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
-	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, live) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
+	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, vat) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 	insertCatVowQuery  = `INSERT INTO maker.cat_vow (diff_id, header_id, vow) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
 )
@@ -26,9 +26,15 @@ type StorageRepository struct {
 }
 
 func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+	addressID, err := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+
+	if err != nil {
+		return fmt.Errorf("Could not retrieve address for cat contract with address %s, error: %w", repository.ContractAddress, err)
+	}
+
 	switch metadata.Name {
 	case Live:
-		return repository.insertLive(diffID, headerID, value.(string))
+		return repository.insertLive(diffID, headerID, addressID, value.(string))
 	case Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
 	case Vow:
@@ -50,8 +56,8 @@ func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {
-	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, live)
+func (repository *StorageRepository) insertLive(diffID, headerID int64, addressID int64, live string) error {
+	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
 	if err != nil {
 		return fmt.Errorf("error inserting cat live %s from diff ID %d: %w", live, diffID, err)
 	}

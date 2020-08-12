@@ -18,6 +18,11 @@ type VariableRes struct {
 	DiffMetadata
 }
 
+type VariableResWithAddress struct {
+	VariableRes
+	AddressID int64 `db:"address_id"`
+}
+
 type MappingRes struct {
 	DiffMetadata
 	Key string
@@ -63,6 +68,13 @@ type FlopRes struct {
 func AssertVariable(res VariableRes, diffID, headerID int64, value string) {
 	Expect(res.DiffID).To(Equal(diffID))
 	Expect(res.HeaderID).To(Equal(headerID))
+	Expect(res.Value).To(Equal(value))
+}
+
+func AssertVariableWithAddress(res VariableResWithAddress, diffID, headerID, addressID int64, value string) {
+	Expect(res.DiffID).To(Equal(diffID))
+	Expect(res.HeaderID).To(Equal(headerID))
+	Expect(res.AddressID).To(Equal(addressID))
 	Expect(res.Value).To(Equal(value))
 }
 
