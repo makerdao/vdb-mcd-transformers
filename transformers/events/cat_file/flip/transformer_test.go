@@ -69,6 +69,7 @@ var _ = Describe("Cat file flip transformer", func() {
 		Expect(ilkIDErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.CatFileFlipModel()
+		test_data.AssignAddressID(test_data.CatFileFlipEventLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.CatFileFlipEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 

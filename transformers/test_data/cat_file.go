@@ -162,12 +162,14 @@ var catFileFlipModel = event.InsertionModel{
 		constants.FlipColumn,
 		constants.MsgSenderColumn,
 		event.LogFK,
+		event.AddressFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileFlipEventLog.HeaderID,
 		constants.WhatColumn: "flip",
 		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
 		event.LogFK:          CatFileFlipEventLog.ID,
+		// event.AddressFK
 	},
 }
 

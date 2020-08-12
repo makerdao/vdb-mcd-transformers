@@ -158,8 +158,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult catFileFlipModel
-		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, what, flip FROM maker.cat_file_flip`)
+		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, address_id, what, flip FROM maker.cat_file_flip`)
 		Expect(err).NotTo(HaveOccurred())
+
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
@@ -169,6 +172,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.Ilk).To(Equal(ilkID))
 		Expect(dbResult.What).To(Equal("flip"))
 		Expect(dbResult.Flip).To(Equal(test_data.FlipEthV100Address()))
@@ -222,6 +226,7 @@ type catFileChopLumpModel struct {
 }
 
 type catFileFlipModel struct {
+	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	Ilk       int64 `db:"ilk_id"`
 	What      string

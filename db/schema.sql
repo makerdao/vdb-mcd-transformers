@@ -7742,6 +7742,7 @@ CREATE TABLE maker.cat_file_flip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     ilk_id integer NOT NULL,
     msg_sender integer NOT NULL,
     what text,
@@ -18318,6 +18319,13 @@ CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btre
 
 
 --
+-- Name: cat_file_flip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_address_index ON maker.cat_file_flip USING btree (address_id);
+
+
+--
 -- Name: cat_file_flip_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22144,6 +22152,14 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 
 ALTER TABLE ONLY maker.cat_file_chop_lump
     ADD CONSTRAINT cat_file_chop_lump_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_flip cat_file_flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_flip
+    ADD CONSTRAINT cat_file_flip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
