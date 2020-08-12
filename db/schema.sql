@@ -7706,6 +7706,7 @@ CREATE TABLE maker.cat_file_chop_lump (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     msg_sender integer NOT NULL,
     ilk_id integer NOT NULL,
     what text,
@@ -18289,6 +18290,13 @@ CREATE INDEX cat_file_cho_lump_msg_sender_index ON maker.cat_file_chop_lump USIN
 
 
 --
+-- Name: cat_file_chop_lump_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_address_index ON maker.cat_file_chop_lump USING btree (address_id);
+
+
+--
 -- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22096,6 +22104,14 @@ ALTER TABLE ONLY maker.bite
 
 ALTER TABLE ONLY maker.bite
     ADD CONSTRAINT bite_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_chop_lump cat_file_chop_lump_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump
+    ADD CONSTRAINT cat_file_chop_lump_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

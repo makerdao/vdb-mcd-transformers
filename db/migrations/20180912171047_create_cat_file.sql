@@ -4,6 +4,7 @@ CREATE TABLE maker.cat_file_chop_lump
     id         SERIAL PRIMARY KEY,
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     msg_sender INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what       TEXT,
@@ -15,6 +16,8 @@ CREATE INDEX cat_file_chop_lump_header_index
     ON maker.cat_file_chop_lump (header_id);
 CREATE INDEX cat_file_chop_lump_log_index
     ON maker.cat_file_chop_lump (log_id);
+CREATE INDEX cat_file_chop_lump_address_index
+    ON maker.cat_file_chop_lump (address_id);
 CREATE INDEX cat_file_cho_lump_msg_sender_index
     ON maker.cat_file_chop_lump (msg_sender);
 CREATE INDEX cat_file_chop_lump_ilk_index

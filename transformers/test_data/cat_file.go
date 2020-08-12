@@ -60,6 +60,7 @@ var catFileChopModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
@@ -68,7 +69,8 @@ var catFileChopModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileChopEventLog.HeaderID,
 		event.LogFK:    CatFileChopEventLog.ID,
-		// msg.sender
+		// event.AddressFK
+		// constants.MsgSenderColumn
 		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "chop",
 		constants.DataColumn: "1000000000000000000000000000",
@@ -107,6 +109,7 @@ var catFileLumpModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
@@ -115,7 +118,8 @@ var catFileLumpModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileLumpEventLog.HeaderID,
 		event.LogFK:    CatFileLumpEventLog.ID,
-		// msg.sender
+		// event.AddressFK
+		// constants.MsgSenderColumn
 		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "lump",
 		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
