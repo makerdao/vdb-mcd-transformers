@@ -10,6 +10,7 @@ CREATE TABLE maker.bite
     tab       NUMERIC,
     flip      TEXT,
     bid_id    NUMERIC,
+    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
@@ -19,11 +20,9 @@ CREATE INDEX bite_log_index
     ON maker.bite (log_id);
 CREATE INDEX bite_urn_index
     ON maker.bite (urn_id);
+CREATE INDEX bite_address_index
+    ON maker.bite (address_id);
 
 
 -- +goose Down
-DROP INDEX maker.bite_header_index;
-DROP INDEX maker.bite_log_index;
-DROP INDEX maker.bite_urn_index;
-
 DROP TABLE maker.bite;

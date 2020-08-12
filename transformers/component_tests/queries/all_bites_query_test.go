@@ -335,6 +335,7 @@ func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event
 	urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(urnErr).NotTo(HaveOccurred())
 	biteEvent := test_data.BiteModel()
+	test_data.AssignAddressID(test_data.BiteEventLog, biteEvent, db)
 	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["art"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["tab"] = strconv.Itoa(rand.Int())

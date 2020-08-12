@@ -7673,7 +7673,8 @@ CREATE TABLE maker.bite (
     art numeric,
     tab numeric,
     flip text,
-    bid_id numeric
+    bid_id numeric,
+    address_id integer NOT NULL
 );
 
 
@@ -18253,6 +18254,13 @@ CREATE INDEX bid_event_urn_index ON maker.bid_event USING btree (ilk_identifier,
 
 
 --
+-- Name: bite_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_address_index ON maker.bite USING btree (address_id);
+
+
+--
 -- Name: bite_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22056,6 +22064,14 @@ ALTER TABLE ONLY maker.auction_file
 
 ALTER TABLE ONLY maker.bid_event
     ADD CONSTRAINT bid_event_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: bite bite_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bite
+    ADD CONSTRAINT bite_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
