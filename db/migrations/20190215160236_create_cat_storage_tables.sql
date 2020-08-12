@@ -31,15 +31,18 @@ CREATE INDEX cat_vat_address_id_index
 
 CREATE TABLE maker.cat_vow
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    vow       TEXT,
+    id          SERIAL PRIMARY KEY,
+    diff_id     BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    header_id   INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    address_id  INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    vow         TEXT,
     UNIQUE (diff_id, header_id, vow)
 );
 
 CREATE INDEX cat_vow_header_id_index
     ON maker.cat_vow (header_id);
+CREATE INDEX cat_vow_address_id_index
+    ON maker.cat_vow (address_id);
 
 CREATE TABLE maker.cat_ilk_flip
 (

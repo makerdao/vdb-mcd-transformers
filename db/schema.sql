@@ -7939,6 +7939,7 @@ CREATE TABLE maker.cat_vow (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
+    address_id integer NOT NULL,
     vow text
 );
 
@@ -18455,6 +18456,13 @@ CREATE INDEX cat_vat_header_id_index ON maker.cat_vat USING btree (header_id);
 
 
 --
+-- Name: cat_vow_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_vow_address_id_index ON maker.cat_vow USING btree (address_id);
+
+
+--
 -- Name: cat_vow_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22368,6 +22376,14 @@ ALTER TABLE ONLY maker.cat_vat
 
 ALTER TABLE ONLY maker.cat_vat
     ADD CONSTRAINT cat_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_vow cat_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_vow
+    ADD CONSTRAINT cat_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

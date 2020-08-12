@@ -85,12 +85,13 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Vow", func() {
 			vowMetadata := types.GetValueMetadata(cat.Vow, nil, types.Address)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName: cat.Vow,
-				Value:          fakeAddress,
-				Schema:         constants.MakerSchema,
-				TableName:      constants.CatVowTable,
-				Repository:     &repo,
-				Metadata:       vowMetadata,
+				ValueFieldName:  cat.Vow,
+				Value:           fakeAddress,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.CatVowTable,
+				Repository:      &repo,
+				ContractAddress: test_data.CatAddress(),
+				Metadata:        vowMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
