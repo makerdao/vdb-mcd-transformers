@@ -55,12 +55,13 @@ var _ = Describe("Cat storage repository", func() {
 		Describe("Live", func() {
 			liveMetadata := types.GetValueMetadata(cat.Live, nil, types.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
-				ValueFieldName: cat.Live,
-				Value:          fakeUint256,
-				Schema:         constants.MakerSchema,
-				TableName:      constants.CatLiveTable,
-				Repository:     &repo,
-				Metadata:       liveMetadata,
+				ValueFieldName:  cat.Live,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.CatLiveTable,
+				Repository:      &repo,
+				ContractAddress: test_data.CatAddress(),
+				Metadata:        liveMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)

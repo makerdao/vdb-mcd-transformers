@@ -22,15 +22,16 @@ import (
 )
 
 type StorageBehaviorInputs struct {
-	KeyFieldName   string
-	ValueFieldName string
-	Key            string
-	Value          string
-	IsAMapping     bool
-	Schema         string
-	TableName      string
-	Repository     storage.Repository
-	Metadata       types.ValueMetadata
+	KeyFieldName    string
+	ValueFieldName  string
+	Key             string
+	Value           string
+	IsAMapping      bool
+	Schema          string
+	TableName       string
+	ContractAddress string
+	Repository      storage.Repository
+	Metadata        types.ValueMetadata
 }
 
 func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
@@ -64,6 +65,16 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 				err = database.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, diffID, headerID, inputs.Key, inputs.Value)
+			} else if len(inputs.ContractAddress) > 0 {
+				contractAddressID, contractAddressErr := shared.GetOrCreateAddress(inputs.ContractAddress, database)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+
+				var result VariableResWithAddress
+				query := fmt.Sprintf("SELECT diff_id, header_id, address_id, %s AS value FROM %s", inputs.ValueFieldName, table)
+				err = database.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+
+				AssertVariableWithAddress(result, diffID, headerID, contractAddressID, inputs.Value)
 			} else {
 				var result VariableRes
 				query := fmt.Sprintf("SELECT diff_id, header_id, %s AS value FROM %s", inputs.ValueFieldName, table)
