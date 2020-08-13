@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	InsertCatIlkChopQuery = `INSERT INTO maker.cat_ilk_chop (diff_id, header_id, ilk_id, chop) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertCatIlkFlipQuery = `INSERT INTO maker.cat_ilk_flip (diff_id, header_id, ilk_id, flip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	InsertCatIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (diff_id, header_id, ilk_id, lump) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	InsertCatIlkChopQuery = `INSERT INTO maker.cat_ilk_chop (diff_id, header_id, address_id, ilk_id, chop) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertCatIlkFlipQuery = `INSERT INTO maker.cat_ilk_flip (diff_id, header_id, address_id, ilk_id, flip) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertCatIlkLumpQuery = `INSERT INTO maker.cat_ilk_lump (diff_id, header_id, address_id, ilk_id, lump) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 
 	insertCatLiveQuery = `INSERT INTO maker.cat_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertCatVatQuery  = `INSERT INTO maker.cat_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -26,19 +26,13 @@ type StorageRepository struct {
 }
 
 func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
-	addressID, err := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
-
-	if err != nil {
-		return fmt.Errorf("Could not retrieve address for cat contract with address %s, error: %w", repository.ContractAddress, err)
-	}
-
 	switch metadata.Name {
 	case Live:
-		return repository.insertLive(diffID, headerID, addressID, value.(string))
+		return repository.insertLive(diffID, headerID, value.(string))
 	case Vat:
-		return repository.insertVat(diffID, headerID, addressID, value.(string))
+		return repository.insertVat(diffID, headerID, value.(string))
 	case Vow:
-		return repository.insertVow(diffID, headerID, addressID, value.(string))
+		return repository.insertVow(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case IlkChop:
@@ -56,7 +50,12 @@ func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository *StorageRepository) insertLive(diffID, headerID, addressID int64, live string) error {
+func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
 	if err != nil {
 		return fmt.Errorf("error inserting cat live %s from diff ID %d: %w", live, diffID, err)
@@ -64,7 +63,12 @@ func (repository *StorageRepository) insertLive(diffID, headerID, addressID int6
 	return nil
 }
 
-func (repository *StorageRepository) insertVat(diffID, headerID, addressID int64, vat string) error {
+func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	_, err := repository.db.Exec(insertCatVatQuery, diffID, headerID, addressID, vat)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vat %s from diff ID %d: %w", vat, diffID, err)
@@ -72,7 +76,12 @@ func (repository *StorageRepository) insertVat(diffID, headerID, addressID int64
 	return nil
 }
 
-func (repository *StorageRepository) insertVow(diffID, headerID, addressID int64, vow string) error {
+func (repository *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	if addressErr != nil {
+		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	_, err := repository.db.Exec(insertCatVowQuery, diffID, headerID, addressID, vow)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vow %s from diff ID %d: %w", vow, diffID, err)
@@ -86,7 +95,7 @@ func (repository *StorageRepository) insertIlkFlip(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk flip: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s flip %s from diff ID %d: %w", insertErr, flip, diffID, insertErr)
 	}
@@ -98,7 +107,7 @@ func (repository *StorageRepository) insertIlkChop(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk chop: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s chop %s from diff Id %d: %w", ilk, chop, diffID, insertErr)
 	}
@@ -110,7 +119,7 @@ func (repository *StorageRepository) insertIlkLump(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk lump: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s lump %s from diff ID %d: %w", ilk, lump, diffID, insertErr)
 	}

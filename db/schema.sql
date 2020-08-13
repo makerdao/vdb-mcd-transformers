@@ -2598,6 +2598,7 @@ CREATE TABLE maker.cat_ilk_chop (
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
+    address_id integer NOT NULL,
     chop numeric NOT NULL
 );
 
@@ -3044,6 +3045,7 @@ CREATE TABLE maker.cat_ilk_flip (
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
+    address_id integer NOT NULL,
     flip text
 );
 
@@ -3825,6 +3827,7 @@ CREATE TABLE maker.cat_ilk_lump (
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
     ilk_id integer NOT NULL,
+    address_id integer NOT NULL,
     lump numeric NOT NULL
 );
 
@@ -18386,6 +18389,13 @@ CREATE INDEX cat_file_vow_msg_sender ON maker.cat_file_vow USING btree (msg_send
 
 
 --
+-- Name: cat_ilk_chop_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_chop_address_id_index ON maker.cat_ilk_chop USING btree (address_id);
+
+
+--
 -- Name: cat_ilk_chop_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18400,6 +18410,13 @@ CREATE INDEX cat_ilk_chop_ilk_index ON maker.cat_ilk_chop USING btree (ilk_id);
 
 
 --
+-- Name: cat_ilk_flip_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_flip_address_id_index ON maker.cat_ilk_flip USING btree (address_id);
+
+
+--
 -- Name: cat_ilk_flip_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18411,6 +18428,13 @@ CREATE INDEX cat_ilk_flip_header_id_index ON maker.cat_ilk_flip USING btree (hea
 --
 
 CREATE INDEX cat_ilk_flip_ilk_index ON maker.cat_ilk_flip USING btree (ilk_id);
+
+
+--
+-- Name: cat_ilk_lump_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_lump_address_id_index ON maker.cat_ilk_lump USING btree (address_id);
 
 
 --
@@ -22259,6 +22283,14 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 
 --
+-- Name: cat_ilk_chop cat_ilk_chop_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_chop
+    ADD CONSTRAINT cat_ilk_chop_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_ilk_chop cat_ilk_chop_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22283,6 +22315,14 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 
 
 --
+-- Name: cat_ilk_flip cat_ilk_flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_flip
+    ADD CONSTRAINT cat_ilk_flip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_ilk_flip cat_ilk_flip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22304,6 +22344,14 @@ ALTER TABLE ONLY maker.cat_ilk_flip
 
 ALTER TABLE ONLY maker.cat_ilk_flip
     ADD CONSTRAINT cat_ilk_flip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_ilk_lump cat_ilk_lump_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_lump
+    ADD CONSTRAINT cat_ilk_lump_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

@@ -11,6 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
@@ -397,17 +398,30 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 		cat.InsertCatIlkLumpQuery,
 	}
 
+	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(getRandomAddress(), state.db)
+	if contractAddressErr != nil {
+		return fmt.Errorf("error inserting random contract address: %w", contractAddressErr)
+	}
+
 	for _, intInsertSql := range intInsertions {
-		_, err := state.pgTx.Exec(intInsertSql, state.currentDiffID, state.currentHeader.Id, ilkId, rand.Int())
+		// HACK because the cat queries now take an address_id. If the other storage queries start taking an
+		// address_id, remove this hack
+		var err error
+		if intInsertSql == cat.InsertCatIlkChopQuery || intInsertSql == cat.InsertCatIlkLumpQuery {
+			_, err = state.pgTx.Exec(intInsertSql, state.currentDiffID, state.currentHeader.Id, contractAddressID, ilkId, rand.Int())
+		} else {
+			_, err = state.pgTx.Exec(intInsertSql, state.currentDiffID, state.currentHeader.Id, ilkId, rand.Int())
+		}
+
 		if err != nil {
-			return fmt.Errorf("error inserting initial ilk data: %v", err)
+			return fmt.Errorf("error inserting initial ilk data: %w", err)
 		}
 	}
 	_, flipErr := state.pgTx.Exec(cat.InsertCatIlkFlipQuery,
-		state.currentDiffID, state.currentHeader.Id, ilkId, test_data.AlreadySeededRandomString(10))
+		state.currentDiffID, state.currentHeader.Id, contractAddressID, ilkId, test_data.AlreadySeededRandomString(10))
 
 	if flipErr != nil {
-		return fmt.Errorf("error inserting initial ilk data: %v", flipErr)
+		return fmt.Errorf("error inserting flip ilk data: %v", flipErr)
 	}
 
 	return nil

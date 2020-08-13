@@ -80,7 +80,7 @@ var _ = Describe("Executing the median transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			Expect(wardsResult.AddressID).To(Equal(medianAddressID))
 			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
@@ -119,7 +119,7 @@ var _ = Describe("Executing the median transformer", func() {
 			var budResult test_helpers.MappingResWithAddress
 			err := db.Get(&budResult, `SELECT diff_id, header_id, address_id, a AS key, bud AS value FROM maker.median_bud`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(budResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			Expect(budResult.AddressID).To(Equal(medianAddressID))
 			test_helpers.AssertMapping(budResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
 		})
 	})
@@ -158,7 +158,7 @@ var _ = Describe("Executing the median transformer", func() {
 			var orclResult test_helpers.MappingResWithAddress
 			err := db.Get(&orclResult, `SELECT diff_id, header_id, address_id, a AS key, orcl AS value from maker.median_orcl`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(orclResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			Expect(orclResult.AddressID).To(Equal(medianAddressID))
 			test_helpers.AssertMapping(orclResult.MappingRes, liftDiff.ID, header.Id, strconv.FormatInt(aAddressID, 10), "1")
 		})
 	})
@@ -200,7 +200,7 @@ var _ = Describe("Executing the median transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 			slotValueAddressID, slotErr := shared.GetOrCreateAddress(value.String(), db)
 			Expect(slotErr).NotTo(HaveOccurred())
-			Expect(slotResult.AddressID).To(Equal(strconv.FormatInt(medianAddressID, 10)))
+			Expect(slotResult.AddressID).To(Equal(medianAddressID))
 			solidityKey := "172"
 			test_helpers.AssertMapping(slotResult.MappingRes, liftDiff.ID, header.Id, solidityKey, strconv.FormatInt(slotValueAddressID, 10))
 		})
