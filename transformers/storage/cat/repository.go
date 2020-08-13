@@ -21,8 +21,9 @@ const (
 )
 
 type StorageRepository struct {
-	db              *postgres.DB
-	ContractAddress string
+	db                *postgres.DB
+	ContractAddress   string
+	contractAddressID int64
 }
 
 func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
@@ -51,9 +52,9 @@ func (repository *StorageRepository) SetDB(db *postgres.DB) {
 }
 
 func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {
-	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	addressID, addressErr := repository.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
 	}
 
 	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
@@ -64,9 +65,9 @@ func (repository *StorageRepository) insertLive(diffID, headerID int64, live str
 }
 
 func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	addressID, addressErr := repository.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
 	}
 
 	_, err := repository.db.Exec(insertCatVatQuery, diffID, headerID, addressID, vat)
@@ -77,9 +78,9 @@ func (repository *StorageRepository) insertVat(diffID, headerID int64, vat strin
 }
 
 func (repository *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+	addressID, addressErr := repository.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("Could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
 	}
 
 	_, err := repository.db.Exec(insertCatVowQuery, diffID, headerID, addressID, vow)
@@ -91,11 +92,16 @@ func (repository *StorageRepository) insertVow(diffID, headerID int64, vow strin
 
 // Ilks mapping: bytes32 => flip address; chop (ray), lump (wad) uint256
 func (repository *StorageRepository) insertIlkFlip(diffID, headerID int64, metadata types.ValueMetadata, flip string) error {
+	addressID, addressErr := repository.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk flip: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s flip %s from diff ID %d: %w", insertErr, flip, diffID, insertErr)
 	}
@@ -103,11 +109,16 @@ func (repository *StorageRepository) insertIlkFlip(diffID, headerID int64, metad
 }
 
 func (repository *StorageRepository) insertIlkChop(diffID, headerID int64, metadata types.ValueMetadata, chop string) error {
+	addressID, addressErr := repository.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk chop: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s chop %s from diff Id %d: %w", ilk, chop, diffID, insertErr)
 	}
@@ -115,15 +126,30 @@ func (repository *StorageRepository) insertIlkChop(diffID, headerID int64, metad
 }
 
 func (repository *StorageRepository) insertIlkLump(diffID, headerID int64, metadata types.ValueMetadata, lump string) error {
+	addressID, addressErr := repository.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+	}
+
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk lump: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, repository.ContractAddress, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
+
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s lump %s from diff ID %d: %w", ilk, lump, diffID, insertErr)
 	}
 	return nil
+}
+
+func (repository *StorageRepository) ContractAddressID() (int64, error) {
+	if repository.contractAddressID == 0 {
+		addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
+		repository.contractAddressID = addressID
+		return repository.contractAddressID, addressErr
+	}
+	return repository.contractAddressID, nil
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {
