@@ -38,20 +38,21 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.CatAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = cat.StorageRepository{ContractAddress: contractAddress}
-		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		transformer       = storage.Transformer{
+		db              = test_config.NewTestDB(test_config.NewTestNode())
+		contractAddress = test_data.CatAddress()
+		keccakOfAddress = types.HexToKeccak256Hash(contractAddress)
+		transformer     storage.Transformer
+		header          = fakes.FakeHeader
+	)
+
+	BeforeEach(func() {
+		storageKeysLookup := storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		repository := cat.StorageRepository{ContractAddress: contractAddress}
+		transformer = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
-		header = fakes.FakeHeader
-	)
-
-	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -152,15 +153,13 @@ var _ = Describe("Executing the transformer", func() {
 
 	Describe("ilk", func() {
 		var (
-			ilk                string
-			ilkID              int64
-			ilkErr             error
-			contractAddressID  int64
-			contractAddressErr error
+			ilkID             int64
+			contractAddressID int64
 		)
 
 		BeforeEach(func() {
-			ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
+			var ilkErr, contractAddressErr error
+			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			contractAddressID, contractAddressErr = shared.GetOrCreateAddress(contractAddress, db)
