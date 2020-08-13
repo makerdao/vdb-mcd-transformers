@@ -76,7 +76,7 @@ var _ = Describe("Vat storage repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			Expect(result.AddressID).To(Equal(contractAddressID))
 			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
 

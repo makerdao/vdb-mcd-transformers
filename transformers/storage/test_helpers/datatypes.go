@@ -36,7 +36,7 @@ type DoubleMappingRes struct {
 
 type MappingResWithAddress struct {
 	MappingRes
-	AddressID string `db:"address_id"`
+	AddressID int64 `db:"address_id"`
 }
 
 type FlapRes struct {

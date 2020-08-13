@@ -145,22 +145,26 @@ var _ = Describe("Executing the transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(catAddressID, 10)))
+			Expect(wardsResult.AddressID).To(Equal(catAddressID))
 			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
 	Describe("ilk", func() {
 		var (
-			ilk    string
-			ilkID  int64
-			ilkErr error
+			ilk                string
+			ilkID              int64
+			ilkErr             error
+			contractAddressID  int64
+			contractAddressErr error
 		)
 
 		BeforeEach(func() {
 			ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr = shared.GetOrCreateAddress(contractAddress, db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
 		})
 
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
@@ -171,10 +175,11 @@ var _ = Describe("Executing the transformer", func() {
 			err := transformer.Execute(catIlkFlipDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkFlipResult test_helpers.MappingRes
-			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+			var ilkFlipResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult, catIlkFlipDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			test_helpers.AssertMapping(ilkFlipResult.MappingRes, catIlkFlipDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			Expect(ilkFlipResult.AddressID).To(Equal(contractAddressID))
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {

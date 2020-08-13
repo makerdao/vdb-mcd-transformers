@@ -122,7 +122,7 @@ var _ = Describe("Cat storage repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
+			Expect(result.AddressID).To(Equal(contractAddressID))
 			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
 
@@ -166,13 +166,16 @@ var _ = Describe("Cat storage repository", func() {
 				err := repo.Create(diffID, fakeHeaderID, ilkFlipMetadata, fakeAddress)
 				Expect(err).NotTo(HaveOccurred())
 
-				var result MappingRes
-				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, ilk_id AS key, flip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkFlipTable))
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
-				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
+				contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				Expect(result.AddressID).To(Equal(contractAddressID))
+				AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeAddress)
 			})
 
 			It("does not duplicate row", func() {

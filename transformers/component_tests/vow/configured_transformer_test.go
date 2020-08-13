@@ -94,7 +94,7 @@ var _ = Describe("Executing the transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vowAddressID, 10)))
+			Expect(wardsResult.AddressID).To(Equal(vowAddressID))
 			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
