@@ -7,7 +7,7 @@ import (
 )
 
 type LogKillEntity struct {
-	Id              *big.Int
+	Id              [32]byte
 	Pair            common.Hash
 	Maker           common.Address
 	PayGem          common.Address

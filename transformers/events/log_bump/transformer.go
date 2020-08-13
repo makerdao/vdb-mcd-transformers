@@ -2,6 +2,7 @@ package log_bump
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -63,19 +64,28 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		if buyGemErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(buyGemErr)
 		}
+		offerID := big.NewInt(0).SetBytes(entity.Id[:])
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogBumpTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, event.AddressFK, constants.OfferId, constants.PairColumn,
-				constants.MakerColumn, constants.PayGemColumn, constants.BuyGemColumn, constants.PayAmtColumn,
-				constants.BuyAmtColumn, constants.TimestampColumn,
+				event.HeaderFK,
+				event.LogFK,
+				event.AddressFK,
+				constants.OfferId,
+				constants.PairColumn,
+				constants.MakerColumn,
+				constants.PayGemColumn,
+				constants.BuyGemColumn,
+				constants.PayAmtColumn,
+				constants.BuyAmtColumn,
+				constants.TimestampColumn,
 			},
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:            entity.HeaderID,
 				event.LogFK:               entity.LogID,
 				event.AddressFK:           addressID,
-				constants.OfferId:         shared.BigIntToString(entity.Id),
+				constants.OfferId:         shared.BigIntToString(offerID),
 				constants.PairColumn:      entity.Pair.Hex(),
 				constants.MakerColumn:     makerID,
 				constants.PayGemColumn:    payGemID,
