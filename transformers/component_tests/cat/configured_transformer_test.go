@@ -190,10 +190,11 @@ var _ = Describe("Executing the transformer", func() {
 			err := transformer.Execute(catIlkChopDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkChopResult test_helpers.MappingRes
-			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+			var ilkChopResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult, catIlkChopDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+			test_helpers.AssertMapping(ilkChopResult.MappingRes, catIlkChopDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+			Expect(ilkChopResult.AddressID).To(Equal(contractAddressID))
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
@@ -204,10 +205,11 @@ var _ = Describe("Executing the transformer", func() {
 			err := transformer.Execute(catIlkLumpDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkLumpResult test_helpers.MappingRes
-			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+			var ilkLumpResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult, catIlkLumpDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
+			test_helpers.AssertMapping(ilkLumpResult.MappingRes, catIlkLumpDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
+			Expect(ilkLumpResult.AddressID).To(Equal(contractAddressID))
 		})
 	})
 })
