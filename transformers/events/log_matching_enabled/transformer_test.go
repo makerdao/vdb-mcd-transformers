@@ -3,7 +3,6 @@ package log_matching_enabled_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_matching_enabled"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -27,9 +26,7 @@ var _ = Describe("LogMatchingEnabled Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogMatchingEnabledModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.LogMatchingEnabledEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressId
+		test_data.AssignAddressID(test_data.LogMatchingEnabledEventLog, expectedModel, db)
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

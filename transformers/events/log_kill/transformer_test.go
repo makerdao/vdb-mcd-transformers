@@ -27,8 +27,7 @@ var _ = Describe("LogKill Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogKillModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.LogKillEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
+		test_data.AssignAddressID(test_data.LogKillEventLog, expectedModel, db)
 		makerAddressId, makerAddressErr := shared.GetOrCreateAddress(test_data.LogKillEventLog.Log.Topics[3].Hex(), db)
 		Expect(makerAddressErr).NotTo(HaveOccurred())
 		payGemAddressId, payGemAddressErr := shared.GetOrCreateAddress(test_data.PayGemAddress.Hex(), db)
@@ -36,7 +35,6 @@ var _ = Describe("LogKill Transformer", func() {
 		buyGemAddressId, buyGemAddressErr := shared.GetOrCreateAddress(test_data.BuyGemAddress.Hex(), db)
 		Expect(buyGemAddressErr).NotTo(HaveOccurred())
 
-		expectedModel.ColumnValues[event.AddressFK] = addressId
 		expectedModel.ColumnValues[constants.MakerColumn] = makerAddressId
 		expectedModel.ColumnValues[constants.PayGemColumn] = payGemAddressId
 		expectedModel.ColumnValues[constants.BuyGemColumn] = buyGemAddressId

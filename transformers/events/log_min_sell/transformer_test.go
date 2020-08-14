@@ -27,9 +27,7 @@ var _ = Describe("LogMinSell Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogMinSellModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogMinSellEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.LogMinSellEventLog, expectedModel, db)
 
 		payGemID, payGemErr := shared.GetOrCreateAddress(test_data.LogMinSellPayGemAddress.Hex(), db)
 		Expect(payGemErr).NotTo(HaveOccurred())

@@ -28,9 +28,7 @@ var _ = Describe("LogBump Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogBumpModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogBumpEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.LogBumpEventLog, expectedModel, db)
 		makerID, makerErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.LogBumpEventLog.Log.Topics[3].Hex()).Hex(), db)
 		Expect(makerErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[constants.MakerColumn] = makerID

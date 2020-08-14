@@ -19,10 +19,8 @@ package flop_kick_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -43,10 +41,7 @@ var _ = Describe("FlopKick Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlopKickModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlopKickEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedKick.ColumnValues[event.AddressFK] = addressId
-
+		test_data.AssignAddressID(test_data.FlopKickEventLog, expectedKick, db)
 		Expect(models[0]).To(Equal(expectedKick))
 	})
 

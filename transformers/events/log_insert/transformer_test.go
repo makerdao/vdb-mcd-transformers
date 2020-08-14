@@ -27,9 +27,7 @@ var _ = Describe("LogInsert Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogInsertModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogInsertEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.LogInsertEventLog, expectedModel, db)
 
 		keeperID, keeperErr := shared.GetOrCreateAddress(test_data.LogInsertKeeperAddress.Hex(), db)
 		Expect(keeperErr).NotTo(HaveOccurred())
