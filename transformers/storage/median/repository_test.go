@@ -70,8 +70,7 @@ var _ = Describe("Median Storage Repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(contractAddressID))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -184,8 +183,7 @@ var _ = Describe("Median Storage Repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			budAddressID, budAddressErr := shared.GetOrCreateAddress(fakeBudAddress, db)
 			Expect(budAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(contractAddressID))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(budAddressID, 10), fakeUint256)
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(budAddressID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -230,8 +228,7 @@ var _ = Describe("Median Storage Repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			orclAddressID, orclAddressErr := shared.GetOrCreateAddress(fakeOrclAddress, db)
 			Expect(orclAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(contractAddressID))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(orclAddressID, 10), fakeUint256)
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(orclAddressID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {
@@ -275,8 +272,7 @@ var _ = Describe("Median Storage Repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			slotAddressID, slotAddressErr := shared.GetOrCreateAddress(fakeSlotAddress, db)
 			Expect(slotAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(contractAddressID))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, fakeUint8, strconv.FormatInt(slotAddressID, 10))
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeUint8, strconv.FormatInt(slotAddressID, 10))
 		})
 
 		It("returns an error if metadata missing slotID", func() {

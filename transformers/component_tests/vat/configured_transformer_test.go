@@ -93,8 +93,7 @@ var _ = Describe("Executing the transformer", func() {
 		var wardsResult test_helpers.MappingResWithAddress
 		err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(wardsResult.AddressID).To(Equal(vatAddressID))
-		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+		test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, vatAddressID, strconv.FormatInt(userAddressID, 10), "1")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {

@@ -72,10 +72,8 @@ func AssertVariable(res VariableRes, diffID, headerID int64, value string) {
 }
 
 func AssertVariableWithAddress(res VariableResWithAddress, diffID, headerID, addressID int64, value string) {
-	Expect(res.DiffID).To(Equal(diffID))
-	Expect(res.HeaderID).To(Equal(headerID))
+	AssertVariable(res.VariableRes, diffID, headerID, value)
 	Expect(res.AddressID).To(Equal(addressID))
-	Expect(res.Value).To(Equal(value))
 }
 
 func AssertMapping(res MappingRes, diffID, headerID int64, key, value string) {
@@ -83,6 +81,12 @@ func AssertMapping(res MappingRes, diffID, headerID int64, key, value string) {
 	Expect(res.HeaderID).To(Equal(headerID))
 	Expect(res.Key).To(Equal(key))
 	Expect(res.Value).To(Equal(value))
+}
+
+func AssertMappingWithAddress(res MappingResWithAddress, diffID, headerID, addressID int64, key, value string) {
+	AssertMapping(res.MappingRes, diffID, headerID, key, value)
+	Expect(res.AddressID).To(Equal(addressID))
+
 }
 
 func AssertDoubleMapping(res DoubleMappingRes, diffID, headerID int64, keyOne, keyTwo, value string) {

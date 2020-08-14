@@ -146,8 +146,7 @@ var _ = Describe("Executing the transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(catAddressID))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, catAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -177,8 +176,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkFlipResult test_helpers.MappingResWithAddress
 			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult.MappingRes, catIlkFlipDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
-			Expect(ilkFlipResult.AddressID).To(Equal(contractAddressID))
+			test_helpers.AssertMappingWithAddress(ilkFlipResult, catIlkFlipDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
@@ -192,8 +190,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkChopResult test_helpers.MappingResWithAddress
 			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult.MappingRes, catIlkChopDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
-			Expect(ilkChopResult.AddressID).To(Equal(contractAddressID))
+			test_helpers.AssertMappingWithAddress(ilkChopResult, catIlkChopDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
@@ -207,8 +204,7 @@ var _ = Describe("Executing the transformer", func() {
 			var ilkLumpResult test_helpers.MappingResWithAddress
 			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult.MappingRes, catIlkLumpDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
-			Expect(ilkLumpResult.AddressID).To(Equal(contractAddressID))
+			test_helpers.AssertMappingWithAddress(ilkLumpResult, catIlkLumpDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
 		})
 	})
 })
