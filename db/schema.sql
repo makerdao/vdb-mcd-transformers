@@ -276,19 +276,6 @@ CREATE TYPE api.tx AS (
 
 
 --
--- Name: diff_status; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.diff_status AS ENUM (
-    'new',
-    'transformed',
-    'unrecognized',
-    'noncanonical',
-    'unwatched'
-);
-
-
---
 -- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -296,7 +283,6 @@ CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT '
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier,
        identifier AS urn_identifier,
        bid_id,
@@ -388,7 +374,6 @@ WITH address_id AS (
                                 AND flap_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
-
 SELECT flap_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -515,7 +500,6 @@ WITH address_ids AS (
                                 AND flip_bid_lot.header_id = headers.id
          WHERE tick.address_id IN (SELECT * FROM address_ids)
      )
-
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS                                          bid_amount,
@@ -669,7 +653,6 @@ WITH address_id AS (
                                 AND flop_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
-
 SELECT flop_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -745,7 +728,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
-
 SELECT ilk_identifier,
        urns.identifier                                                             AS urn_identifier,
        dink,
@@ -772,7 +754,6 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
-
 SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1308,7 +1289,6 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1349,7 +1329,6 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
-
      storage_values AS (
          SELECT guy,
                 tic,
@@ -1373,7 +1352,6 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                WHERE deal.bid_id = get_flip.bid_id
                  AND deal.address_id = (SELECT * FROM address_id)
                  AND headers.block_number <= block_height)
-
 SELECT get_flip.block_height,
        get_flip.bid_id,
        (SELECT id FROM ilk_ids),
@@ -1433,7 +1411,6 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-
 SELECT get_flop.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1469,7 +1446,6 @@ WITH created AS (SELECT era, h.block_number, api.epoch_to_datetime(block_timesta
                  WHERE era = get_queued_sin.era
                  ORDER BY h.block_number DESC
                  LIMIT 1)
-
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -1491,7 +1467,6 @@ $$;
 CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
-
 SELECT urn_identifier, ilk_identifier, get_urn.block_height, ink, art, created, updated
 FROM api.urn_snapshot
 WHERE ilk_identifier = get_urn.ilk_identifier
@@ -1749,7 +1724,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
-
 SELECT ilk_identifier,
        urn_bites.urn_identifier,
        bid_id,
@@ -1786,7 +1760,6 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
-
 SELECT ilk_identifier,
        urn_identifier,
        dink,
@@ -6523,7 +6496,7 @@ COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.va
 -- Name: create_back_filled_diff(bigint, bytea, bytea, bytea, bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) RETURNS void
+CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -6531,7 +6504,7 @@ DECLARE
         SELECT storage_diff.storage_value
         FROM public.storage_diff
         WHERE storage_diff.block_height <= create_back_filled_diff.block_height
-          AND storage_diff.address = create_back_filled_diff.address
+          AND storage_diff.hashed_address = create_back_filled_diff.hashed_address
           AND storage_diff.storage_key = create_back_filled_diff.storage_key
         ORDER BY storage_diff.block_height DESC
         LIMIT 1
@@ -6543,28 +6516,25 @@ BEGIN
     IF last_storage_value = create_back_filled_diff.storage_value THEN
         RETURN;
     END IF;
-
     IF last_storage_value is null and create_back_filled_diff.storage_value = empty_storage_value THEN
         RETURN;
     END IF;
-
-    INSERT INTO public.storage_diff (block_height, block_hash, address, storage_key, storage_value,
+    INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key, storage_value,
                                      eth_node_id, from_backfill)
     VALUES (create_back_filled_diff.block_height, create_back_filled_diff.block_hash,
-            create_back_filled_diff.address, create_back_filled_diff.storage_key,
+            create_back_filled_diff.hashed_address, create_back_filled_diff.storage_key,
             create_back_filled_diff.storage_value, create_back_filled_diff.eth_node_id, true)
     ON CONFLICT DO NOTHING;
-
     RETURN;
 END
 $$;
 
 
 --
--- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) IS '@omit';
+COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) IS '@omit';
 
 
 --
@@ -7112,20 +7082,16 @@ BEGIN
     IF matching_header_id != 0 THEN
         RETURN matching_header_id;
     END IF;
-
     IF nonmatching_header_id != 0 AND block_number <= max_block_number - 15 THEN
         RETURN nonmatching_header_id;
     END IF;
-
     IF nonmatching_header_id != 0 AND block_number > max_block_number - 15 THEN
         DELETE FROM public.headers WHERE id = nonmatching_header_id;
     END IF;
-
     INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id)
     VALUES (get_or_create_header.hash, get_or_create_header.block_number, get_or_create_header.raw,
             get_or_create_header.block_timestamp, get_or_create_header.eth_node_id)
     RETURNING id INTO inserted_header_id;
-
     RETURN inserted_header_id;
 END
 $$;
@@ -7152,7 +7118,6 @@ FROM public.transactions txs
 WHERE headers.block_number = block_height
   AND event_logs.id = log_id
 ORDER BY block_number DESC
-
 $$;
 
 
@@ -7168,7 +7133,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT art
 FROM maker.vat_ilk_art
          LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
@@ -7198,7 +7162,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT chop
 FROM maker.cat_ilk_chop
          LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
@@ -7228,7 +7191,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT dust
 FROM maker.vat_ilk_dust
          LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
@@ -7258,7 +7220,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT duty
 FROM maker.jug_ilk_duty
          LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
@@ -7288,7 +7249,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT flip
 FROM maker.cat_ilk_flip
          LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
@@ -7318,7 +7278,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT line
 FROM maker.vat_ilk_line
          LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
@@ -7348,7 +7307,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT lump
 FROM maker.cat_ilk_lump
          LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
@@ -7378,7 +7336,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT mat
 FROM maker.spot_ilk_mat
          LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
@@ -7408,7 +7365,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT pip
 FROM maker.spot_ilk_pip
          LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
@@ -7438,7 +7394,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT rate
 FROM maker.vat_ilk_rate
          LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
@@ -7463,13 +7418,11 @@ COMMENT ON FUNCTION public.ilk_rate_before_block(ilk_id integer, header_id integ
 CREATE FUNCTION public.ilk_rho_before_block(ilk_id integer, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
-
 WITH passed_block_number AS (
     SELECT block_number
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT rho
 FROM maker.jug_ilk_rho
          LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
@@ -7499,7 +7452,6 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
-
 SELECT spot
 FROM maker.vat_ilk_spot
          LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id
@@ -7539,66 +7491,10 @@ COMMENT ON FUNCTION public.ilk_time_created(ilk_id integer) IS '@omit';
 
 
 --
--- Name: set_event_log_updated(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.set_event_log_updated() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    NEW.updated = NOW();
-    RETURN NEW;
-END;
-$$;
-
-
---
 -- Name: set_header_updated(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.set_header_updated() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    NEW.updated = NOW();
-    RETURN NEW;
-END;
-$$;
-
-
---
--- Name: set_receipt_updated(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.set_receipt_updated() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    NEW.updated = NOW();
-    RETURN NEW;
-END;
-$$;
-
-
---
--- Name: set_storage_updated(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.set_storage_updated() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    NEW.updated = NOW();
-    RETURN NEW;
-END;
-$$;
-
-
---
--- Name: set_transaction_updated(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.set_transaction_updated() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -9733,6 +9629,38 @@ CREATE SEQUENCE maker.flop_vow_id_seq
 --
 
 ALTER SEQUENCE maker.flop_vow_id_seq OWNED BY maker.flop_vow.id;
+
+
+--
+-- Name: goose_db_version; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.goose_db_version (
+    id integer NOT NULL,
+    version_id bigint NOT NULL,
+    is_applied boolean NOT NULL,
+    tstamp timestamp without time zone DEFAULT now()
+);
+
+
+--
+-- Name: goose_db_version_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.goose_db_version_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goose_db_version_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.goose_db_version_id_seq OWNED BY maker.goose_db_version.id;
 
 
 --
@@ -13497,8 +13425,9 @@ ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
 --
 
 CREATE TABLE public.addresses (
-    id bigint NOT NULL,
-    address character varying(42)
+    id integer NOT NULL,
+    address character varying(42),
+    hashed_address character varying(66)
 );
 
 
@@ -13507,6 +13436,7 @@ CREATE TABLE public.addresses (
 --
 
 CREATE SEQUENCE public.addresses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -13590,9 +13520,9 @@ ALTER SEQUENCE public.eth_nodes_id_seq OWNED BY public.eth_nodes.id;
 --
 
 CREATE TABLE public.event_logs (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     header_id integer NOT NULL,
-    address bigint NOT NULL,
+    address integer NOT NULL,
     topics bytea[],
     data bytea,
     block_number bigint,
@@ -13601,9 +13531,7 @@ CREATE TABLE public.event_logs (
     tx_index integer,
     log_index integer,
     raw jsonb,
-    transformed boolean DEFAULT false NOT NULL,
-    created timestamp without time zone DEFAULT now() NOT NULL,
-    updated timestamp without time zone DEFAULT now() NOT NULL
+    transformed boolean DEFAULT false NOT NULL
 );
 
 
@@ -13612,6 +13540,7 @@ CREATE TABLE public.event_logs (
 --
 
 CREATE SEQUENCE public.event_logs_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -13703,15 +13632,13 @@ CREATE TABLE public.receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    contract_address_id bigint NOT NULL,
+    contract_address_id integer NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
     status integer,
     tx_hash character varying(66),
-    rlp bytea,
-    created timestamp without time zone DEFAULT now() NOT NULL,
-    updated timestamp without time zone DEFAULT now() NOT NULL
+    rlp bytea
 );
 
 
@@ -13741,16 +13668,14 @@ ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
 
 CREATE TABLE public.storage_diff (
     id bigint NOT NULL,
-    address bytea,
     block_height bigint,
     block_hash bytea,
+    hashed_address bytea,
     storage_key bytea,
     storage_value bytea,
     eth_node_id integer NOT NULL,
-    status public.diff_status DEFAULT 'new'::public.diff_status NOT NULL,
-    from_backfill boolean DEFAULT false NOT NULL,
-    created timestamp without time zone DEFAULT now() NOT NULL,
-    updated timestamp without time zone DEFAULT now() NOT NULL
+    checked boolean DEFAULT false NOT NULL,
+    from_backfill boolean DEFAULT false NOT NULL
 );
 
 
@@ -13789,9 +13714,7 @@ CREATE TABLE public.transactions (
     tx_from character varying(44),
     tx_index integer,
     tx_to character varying(44),
-    value numeric,
-    created timestamp without time zone DEFAULT now() NOT NULL,
-    updated timestamp without time zone DEFAULT now() NOT NULL
+    value numeric
 );
 
 
@@ -14334,6 +14257,13 @@ ALTER TABLE ONLY maker.flop_vat ALTER COLUMN id SET DEFAULT nextval('maker.flop_
 --
 
 ALTER TABLE ONLY maker.flop_vow ALTER COLUMN id SET DEFAULT nextval('maker.flop_vow_id_seq'::regclass);
+
+
+--
+-- Name: goose_db_version id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.goose_db_version ALTER COLUMN id SET DEFAULT nextval('maker.goose_db_version_id_seq'::regclass);
 
 
 --
@@ -16394,6 +16324,14 @@ ALTER TABLE ONLY maker.flop_vow
 
 
 --
+-- Name: goose_db_version goose_db_version_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.goose_db_version
+    ADD CONSTRAINT goose_db_version_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ilks ilks_identifier_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -18378,11 +18316,11 @@ ALTER TABLE ONLY public.receipts
 
 
 --
--- Name: storage_diff storage_diff_block_height_block_hash_address_storage_key_st_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: storage_diff storage_diff_block_height_block_hash_hashed_address_storage_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.storage_diff
-    ADD CONSTRAINT storage_diff_block_height_block_hash_address_storage_key_st_key UNIQUE (block_height, block_hash, address, storage_key, storage_value);
+    ADD CONSTRAINT storage_diff_block_height_block_hash_hashed_address_storage_key UNIQUE (block_height, block_hash, hashed_address, storage_key, storage_value);
 
 
 --
@@ -21974,24 +21912,17 @@ CREATE INDEX receipts_transaction ON public.receipts USING btree (transaction_id
 
 
 --
+-- Name: storage_diff_checked_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_checked_index ON public.storage_diff USING btree (checked) WHERE (checked = false);
+
+
+--
 -- Name: storage_diff_eth_node; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX storage_diff_eth_node ON public.storage_diff USING btree (eth_node_id);
-
-
---
--- Name: storage_diff_new_status_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX storage_diff_new_status_index ON public.storage_diff USING btree (status) WHERE (status = 'new'::public.diff_status);
-
-
---
--- Name: storage_diff_unrecognized_status_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX storage_diff_unrecognized_status_index ON public.storage_diff USING btree (status) WHERE (status = 'unrecognized'::public.diff_status);
 
 
 --
@@ -22352,38 +22283,10 @@ CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE PROCEDURE ma
 
 
 --
--- Name: event_logs event_log_updated; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER event_log_updated BEFORE UPDATE ON public.event_logs FOR EACH ROW EXECUTE PROCEDURE public.set_event_log_updated();
-
-
---
 -- Name: headers header_updated; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECUTE PROCEDURE public.set_header_updated();
-
-
---
--- Name: receipts receipt_updated; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER receipt_updated BEFORE UPDATE ON public.receipts FOR EACH ROW EXECUTE PROCEDURE public.set_receipt_updated();
-
-
---
--- Name: storage_diff storage_updated; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER storage_updated BEFORE UPDATE ON public.storage_diff FOR EACH ROW EXECUTE PROCEDURE public.set_storage_updated();
-
-
---
--- Name: transactions transaction_updated; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER transaction_updated BEFORE UPDATE ON public.transactions FOR EACH ROW EXECUTE PROCEDURE public.set_transaction_updated();
 
 
 --
