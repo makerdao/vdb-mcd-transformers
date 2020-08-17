@@ -51,10 +51,9 @@ test: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	cd db/migrations;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" up
-	cd db/migrations/;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" reset
+	psql $(TEST_DB) < test_data/vulcanize_schema.sql
+	make migrate NAME=$(TEST_DB)
+	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
 	$(GINKGO) -r --skipPackage=integration_tests,integration
 
@@ -115,7 +114,7 @@ checkmigname:
 .PHONY: rollback
 rollback: $(GOOSE) checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" down
+	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" down
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 
@@ -123,13 +122,21 @@ rollback: $(GOOSE) checkdbvars
 .PHONY: rollback_to
 rollback_to: $(GOOSE) checkmigration checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
+	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
 
 ## Apply all migrations not already run
 .PHONY: migrate
 migrate: $(GOOSE) checkdbvars
+	psql $(NAME) -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" up
+	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" up
+	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
+
+.PHONY: reset
+reset: $(GOOSE) checkdbvars
+	cd db/migrations/;\
+		$(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" reset
+	psql $(NAME) -c 'DROP SCHEMA maker CASCADE;'
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 ## Create a new migration file
