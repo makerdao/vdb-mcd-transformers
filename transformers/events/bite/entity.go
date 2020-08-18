@@ -23,13 +23,14 @@ import (
 )
 
 type BiteEntity struct {
-	Ilk      [32]byte
-	Urn      common.Address
-	Ink      *big.Int
-	Art      *big.Int
-	Tab      *big.Int
-	Flip     common.Address
-	Id       *big.Int
-	HeaderID int64
-	LogID    int64
+	Ilk             [32]byte
+	Urn             common.Address
+	Ink             *big.Int
+	Art             *big.Int
+	Tab             *big.Int
+	Flip            common.Address
+	Id              *big.Int
+	ContractAddress common.Address
+	HeaderID        int64
+	LogID           int64
 }

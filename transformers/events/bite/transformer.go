@@ -50,6 +50,7 @@ func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]BiteE
 			return nil, unpackErr
 		}
 
+		entity.ContractAddress = log.Log.Address
 		entity.HeaderID = log.HeaderID
 		entity.LogID = log.ID
 		entities = append(entities, entity)
@@ -74,12 +75,18 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 			return nil, shared.ErrCouldNotCreateFK(urnErr)
 		}
 
+		addressId, addressErr := shared.GetOrCreateAddress(biteEntity.ContractAddress.Hex(), db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.BiteTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
+				event.AddressFK,
 				constants.UrnColumn,
 				constants.InkColumn,
 				constants.ArtColumn,
@@ -90,6 +97,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 			ColumnValues: event.ColumnValues{
 				event.HeaderFK:        biteEntity.HeaderID,
 				event.LogFK:           biteEntity.LogID,
+				event.AddressFK:       addressId,
 				constants.UrnColumn:   urnID,
 				constants.InkColumn:   shared.BigIntToString(biteEntity.Ink),
 				constants.ArtColumn:   shared.BigIntToString(biteEntity.Art),

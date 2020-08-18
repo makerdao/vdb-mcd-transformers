@@ -7673,7 +7673,8 @@ CREATE TABLE maker.bite (
     art numeric,
     tab numeric,
     flip text,
-    bid_id numeric
+    bid_id numeric,
+    address_id integer NOT NULL
 );
 
 
@@ -7705,6 +7706,7 @@ CREATE TABLE maker.cat_file_chop_lump (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     msg_sender integer NOT NULL,
     ilk_id integer NOT NULL,
     what text,
@@ -7740,6 +7742,7 @@ CREATE TABLE maker.cat_file_flip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     ilk_id integer NOT NULL,
     msg_sender integer NOT NULL,
     what text,
@@ -7775,6 +7778,7 @@ CREATE TABLE maker.cat_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     msg_sender integer NOT NULL,
     what text,
     data text
@@ -18253,6 +18257,13 @@ CREATE INDEX bid_event_urn_index ON maker.bid_event USING btree (ilk_identifier,
 
 
 --
+-- Name: bite_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_address_index ON maker.bite USING btree (address_id);
+
+
+--
 -- Name: bite_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18281,6 +18292,13 @@ CREATE INDEX cat_file_cho_lump_msg_sender_index ON maker.cat_file_chop_lump USIN
 
 
 --
+-- Name: cat_file_chop_lump_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_address_index ON maker.cat_file_chop_lump USING btree (address_id);
+
+
+--
 -- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18299,6 +18317,13 @@ CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btre
 --
 
 CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btree (log_id);
+
+
+--
+-- Name: cat_file_flip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_address_index ON maker.cat_file_flip USING btree (address_id);
 
 
 --
@@ -18327,6 +18352,13 @@ CREATE INDEX cat_file_flip_log_index ON maker.cat_file_flip USING btree (log_id)
 --
 
 CREATE INDEX cat_file_flip_msg_sender_index ON maker.cat_file_flip USING btree (msg_sender);
+
+
+--
+-- Name: cat_file_vow_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_address_index ON maker.cat_file_vow USING btree (address_id);
 
 
 --
@@ -22059,6 +22091,14 @@ ALTER TABLE ONLY maker.bid_event
 
 
 --
+-- Name: bite bite_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bite
+    ADD CONSTRAINT bite_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: bite bite_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22080,6 +22120,14 @@ ALTER TABLE ONLY maker.bite
 
 ALTER TABLE ONLY maker.bite
     ADD CONSTRAINT bite_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_chop_lump cat_file_chop_lump_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump
+    ADD CONSTRAINT cat_file_chop_lump_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -22115,6 +22163,14 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 
 
 --
+-- Name: cat_file_flip cat_file_flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_flip
+    ADD CONSTRAINT cat_file_flip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_flip cat_file_flip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22144,6 +22200,14 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 ALTER TABLE ONLY maker.cat_file_flip
     ADD CONSTRAINT cat_file_flip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_vow cat_file_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

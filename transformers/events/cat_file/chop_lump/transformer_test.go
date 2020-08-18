@@ -43,9 +43,10 @@ var _ = Describe("Cat file chop lump transformer", func() {
 		It("converts a chop log to a model", func() {
 			chopLog := test_data.CatFileChopEventLog
 			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{chopLog}, db)
-
 			Expect(err).NotTo(HaveOccurred())
+
 			expectedModel := test_data.CatFileChopModel()
+			test_data.AssignAddressID(chopLog, expectedModel, db)
 			ilkID, ilkErr := shared.GetOrCreateIlk(chopLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
@@ -58,13 +59,15 @@ var _ = Describe("Cat file chop lump transformer", func() {
 		It("converts a lump log to a model", func() {
 			lumpLog := test_data.CatFileLumpEventLog
 			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{lumpLog}, db)
-
 			Expect(err).NotTo(HaveOccurred())
+
 			expectedModel := test_data.CatFileLumpModel()
+			test_data.AssignAddressID(lumpLog, expectedModel, db)
 			ilkID, ilkErr := shared.GetOrCreateIlk(lumpLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 			test_data.AssignMessageSenderID(lumpLog, expectedModel, db)
+
 			Expect(models).To(ConsistOf(expectedModel))
 		})
 	})

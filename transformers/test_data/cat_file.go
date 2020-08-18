@@ -60,6 +60,7 @@ var catFileChopModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
@@ -68,7 +69,8 @@ var catFileChopModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileChopEventLog.HeaderID,
 		event.LogFK:    CatFileChopEventLog.ID,
-		// msg.sender
+		// event.AddressFK
+		// constants.MsgSenderColumn
 		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "chop",
 		constants.DataColumn: "1000000000000000000000000000",
@@ -107,6 +109,7 @@ var catFileLumpModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
@@ -115,7 +118,8 @@ var catFileLumpModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileLumpEventLog.HeaderID,
 		event.LogFK:    CatFileLumpEventLog.ID,
-		// msg.sender
+		// event.AddressFK
+		// constants.MsgSenderColumn
 		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "lump",
 		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
@@ -158,12 +162,14 @@ var catFileFlipModel = event.InsertionModel{
 		constants.FlipColumn,
 		constants.MsgSenderColumn,
 		event.LogFK,
+		event.AddressFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileFlipEventLog.HeaderID,
 		constants.WhatColumn: "flip",
 		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
 		event.LogFK:          CatFileFlipEventLog.ID,
+		// event.AddressFK
 	},
 }
 
@@ -199,6 +205,7 @@ var catFileVowModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.MsgSenderColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
@@ -208,5 +215,7 @@ var catFileVowModel = event.InsertionModel{
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
 		event.LogFK:          CatFileVowEventLog.ID,
+		//event.AddressFK
+		//constants.MsgSenderColumn
 	},
 }

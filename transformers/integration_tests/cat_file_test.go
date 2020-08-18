@@ -71,13 +71,16 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult catFileChopLumpModel
-		getErr := db.Get(&dbResult, `SELECT msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
+		getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
 		Expect(getErr).NotTo(HaveOccurred())
 
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 		ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		Expect(dbResult.Ilk).To(Equal(ilkID))
 		Expect(dbResult.What).To(Equal("lump"))
@@ -111,13 +114,16 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult catFileChopLumpModel
-		getErr := db.Get(&dbResult, `SELECT msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
+		getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
 		Expect(getErr).NotTo(HaveOccurred())
 
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 		ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		Expect(dbResult.Ilk).To(Equal(ilkID))
 		Expect(dbResult.What).To(Equal("chop"))
@@ -152,8 +158,11 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		var dbResult catFileFlipModel
-		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, what, flip FROM maker.cat_file_flip`)
+		err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, address_id, what, flip FROM maker.cat_file_flip`)
 		Expect(err).NotTo(HaveOccurred())
+
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
@@ -163,6 +172,7 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.Ilk).To(Equal(ilkID))
 		Expect(dbResult.What).To(Equal("flip"))
 		Expect(dbResult.Flip).To(Equal(test_data.FlipEthV100Address()))
@@ -195,12 +205,16 @@ var _ = Describe("Cat File transformer", func() {
 		Expect(executeErr).NotTo(HaveOccurred())
 
 		var dbResult catFileVowModel
-		getErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.cat_file_vow`)
+		getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_vow`)
 		Expect(getErr).NotTo(HaveOccurred())
+
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
 
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
+		Expect(dbResult.AddressID).To(Equal(addressID))
 		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		Expect(dbResult.What).To(Equal("vow"))
 		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
@@ -208,6 +222,7 @@ var _ = Describe("Cat File transformer", func() {
 })
 
 type catFileChopLumpModel struct {
+	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	Ilk       int64 `db:"ilk_id"`
 	What      string
@@ -215,6 +230,7 @@ type catFileChopLumpModel struct {
 }
 
 type catFileFlipModel struct {
+	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	Ilk       int64 `db:"ilk_id"`
 	What      string
@@ -222,6 +238,7 @@ type catFileFlipModel struct {
 }
 
 type catFileVowModel struct {
+	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	What      string
 	Data      string

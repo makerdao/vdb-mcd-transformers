@@ -65,6 +65,7 @@ var _ = Describe("Cat file vow transformer", func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.CatFileVowModel()
+		test_data.AssignAddressID(test_data.CatFileVowEventLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.CatFileVowEventLog, expectedModel, db)
 		Expect(models).To(ConsistOf(expectedModel))
 	})
