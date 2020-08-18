@@ -9,10 +9,7 @@ $(BIN)/ginkgo:
 	go get -u github.com/onsi/ginkgo/ginkgo
 
 ## Migration tool
-GOOSE = $(BIN)/goose
-$(BIN)/goose:
-	go get -u -d github.com/pressly/goose/cmd/goose
-	go build -tags='no_mysql no_sqlite' -o $(BIN)/goose github.com/pressly/goose/cmd/goose
+GOOSE = go run -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
 
 ## Source linter
 LINT = $(BIN)/golint
@@ -27,7 +24,7 @@ $(BIN)/gometalinter.v2:
 
 
 .PHONY: installtools
-installtools: | $(LINT) $(GOOSE) $(GINKGO)
+installtools: | $(LINT) $(GINKGO)
 	echo "Installing tools"
 
 .PHONY: metalint
@@ -63,10 +60,9 @@ integrationtest: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	cd db/migrations;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" up
-	cd db/migrations/;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" reset
+	psql $(TEST_DB) < test_data/vulcanize_schema.sql
+	make migrate NAME=$(TEST_DB)
+	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
 	$(GINKGO) -r transformers/integration_tests/
 
@@ -112,42 +108,42 @@ checkmigname:
 # Migration operations
 ## Rollback the last migration
 .PHONY: rollback
-rollback: $(GOOSE) checkdbvars
+rollback: checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" down
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 
 ## Rollback to a select migration (id/timestamp)
 .PHONY: rollback_to
-rollback_to: $(GOOSE) checkmigration checkdbvars
+rollback_to: checkmigration checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
 
 ## Apply all migrations not already run
 .PHONY: migrate
-migrate: $(GOOSE) checkdbvars
+migrate: checkdbvars
 	psql $(NAME) -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 	cd db/migrations;\
-	  $(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" up
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" up
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 .PHONY: reset
-reset: $(GOOSE) checkdbvars
+reset: checkdbvars
 	cd db/migrations/;\
-		$(GOOSE) -table maker.goose_db_version postgres "$(CONNECT_STRING)" reset
+		$(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" reset
 	psql $(NAME) -c 'DROP SCHEMA maker CASCADE;'
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 ## Create a new migration file
 .PHONY: new_migration
-new_migration: $(GOOSE) checkmigname
+new_migration: checkmigname
 	cd db/migrations;\
 	  $(GOOSE) create $(NAME) sql
 
 ## Check which migrations are applied at the moment
 .PHONY: migration_status
-migration_status: $(GOOSE) checkdbvars
+migration_status: checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) postgres "$(CONNECT_STRING)" status
 
