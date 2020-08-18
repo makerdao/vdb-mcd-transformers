@@ -1852,7 +1852,7 @@ CREATE TABLE maker.flip_ilk (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -1888,7 +1888,7 @@ CREATE TABLE maker.flap_kick (
     bid_id numeric NOT NULL,
     lot numeric NOT NULL,
     bid numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id bigint NOT NULL
 );
 
 
@@ -1926,7 +1926,7 @@ CREATE TABLE maker.flip_kick (
     tab numeric,
     usr text,
     gal text,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     log_id bigint NOT NULL
 );
 
@@ -1964,7 +1964,7 @@ CREATE TABLE maker.flop_kick (
     lot numeric NOT NULL,
     bid numeric NOT NULL,
     gal text,
-    address_id integer NOT NULL
+    address_id bigint NOT NULL
 );
 
 
@@ -2027,10 +2027,10 @@ COMMENT ON FUNCTION maker.clear_time_created(old_event maker.vat_init) IS '@omit
 
 
 --
--- Name: delete_obsolete_flap(numeric, integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_flap(numeric, bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_flap(bid_id numeric, address_id integer, header_id integer) RETURNS void
+CREATE FUNCTION maker.delete_obsolete_flap(bid_id numeric, address_id bigint, header_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -2068,17 +2068,17 @@ $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_flap(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_obsolete_flap(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_obsolete_flap(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_obsolete_flap(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: delete_obsolete_flip(numeric, integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_flip(numeric, bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_flip(bid_id numeric, address_id integer, header_id integer) RETURNS void
+CREATE FUNCTION maker.delete_obsolete_flip(bid_id numeric, address_id bigint, header_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -2119,17 +2119,17 @@ $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_flip(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_obsolete_flip(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_obsolete_flip(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_obsolete_flip(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: delete_obsolete_flop(numeric, integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_flop(numeric, bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id integer, header_id integer) RETURNS void
+CREATE FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id bigint, header_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -2167,10 +2167,10 @@ $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_flop(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION delete_obsolete_flop(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
@@ -2275,10 +2275,10 @@ COMMENT ON FUNCTION maker.delete_redundant_ilk_snapshot(ilk_id integer, header_i
 
 
 --
--- Name: insert_bid_event(bigint, numeric, integer, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: insert_bid_event(bigint, numeric, bigint, integer, api.bid_act, numeric, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
+CREATE FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id bigint, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) RETURNS void
     LANGUAGE sql
     AS $$
 INSERT
@@ -2309,10 +2309,10 @@ $$;
 
 
 --
--- Name: FUNCTION insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric); Type: COMMENT; Schema: maker; Owner: -
+-- Name: FUNCTION insert_bid_event(log_id bigint, bid_id numeric, address_id bigint, header_id integer, act api.bid_act, lot numeric, bid_amount numeric); Type: COMMENT; Schema: maker; Owner: -
 --
 
-COMMENT ON FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id integer, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) IS '@omit';
+COMMENT ON FUNCTION maker.insert_bid_event(log_id bigint, bid_id numeric, address_id bigint, header_id integer, act api.bid_act, lot numeric, bid_amount numeric) IS '@omit';
 
 
 --
@@ -2343,7 +2343,7 @@ CREATE TABLE maker.flip_bid_usr (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     usr text
 );
@@ -2812,7 +2812,7 @@ CREATE TABLE maker.flap_bid_bid (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -2861,7 +2861,7 @@ CREATE TABLE maker.flap_bid_end (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -2910,7 +2910,7 @@ CREATE TABLE maker.flap_bid_guy (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text NOT NULL
 );
@@ -2959,7 +2959,7 @@ CREATE TABLE maker.flap_bid_lot (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -3008,7 +3008,7 @@ CREATE TABLE maker.flap_bid_tic (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -3125,7 +3125,7 @@ CREATE TABLE maker.flip_bid_bid (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -3177,7 +3177,7 @@ CREATE TABLE maker.flip_bid_end (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -3229,7 +3229,7 @@ CREATE TABLE maker.flip_bid_gal (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     gal text
 );
@@ -3281,7 +3281,7 @@ CREATE TABLE maker.flip_bid_guy (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text
 );
@@ -3333,7 +3333,7 @@ CREATE TABLE maker.flip_bid_lot (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -3385,7 +3385,7 @@ CREATE TABLE maker.flip_bid_tab (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     tab numeric NOT NULL
 );
@@ -3437,7 +3437,7 @@ CREATE TABLE maker.flip_bid_tic (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -3527,7 +3527,7 @@ CREATE TABLE maker.flop_bid_bid (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     bid numeric NOT NULL
 );
@@ -3576,7 +3576,7 @@ CREATE TABLE maker.flop_bid_end (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     "end" bigint NOT NULL
 );
@@ -3625,7 +3625,7 @@ CREATE TABLE maker.flop_bid_guy (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text
 );
@@ -3674,7 +3674,7 @@ CREATE TABLE maker.flop_bid_lot (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     lot numeric NOT NULL
 );
@@ -3723,7 +3723,7 @@ CREATE TABLE maker.flop_bid_tic (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     bid_id numeric NOT NULL,
     tic bigint NOT NULL
 );
@@ -6560,10 +6560,10 @@ COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_ha
 
 
 --
--- Name: flap_bid_bid_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_bid_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flap_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT bid
@@ -6578,17 +6578,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flap_bid_end_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_end_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flap_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT "end"
@@ -6603,17 +6603,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_end_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flap_bid_guy_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_guy_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+CREATE FUNCTION public.flap_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS text
     LANGUAGE sql
     AS $$
 SELECT guy
@@ -6628,17 +6628,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flap_bid_lot_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_lot_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flap_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT lot
@@ -6653,17 +6653,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flap_bid_tic_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_tic_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flap_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT tic
@@ -6678,17 +6678,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flap_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flap_bid_time_created(bigint, numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flap_bid_time_created(address_id integer, bid_id numeric) RETURNS timestamp without time zone
+CREATE FUNCTION public.flap_bid_time_created(address_id bigint, bid_id numeric) RETURNS timestamp without time zone
     LANGUAGE sql
     AS $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
@@ -6700,17 +6700,17 @@ $$;
 
 
 --
--- Name: FUNCTION flap_bid_time_created(address_id integer, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flap_bid_time_created(address_id bigint, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flap_bid_time_created(address_id integer, bid_id numeric) IS '@omit';
+COMMENT ON FUNCTION public.flap_bid_time_created(address_id bigint, bid_id numeric) IS '@omit';
 
 
 --
--- Name: flip_bid_bid_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_bid_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT bid
@@ -6725,17 +6725,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_end_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_end_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT "end"
@@ -6750,17 +6750,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_gal_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_gal_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+CREATE FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS text
     LANGUAGE sql
     AS $$
 SELECT gal
@@ -6775,17 +6775,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_gal_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_gal_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_guy_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_guy_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+CREATE FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS text
     LANGUAGE sql
     AS $$
 SELECT guy
@@ -6800,17 +6800,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_lot_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_lot_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT lot
@@ -6825,17 +6825,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_tab_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_tab_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT tab
@@ -6850,17 +6850,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_tab_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_tab_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_tic_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_tic_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT tic
@@ -6875,17 +6875,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flip_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_time_created(bigint, numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_time_created(address_id integer, bid_id numeric) RETURNS timestamp without time zone
+CREATE FUNCTION public.flip_bid_time_created(address_id bigint, bid_id numeric) RETURNS timestamp without time zone
     LANGUAGE sql
     AS $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
@@ -6897,17 +6897,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_time_created(address_id integer, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_time_created(address_id bigint, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_time_created(address_id integer, bid_id numeric) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_time_created(address_id bigint, bid_id numeric) IS '@omit';
 
 
 --
--- Name: flip_bid_usr_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flip_bid_usr_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flip_bid_usr_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+CREATE FUNCTION public.flip_bid_usr_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS text
     LANGUAGE sql
     AS $$
 SELECT usr
@@ -6922,17 +6922,17 @@ $$;
 
 
 --
--- Name: FUNCTION flip_bid_usr_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flip_bid_usr_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flip_bid_usr_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flip_bid_usr_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_bid_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_bid_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT bid
@@ -6947,17 +6947,17 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_bid_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_end_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_end_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT "end"
@@ -6972,17 +6972,17 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_end_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_guy_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_guy_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS text
+CREATE FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS text
     LANGUAGE sql
     AS $$
 SELECT guy
@@ -6997,17 +6997,17 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_guy_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_lot_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_lot_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS numeric
+CREATE FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
 SELECT lot
@@ -7022,17 +7022,17 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_lot_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_tic_before_block(numeric, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_tic_before_block(numeric, bigint, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) RETURNS bigint
+CREATE FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) RETURNS bigint
     LANGUAGE sql
     AS $$
 SELECT tic
@@ -7047,17 +7047,17 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id integer, header_id integer) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_tic_before_block(bid_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
--- Name: flop_bid_time_created(integer, numeric); Type: FUNCTION; Schema: public; Owner: -
+-- Name: flop_bid_time_created(bigint, numeric); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.flop_bid_time_created(address_id integer, bid_id numeric) RETURNS timestamp without time zone
+CREATE FUNCTION public.flop_bid_time_created(address_id bigint, bid_id numeric) RETURNS timestamp without time zone
     LANGUAGE sql
     AS $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
@@ -7069,10 +7069,10 @@ $$;
 
 
 --
--- Name: FUNCTION flop_bid_time_created(address_id integer, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION flop_bid_time_created(address_id bigint, bid_id numeric); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.flop_bid_time_created(address_id integer, bid_id numeric) IS '@omit';
+COMMENT ON FUNCTION public.flop_bid_time_created(address_id bigint, bid_id numeric) IS '@omit';
 
 
 --
@@ -7647,12 +7647,12 @@ ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
 
 CREATE TABLE maker.auction_file (
     id integer NOT NULL,
-    header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
-    data numeric
+    data numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -7723,7 +7723,7 @@ CREATE TABLE maker.cat_file_chop_lump (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
     data numeric
@@ -7760,7 +7760,7 @@ CREATE TABLE maker.cat_file_flip (
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
     ilk_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     flip text
 );
@@ -7795,7 +7795,7 @@ CREATE TABLE maker.cat_file_vow (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data text
 );
@@ -8316,8 +8316,8 @@ CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     bid_id numeric NOT NULL
 );
 
@@ -8353,8 +8353,8 @@ CREATE TABLE maker.dent (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    msg_sender integer NOT NULL,
-    address_id integer NOT NULL
+    msg_sender bigint NOT NULL,
+    address_id bigint NOT NULL
 );
 
 
@@ -8384,11 +8384,11 @@ ALTER SEQUENCE maker.dent_id_seq OWNED BY maker.dent.id;
 
 CREATE TABLE maker.deny (
     id integer NOT NULL,
-    header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
-    usr integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    usr bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -8417,7 +8417,7 @@ ALTER SEQUENCE maker.deny_id_seq OWNED BY maker.deny.id;
 --
 
 CREATE TABLE maker.flap (
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     block_number bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text,
@@ -8438,7 +8438,7 @@ CREATE TABLE maker.flap_beg (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -8571,7 +8571,7 @@ CREATE TABLE maker.flap_gem (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     gem text NOT NULL
 );
 
@@ -8624,7 +8624,7 @@ CREATE TABLE maker.flap_kicks (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -8657,7 +8657,7 @@ CREATE TABLE maker.flap_live (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     live numeric NOT NULL
 );
 
@@ -8689,8 +8689,8 @@ ALTER SEQUENCE maker.flap_live_id_seq OWNED BY maker.flap_live.id;
 CREATE TABLE maker.flap_tau (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
     tau integer NOT NULL
 );
 
@@ -8722,8 +8722,8 @@ ALTER SEQUENCE maker.flap_tau_id_seq OWNED BY maker.flap_tau.id;
 CREATE TABLE maker.flap_ttl (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
     ttl integer NOT NULL
 );
 
@@ -8756,7 +8756,7 @@ CREATE TABLE maker.flap_vat (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     vat text NOT NULL
 );
 
@@ -8786,7 +8786,7 @@ ALTER SEQUENCE maker.flap_vat_id_seq OWNED BY maker.flap_vat.id;
 --
 
 CREATE TABLE maker.flip (
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     block_number bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text,
@@ -8810,7 +8810,7 @@ CREATE TABLE maker.flip_beg (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -9043,7 +9043,7 @@ CREATE TABLE maker.flip_kicks (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -9076,7 +9076,7 @@ CREATE TABLE maker.flip_tau (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     tau numeric NOT NULL
 );
 
@@ -9109,7 +9109,7 @@ CREATE TABLE maker.flip_ttl (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     ttl numeric NOT NULL
 );
 
@@ -9142,7 +9142,7 @@ CREATE TABLE maker.flip_vat (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     vat text
 );
 
@@ -9172,7 +9172,7 @@ ALTER SEQUENCE maker.flip_vat_id_seq OWNED BY maker.flip_vat.id;
 --
 
 CREATE TABLE maker.flop (
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     block_number bigint NOT NULL,
     bid_id numeric NOT NULL,
     guy text,
@@ -9193,7 +9193,7 @@ CREATE TABLE maker.flop_beg (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     beg numeric NOT NULL
 );
 
@@ -9326,7 +9326,7 @@ CREATE TABLE maker.flop_gem (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     gem text
 );
 
@@ -9379,7 +9379,7 @@ CREATE TABLE maker.flop_kicks (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     kicks numeric NOT NULL
 );
 
@@ -9412,7 +9412,7 @@ CREATE TABLE maker.flop_live (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     live numeric NOT NULL
 );
 
@@ -9445,7 +9445,7 @@ CREATE TABLE maker.flop_pad (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     pad numeric NOT NULL
 );
 
@@ -9478,7 +9478,7 @@ CREATE TABLE maker.flop_tau (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     tau numeric NOT NULL
 );
 
@@ -9511,7 +9511,7 @@ CREATE TABLE maker.flop_ttl (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     ttl numeric NOT NULL
 );
 
@@ -9544,7 +9544,7 @@ CREATE TABLE maker.flop_vat (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     vat text
 );
 
@@ -9577,7 +9577,7 @@ CREATE TABLE maker.flop_vow (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     vow text
 );
 
@@ -9673,7 +9673,7 @@ CREATE TABLE maker.jug_drip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -9706,7 +9706,7 @@ CREATE TABLE maker.jug_file_base (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data numeric
 );
@@ -9740,7 +9740,7 @@ CREATE TABLE maker.jug_file_ilk (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     ilk_id integer NOT NULL,
     what text,
     data numeric
@@ -9775,7 +9775,7 @@ CREATE TABLE maker.jug_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data text
 );
@@ -9848,8 +9848,8 @@ ALTER SEQUENCE maker.jug_ilk_rho_id_seq OWNED BY maker.jug_ilk_rho.id;
 CREATE TABLE maker.jug_init (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     header_id integer NOT NULL,
-    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -9945,15 +9945,15 @@ ALTER SEQUENCE maker.jug_vow_id_seq OWNED BY maker.jug_vow.id;
 CREATE TABLE maker.log_bump (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    offer_id numeric,
-    pair character varying(66),
-    maker integer NOT NULL,
-    pay_gem integer NOT NULL,
-    buy_gem integer NOT NULL,
+    address_id bigint NOT NULL,
+    maker bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    buy_gem bigint NOT NULL,
     pay_amt numeric,
     buy_amt numeric,
+    offer_id numeric,
+    pair character varying(66),
+    header_id integer NOT NULL,
     "timestamp" integer
 );
 
@@ -9985,8 +9985,8 @@ ALTER SEQUENCE maker.log_bump_id_seq OWNED BY maker.log_bump.id;
 CREATE TABLE maker.log_buy_enabled (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
     is_enabled boolean
 );
 
@@ -10018,10 +10018,10 @@ ALTER SEQUENCE maker.log_buy_enabled_id_seq OWNED BY maker.log_buy_enabled.id;
 CREATE TABLE maker.log_delete (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    keeper integer NOT NULL,
-    offer_id numeric
+    address_id bigint NOT NULL,
+    keeper bigint NOT NULL,
+    offer_id numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -10052,10 +10052,10 @@ ALTER SEQUENCE maker.log_delete_id_seq OWNED BY maker.log_delete.id;
 CREATE TABLE maker.log_insert (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    keeper integer NOT NULL,
-    offer_id numeric
+    address_id bigint NOT NULL,
+    keeper bigint NOT NULL,
+    offer_id numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -10086,8 +10086,8 @@ ALTER SEQUENCE maker.log_insert_id_seq OWNED BY maker.log_insert.id;
 CREATE TABLE maker.log_item_update (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
     offer_id numeric
 );
 
@@ -10119,16 +10119,16 @@ ALTER SEQUENCE maker.log_item_update_id_seq OWNED BY maker.log_item_update.id;
 CREATE TABLE maker.log_kill (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    offer_id numeric,
-    pair character varying(66),
-    maker integer NOT NULL,
-    pay_gem integer NOT NULL,
-    buy_gem integer NOT NULL,
+    address_id bigint NOT NULL,
+    maker bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    buy_gem bigint NOT NULL,
     pay_amt numeric,
     buy_amt numeric,
-    "timestamp" bigint
+    offer_id numeric,
+    pair character varying(66),
+    header_id integer NOT NULL,
+    "timestamp" integer
 );
 
 
@@ -10159,15 +10159,15 @@ ALTER SEQUENCE maker.log_kill_id_seq OWNED BY maker.log_kill.id;
 CREATE TABLE maker.log_make (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    offer_id numeric,
-    pair character varying(66),
-    maker integer NOT NULL,
-    pay_gem integer NOT NULL,
-    buy_gem integer NOT NULL,
+    address_id bigint NOT NULL,
+    maker bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    buy_gem bigint NOT NULL,
     pay_amt numeric,
     buy_amt numeric,
+    offer_id numeric,
+    pair character varying(66),
+    header_id integer NOT NULL,
     "timestamp" integer
 );
 
@@ -10199,8 +10199,8 @@ ALTER SEQUENCE maker.log_make_id_seq OWNED BY maker.log_make.id;
 CREATE TABLE maker.log_matching_enabled (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
     is_enabled boolean
 );
 
@@ -10231,11 +10231,11 @@ ALTER SEQUENCE maker.log_matching_enabled_id_seq OWNED BY maker.log_matching_ena
 
 CREATE TABLE maker.log_median_price (
     id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     log_id bigint NOT NULL,
     val numeric,
-    age numeric
+    age numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -10266,10 +10266,10 @@ ALTER SEQUENCE maker.log_median_price_id_seq OWNED BY maker.log_median_price.id;
 CREATE TABLE maker.log_min_sell (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    pay_gem integer NOT NULL,
-    min_amount numeric
+    address_id bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    min_amount numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -10301,7 +10301,7 @@ CREATE TABLE maker.log_sorted_offer (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     offer_id numeric
 );
 
@@ -10333,16 +10333,16 @@ ALTER SEQUENCE maker.log_sorted_offer_id_seq OWNED BY maker.log_sorted_offer.id;
 CREATE TABLE maker.log_take (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    offer_id numeric,
-    pair character varying(66),
-    maker integer NOT NULL,
-    pay_gem integer NOT NULL,
-    buy_gem integer NOT NULL,
-    taker integer NOT NULL,
+    address_id bigint NOT NULL,
+    maker bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    buy_gem bigint NOT NULL,
+    taker bigint NOT NULL,
     take_amt numeric,
     give_amt numeric,
+    offer_id numeric,
+    pair character varying(66),
+    header_id integer NOT NULL,
     "timestamp" integer
 );
 
@@ -10374,12 +10374,12 @@ ALTER SEQUENCE maker.log_take_id_seq OWNED BY maker.log_take.id;
 CREATE TABLE maker.log_trade (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    pay_gem integer NOT NULL,
-    buy_gem integer NOT NULL,
+    address_id bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    buy_gem bigint NOT NULL,
     pay_amt numeric,
-    buy_amt numeric
+    buy_amt numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -10411,7 +10411,7 @@ CREATE TABLE maker.log_unsorted_offer (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
+    address_id bigint NOT NULL,
     offer_id numeric
 );
 
@@ -10476,9 +10476,9 @@ ALTER SEQUENCE maker.log_value_id_seq OWNED BY maker.log_value.id;
 CREATE TABLE maker.median_age (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    age numeric NOT NULL
+    address_id bigint NOT NULL,
+    age numeric NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10509,9 +10509,9 @@ ALTER SEQUENCE maker.median_age_id_seq OWNED BY maker.median_age.id;
 CREATE TABLE maker.median_bar (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    bar numeric NOT NULL
+    address_id bigint NOT NULL,
+    bar numeric NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10542,9 +10542,9 @@ ALTER SEQUENCE maker.median_bar_id_seq OWNED BY maker.median_bar.id;
 CREATE TABLE maker.median_bud (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    a bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    a integer NOT NULL,
     bud integer NOT NULL
 );
 
@@ -10576,9 +10576,9 @@ ALTER SEQUENCE maker.median_bud_id_seq OWNED BY maker.median_bud.id;
 CREATE TABLE maker.median_diss_batch (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
     a_length integer NOT NULL,
     a text[] NOT NULL
 );
@@ -10611,10 +10611,10 @@ ALTER SEQUENCE maker.median_diss_batch_id_seq OWNED BY maker.median_diss_batch.i
 CREATE TABLE maker.median_diss_single (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
-    a integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    a bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10645,9 +10645,9 @@ ALTER SEQUENCE maker.median_diss_single_id_seq OWNED BY maker.median_diss_single
 CREATE TABLE maker.median_drop (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
     a_length integer NOT NULL,
     a text[] NOT NULL
 );
@@ -10680,9 +10680,9 @@ ALTER SEQUENCE maker.median_drop_id_seq OWNED BY maker.median_drop.id;
 CREATE TABLE maker.median_kiss_batch (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
     a_length integer NOT NULL,
     a text[] NOT NULL
 );
@@ -10715,10 +10715,10 @@ ALTER SEQUENCE maker.median_kiss_batch_id_seq OWNED BY maker.median_kiss_batch.i
 CREATE TABLE maker.median_kiss_single (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
-    a integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    a bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10749,9 +10749,9 @@ ALTER SEQUENCE maker.median_kiss_single_id_seq OWNED BY maker.median_kiss_single
 CREATE TABLE maker.median_lift (
     id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
     a_length integer NOT NULL,
     a text[] NOT NULL
 );
@@ -10784,9 +10784,9 @@ ALTER SEQUENCE maker.median_lift_id_seq OWNED BY maker.median_lift.id;
 CREATE TABLE maker.median_orcl (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    a bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    a integer NOT NULL,
     orcl integer NOT NULL
 );
 
@@ -10818,10 +10818,10 @@ ALTER SEQUENCE maker.median_orcl_id_seq OWNED BY maker.median_orcl.id;
 CREATE TABLE maker.median_slot (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    slot bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    slot_id integer NOT NULL,
-    slot integer NOT NULL
+    slot_id integer NOT NULL
 );
 
 
@@ -10852,9 +10852,9 @@ ALTER SEQUENCE maker.median_slot_id_seq OWNED BY maker.median_slot.id;
 CREATE TABLE maker.median_val (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    val numeric NOT NULL
+    address_id bigint NOT NULL,
+    val numeric NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10919,10 +10919,10 @@ ALTER SEQUENCE maker.new_cdp_id_seq OWNED BY maker.new_cdp.id;
 CREATE TABLE maker.osm_change (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
-    src integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    src bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -10954,7 +10954,7 @@ CREATE TABLE maker.pot_cage (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL
+    msg_sender bigint NOT NULL
 );
 
 
@@ -11018,7 +11018,7 @@ CREATE TABLE maker.pot_drip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL
+    msg_sender bigint NOT NULL
 );
 
 
@@ -11082,7 +11082,7 @@ CREATE TABLE maker.pot_exit (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     wad numeric
 );
 
@@ -11115,7 +11115,7 @@ CREATE TABLE maker.pot_file_dsr (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data numeric
 );
@@ -11149,7 +11149,7 @@ CREATE TABLE maker.pot_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data text
 );
@@ -11183,7 +11183,7 @@ CREATE TABLE maker.pot_join (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     wad numeric
 );
 
@@ -11312,7 +11312,7 @@ CREATE TABLE maker.pot_user_pie (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    "user" integer NOT NULL,
+    "user" bigint NOT NULL,
     pie numeric NOT NULL
 );
 
@@ -11345,7 +11345,7 @@ CREATE TABLE maker.pot_vat (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    vat integer NOT NULL
+    vat bigint NOT NULL
 );
 
 
@@ -11377,7 +11377,7 @@ CREATE TABLE maker.pot_vow (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
     header_id integer NOT NULL,
-    vow integer NOT NULL
+    vow bigint NOT NULL
 );
 
 
@@ -11407,11 +11407,11 @@ ALTER SEQUENCE maker.pot_vow_id_seq OWNED BY maker.pot_vow.id;
 
 CREATE TABLE maker.rely (
     id integer NOT NULL,
-    header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
-    usr integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    usr bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -11442,11 +11442,11 @@ ALTER SEQUENCE maker.rely_id_seq OWNED BY maker.rely.id;
 CREATE TABLE maker.set_min_sell (
     id integer NOT NULL,
     log_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    pay_gem integer NOT NULL,
-    msg_sender integer NOT NULL,
-    dust numeric
+    address_id bigint NOT NULL,
+    pay_gem bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    dust numeric,
+    header_id integer NOT NULL
 );
 
 
@@ -11479,7 +11479,7 @@ CREATE TABLE maker.spot_file_mat (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data numeric
 );
@@ -11513,7 +11513,7 @@ CREATE TABLE maker.spot_file_par (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data numeric
 );
@@ -11548,7 +11548,7 @@ CREATE TABLE maker.spot_file_pip (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     pip text
 );
@@ -11755,8 +11755,8 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL
 );
 
 
@@ -11789,8 +11789,8 @@ CREATE TABLE maker.tick (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL
 );
 
 
@@ -11916,9 +11916,9 @@ ALTER SEQUENCE maker.vat_debt_id_seq OWNED BY maker.vat_debt.id;
 
 CREATE TABLE maker.vat_deny (
     id integer NOT NULL,
-    header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    usr integer NOT NULL
+    usr bigint NOT NULL,
+    header_id integer NOT NULL
 );
 
 
@@ -12260,7 +12260,7 @@ CREATE TABLE maker.vat_hope (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    usr integer NOT NULL
+    usr bigint NOT NULL
 );
 
 
@@ -12510,7 +12510,7 @@ CREATE TABLE maker.vat_nope (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    usr integer NOT NULL
+    usr bigint NOT NULL
 );
 
 
@@ -12542,7 +12542,7 @@ CREATE TABLE maker.vat_rely (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    usr integer NOT NULL
+    usr bigint NOT NULL
 );
 
 
@@ -12843,7 +12843,7 @@ CREATE TABLE maker.vow_fess (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     tab numeric NOT NULL
 );
 
@@ -12876,9 +12876,9 @@ CREATE TABLE maker.vow_file_auction_address (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
-    data integer NOT NULL
+    data bigint NOT NULL
 );
 
 
@@ -12910,7 +12910,7 @@ CREATE TABLE maker.vow_file_auction_attributes (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     what text,
     data numeric
 );
@@ -12975,7 +12975,7 @@ ALTER SEQUENCE maker.vow_flapper_id_seq OWNED BY maker.vow_flapper.id;
 CREATE TABLE maker.vow_flog (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     log_id bigint NOT NULL,
     era integer NOT NULL
 );
@@ -13041,7 +13041,7 @@ CREATE TABLE maker.vow_heal (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    msg_sender bigint NOT NULL,
     rad numeric
 );
 
@@ -13298,9 +13298,9 @@ ALTER SEQUENCE maker.vow_wait_id_seq OWNED BY maker.vow_wait.id;
 CREATE TABLE maker.wards (
     id integer NOT NULL,
     diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    usr bigint NOT NULL,
     header_id integer NOT NULL,
-    address_id integer NOT NULL,
-    usr integer NOT NULL,
     wards integer NOT NULL
 );
 
@@ -13333,8 +13333,8 @@ CREATE TABLE maker.yank (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    address_id integer NOT NULL,
-    msg_sender integer NOT NULL,
+    address_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
     bid_id numeric NOT NULL
 );
 
@@ -13364,7 +13364,7 @@ ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
 --
 
 CREATE TABLE public.addresses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     address character varying(42),
     hashed_address character varying(66)
 );
@@ -13375,7 +13375,6 @@ CREATE TABLE public.addresses (
 --
 
 CREATE SEQUENCE public.addresses_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -13461,7 +13460,7 @@ ALTER SEQUENCE public.eth_nodes_id_seq OWNED BY public.eth_nodes.id;
 CREATE TABLE public.event_logs (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    address integer NOT NULL,
+    address bigint NOT NULL,
     topics bytea[],
     data bytea,
     block_number bigint,
@@ -13571,7 +13570,7 @@ CREATE TABLE public.receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    contract_address_id integer NOT NULL,
+    contract_address_id bigint NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),

@@ -7,7 +7,7 @@ CREATE TABLE maker.flap_kick
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

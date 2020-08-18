@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200818204201-4fe778b52f9e
+	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200825200143-806fda825371
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.10.0
 	github.com/sirupsen/logrus v1.2.0

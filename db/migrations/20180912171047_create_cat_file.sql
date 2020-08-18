@@ -5,7 +5,7 @@ CREATE TABLE maker.cat_file_chop_lump
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     what       TEXT,
     data       NUMERIC,
@@ -30,7 +30,7 @@ CREATE TABLE maker.cat_file_flip
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     flip       TEXT,
     UNIQUE (header_id, log_id)
@@ -53,7 +53,7 @@ CREATE TABLE maker.cat_file_vow
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     data       TEXT,
     UNIQUE (header_id, log_id)

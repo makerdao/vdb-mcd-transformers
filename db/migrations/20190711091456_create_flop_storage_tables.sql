@@ -1,11 +1,10 @@
 -- +goose Up
--- SQL in this section is executed when the migration is applied.
 CREATE TABLE maker.flop_bid_bid
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, bid_id, address_id, bid)
@@ -21,9 +20,9 @@ CREATE INDEX flop_bid_bid_address_index
 CREATE TABLE maker.flop_bid_lot
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, bid_id, address_id, lot)
@@ -39,9 +38,9 @@ CREATE INDEX flop_bid_lot_bid_address_index
 CREATE TABLE maker.flop_bid_guy
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     guy        TEXT,
     UNIQUE (diff_id, header_id, bid_id, address_id, guy)
@@ -57,9 +56,9 @@ CREATE INDEX flop_bid_guy_bid_address_index
 CREATE TABLE maker.flop_bid_tic
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     tic        BIGINT  NOT NULL,
     UNIQUE (diff_id, header_id, bid_id, address_id, tic)
@@ -75,9 +74,9 @@ CREATE INDEX flop_bid_tic_bid_address_index
 CREATE TABLE maker.flop_bid_end
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     "end"      BIGINT  NOT NULL,
     UNIQUE (diff_id, header_id, bid_id, address_id, "end")
@@ -93,9 +92,9 @@ CREATE INDEX flop_bid_end_bid_address_index
 CREATE TABLE maker.flop_vat
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vat        TEXT,
     UNIQUE (diff_id, header_id, address_id, vat)
 );
@@ -108,9 +107,9 @@ CREATE INDEX flop_vat_address_index
 CREATE TABLE maker.flop_gem
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     gem        TEXT,
     UNIQUE (diff_id, header_id, address_id, gem)
 );
@@ -123,9 +122,9 @@ CREATE INDEX flop_gem_address_index
 CREATE TABLE maker.flop_beg
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     beg        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, beg)
 );
@@ -138,9 +137,9 @@ CREATE INDEX flop_beg_address_index
 CREATE TABLE maker.flop_pad
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     pad        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, pad)
 );
@@ -153,9 +152,9 @@ CREATE INDEX flop_pad_address_index
 CREATE TABLE maker.flop_ttl
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     ttl        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, ttl)
 );
@@ -168,9 +167,9 @@ CREATE INDEX flop_ttl_address_index
 CREATE TABLE maker.flop_tau
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     tau        NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, tau)
 );
@@ -183,9 +182,9 @@ CREATE INDEX flop_tau_address_index
 CREATE TABLE maker.flop_kicks
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     kicks      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, kicks)
 );
@@ -198,9 +197,9 @@ CREATE INDEX flop_kicks_address_index
 CREATE TABLE maker.flop_live
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     live       NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, address_id, live)
 );
@@ -213,9 +212,9 @@ CREATE INDEX flop_live_address_index
 CREATE TABLE maker.flop_vow
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vow        TEXT,
     UNIQUE (diff_id, header_id, address_id, vow)
 );
@@ -226,7 +225,6 @@ CREATE INDEX flop_vow_address_index
     ON maker.flop_vow (address_id);
 
 -- +goose Down
--- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.flop_vow_address_index;
 DROP INDEX maker.flop_vow_header_id_index;
 DROP INDEX maker.flop_live_address_index;

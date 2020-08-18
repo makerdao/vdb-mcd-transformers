@@ -8,7 +8,7 @@ CREATE TABLE maker.flop_kick
     lot        NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
     gal        TEXT,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

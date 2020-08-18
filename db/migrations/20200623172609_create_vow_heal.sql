@@ -4,7 +4,7 @@ CREATE TABLE maker.vow_heal
     id         serial primary key,
     log_id     bigint  not null references public.event_logs (id) on delete cascade,
     header_id  integer not null references public.headers (id) on delete cascade,
-    msg_sender integer not null references public.addresses (id) on delete cascade,
+    msg_sender bigint  not null references public.addresses (id) on delete cascade,
     rad        numeric,
     UNIQUE (header_id, log_id)
 );

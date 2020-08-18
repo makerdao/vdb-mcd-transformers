@@ -7,8 +7,8 @@ CREATE TABLE maker.tend
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC,
     bid        NUMERIC,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
