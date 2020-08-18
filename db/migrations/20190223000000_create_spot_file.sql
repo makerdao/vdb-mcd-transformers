@@ -2,12 +2,12 @@
 CREATE TABLE maker.spot_file_mat
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     data       NUMERIC,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
@@ -23,11 +23,11 @@ CREATE INDEX spot_file_mat_msg_sender_index
 CREATE TABLE maker.spot_file_par
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     data       NUMERIC,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
@@ -41,12 +41,12 @@ CREATE INDEX spot_file_par_msg_sender_index
 CREATE TABLE maker.spot_file_pip
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     pip        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

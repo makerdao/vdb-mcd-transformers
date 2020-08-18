@@ -2,10 +2,10 @@
 CREATE TABLE maker.cat_live
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     live       NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, live)
 );
 
@@ -17,10 +17,10 @@ CREATE INDEX cat_live_address_id_index
 CREATE TABLE maker.cat_vat
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vat        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vat)
 );
 
@@ -32,10 +32,10 @@ CREATE INDEX cat_vat_address_id_index
 CREATE TABLE maker.cat_vow
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vow        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vow)
 );
 
@@ -47,11 +47,11 @@ CREATE INDEX cat_vow_address_id_index
 CREATE TABLE maker.cat_ilk_flip
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     flip       TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, ilk_id, flip)
 );
 
@@ -65,11 +65,11 @@ CREATE INDEX cat_ilk_flip_address_id_index
 CREATE TABLE maker.cat_ilk_chop
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     chop       NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, ilk_id, chop)
 );
 
@@ -83,11 +83,11 @@ CREATE INDEX cat_ilk_chop_address_id_index
 CREATE TABLE maker.cat_ilk_lump
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     lump       NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, ilk_id, lump)
 );
 

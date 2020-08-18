@@ -5,9 +5,9 @@ CREATE TABLE maker.median_drop
     log_id     BIGINT     NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     address_id BIGINT     NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     msg_sender BIGINT     NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    a          TEXT ARRAY NOT NULL,
     header_id  INTEGER    NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     a_length   INTEGER    NOT NULL,
-    a          TEXT ARRAY NOT NULL,
     UNIQUE (header_id, log_id)
 );
 

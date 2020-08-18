@@ -3,10 +3,10 @@ CREATE TABLE maker.flip_bid_bid
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, bid)
 );
 
@@ -21,10 +21,10 @@ CREATE TABLE maker.flip_bid_lot
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, lot)
 );
 
@@ -39,10 +39,10 @@ CREATE TABLE maker.flip_bid_guy
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     guy        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, guy)
 );
 
@@ -57,10 +57,10 @@ CREATE TABLE maker.flip_bid_tic
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    bid_id     NUMERIC NOT NULL,
     tic        BIGINT  NOT NULL,
+    bid_id     NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, tic)
 );
 
@@ -75,10 +75,10 @@ CREATE TABLE maker.flip_bid_end
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    bid_id     NUMERIC NOT NULL,
     "end"      BIGINT  NOT NULL,
+    bid_id     NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, "end")
 );
 
@@ -93,10 +93,10 @@ CREATE TABLE maker.flip_bid_usr
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     usr        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, usr)
 );
 
@@ -111,10 +111,10 @@ CREATE TABLE maker.flip_bid_gal
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     gal        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, gal)
 );
 
@@ -129,10 +129,10 @@ CREATE TABLE maker.flip_bid_tab
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     tab        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, bid_id, address_id, tab)
 );
 
@@ -147,9 +147,9 @@ CREATE TABLE maker.flip_vat
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vat        TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, vat)
 );
 
@@ -162,8 +162,8 @@ CREATE TABLE maker.flip_ilk
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, ilk_id)
 );
@@ -179,9 +179,9 @@ CREATE TABLE maker.flip_beg
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     beg        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, beg)
 );
 
@@ -194,9 +194,9 @@ CREATE TABLE maker.flip_ttl
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     ttl        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, ttl)
 );
 
@@ -209,9 +209,9 @@ CREATE TABLE maker.flip_tau
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     tau        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, tau)
 );
 
@@ -224,9 +224,9 @@ CREATE TABLE maker.flip_kicks
 (
     id         SERIAL PRIMARY KEY,
     diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     kicks      NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, kicks)
 );
 

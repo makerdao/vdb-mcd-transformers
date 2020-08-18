@@ -3,9 +3,9 @@ CREATE TABLE maker.pot_user_pie
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     "user"    BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     pie       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, "user", pie)
 );
 
@@ -18,8 +18,8 @@ CREATE TABLE maker.pot_pie
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     pie       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, pie)
 );
 
@@ -30,8 +30,8 @@ CREATE TABLE maker.pot_dsr
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     dsr       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, dsr)
 );
 
@@ -42,8 +42,8 @@ CREATE TABLE maker.pot_chi
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     chi       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, chi)
 );
 
@@ -54,8 +54,8 @@ CREATE TABLE maker.pot_vat
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     vat       BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vat)
 );
 
@@ -68,8 +68,8 @@ CREATE TABLE maker.pot_vow
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     vow       BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vow)
 );
 
@@ -82,8 +82,8 @@ CREATE TABLE maker.pot_rho
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     rho       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, rho)
 );
 
@@ -94,8 +94,8 @@ CREATE TABLE maker.pot_live
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     live      NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, live)
 );
 
