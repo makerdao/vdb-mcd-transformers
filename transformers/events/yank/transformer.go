@@ -32,6 +32,10 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (re
 		if validationErr != nil {
 			return nil, validationErr
 		}
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
 		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
@@ -42,13 +46,18 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (re
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.YankTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn,
+				event.HeaderFK,
+				event.LogFK,
+				event.AddressFK,
+				constants.MsgSenderColumn,
+				constants.BidIDColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.LogFK:           log.ID,
-				event.AddressFK:       addressID,
-				constants.BidIDColumn: bidId.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				event.AddressFK:           addressID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.BidIDColumn:     bidId.String(),
 			},
 		}
 		results = append(results, model)

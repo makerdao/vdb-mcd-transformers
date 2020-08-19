@@ -88,7 +88,7 @@ var _ = Describe("Frob event computed columns", func() {
 	})
 
 	Describe("frob_event_urn", func() {
-		It("returns urn_state for a frob_event", func() {
+		It("returns urn_snapshot for a frob_event", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			vatRepository.SetDB(db)

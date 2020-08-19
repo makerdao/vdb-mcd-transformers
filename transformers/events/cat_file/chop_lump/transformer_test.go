@@ -21,9 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -41,31 +41,34 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
-			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileChopEventLog}, db)
+			chopLog := test_data.CatFileChopEventLog
+			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{chopLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopEventLog.Log.Topics[2].Hex())
-			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
+			test_data.AssignAddressID(chopLog, expectedModel, db)
+			ilkID, ilkErr := shared.GetOrCreateIlk(chopLog.Log.Topics[2].Hex(), db)
+			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-
-			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+			test_data.AssignMessageSenderID(chopLog, expectedModel, db)
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 	})
 
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
-			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileLumpEventLog}, db)
+			lumpLog := test_data.CatFileLumpEventLog
+			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{lumpLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileLumpEventLog.Log.Topics[2].Hex())
-			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileLumpModel()
+			test_data.AssignAddressID(lumpLog, expectedModel, db)
+			ilkID, ilkErr := shared.GetOrCreateIlk(lumpLog.Log.Topics[2].Hex(), db)
+			Expect(ilkErr).NotTo(HaveOccurred())
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			test_data.AssignMessageSenderID(lumpLog, expectedModel, db)
 
-			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+			Expect(models).To(ConsistOf(expectedModel))
 		})
 	})
 

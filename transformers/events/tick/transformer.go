@@ -24,8 +24,10 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
+// Transformer implements the VDB event Transformer interface
 type Transformer struct{}
 
+// ToModels transforms log data into general InsertionModels the Repository can persist
 func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
@@ -39,17 +41,24 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.TickTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK,
+				event.HeaderFK, event.LogFK, constants.BidIDColumn, event.AddressFK, constants.MsgSenderColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.LogFK:           log.ID,
-				constants.BidIDColumn: log.Log.Topics[2].Big().String(),
-				event.AddressFK:       addressID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.BidIDColumn:     log.Log.Topics[2].Big().String(),
+				event.AddressFK:           addressID,
+				constants.MsgSenderColumn: msgSenderID,
 			},
 		}
 		models = append(models, model)

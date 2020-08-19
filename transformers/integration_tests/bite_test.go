@@ -66,31 +66,34 @@ var _ = Describe("Bite Transformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []biteModel
-		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id, bid_id from maker.bite`)
+		var dbResult biteModel
+		err = db.Get(&dbResult, `SELECT art, ink, flip, tab, urn_id, bid_id, address_id from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Art).To(Equal("4460522851157616216837"))
+		Expect(dbResult.Art).To(Equal("4460522851157616216837"))
 		urnID, err := shared.GetOrCreateUrn("0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5",
 			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].Ink).To(Equal("50000000000000000000"))
-		Expect(dbResult[0].Flip).To(Equal(test_data.FlipEthAddress()))
-		Expect(dbResult[0].Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
-		Expect(dbResult[0].Id).To(Equal("112"))
+		Expect(dbResult.Urn).To(Equal(strconv.FormatInt(urnID, 10)))
+		Expect(dbResult.Ink).To(Equal("50000000000000000000"))
+		Expect(dbResult.Flip).To(Equal(test_data.FlipEthV100Address()))
+		Expect(dbResult.Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
+		Expect(dbResult.Id).To(Equal("112"))
+		addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		Expect(dbResult.AddressID).To(Equal(addressID))
 	})
 })
 
 type biteModel struct {
-	Ilk      string
-	Urn      string `db:"urn_id"`
-	Ink      string
-	Art      string
-	Tab      string
-	Flip     string
-	Id       string `db:"bid_id"`
-	HeaderID int64
-	LogID    int64 `db:"log_id"`
+	Ilk       string
+	Urn       string `db:"urn_id"`
+	Ink       string
+	Art       string
+	Tab       string
+	Flip      string
+	Id        string `db:"bid_id"`
+	HeaderID  int64
+	LogID     int64 `db:"log_id"`
+	AddressID int64 `db:"address_id"`
 }

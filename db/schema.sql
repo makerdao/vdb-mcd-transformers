@@ -957,14 +957,15 @@ CREATE TABLE api.urn_snapshot (
 CREATE FUNCTION api.all_urns(block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
-WITH distinct_urn_snapshots AS (
-    SELECT DISTINCT ON (urn_identifier, ilk_identifier)
-        urn_identifier, ilk_identifier, block_height, ink, coalesce(art, 0), created, updated
-        FROM api.urn_snapshot
-        WHERE block_height <= all_urns.block_height
-        ORDER BY urn_identifier, ilk_identifier, updated DESC)
-SELECT *
-    FROM distinct_urn_snapshots
+WITH distinct_urn_snapshots AS (SELECT urn_identifier, ilk_identifier, MAX(block_height) AS block_height
+                                FROM api.urn_snapshot
+                                WHERE block_height <= all_urns.block_height
+                                GROUP BY urn_identifier, ilk_identifier)
+SELECT us.urn_identifier, us.ilk_identifier, us.block_height, us.ink, coalesce(us.art, 0), us.created, us.updated
+    FROM api.urn_snapshot AS us, distinct_urn_snapshots AS dus
+    WHERE us.urn_identifier = dus.urn_identifier
+    AND us.ilk_identifier = dus.ilk_identifier
+    AND us.block_height = dus.block_height
     LIMIT all_urns.max_results
     OFFSET all_urns.result_offset
 $$;
@@ -6495,10 +6496,10 @@ COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.va
 
 
 --
--- Name: create_back_filled_diff(bigint, bytea, bytea, bytea, bytea); Type: FUNCTION; Schema: public; Owner: -
+-- Name: create_back_filled_diff(bigint, bytea, bytea, bytea, bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea) RETURNS void
+CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -6524,10 +6525,10 @@ BEGIN
     END IF;
 
     INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key, storage_value,
-                                     from_backfill)
+                                     eth_node_id, from_backfill)
     VALUES (create_back_filled_diff.block_height, create_back_filled_diff.block_hash,
             create_back_filled_diff.hashed_address, create_back_filled_diff.storage_key,
-            create_back_filled_diff.storage_value, true)
+            create_back_filled_diff.storage_value, create_back_filled_diff.eth_node_id, true)
     ON CONFLICT DO NOTHING;
 
     RETURN;
@@ -6536,10 +6537,10 @@ $$;
 
 
 --
--- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea) IS '@omit';
+COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) IS '@omit';
 
 
 --
@@ -7107,6 +7108,13 @@ $$;
 
 
 --
+-- Name: FUNCTION get_or_create_header(block_number bigint, hash character varying, raw jsonb, block_timestamp numeric, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.get_or_create_header(block_number bigint, hash character varying, raw jsonb, block_timestamp numeric, eth_node_id integer) IS '@omit';
+
+
+--
 -- Name: get_tx_data(bigint, bigint); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -7618,6 +7626,41 @@ ALTER SEQUENCE api.managed_cdp_id_seq OWNED BY api.managed_cdp.id;
 
 
 --
+-- Name: auction_file; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.auction_file (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.auction_file_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: auction_file_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.auction_file_id_seq OWNED BY maker.auction_file.id;
+
+
+--
 -- Name: bite; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -7630,7 +7673,8 @@ CREATE TABLE maker.bite (
     art numeric,
     tab numeric,
     flip text,
-    bid_id numeric
+    bid_id numeric,
+    address_id integer NOT NULL
 );
 
 
@@ -7662,6 +7706,8 @@ CREATE TABLE maker.cat_file_chop_lump (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL,
     what text,
     data numeric
@@ -7696,7 +7742,9 @@ CREATE TABLE maker.cat_file_flip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
     ilk_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     flip text
 );
@@ -7730,6 +7778,8 @@ CREATE TABLE maker.cat_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data text
 );
@@ -8247,8 +8297,9 @@ CREATE TABLE maker.deal (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    bid_id numeric NOT NULL
 );
 
 
@@ -8283,6 +8334,7 @@ CREATE TABLE maker.dent (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
+    msg_sender integer NOT NULL,
     address_id integer NOT NULL
 );
 
@@ -9602,6 +9654,7 @@ CREATE TABLE maker.jug_drip (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -9634,6 +9687,7 @@ CREATE TABLE maker.jug_file_base (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -9667,6 +9721,7 @@ CREATE TABLE maker.jug_file_ilk (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL,
     what text,
     data numeric
@@ -9701,6 +9756,7 @@ CREATE TABLE maker.jug_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data text
 );
@@ -9774,6 +9830,7 @@ CREATE TABLE maker.jug_init (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     ilk_id integer NOT NULL
 );
 
@@ -10368,6 +10425,7 @@ CREATE TABLE maker.log_value (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
     val numeric
 );
 
@@ -10876,7 +10934,8 @@ ALTER SEQUENCE maker.osm_change_id_seq OWNED BY maker.osm_change.id;
 CREATE TABLE maker.pot_cage (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    log_id bigint NOT NULL
+    log_id bigint NOT NULL,
+    msg_sender integer NOT NULL
 );
 
 
@@ -11037,6 +11096,7 @@ CREATE TABLE maker.pot_file_dsr (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -11070,6 +11130,7 @@ CREATE TABLE maker.pot_file_vow (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data text
 );
@@ -11399,6 +11460,7 @@ CREATE TABLE maker.spot_file_mat (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -11432,6 +11494,7 @@ CREATE TABLE maker.spot_file_par (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     data numeric
 );
@@ -11466,6 +11529,7 @@ CREATE TABLE maker.spot_file_pip (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     ilk_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
     pip text
 );
@@ -11672,7 +11736,8 @@ CREATE TABLE maker.tend (
     bid_id numeric NOT NULL,
     lot numeric,
     bid numeric,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL
 );
 
 
@@ -11705,7 +11770,8 @@ CREATE TABLE maker.tick (
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
     bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL
 );
 
 
@@ -12758,6 +12824,7 @@ CREATE TABLE maker.vow_fess (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     tab numeric NOT NULL
 );
 
@@ -12783,23 +12850,24 @@ ALTER SEQUENCE maker.vow_fess_id_seq OWNED BY maker.vow_fess.id;
 
 
 --
--- Name: vow_file; Type: TABLE; Schema: maker; Owner: -
+-- Name: vow_file_auction_address; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.vow_file (
+CREATE TABLE maker.vow_file_auction_address (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
     what text,
-    data numeric
+    data integer NOT NULL
 );
 
 
 --
--- Name: vow_file_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.vow_file_id_seq
+CREATE SEQUENCE maker.vow_file_auction_address_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -12809,10 +12877,44 @@ CREATE SEQUENCE maker.vow_file_id_seq
 
 
 --
--- Name: vow_file_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: vow_file_auction_address_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.vow_file_id_seq OWNED BY maker.vow_file.id;
+ALTER SEQUENCE maker.vow_file_auction_address_id_seq OWNED BY maker.vow_file_auction_address.id;
+
+
+--
+-- Name: vow_file_auction_attributes; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_file_auction_attributes (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    log_id bigint NOT NULL,
+    msg_sender integer NOT NULL,
+    what text,
+    data numeric
+);
+
+
+--
+-- Name: vow_file_auction_attributes_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_file_auction_attributes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_file_auction_attributes_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_file_auction_attributes_id_seq OWNED BY maker.vow_file_auction_attributes.id;
 
 
 --
@@ -12854,6 +12956,7 @@ ALTER SEQUENCE maker.vow_flapper_id_seq OWNED BY maker.vow_flapper.id;
 CREATE TABLE maker.vow_flog (
     id integer NOT NULL,
     header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
     log_id bigint NOT NULL,
     era integer NOT NULL
 );
@@ -12909,6 +13012,39 @@ CREATE SEQUENCE maker.vow_flopper_id_seq
 --
 
 ALTER SEQUENCE maker.vow_flopper_id_seq OWNED BY maker.vow_flopper.id;
+
+
+--
+-- Name: vow_heal; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.vow_heal (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    rad numeric
+);
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.vow_heal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vow_heal_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.vow_heal_id_seq OWNED BY maker.vow_heal.id;
 
 
 --
@@ -13178,8 +13314,9 @@ CREATE TABLE maker.yank (
     id integer NOT NULL,
     header_id integer NOT NULL,
     log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
-    address_id integer NOT NULL
+    address_id integer NOT NULL,
+    msg_sender integer NOT NULL,
+    bid_id numeric NOT NULL
 );
 
 
@@ -13241,7 +13378,6 @@ ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 CREATE TABLE public.checked_headers (
     id integer NOT NULL,
     header_id integer NOT NULL,
-    yank integer DEFAULT 0 NOT NULL,
     new_cdp integer DEFAULT 0 NOT NULL
 );
 
@@ -13457,6 +13593,7 @@ CREATE TABLE public.storage_diff (
     hashed_address bytea,
     storage_key bytea,
     storage_value bytea,
+    eth_node_id integer NOT NULL,
     checked boolean DEFAULT false NOT NULL,
     from_backfill boolean DEFAULT false NOT NULL
 );
@@ -13557,6 +13694,13 @@ ALTER SEQUENCE public.watched_logs_id_seq OWNED BY public.watched_logs.id;
 --
 
 ALTER TABLE ONLY api.managed_cdp ALTER COLUMN id SET DEFAULT nextval('api.managed_cdp_id_seq'::regclass);
+
+
+--
+-- Name: auction_file id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file ALTER COLUMN id SET DEFAULT nextval('maker.auction_file_id_seq'::regclass);
 
 
 --
@@ -14736,10 +14880,17 @@ ALTER TABLE ONLY maker.vow_fess ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 
 
 --
--- Name: vow_file id; Type: DEFAULT; Schema: maker; Owner: -
+-- Name: vow_file_auction_address id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_id_seq'::regclass);
+ALTER TABLE ONLY maker.vow_file_auction_address ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_address_id_seq'::regclass);
+
+
+--
+-- Name: vow_file_auction_attributes id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes ALTER COLUMN id SET DEFAULT nextval('maker.vow_file_auction_attributes_id_seq'::regclass);
 
 
 --
@@ -14761,6 +14912,13 @@ ALTER TABLE ONLY maker.vow_flog ALTER COLUMN id SET DEFAULT nextval('maker.vow_f
 --
 
 ALTER TABLE ONLY maker.vow_flopper ALTER COLUMN id SET DEFAULT nextval('maker.vow_flopper_id_seq'::regclass);
+
+
+--
+-- Name: vow_heal id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal ALTER COLUMN id SET DEFAULT nextval('maker.vow_heal_id_seq'::regclass);
 
 
 --
@@ -14926,6 +15084,22 @@ ALTER TABLE ONLY api.managed_cdp
 
 ALTER TABLE ONLY api.urn_snapshot
     ADD CONSTRAINT urn_snapshot_pkey PRIMARY KEY (urn_identifier, ilk_identifier, block_height);
+
+
+--
+-- Name: auction_file auction_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: auction_file auction_file_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_pkey PRIMARY KEY (id);
 
 
 --
@@ -17657,19 +17831,35 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
--- Name: vow_file vow_file_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_header_id_log_id_key UNIQUE (header_id, log_id);
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
--- Name: vow_file vow_file_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_address vow_file_auction_address_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_pkey PRIMARY KEY (id);
 
 
 --
@@ -17718,6 +17908,22 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vow_heal vow_heal_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: vow_heal vow_heal_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_pkey PRIMARY KEY (id);
 
 
 --
@@ -18009,6 +18215,34 @@ ALTER TABLE ONLY public.watched_logs
 
 
 --
+-- Name: auction_file_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_address_id_index ON maker.auction_file USING btree (address_id);
+
+
+--
+-- Name: auction_file_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_header_index ON maker.auction_file USING btree (header_id);
+
+
+--
+-- Name: auction_file_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_log_index ON maker.auction_file USING btree (log_id);
+
+
+--
+-- Name: auction_file_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX auction_file_msg_sender_index ON maker.auction_file USING btree (msg_sender);
+
+
+--
 -- Name: bid_event_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18020,6 +18254,13 @@ CREATE INDEX bid_event_index ON maker.bid_event USING btree (contract_address, b
 --
 
 CREATE INDEX bid_event_urn_index ON maker.bid_event USING btree (ilk_identifier, urn_identifier);
+
+
+--
+-- Name: bite_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX bite_address_index ON maker.bite USING btree (address_id);
 
 
 --
@@ -18044,6 +18285,20 @@ CREATE INDEX bite_urn_index ON maker.bite USING btree (urn_id);
 
 
 --
+-- Name: cat_file_cho_lump_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_cho_lump_msg_sender_index ON maker.cat_file_chop_lump USING btree (msg_sender);
+
+
+--
+-- Name: cat_file_chop_lump_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_address_index ON maker.cat_file_chop_lump USING btree (address_id);
+
+
+--
 -- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18062,6 +18317,13 @@ CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btre
 --
 
 CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btree (log_id);
+
+
+--
+-- Name: cat_file_flip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_address_index ON maker.cat_file_flip USING btree (address_id);
 
 
 --
@@ -18086,6 +18348,20 @@ CREATE INDEX cat_file_flip_log_index ON maker.cat_file_flip USING btree (log_id)
 
 
 --
+-- Name: cat_file_flip_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_flip_msg_sender_index ON maker.cat_file_flip USING btree (msg_sender);
+
+
+--
+-- Name: cat_file_vow_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_address_index ON maker.cat_file_vow USING btree (address_id);
+
+
+--
 -- Name: cat_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18097,6 +18373,13 @@ CREATE INDEX cat_file_vow_header_index ON maker.cat_file_vow USING btree (header
 --
 
 CREATE INDEX cat_file_vow_log_index ON maker.cat_file_vow USING btree (log_id);
+
+
+--
+-- Name: cat_file_vow_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_vow_msg_sender ON maker.cat_file_vow USING btree (msg_sender);
 
 
 --
@@ -18282,6 +18565,13 @@ CREATE INDEX deal_log_index ON maker.deal USING btree (log_id);
 
 
 --
+-- Name: deal_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX deal_msg_sender_index ON maker.deal USING btree (msg_sender);
+
+
+--
 -- Name: dent_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18300,6 +18590,13 @@ CREATE INDEX dent_header_index ON maker.dent USING btree (header_id);
 --
 
 CREATE INDEX dent_log_index ON maker.dent USING btree (log_id);
+
+
+--
+-- Name: dent_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dent_msg_sender_index ON maker.dent USING btree (msg_sender);
 
 
 --
@@ -19122,6 +19419,13 @@ CREATE INDEX flop_vow_header_id_index ON maker.flop_vow USING btree (header_id);
 
 
 --
+-- Name: jog_drip_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jog_drip_msg_sender ON maker.jug_drip USING btree (msg_sender);
+
+
+--
 -- Name: jug_base_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -19164,6 +19468,13 @@ CREATE INDEX jug_file_base_log_index ON maker.jug_file_base USING btree (log_id)
 
 
 --
+-- Name: jug_file_base_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_base_msg_sender_index ON maker.jug_file_base USING btree (msg_sender);
+
+
+--
 -- Name: jug_file_ilk_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -19185,6 +19496,13 @@ CREATE INDEX jug_file_ilk_log_index ON maker.jug_file_ilk USING btree (log_id);
 
 
 --
+-- Name: jug_file_ilk_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_ilk_msg_sender_index ON maker.jug_file_ilk USING btree (msg_sender);
+
+
+--
 -- Name: jug_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -19196,6 +19514,13 @@ CREATE INDEX jug_file_vow_header_index ON maker.jug_file_vow USING btree (header
 --
 
 CREATE INDEX jug_file_vow_log_index ON maker.jug_file_vow USING btree (log_id);
+
+
+--
+-- Name: jug_file_vow_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_file_vow_msg_sender_index ON maker.jug_file_vow USING btree (msg_sender);
 
 
 --
@@ -19245,6 +19570,13 @@ CREATE INDEX jug_init_ilk_index ON maker.jug_init USING btree (ilk_id);
 --
 
 CREATE INDEX jug_init_log_index ON maker.jug_init USING btree (log_id);
+
+
+--
+-- Name: jug_init_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX jug_init_msg_sender_index ON maker.jug_init USING btree (msg_sender);
 
 
 --
@@ -19682,6 +20014,13 @@ CREATE INDEX log_unsorted_offer_log_index ON maker.log_unsorted_offer USING btre
 
 
 --
+-- Name: log_value_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX log_value_address_index ON maker.log_value USING btree (address_id);
+
+
+--
 -- Name: log_value_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20067,6 +20406,13 @@ CREATE INDEX pot_cage_log_index ON maker.pot_cage USING btree (log_id);
 
 
 --
+-- Name: pot_cage_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_cage_msg_sender_index ON maker.pot_cage USING btree (msg_sender);
+
+
+--
 -- Name: pot_chi_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20137,6 +20483,13 @@ CREATE INDEX pot_file_dsr_log_index ON maker.pot_file_dsr USING btree (log_id);
 
 
 --
+-- Name: pot_file_dsr_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_file_dsr_msg_sender_index ON maker.pot_file_dsr USING btree (msg_sender);
+
+
+--
 -- Name: pot_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20148,6 +20501,13 @@ CREATE INDEX pot_file_vow_header_index ON maker.pot_file_vow USING btree (header
 --
 
 CREATE INDEX pot_file_vow_log_index ON maker.pot_file_vow USING btree (log_id);
+
+
+--
+-- Name: pot_file_vow_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX pot_file_vow_msg_sender_index ON maker.pot_file_vow USING btree (msg_sender);
 
 
 --
@@ -20326,6 +20686,13 @@ CREATE INDEX spot_file_mat_log_index ON maker.spot_file_mat USING btree (log_id)
 
 
 --
+-- Name: spot_file_mat_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_mat_msg_sender_index ON maker.spot_file_mat USING btree (msg_sender);
+
+
+--
 -- Name: spot_file_par_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20337,6 +20704,13 @@ CREATE INDEX spot_file_par_header_index ON maker.spot_file_par USING btree (head
 --
 
 CREATE INDEX spot_file_par_log_index ON maker.spot_file_par USING btree (log_id);
+
+
+--
+-- Name: spot_file_par_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_par_msg_sender_index ON maker.spot_file_par USING btree (msg_sender);
 
 
 --
@@ -20358,6 +20732,13 @@ CREATE INDEX spot_file_pip_ilk_index ON maker.spot_file_pip USING btree (ilk_id)
 --
 
 CREATE INDEX spot_file_pip_log_index ON maker.spot_file_pip USING btree (log_id);
+
+
+--
+-- Name: spot_file_pip_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX spot_file_pip_msg_sender_index ON maker.spot_file_pip USING btree (msg_sender);
 
 
 --
@@ -20452,6 +20833,13 @@ CREATE INDEX tend_log_index ON maker.tend USING btree (log_id);
 
 
 --
+-- Name: tend_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tend_msg_sender_index ON maker.tend USING btree (msg_sender);
+
+
+--
 -- Name: tick_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -20477,6 +20865,13 @@ CREATE INDEX tick_header_index ON maker.tick USING btree (header_id);
 --
 
 CREATE INDEX tick_log_index ON maker.tick USING btree (log_id);
+
+
+--
+-- Name: tick_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX tick_msg_sender_index ON maker.tick USING btree (msg_sender);
 
 
 --
@@ -20984,17 +21379,59 @@ CREATE INDEX vow_fess_log_index ON maker.vow_fess USING btree (log_id);
 
 
 --
--- Name: vow_file_header_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: vow_fess_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_header_index ON maker.vow_file USING btree (header_id);
+CREATE INDEX vow_fess_msg_sender_index ON maker.vow_fess USING btree (msg_sender);
 
 
 --
--- Name: vow_file_log_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: vow_file_auction_address_data_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX vow_file_log_index ON maker.vow_file USING btree (log_id);
+CREATE INDEX vow_file_auction_address_data_index ON maker.vow_file_auction_address USING btree (data);
+
+
+--
+-- Name: vow_file_auction_address_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_header_index ON maker.vow_file_auction_address USING btree (header_id);
+
+
+--
+-- Name: vow_file_auction_address_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_log_index ON maker.vow_file_auction_address USING btree (log_id);
+
+
+--
+-- Name: vow_file_auction_address_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_address_msg_sender_index ON maker.vow_file_auction_address USING btree (msg_sender);
+
+
+--
+-- Name: vow_file_auction_attributes_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_attributes_header_index ON maker.vow_file_auction_attributes USING btree (header_id);
+
+
+--
+-- Name: vow_file_auction_attributes_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_attributes_log_index ON maker.vow_file_auction_attributes USING btree (log_id);
+
+
+--
+-- Name: vow_file_auction_attributes_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_file_auction_attributes_msg_sender_index ON maker.vow_file_auction_attributes USING btree (msg_sender);
 
 
 --
@@ -21026,10 +21463,38 @@ CREATE INDEX vow_flog_log_index ON maker.vow_flog USING btree (log_id);
 
 
 --
+-- Name: vow_flog_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_flog_msg_sender_index ON maker.vow_flog USING btree (msg_sender);
+
+
+--
 -- Name: vow_flopper_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
 CREATE INDEX vow_flopper_header_id_index ON maker.vow_flopper USING btree (header_id);
+
+
+--
+-- Name: vow_heal_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_header_index ON maker.vow_heal USING btree (header_id);
+
+
+--
+-- Name: vow_heal_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_log_index ON maker.vow_heal USING btree (log_id);
+
+
+--
+-- Name: vow_heal_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vow_heal_msg_sender ON maker.vow_heal USING btree (msg_sender);
 
 
 --
@@ -21138,6 +21603,13 @@ CREATE INDEX yank_log_index ON maker.yank USING btree (log_id);
 
 
 --
+-- Name: yank_msg_sender; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX yank_msg_sender ON maker.yank USING btree (msg_sender);
+
+
+--
 -- Name: event_logs_address; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -21155,7 +21627,7 @@ CREATE INDEX event_logs_transaction ON public.event_logs USING btree (tx_hash);
 -- Name: event_logs_untransformed; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX event_logs_untransformed ON public.event_logs USING btree (transformed) WHERE (transformed IS FALSE);
+CREATE INDEX event_logs_untransformed ON public.event_logs USING btree (transformed) WHERE (transformed = false);
 
 
 --
@@ -21204,7 +21676,14 @@ CREATE INDEX receipts_transaction ON public.receipts USING btree (transaction_id
 -- Name: storage_diff_checked_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX storage_diff_checked_index ON public.storage_diff USING btree (checked) WHERE (checked IS FALSE);
+CREATE INDEX storage_diff_checked_index ON public.storage_diff USING btree (checked) WHERE (checked = false);
+
+
+--
+-- Name: storage_diff_eth_node; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_eth_node ON public.storage_diff USING btree (eth_node_id);
 
 
 --
@@ -21572,11 +22051,51 @@ CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECU
 
 
 --
+-- Name: auction_file auction_file_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auction_file auction_file_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.auction_file
+    ADD CONSTRAINT auction_file_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: bid_event bid_event_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.bid_event
     ADD CONSTRAINT bid_event_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: bite bite_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.bite
+    ADD CONSTRAINT bite_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -21604,6 +22123,14 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: cat_file_chop_lump cat_file_chop_lump_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump
+    ADD CONSTRAINT cat_file_chop_lump_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_chop_lump cat_file_chop_lump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21625,6 +22152,22 @@ ALTER TABLE ONLY maker.cat_file_chop_lump
 
 ALTER TABLE ONLY maker.cat_file_chop_lump
     ADD CONSTRAINT cat_file_chop_lump_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_chop_lump cat_file_chop_lump_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump
+    ADD CONSTRAINT cat_file_chop_lump_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_flip cat_file_flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_flip
+    ADD CONSTRAINT cat_file_flip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -21652,6 +22195,22 @@ ALTER TABLE ONLY maker.cat_file_flip
 
 
 --
+-- Name: cat_file_flip cat_file_flip_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_flip
+    ADD CONSTRAINT cat_file_flip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_vow cat_file_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_file_vow cat_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -21665,6 +22224,14 @@ ALTER TABLE ONLY maker.cat_file_vow
 
 ALTER TABLE ONLY maker.cat_file_vow
     ADD CONSTRAINT cat_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_vow cat_file_vow_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_vow
+    ADD CONSTRAINT cat_file_vow_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -21980,6 +22547,14 @@ ALTER TABLE ONLY maker.deal
 
 
 --
+-- Name: deal deal_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.deal
+    ADD CONSTRAINT deal_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: dent dent_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22001,6 +22576,14 @@ ALTER TABLE ONLY maker.dent
 
 ALTER TABLE ONLY maker.dent
     ADD CONSTRAINT dent_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dent dent_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dent
+    ADD CONSTRAINT dent_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -23148,6 +23731,14 @@ ALTER TABLE ONLY maker.jug_drip
 
 
 --
+-- Name: jug_drip jug_drip_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_drip
+    ADD CONSTRAINT jug_drip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_file_base jug_file_base_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -23161,6 +23752,14 @@ ALTER TABLE ONLY maker.jug_file_base
 
 ALTER TABLE ONLY maker.jug_file_base
     ADD CONSTRAINT jug_file_base_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_base jug_file_base_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_base
+    ADD CONSTRAINT jug_file_base_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -23188,6 +23787,14 @@ ALTER TABLE ONLY maker.jug_file_ilk
 
 
 --
+-- Name: jug_file_ilk jug_file_ilk_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_ilk
+    ADD CONSTRAINT jug_file_ilk_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: jug_file_vow jug_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -23201,6 +23808,14 @@ ALTER TABLE ONLY maker.jug_file_vow
 
 ALTER TABLE ONLY maker.jug_file_vow
     ADD CONSTRAINT jug_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_file_vow jug_file_vow_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_file_vow
+    ADD CONSTRAINT jug_file_vow_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -23273,6 +23888,14 @@ ALTER TABLE ONLY maker.jug_init
 
 ALTER TABLE ONLY maker.jug_init
     ADD CONSTRAINT jug_init_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jug_init jug_init_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.jug_init
+    ADD CONSTRAINT jug_init_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -23788,6 +24411,14 @@ ALTER TABLE ONLY maker.log_unsorted_offer
 
 
 --
+-- Name: log_value log_value_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.log_value
+    ADD CONSTRAINT log_value_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: log_value log_value_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24252,6 +24883,14 @@ ALTER TABLE ONLY maker.pot_cage
 
 
 --
+-- Name: pot_cage pot_cage_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_cage
+    ADD CONSTRAINT pot_cage_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pot_chi pot_chi_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24348,6 +24987,14 @@ ALTER TABLE ONLY maker.pot_file_dsr
 
 
 --
+-- Name: pot_file_dsr pot_file_dsr_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_file_dsr
+    ADD CONSTRAINT pot_file_dsr_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pot_file_vow pot_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24361,6 +25008,14 @@ ALTER TABLE ONLY maker.pot_file_vow
 
 ALTER TABLE ONLY maker.pot_file_vow
     ADD CONSTRAINT pot_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pot_file_vow pot_file_vow_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.pot_file_vow
+    ADD CONSTRAINT pot_file_vow_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -24612,6 +25267,14 @@ ALTER TABLE ONLY maker.spot_file_mat
 
 
 --
+-- Name: spot_file_mat spot_file_mat_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_mat
+    ADD CONSTRAINT spot_file_mat_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: spot_file_par spot_file_par_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24625,6 +25288,14 @@ ALTER TABLE ONLY maker.spot_file_par
 
 ALTER TABLE ONLY maker.spot_file_par
     ADD CONSTRAINT spot_file_par_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_par spot_file_par_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_par
+    ADD CONSTRAINT spot_file_par_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -24649,6 +25320,14 @@ ALTER TABLE ONLY maker.spot_file_pip
 
 ALTER TABLE ONLY maker.spot_file_pip
     ADD CONSTRAINT spot_file_pip_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spot_file_pip spot_file_pip_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.spot_file_pip
+    ADD CONSTRAINT spot_file_pip_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -24796,6 +25475,14 @@ ALTER TABLE ONLY maker.tend
 
 
 --
+-- Name: tend tend_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tend
+    ADD CONSTRAINT tend_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: tick tick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -24817,6 +25504,14 @@ ALTER TABLE ONLY maker.tick
 
 ALTER TABLE ONLY maker.tick
     ADD CONSTRAINT tick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tick tick_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.tick
+    ADD CONSTRAINT tick_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -25532,19 +26227,67 @@ ALTER TABLE ONLY maker.vow_fess
 
 
 --
--- Name: vow_file vow_file_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_fess vow_fess_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.vow_fess
+    ADD CONSTRAINT vow_fess_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
--- Name: vow_file vow_file_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: vow_file_auction_address vow_file_auction_address_data_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.vow_file
-    ADD CONSTRAINT vow_file_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_data_fkey FOREIGN KEY (data) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_address vow_file_auction_address_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_address
+    ADD CONSTRAINT vow_file_auction_address_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_file_auction_attributes vow_file_auction_attributes_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_file_auction_attributes
+    ADD CONSTRAINT vow_file_auction_attributes_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -25580,6 +26323,14 @@ ALTER TABLE ONLY maker.vow_flog
 
 
 --
+-- Name: vow_flog vow_flog_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_flog
+    ADD CONSTRAINT vow_flog_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vow_flopper vow_flopper_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -25593,6 +26344,30 @@ ALTER TABLE ONLY maker.vow_flopper
 
 ALTER TABLE ONLY maker.vow_flopper
     ADD CONSTRAINT vow_flopper_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vow_heal vow_heal_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.vow_heal
+    ADD CONSTRAINT vow_heal_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -25764,6 +26539,14 @@ ALTER TABLE ONLY maker.yank
 
 
 --
+-- Name: yank yank_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.yank
+    ADD CONSTRAINT yank_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
 -- Name: checked_headers checked_headers_header_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25825,6 +26608,14 @@ ALTER TABLE ONLY public.receipts
 
 ALTER TABLE ONLY public.receipts
     ADD CONSTRAINT receipts_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES public.transactions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: storage_diff storage_diff_eth_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.storage_diff
+    ADD CONSTRAINT storage_diff_eth_node_id_fkey FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
 
 
 --

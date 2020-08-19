@@ -28,7 +28,7 @@ import (
 )
 
 var rawYankLog = types.Log{
-	Address: common.HexToAddress(FlipEthAddress()),
+	Address: common.HexToAddress(FlipEthV100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.YankSignature()),
 		common.HexToHash("0x00000000000000000000000064d922894153be9eef7b7218dc565d1d0ce2a092"),
@@ -55,11 +55,17 @@ var yankModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.YankTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn,
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.BidIDColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK:        YankEventLog.HeaderID,
-		event.LogFK:           YankEventLog.ID,
+		event.HeaderFK: YankEventLog.HeaderID,
+		event.LogFK:    YankEventLog.ID,
+		// contract address ID
+		// msg.sender
 		constants.BidIDColumn: "10000000000000000",
 	},
 }

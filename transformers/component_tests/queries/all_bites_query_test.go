@@ -334,7 +334,10 @@ var _ = Describe("Bites query", func() {
 func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event.InsertionModel {
 	urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(urnErr).NotTo(HaveOccurred())
+	addressID, addressErr := shared.GetOrCreateAddress(test_data.CatAddress(), db)
+	Expect(addressErr).NotTo(HaveOccurred())
 	biteEvent := test_data.BiteModel()
+	test_data.AssignAddressID(test_data.BiteEventLog, biteEvent, db)
 	biteEvent.ColumnValues["ink"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["art"] = strconv.Itoa(rand.Int())
 	biteEvent.ColumnValues["tab"] = strconv.Itoa(rand.Int())
@@ -342,5 +345,6 @@ func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event
 	biteEvent.ColumnValues[constants.UrnColumn] = urnID
 	biteEvent.ColumnValues[event.HeaderFK] = headerID
 	biteEvent.ColumnValues[event.LogFK] = logID
+	biteEvent.ColumnValues[event.AddressFK] = addressID
 	return biteEvent
 }

@@ -174,3 +174,7 @@ func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value
 	}
 	return tx.Commit()
 }
+
+func GetChecksumAddressString(address string) string {
+	return common.HexToAddress(address).Hex()
+}

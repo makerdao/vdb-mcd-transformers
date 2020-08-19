@@ -204,6 +204,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				spotFileMat.ColumnValues[event.HeaderFK] = headerTwo.Id
 				spotFileMat.ColumnValues[event.LogFK] = newLogID
 				spotFileMat.ColumnValues[constants.IlkColumn] = ilkID
+				test_data.AssignMessageSenderID(test_data.SpotFileMatEventLog, spotFileMat, db)
 				spotFileMatErr := event.PersistModels([]event.InsertionModel{spotFileMat}, db)
 				Expect(spotFileMatErr).NotTo(HaveOccurred())
 			})

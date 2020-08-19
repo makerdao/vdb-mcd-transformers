@@ -27,9 +27,7 @@ var _ = Describe("LogDelete Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogDeleteModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogDeleteEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.LogDeleteEventLog, expectedModel, db)
 
 		keeperID, keeperErr := shared.GetOrCreateAddress(test_data.LogDeleteKeeperAddress.Hex(), db)
 		Expect(keeperErr).NotTo(HaveOccurred())

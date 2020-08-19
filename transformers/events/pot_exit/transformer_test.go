@@ -26,12 +26,9 @@ var _ = Describe("PotExit transformer", func() {
 		models, err := transformer.ToModels(constants.PotABI(), []core.EventLog{test_data.PotExitEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var addressID int64
-		addressErr := db.Get(&addressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.PotExitEventLog.Log.Topics[1].Hex()).Hex())
-		Expect(addressErr).NotTo(HaveOccurred())
 		expectedModel := test_data.PotExitModel()
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = addressID
+		test_data.AssignMessageSenderID(test_data.PotExitEventLog, expectedModel, db)
+
 		Expect(models).To(ConsistOf(expectedModel))
 	})
 

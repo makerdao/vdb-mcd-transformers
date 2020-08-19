@@ -59,17 +59,21 @@ var catFileChopModel = event.InsertionModel{
 	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
-		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileChopEventLog.HeaderID,
-		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		event.LogFK:    CatFileChopEventLog.ID,
+		// event.AddressFK
+		// constants.MsgSenderColumn
+		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "chop",
 		constants.DataColumn: "1000000000000000000000000000",
-		event.LogFK:          CatFileChopEventLog.ID,
 	},
 }
 
@@ -104,17 +108,21 @@ var catFileLumpModel = event.InsertionModel{
 	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
-		event.LogFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileLumpEventLog.HeaderID,
-		//constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
+		event.LogFK:    CatFileLumpEventLog.ID,
+		// event.AddressFK
+		// constants.MsgSenderColumn
+		// constants.IlkIdColumn changes with each insertion so it's best to assert directly in the test itself
 		constants.WhatColumn: "lump",
 		constants.DataColumn: "10000000000000000000000000000000000000000000000000",
-		event.LogFK:          CatFileLumpEventLog.ID,
 	},
 }
 
@@ -152,13 +160,16 @@ var catFileFlipModel = event.InsertionModel{
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.FlipColumn,
+		constants.MsgSenderColumn,
 		event.LogFK,
+		event.AddressFK,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileFlipEventLog.HeaderID,
 		constants.WhatColumn: "flip",
 		constants.FlipColumn: "0x6E8032435c84B08E30F27bfbb812Ee365A095b31",
 		event.LogFK:          CatFileFlipEventLog.ID,
+		// event.AddressFK
 	},
 }
 
@@ -192,12 +203,19 @@ var catFileVowModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileVowTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK:       CatFileVowEventLog.HeaderID,
 		constants.WhatColumn: "vow",
 		constants.DataColumn: "0x17560834075DA3Db54f737db74377E799c865821",
 		event.LogFK:          CatFileVowEventLog.ID,
+		//event.AddressFK
+		//constants.MsgSenderColumn
 	},
 }

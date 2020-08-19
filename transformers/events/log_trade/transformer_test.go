@@ -27,14 +27,12 @@ var _ = Describe("LogTrade Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.LogTradeModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.LogTradeEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
+		test_data.AssignAddressID(test_data.LogTradeEventLog, expectedModel, db)
 		payGemID, payGemErr := shared.GetOrCreateAddress(test_data.LogTradeEventLog.Log.Topics[1].Hex(), db)
 		Expect(payGemErr).NotTo(HaveOccurred())
 		buyGemID, buyGemErr := shared.GetOrCreateAddress(test_data.LogTradeEventLog.Log.Topics[2].Hex(), db)
 		Expect(buyGemErr).NotTo(HaveOccurred())
 
-		expectedModel.ColumnValues[event.AddressFK] = addressID
 		expectedModel.ColumnValues[constants.PayGemColumn] = payGemID
 		expectedModel.ColumnValues[constants.BuyGemColumn] = buyGemID
 

@@ -25,24 +25,15 @@ var _ = Describe("Auth Transformer", func() {
 		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.RelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.RelyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		var msgSenderAddressID int64
-		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.RelyEventLog.Log.Topics[1].Hex()).Hex())
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
 			common.HexToAddress(test_data.RelyEventLog.Log.Topics[2].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.RelyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+
+		test_data.AssignAddressID(test_data.RelyEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.RelyEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
@@ -53,24 +44,14 @@ var _ = Describe("Auth Transformer", func() {
 		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.DenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.DenyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		var msgSenderAddressID int64
-		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.DenyEventLog.Log.Topics[1].Hex()).Hex())
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
 			common.HexToAddress(test_data.DenyEventLog.Log.Topics[2].Hex()).Hex())
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.DenyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignAddressID(test_data.DenyEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.DenyEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))

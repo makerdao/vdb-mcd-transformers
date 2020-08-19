@@ -22,6 +22,10 @@ import (
 )
 
 var _ = Describe("Signature constants", func() {
+	It("generates auction file signature", func() {
+		Expect(AuctionFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates bite signature", func() {
 		Expect(BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})
@@ -290,12 +294,20 @@ var _ = Describe("Signature constants", func() {
 		Expect(VowFessSignature()).To(Equal("0x697efb7800000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates vow file signature", func() {
-		Expect(VowFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	It("generates vow file auction attributes signature", func() {
+		Expect(VowFileAuctionAttributesSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vow file auction address signature", func() {
+		Expect(VowFileAuctionAddressSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vow flog signature", func() {
 		Expect(VowFlogSignature()).To(Equal("0xd7ee674b00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vow heal signature", func() {
+		Expect(VowHealSignature()).To(Equal("0xf37ac61c00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates yank signature", func() {

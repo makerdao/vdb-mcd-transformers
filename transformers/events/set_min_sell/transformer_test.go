@@ -27,17 +27,12 @@ var _ = Describe("SetMinSell Note Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.SetMinSellModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.SetMinSellEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.SetMinSellEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.SetMinSellEventLog, expectedModel, db)
 
 		payGemID, payGemErr := shared.GetOrCreateAddress(test_data.SetMinSellPayGemAddress.Hex(), db)
 		Expect(payGemErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[constants.PayGemColumn] = payGemID
-
-		senderAddressID, senderAddressErr := shared.GetOrCreateAddress(test_data.SetMinSellMsgSenderAddress.Hex(), db)
-		Expect(senderAddressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = senderAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

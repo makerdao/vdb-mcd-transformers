@@ -69,21 +69,27 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []jugFileIlkModel
-		err = db.Select(&dbResult, `SELECT ilk_id, what, data FROM maker.jug_file_ilk`)
+		var dbResult jugFileIlkModel
+		err = db.Get(&dbResult, `SELECT msg_sender, ilk_id, what, data FROM maker.jug_file_ilk`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb")
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
 		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].What).To(Equal("duty"))
-		Expect(dbResult[0].Data).To(Equal("1000000001243680656318820312"))
+
+		Expect(dbResult.MsgSender).To(Equal(msgSenderId))
+		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		Expect(dbResult.What).To(Equal("duty"))
+		Expect(dbResult.Data).To(Equal("1000000001243680656318820312"))
 	})
 })
 
 type jugFileIlkModel struct {
-	Ilk  string `db:"ilk_id"`
-	What string
-	Data string
+	Ilk       string `db:"ilk_id"`
+	MsgSender int64  `db:"msg_sender"`
+	What      string
+	Data      string
 }

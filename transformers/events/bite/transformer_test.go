@@ -41,7 +41,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(urnErr).NotTo(HaveOccurred())
 		expectedModel := test_data.BiteModel()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
-
+		test_data.AssignAddressID(test_data.BiteEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

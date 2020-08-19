@@ -592,6 +592,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
 	dealModel.ColumnValues[event.AddressFK] = addressID
+	test_data.AssignMessageSenderID(test_data.DealEventLog, dealModel, input.DB)
 	deals := []event.InsertionModel{dealModel}
 	return event.PersistModels(deals, input.DB)
 }
@@ -641,6 +642,7 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues[event.AddressFK] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	test_data.AssignMessageSenderID(test_data.TendEventLog, tendModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
 }
 
@@ -654,6 +656,7 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues[event.AddressFK] = addressID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
+	test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
@@ -661,10 +664,11 @@ func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.YankModel()
-	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[event.AddressFK] = addressID
 	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[event.LogFK] = input.YankLogId
+	test_data.AssignMessageSenderID(test_data.YankEventLog, yankModel, input.DB)
+	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
 }
 
@@ -677,6 +681,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	tickModel.ColumnValues[event.AddressFK] = addressID
 	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[event.LogFK] = tickLog.ID
+	test_data.AssignMessageSenderID(test_data.FlipTickEventLog, tickModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)
 }
 

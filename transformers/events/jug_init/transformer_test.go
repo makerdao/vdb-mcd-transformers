@@ -50,8 +50,10 @@ var _ = Describe("Jug init transformer", func() {
 
 		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.JugInitEventLog.Log.Topics[2].Hex(), db)
 		Expect(ilkErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.JugInitModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		test_data.AssignMessageSenderID(test_data.JugInitEventLog, expectedModel, db)
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

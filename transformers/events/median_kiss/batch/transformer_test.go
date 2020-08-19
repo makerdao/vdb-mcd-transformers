@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -46,17 +45,13 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianKissBatchModelOneAddress()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianKissBatchLogOneAddress.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianKissBatchLogOneAddress.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+		test_data.AssignAddressID(test_data.MedianKissBatchLogOneAddress, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.MedianKissBatchLogOneAddress, expectedModel, db)
 
 		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianKissBatchLogOneAddress.Log.Data)
 		Expect(a0Err).NotTo(HaveOccurred())
 		address0 := common.BytesToAddress(a0Bytes).Hex()
 
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 		expectedModel.ColumnValues[constants.AColumn] = pq.Array([]string{address0})
 
 		Expect(models).To(ConsistOf(expectedModel))
@@ -67,10 +62,6 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianKissBatchModelFiveAddresses()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianKissBatchLogFiveAddresses.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianKissBatchLogFiveAddresses.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianKissBatchLogFiveAddresses.Log.Data)
 		Expect(a0Err).NotTo(HaveOccurred())
@@ -85,9 +76,9 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 		Expect(a3Err).NotTo(HaveOccurred())
 		address3 := common.BytesToAddress(a3Bytes).Hex()
 
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 		expectedModel.ColumnValues[constants.AColumn] = pq.Array([]string{address0, address1, address2, address3})
+		test_data.AssignAddressID(test_data.MedianKissBatchLogOneAddress, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.MedianKissBatchLogOneAddress, expectedModel, db)
 
 		Expect(models).To(ConsistOf(expectedModel))
 	})

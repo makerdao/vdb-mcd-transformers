@@ -45,7 +45,7 @@ var _ = Describe("Tick EventTransformer", func() {
 
 		tickConfig = event.TransformerConfig{
 			TransformerName:   constants.TickTable,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopAddress()),
+			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
 			ContractAbi:       constants.FlipABI(),
 			Topic:             constants.TickSignature(),
 		}
@@ -76,16 +76,20 @@ var _ = Describe("Tick EventTransformer", func() {
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []tickModel
-		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
+		var dbResult tickModel
+		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(flipAddressErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].AddressID).To(Equal(strconv.FormatInt(flipAddressID, 10)))
-		Expect(dbResult[0].BidID).To(Equal("15"))
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000b00b6d69822da235a99d2242376066507c9a97b7")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.AddressID).To(Equal(flipAddressID))
+		Expect(dbResult.BidID).To(Equal("15"))
+		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 	})
 
 	// Todo: fill this in with flap tick event data from mainnet
@@ -109,7 +113,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(flapAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -138,7 +142,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.tick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(flopAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResult)).To(Equal(1))
@@ -149,8 +153,9 @@ var _ = Describe("Tick EventTransformer", func() {
 
 type tickModel struct {
 	BidID            string `db:"bid_id"`
-	AddressID        string `db:"address_id"`
+	AddressID        int64  `db:"address_id"`
 	LogIndex         uint   `db:"log_idx"`
+	MsgSender        int64  `db:"msg_sender"`
 	TransactionIndex uint   `db:"tx_idx"`
 	Raw              []byte `db:"raw_log"`
 }

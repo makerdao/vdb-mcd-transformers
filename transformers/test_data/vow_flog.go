@@ -57,11 +57,12 @@ var VowFlogModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.VowFlogTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, constants.EraColumn,
+		event.HeaderFK, event.LogFK, constants.EraColumn, constants.MsgSenderColumn,
 	},
 	ColumnValues: event.ColumnValues{
+		event.HeaderFK: VowFlogEventLog.HeaderID,
+		event.LogFK:    VowFlogEventLog.ID,
+		// MsgSenderColumn
 		constants.EraColumn: "1337",
-		event.HeaderFK:      VowFlogEventLog.HeaderID,
-		event.LogFK:         VowFlogEventLog.ID,
 	},
 }

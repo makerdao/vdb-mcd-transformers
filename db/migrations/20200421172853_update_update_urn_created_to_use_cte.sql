@@ -1,5 +1,4 @@
 -- +goose Up
-DROP TRIGGER urn_ink ON maker.vat_urn_ink;
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_urn_created(urn_id INTEGER) RETURNS maker.vat_urn_ink
@@ -20,34 +19,7 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
--- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.update_urn_inks() RETURNS TRIGGER
-AS
-$$
-BEGIN
-    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
-        PERFORM maker.insert_urn_ink(NEW);
-        PERFORM maker.update_urn_inks_until_next_diff(NEW, NEW.ink);
-        PERFORM maker.update_urn_created(NEW.urn_id);
-    ELSIF (TG_OP = 'DELETE') THEN
-        PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
-        PERFORM maker.update_urn_created(OLD.urn_id);
-    END IF;
-    RETURN NULL;
-END
-$$
-    LANGUAGE plpgsql;
--- +goose StatementEnd
-
-CREATE TRIGGER urn_ink
-    AFTER INSERT OR UPDATE OR DELETE
-    ON maker.vat_urn_ink
-    FOR EACH ROW
-EXECUTE PROCEDURE maker.update_urn_inks();
-
 -- +goose Down
-DROP TRIGGER urn_ink ON maker.vat_urn_ink;
 
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION maker.update_urn_created(urn_id INTEGER) RETURNS maker.vat_urn_ink
@@ -66,29 +38,3 @@ END
 $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
-
--- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.update_urn_inks() RETURNS TRIGGER
-AS
-$$
-BEGIN
-    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
-        PERFORM maker.insert_urn_ink(NEW);
-        PERFORM maker.update_urn_inks_until_next_diff(NEW, NEW.ink);
-        PERFORM maker.update_urn_created(NEW.urn_id);
-    ELSIF (TG_OP = 'DELETE') THEN
-        PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_state(OLD.urn_id, OLD.header_id);
-        PERFORM maker.update_urn_created(OLD.urn_id);
-    END IF;
-    RETURN NULL;
-END
-$$
-    LANGUAGE plpgsql;
--- +goose StatementEnd
-
-CREATE TRIGGER urn_ink
-    AFTER INSERT OR UPDATE OR DELETE
-    ON maker.vat_urn_ink
-    FOR EACH ROW
-EXECUTE PROCEDURE maker.update_urn_inks();
