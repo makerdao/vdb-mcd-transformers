@@ -60,6 +60,13 @@ elif [ "$ENVIRONMENT" == "staging" ]; then
    --task-definition vdb-backfill-events-$ENVIRONMENT \
    --network-configuration "$STAGING_NETWORK_CONFIG" \
    --region $STAGING_REGION
+
+   message DEPLOYING BACKFILL-STORAGE
+   aws ecs run-task --cluster vdb-cluster-$ENVIRONMENT \
+    --launch-type FARGATE \
+    --task-definition vdb-backfill-storage-$ENVIRONMENT \
+    --network-configuration "$STAGING_NETWORK_CONFIG" \
+    --region $STAGING_REGION
 else
    message UNKNOWN ENVIRONMENT
 fi
