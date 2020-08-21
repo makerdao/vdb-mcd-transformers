@@ -52,11 +52,11 @@ var _ = Describe("Urns repository", func() {
 	Describe("InsertDiff", func() {
 		It("inserts a back filled diff", func() {
 			diff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.RandomString(64)),
-				BlockHash:     common.HexToHash(test_data.RandomString(64)),
-				BlockHeight:   rand.Int(),
-				StorageKey:    common.HexToHash(test_data.RandomString(64)),
-				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+				Address:      common.HexToAddress(test_data.RandomString(40)),
+				BlockHash:    common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:  rand.Int(),
+				StorageKey:   common.HexToHash(test_data.RandomString(64)),
+				StorageValue: common.HexToHash(test_data.RandomString(64)),
 			}
 
 			err := repo.InsertDiff(diff)
@@ -72,11 +72,11 @@ var _ = Describe("Urns repository", func() {
 
 		It("doesn't duplicate diffs", func() {
 			diff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.RandomString(64)),
-				BlockHash:     common.HexToHash(test_data.RandomString(64)),
-				BlockHeight:   rand.Int(),
-				StorageKey:    common.HexToHash(test_data.RandomString(64)),
-				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+				Address:      common.HexToAddress(test_data.RandomString(40)),
+				BlockHash:    common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:  rand.Int(),
+				StorageKey:   common.HexToHash(test_data.RandomString(64)),
+				StorageValue: common.HexToHash(test_data.RandomString(64)),
 			}
 
 			err := repo.InsertDiff(diff)

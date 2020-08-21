@@ -6523,7 +6523,7 @@ COMMENT ON FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.va
 -- Name: create_back_filled_diff(bigint, bytea, bytea, bytea, bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) RETURNS void
+CREATE FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) RETURNS void
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -6531,7 +6531,7 @@ DECLARE
         SELECT storage_diff.storage_value
         FROM public.storage_diff
         WHERE storage_diff.block_height <= create_back_filled_diff.block_height
-          AND storage_diff.hashed_address = create_back_filled_diff.hashed_address
+          AND storage_diff.address = create_back_filled_diff.address
           AND storage_diff.storage_key = create_back_filled_diff.storage_key
         ORDER BY storage_diff.block_height DESC
         LIMIT 1
@@ -6548,10 +6548,10 @@ BEGIN
         RETURN;
     END IF;
 
-    INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key, storage_value,
+    INSERT INTO public.storage_diff (block_height, block_hash, address, storage_key, storage_value,
                                      eth_node_id, from_backfill)
     VALUES (create_back_filled_diff.block_height, create_back_filled_diff.block_hash,
-            create_back_filled_diff.hashed_address, create_back_filled_diff.storage_key,
+            create_back_filled_diff.address, create_back_filled_diff.storage_key,
             create_back_filled_diff.storage_value, create_back_filled_diff.eth_node_id, true)
     ON CONFLICT DO NOTHING;
 
@@ -6561,10 +6561,10 @@ $$;
 
 
 --
--- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
+-- Name: FUNCTION create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer); Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, hashed_address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) IS '@omit';
+COMMENT ON FUNCTION public.create_back_filled_diff(block_height bigint, block_hash bytea, address bytea, storage_key bytea, storage_value bytea, eth_node_id integer) IS '@omit';
 
 
 --
@@ -13373,8 +13373,7 @@ ALTER SEQUENCE maker.yank_id_seq OWNED BY maker.yank.id;
 
 CREATE TABLE public.addresses (
     id bigint NOT NULL,
-    address character varying(42),
-    hashed_address character varying(66)
+    address character varying(42)
 );
 
 
@@ -13613,9 +13612,9 @@ ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
 
 CREATE TABLE public.storage_diff (
     id bigint NOT NULL,
+    address bytea,
     block_height bigint,
     block_hash bytea,
-    hashed_address bytea,
     storage_key bytea,
     storage_value bytea,
     eth_node_id integer NOT NULL,
@@ -18200,11 +18199,11 @@ ALTER TABLE ONLY public.receipts
 
 
 --
--- Name: storage_diff storage_diff_block_height_block_hash_hashed_address_storage_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: storage_diff storage_diff_block_height_block_hash_address_storage_key_st_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.storage_diff
-    ADD CONSTRAINT storage_diff_block_height_block_hash_hashed_address_storage_key UNIQUE (block_height, block_hash, hashed_address, storage_key, storage_value);
+    ADD CONSTRAINT storage_diff_block_height_block_hash_address_storage_key_st_key UNIQUE (block_height, block_hash, address, storage_key, storage_value);
 
 
 --

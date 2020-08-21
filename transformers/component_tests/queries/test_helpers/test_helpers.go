@@ -396,7 +396,7 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 			panic(fmt.Sprintf("valuesMap value type not recognized %v", v))
 		}
 
-		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Hash{}, key, valueForDiffRecord)
+		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Address{}, key, valueForDiffRecord)
 
 		err := repo.Create(persistedDiff.ID, header.Id, metadata, valueForStorageRecord)
 		Expect(err).NotTo(HaveOccurred())

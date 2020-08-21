@@ -100,7 +100,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	Describe("Wards mapping", func() {
 		BeforeEach(func() {
-			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Address{}, common.Hash{}, common.Hash{})
 			storageDiffRepo := storage.NewDiffRepository(db)
 			var insertDiffErr error
 			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
@@ -151,7 +151,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	Describe("Ilk", func() {
 		BeforeEach(func() {
-			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Hash{}, common.Hash{}, common.Hash{})
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Address{}, common.Hash{}, common.Hash{})
 			storageDiffRepo := storage.NewDiffRepository(db)
 			var insertDiffErr error
 			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)

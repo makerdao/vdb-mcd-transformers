@@ -14,10 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	HashedVatAddress = crypto.Keccak256Hash(common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b").Bytes())
-	VatAddress       = common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b")
-)
+var VatAddress = common.HexToAddress("0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b")
 
 type DartDink struct {
 	Dart     string
@@ -104,11 +101,11 @@ func (retriever dartDinkRetriever) getAndPersistVatDiffs(keys []common.Hash, hea
 	}
 	for k, v := range storageKeysToValues {
 		diff := types.RawDiff{
-			HashedAddress: HashedVatAddress,
-			BlockHash:     common.HexToHash(header.Hash),
-			BlockHeight:   int(header.BlockNumber),
-			StorageKey:    crypto.Keccak256Hash(k.Bytes()),
-			StorageValue:  common.BytesToHash(v),
+			Address:      VatAddress,
+			BlockHash:    common.HexToHash(header.Hash),
+			BlockHeight:  int(header.BlockNumber),
+			StorageKey:   crypto.Keccak256Hash(k.Bytes()),
+			StorageValue: common.BytesToHash(v),
 		}
 		createDiffErr := retriever.storageRepository.InsertDiff(diff)
 		if createDiffErr != nil {
