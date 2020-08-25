@@ -13,6 +13,7 @@ require (
 	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200825200143-806fda825371
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.10.0
+	github.com/pressly/goose v2.7.0-rc5+incompatible // indirect
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72
 	github.com/spf13/cobra v0.0.3
