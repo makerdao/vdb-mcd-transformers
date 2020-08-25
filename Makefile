@@ -9,10 +9,7 @@ $(BIN)/ginkgo:
 	go get -u github.com/onsi/ginkgo/ginkgo
 
 ## Migration tool
-GOOSE = $(BIN)/goose
-$(BIN)/goose:
-	GO111MODULE=off go get -u github.com/pressly/goose/cmd/goose
-	GO111MODULE=off go build -tags='no_mysql no_sqlite' -o $(BIN)/goose github.com/pressly/goose/cmd/goose
+GOOSE = go run -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
 
 ## Source linter
 LINT = $(BIN)/golint
@@ -27,7 +24,7 @@ $(BIN)/gometalinter.v2:
 
 
 .PHONY: installtools
-installtools: | $(LINT) $(GOOSE) $(GINKGO)
+installtools: | $(LINT) $(GINKGO)
 	echo "Installing tools"
 
 .PHONY: metalint
@@ -111,7 +108,7 @@ checkmigname:
 # Migration operations
 ## Rollback the last migration
 .PHONY: rollback
-rollback: $(GOOSE) checkdbvars
+rollback: checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
@@ -119,20 +116,20 @@ rollback: $(GOOSE) checkdbvars
 
 ## Rollback to a select migration (id/timestamp)
 .PHONY: rollback_to
-rollback_to: $(GOOSE) checkmigration checkdbvars
+rollback_to: checkmigration checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
 
 ## Apply all migrations not already run
 .PHONY: migrate
-migrate: $(GOOSE) checkdbvars
+migrate: checkdbvars
 	psql $(NAME) -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 	cd db/migrations;\
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" up
 	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 .PHONY: reset
-reset: $(GOOSE) checkdbvars
+reset: checkdbvars
 	cd db/migrations/;\
 		$(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" reset
 	psql $(NAME) -c 'DROP SCHEMA maker CASCADE;'
@@ -140,13 +137,13 @@ reset: $(GOOSE) checkdbvars
 
 ## Create a new migration file
 .PHONY: new_migration
-new_migration: $(GOOSE) checkmigname
+new_migration: checkmigname
 	cd db/migrations;\
 	  $(GOOSE) create $(NAME) sql
 
 ## Check which migrations are applied at the moment
 .PHONY: migration_status
-migration_status: $(GOOSE) checkdbvars
+migration_status: checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) postgres "$(CONNECT_STRING)" status
 
