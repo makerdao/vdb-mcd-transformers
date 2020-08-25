@@ -67,7 +67,7 @@ var _ = Describe("Urns repository", func() {
 			Expect(readErr).NotTo(HaveOccurred())
 			Expect(persistedDiff.RawDiff).To(Equal(diff))
 			Expect(persistedDiff.FromBackfill).To(BeTrue())
-			Expect(persistedDiff.Checked).To(BeFalse())
+			Expect(persistedDiff.Status).To(Equal("new"))
 		})
 
 		It("doesn't duplicate diffs", func() {
