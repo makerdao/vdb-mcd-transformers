@@ -7,10 +7,12 @@ require (
 	github.com/VictoriaMetrics/fastcache v1.5.7
 	github.com/dop251/goja v0.0.0-20200219165308-d1232e640a87
 	github.com/ethereum/go-ethereum v1.9.16
+	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
-	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
+	github.com/howeyc/fsnotify v0.9.0 // indirect
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200825200143-806fda825371
+	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200826164038-125a904f02eb
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.10.0
 	github.com/pressly/goose v2.7.0-rc5+incompatible // indirect

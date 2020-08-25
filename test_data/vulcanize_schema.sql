@@ -31,6 +31,19 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
+-- Name: diff_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.diff_status AS ENUM (
+    'new',
+    'transformed',
+    'unrecognized',
+    'noncanonical',
+    'unwatched'
+);
+
+
+--
 -- Name: create_back_filled_diff(bigint, bytea, bytea, bytea, bytea, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -149,7 +162,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.addresses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     address character varying(42),
     hashed_address character varying(66)
 );
@@ -160,7 +173,6 @@ CREATE TABLE public.addresses (
 --
 
 CREATE SEQUENCE public.addresses_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -243,9 +255,9 @@ ALTER SEQUENCE public.eth_nodes_id_seq OWNED BY public.eth_nodes.id;
 --
 
 CREATE TABLE public.event_logs (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     header_id integer NOT NULL,
-    address integer NOT NULL,
+    address bigint NOT NULL,
     topics bytea[],
     data bytea,
     block_number bigint,
@@ -263,7 +275,6 @@ CREATE TABLE public.event_logs (
 --
 
 CREATE SEQUENCE public.event_logs_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -355,7 +366,7 @@ CREATE TABLE public.receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     header_id integer NOT NULL,
-    contract_address_id integer NOT NULL,
+    contract_address_id bigint NOT NULL,
     cumulative_gas_used numeric,
     gas_used numeric,
     state_root character varying(66),
@@ -397,7 +408,7 @@ CREATE TABLE public.storage_diff (
     storage_key bytea,
     storage_value bytea,
     eth_node_id integer NOT NULL,
-    checked boolean DEFAULT false NOT NULL,
+    status public.diff_status DEFAULT 'new'::public.diff_status NOT NULL,
     from_backfill boolean DEFAULT false NOT NULL
 );
 
@@ -770,17 +781,24 @@ CREATE INDEX receipts_transaction ON public.receipts USING btree (transaction_id
 
 
 --
--- Name: storage_diff_checked_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX storage_diff_checked_index ON public.storage_diff USING btree (checked) WHERE (checked = false);
-
-
---
 -- Name: storage_diff_eth_node; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX storage_diff_eth_node ON public.storage_diff USING btree (eth_node_id);
+
+
+--
+-- Name: storage_diff_new_status_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_new_status_index ON public.storage_diff USING btree (status) WHERE (status = 'new'::public.diff_status);
+
+
+--
+-- Name: storage_diff_unrecognized_status_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_unrecognized_status_index ON public.storage_diff USING btree (status) WHERE (status = 'unrecognized'::public.diff_status);
 
 
 --
