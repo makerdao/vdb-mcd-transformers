@@ -41,7 +41,8 @@ import (
 )
 
 var eventConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -70,7 +71,8 @@ var eventConfig = config.Plugin{
 }
 
 var storageConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"jug": {
 			Path:           "transformers/storage/jug/initializer",
@@ -91,7 +93,8 @@ var storageConfig = config.Plugin{
 }
 
 var combinedConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
