@@ -48,7 +48,7 @@ test: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	psql $(TEST_DB) < test_data/vulcanize_schema.sql
+	psql -q $(TEST_DB) < test_data/vulcanize_schema.sql
 	make migrate NAME=$(TEST_DB)
 	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
@@ -60,7 +60,7 @@ integrationtest: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	psql $(TEST_DB) < test_data/vulcanize_schema.sql
+	psql -q $(TEST_DB) < test_data/vulcanize_schema.sql
 	make migrate NAME=$(TEST_DB)
 	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
@@ -111,7 +111,7 @@ checkmigname:
 rollback: checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down
-	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
 
 
 ## Rollback to a select migration (id/timestamp)
@@ -126,14 +126,14 @@ migrate: checkdbvars
 	psql $(NAME) -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 	cd db/migrations;\
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" up
-	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
 
 .PHONY: reset
 reset: checkdbvars
 	cd db/migrations/;\
 		$(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" reset
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
 	psql $(NAME) -c 'DROP SCHEMA maker CASCADE;'
-	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
 
 ## Create a new migration file
 .PHONY: new_migration
