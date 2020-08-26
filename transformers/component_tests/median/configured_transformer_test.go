@@ -14,7 +14,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -24,18 +23,17 @@ import (
 var _ = Describe("Executing the median transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.MedianEthAddress()
-		keccakAddress     = types.HexToKeccak256Hash(contractAddress)
-		storageKeysLookup = storage.NewKeysLookup(median.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		contractAddress   = common.HexToAddress(test_data.MedianEthAddress())
+		storageKeysLookup = storage.NewKeysLookup(median.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		var repository = median.MedianStorageRepository{ContractAddress: contractAddress}
+		var repository = median.MedianStorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -51,7 +49,7 @@ var _ = Describe("Executing the median transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -72,7 +70,7 @@ var _ = Describe("Executing the median transformer", func() {
 
 			key := common.HexToHash("4f3fc9e802fdeddd3e9ba88447e1731d7cfb3279d1b86a2328ef7efe1d42ac84")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -89,7 +87,7 @@ var _ = Describe("Executing the median transformer", func() {
 			kissLog := test_data.CreateTestLog(header.Id, db)
 			kissModel := test_data.MedianKissSingleModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -110,7 +108,7 @@ var _ = Describe("Executing the median transformer", func() {
 
 			key := common.HexToHash("6e8bbf796f21b82c83c834b2cacf88452e5bba3a2fb53ad9e5b2c0e6c54820fd")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -127,7 +125,7 @@ var _ = Describe("Executing the median transformer", func() {
 			liftLog := test_data.CreateTestLog(header.Id, db)
 			liftModel := test_data.MedianLiftModelWithOneAccount()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
@@ -148,7 +146,7 @@ var _ = Describe("Executing the median transformer", func() {
 
 			key := common.HexToHash("6e8810a330507229748898345becb3182d8632868d2bd2df00dfbd0f623252f9")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+			liftDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(liftDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -165,7 +163,7 @@ var _ = Describe("Executing the median transformer", func() {
 			liftLog := test_data.CreateTestLog(header.Id, db)
 			liftModel := test_data.MedianLiftModelWithOneAccount()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
@@ -187,7 +185,7 @@ var _ = Describe("Executing the median transformer", func() {
 			//key is keccak hash aAddress passed through solidity bitshift uint8(uint256(a[i]) >> 152) + the index
 			key := common.HexToHash("2944b9af8d962e2b5d171cd2b530c03b245945580d9e2a1c9efc472e2e5ec88b")
 			value := common.HexToHash("000000000000000000000000ac8519b3495d8a3e3e44c041521cf7ac3f8f63b3")
-			liftDiff := test_helpers.CreateDiffRecord(db, header, keccakAddress, key, value)
+			liftDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(liftDiff)
 			Expect(transformErr).NotTo(HaveOccurred())

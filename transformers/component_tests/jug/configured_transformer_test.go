@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,12 +38,11 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.JugAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		storageKeysLookup = storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		repository        = jug.StorageRepository{ContractAddress: contractAddress}
+		contractAddress   = common.HexToAddress(test_data.JugAddress())
+		storageKeysLookup = storage.NewKeysLookup(jug.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		repository        = jug.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -68,7 +66,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1")
-		jugVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		jugVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(jugVatDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -82,7 +80,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Vow storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("17560834075da3db54f737db74377e799c865821000000000000000000000000")
-		jugVowDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		jugVowDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(jugVowDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -97,7 +95,7 @@ var _ = Describe("Executing the transformer", func() {
 		denyLog := test_data.CreateTestLog(header.Id, db)
 		denyModel := test_data.DenyModel()
 
-		jugAddressID, jugAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+		jugAddressID, jugAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 		Expect(jugAddressErr).NotTo(HaveOccurred())
 
 		userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
@@ -118,7 +116,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		transformErr := transformer.Execute(wardsDiff)
 		Expect(transformErr).NotTo(HaveOccurred())
@@ -132,7 +130,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Ilk Duty storage diff row and persists it", func() {
 		key := common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97a")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		jugIlkDutyDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		jugIlkDutyDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(jugIlkDutyDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -146,7 +144,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Jug Ilk Rho storage diff row and persists it", func() {
 		key := common.HexToHash("a27f5adbce3dcb790941ebd020e02078a61e6c9748376e52ec0929d58babf97b")
 		value := common.HexToHash("000000000000000000000000000000000000000000000000000000005c812808")
-		jugIlkRhoDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		jugIlkRhoDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(jugIlkRhoDiff)
 		Expect(err).NotTo(HaveOccurred())

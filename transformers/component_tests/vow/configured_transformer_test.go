@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,12 +38,11 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		vowAddress        = test_data.VowAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(vowAddress)
-		storageKeysLookup = storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, vowAddress))
-		repository        = vow.StorageRepository{ContractAddress: vowAddress}
+		contractAddress   = common.HexToAddress(test_data.VowAddress())
+		storageKeysLookup = storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		repository        = vow.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(vowAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -65,7 +63,7 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			vowAddressID, vowAddressErr := shared.GetOrCreateAddress(test_data.VowAddress(), db)
+			vowAddressID, vowAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(vowAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
@@ -86,7 +84,7 @@ var _ = Describe("Executing the transformer", func() {
 
 			key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -101,7 +99,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 		value := common.HexToHash("00000000000000000000000067fd6c3575fc2dbe2cb596bd3bebc9edb5571fa1")
-		vowVat := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowVat := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowVat)
 		Expect(err).NotTo(HaveOccurred())
@@ -115,7 +113,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.flapper storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("000000000000000000000000b6e31ab6ea62be7c530c32daea96e84d92fe20b7")
-		vowFlapper := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowFlapper := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowFlapper)
 		Expect(err).NotTo(HaveOccurred())
@@ -129,7 +127,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.flopper storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("000000000000000000000000275ec1950d6406e3ce6156f9f529c047ea41c8ce")
-		vowFlopper := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowFlopper := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowFlopper)
 		Expect(err).NotTo(HaveOccurred())
@@ -143,7 +141,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.dump storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008")
 		value := common.HexToHash("000000000000000000000000000000000000000000000000002386f26fc10000")
-		vowDump := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowDump := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowDump)
 		Expect(err).NotTo(HaveOccurred())
@@ -157,7 +155,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.sump storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
 		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
-		vowSump := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowSump := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowSump)
 		Expect(err).NotTo(HaveOccurred())
@@ -171,7 +169,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.bump storage diff row and persists it", func() {
 		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a")
 		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
-		vowBump := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowBump := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowBump)
 		Expect(err).NotTo(HaveOccurred())
@@ -186,7 +184,7 @@ var _ = Describe("Executing the transformer", func() {
 		// TODO: Update with a real storage diff
 		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b")
 		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
-		vowHump := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowHump := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowHump)
 		Expect(err).NotTo(HaveOccurred())
@@ -200,7 +198,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vow.live storage diff row and persists it", func() {
 		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000c")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		vowLive := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vowLive := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vowLive)
 		Expect(err).NotTo(HaveOccurred())

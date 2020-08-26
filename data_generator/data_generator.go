@@ -447,7 +447,7 @@ func (state *GeneratorState) insertCurrentBlockTx() error {
 }
 
 func (state *GeneratorState) insertDiffRecord() error {
-	fakeRawDiff := test_helpers.GetFakeStorageDiffForHeader(state.currentHeader, common.Hash{}, common.Hash{}, common.Hash{})
+	fakeRawDiff := test_helpers.GetFakeStorageDiffForHeader(state.currentHeader, common.Address{}, common.Hash{}, common.Hash{})
 	storageDiffRepo := storage.NewDiffRepository(state.db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	state.currentDiffID = diffID
