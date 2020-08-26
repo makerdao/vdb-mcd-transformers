@@ -3,15 +3,15 @@ CREATE TABLE maker.log_make
 (
     id         serial primary key,
     log_id     bigint  not null references public.event_logs (id) on delete cascade,
-    header_id  integer not null references public.headers (id) on delete cascade,
-    address_id integer not null references public.addresses (id) on delete cascade,
-    offer_id   numeric,
-    pair       character varying(66),
-    maker      integer not null references public.addresses (id) on delete cascade,
-    pay_gem    integer not null references public.addresses (id) on delete cascade,
-    buy_gem    integer not null references public.addresses (id) on delete cascade,
+    address_id bigint  not null references public.addresses (id) on delete cascade,
+    maker      bigint  not null references public.addresses (id) on delete cascade,
+    pay_gem    bigint  not null references public.addresses (id) on delete cascade,
+    buy_gem    bigint  not null references public.addresses (id) on delete cascade,
     pay_amt    numeric,
     buy_amt    numeric,
+    offer_id   numeric,
+    pair       character varying(66),
+    header_id  integer not null references public.headers (id) on delete cascade,
     timestamp  integer,
     UNIQUE (header_id, log_id)
 );

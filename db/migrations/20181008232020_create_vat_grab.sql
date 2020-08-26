@@ -2,13 +2,13 @@
 CREATE TABLE maker.vat_grab
 (
     id        SERIAL PRIMARY KEY,
-    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id    BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     v         TEXT,
     w         TEXT,
     dink      NUMERIC,
     dart      NUMERIC,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    urn_id    INTEGER NOT NULL REFERENCES maker.urns (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

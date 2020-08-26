@@ -3,15 +3,15 @@ CREATE TABLE maker.log_bump
 (
     id         SERIAL PRIMARY KEY,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    offer_id   NUMERIC,
-    pair       CHARACTER VARYING(66),
-    maker      INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    pay_gem    INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    buy_gem    INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    maker      BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    pay_gem    BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    buy_gem    BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     pay_amt    NUMERIC,
     buy_amt    NUMERIC,
+    offer_id   NUMERIC,
+    pair       CHARACTER VARYING(66),
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     timestamp  INTEGER,
     UNIQUE (header_id, log_id)
 );

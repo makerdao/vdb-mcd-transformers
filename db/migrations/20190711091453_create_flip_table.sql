@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE maker.flip
 (
-    address_id   INTEGER   NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    address_id   BIGINT    NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     block_number BIGINT    NOT NULL,
     bid_id       NUMERIC   NOT NULL,
     guy          TEXT      DEFAULT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE maker.flip
 CREATE INDEX flip_address_index
     ON maker.flip (address_id);
 
-CREATE FUNCTION flip_bid_guy_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS TEXT AS
+CREATE FUNCTION flip_bid_guy_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
 $$
 SELECT guy
 FROM maker.flip_bid_guy
@@ -36,7 +36,7 @@ $$
 COMMENT ON FUNCTION flip_bid_guy_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_tic_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS BIGINT AS
+CREATE FUNCTION flip_bid_tic_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS BIGINT AS
 $$
 SELECT tic
 FROM maker.flip_bid_tic
@@ -52,7 +52,7 @@ $$
 COMMENT ON FUNCTION flip_bid_tic_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_end_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS BIGINT AS
+CREATE FUNCTION flip_bid_end_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS BIGINT AS
 $$
 SELECT "end"
 FROM maker.flip_bid_end
@@ -68,7 +68,7 @@ $$
 COMMENT ON FUNCTION flip_bid_end_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_lot_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION flip_bid_lot_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
 SELECT lot
 FROM maker.flip_bid_lot
@@ -84,7 +84,7 @@ $$
 COMMENT ON FUNCTION flip_bid_lot_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_bid_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION flip_bid_bid_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
 SELECT bid
 FROM maker.flip_bid_bid
@@ -100,7 +100,7 @@ $$
 COMMENT ON FUNCTION flip_bid_bid_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_usr_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS TEXT AS
+CREATE FUNCTION flip_bid_usr_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
 $$
 SELECT usr
 FROM maker.flip_bid_usr
@@ -116,7 +116,7 @@ $$
 COMMENT ON FUNCTION flip_bid_usr_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_gal_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS TEXT AS
+CREATE FUNCTION flip_bid_gal_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
 $$
 SELECT gal
 FROM maker.flip_bid_gal
@@ -132,7 +132,7 @@ $$
 COMMENT ON FUNCTION flip_bid_gal_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_tab_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION flip_bid_tab_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
 SELECT tab
 FROM maker.flip_bid_tab
@@ -148,7 +148,7 @@ $$
 COMMENT ON FUNCTION flip_bid_tab_before_block
     IS E'@omit';
 
-CREATE FUNCTION flip_bid_time_created(address_id INTEGER, bid_id NUMERIC) RETURNS TIMESTAMP AS
+CREATE FUNCTION flip_bid_time_created(address_id BIGINT, bid_id NUMERIC) RETURNS TIMESTAMP AS
 $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
 FROM public.headers
@@ -162,7 +162,7 @@ COMMENT ON FUNCTION flip_bid_time_created
     IS E'@omit';
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.delete_obsolete_flip(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION maker.delete_obsolete_flip(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS VOID AS
 $$
 DECLARE
     flip_block      BIGINT     := (
@@ -995,16 +995,16 @@ DROP FUNCTION maker.update_flip_usrs();
 DROP FUNCTION maker.update_flip_gals();
 DROP FUNCTION maker.update_flip_tabs();
 DROP FUNCTION maker.update_flip_created();
-DROP FUNCTION maker.delete_obsolete_flip(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_guy_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_tic_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_end_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_lot_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_bid_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_usr_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_gal_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_tab_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flip_bid_time_created(INTEGER, NUMERIC);
+DROP FUNCTION maker.delete_obsolete_flip(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_guy_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_tic_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_end_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_lot_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_bid_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_usr_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_gal_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_tab_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flip_bid_time_created(BIGINT, NUMERIC);
 
 DROP INDEX maker.flip_address_index;
 DROP TABLE maker.flip;

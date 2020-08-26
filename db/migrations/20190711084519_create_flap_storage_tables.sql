@@ -1,13 +1,12 @@
 -- +goose Up
--- SQL in this section is executed when the migration is applied.
 CREATE TABLE maker.flap_bid_bid
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     bid        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, bid_id, bid)
 );
 
@@ -21,11 +20,11 @@ CREATE INDEX flap_bid_bid_address_index
 CREATE TABLE maker.flap_bid_lot
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     lot        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, bid_id, lot)
 );
 
@@ -39,11 +38,11 @@ CREATE INDEX flap_bid_lot_bid_address_index
 CREATE TABLE maker.flap_bid_guy
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     guy        TEXT    NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, bid_id, guy)
 );
 
@@ -57,11 +56,11 @@ CREATE INDEX flap_bid_guy_bid_address_index
 CREATE TABLE maker.flap_bid_tic
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     tic        BIGINT  NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, bid_id, tic)
 );
 
@@ -75,11 +74,11 @@ CREATE INDEX flap_bid_tic_bid_address_index
 CREATE TABLE maker.flap_bid_end
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     bid_id     NUMERIC NOT NULL,
     "end"      BIGINT  NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, bid_id, "end")
 );
 
@@ -93,10 +92,10 @@ CREATE INDEX flap_bid_end_bid_address_index
 CREATE TABLE maker.flap_vat
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     vat        TEXT    NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, vat)
 );
 
@@ -108,10 +107,10 @@ CREATE INDEX flap_vat_address_index
 CREATE TABLE maker.flap_gem
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     gem        TEXT    NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, gem)
 );
 
@@ -123,10 +122,10 @@ CREATE INDEX flap_gem_address_index
 CREATE TABLE maker.flap_beg
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     beg        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, beg)
 );
 
@@ -138,9 +137,9 @@ CREATE INDEX flap_beg_address_index
 CREATE TABLE maker.flap_ttl
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     ttl        INT     NOT NULL,
     UNIQUE (diff_id, header_id, address_id, ttl)
 );
@@ -153,9 +152,9 @@ CREATE INDEX flap_ttl_address_index
 CREATE TABLE maker.flap_tau
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     tau        INT     NOT NULL,
     UNIQUE (diff_id, header_id, address_id, tau)
 );
@@ -168,10 +167,10 @@ CREATE INDEX flap_tau_address_index
 CREATE TABLE maker.flap_kicks
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     kicks      NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, kicks)
 );
 
@@ -183,10 +182,10 @@ CREATE INDEX flap_kicks_address_index
 CREATE TABLE maker.flap_live
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     live       NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, address_id, live)
 );
 
@@ -196,7 +195,6 @@ CREATE INDEX flap_live_address_index
     ON maker.flap_live (address_id);
 
 -- +goose Down
--- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.flap_live_address_index;
 DROP INDEX maker.flap_live_header_id_index;
 DROP INDEX maker.flap_kicks_address_index;

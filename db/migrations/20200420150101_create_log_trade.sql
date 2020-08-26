@@ -3,12 +3,12 @@ CREATE TABLE maker.log_trade
 (
     id         serial primary key,
     log_id     bigint  not null references public.event_logs (id) on delete cascade,
-    header_id  integer not null references public.headers (id) on delete cascade,
-    address_id integer not null references public.addresses (id) on delete cascade,
-    pay_gem    integer not null references public.addresses (id) on delete cascade,
-    buy_gem    integer not null references public.addresses (id) on delete cascade,
+    address_id bigint  not null references public.addresses (id) on delete cascade,
+    pay_gem    bigint  not null references public.addresses (id) on delete cascade,
+    buy_gem    bigint  not null references public.addresses (id) on delete cascade,
     pay_amt    numeric,
     buy_amt    numeric,
+    header_id  integer not null references public.headers (id) on delete cascade,
     UNIQUE (header_id, log_id)
 );
 

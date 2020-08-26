@@ -2,11 +2,11 @@
 CREATE TABLE maker.pot_file_dsr
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
-    what       TEXT,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     data       NUMERIC,
+    what       TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 
@@ -20,11 +20,11 @@ CREATE INDEX pot_file_dsr_msg_sender_index
 CREATE TABLE maker.pot_file_vow
 (
     id         SERIAL PRIMARY KEY,
-    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
     data       TEXT,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

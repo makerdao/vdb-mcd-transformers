@@ -1,11 +1,11 @@
 -- +goose Up
 CREATE TABLE maker.median_val
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    val       NUMERIC NOT NULL,
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    val        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, address_id, val)
 );
 
@@ -18,11 +18,11 @@ CREATE INDEX median_val_address_id_index
 
 CREATE TABLE maker.median_bar
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    bar       NUMERIC NOT NULL,
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    bar        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, address_id, bar)
 );
 
@@ -35,11 +35,11 @@ CREATE INDEX median_bar_address_id_index
 
 CREATE TABLE maker.median_age
 (
-    id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    age       NUMERIC NOT NULL,
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    age        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (header_id, address_id, age)
 );
 
@@ -53,11 +53,11 @@ CREATE INDEX median_age_address_id_index
 CREATE TABLE maker.median_orcl
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    a          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    orcl        INTEGER NOT NULL,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    a          BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    orcl       INTEGER NOT NULL,
     UNIQUE (header_id, address_id, a, orcl)
 );
 
@@ -73,10 +73,10 @@ CREATE INDEX median_orcl_a_index
 CREATE TABLE maker.median_bud
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    a          INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    a          BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     bud        INTEGER NOT NULL,
     UNIQUE (header_id, address_id, a, bud)
 );
@@ -91,11 +91,11 @@ CREATE INDEX median_bud_a_index
 CREATE TABLE maker.median_slot
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    slot       BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     slot_id    INTEGER NOT NULL,
-    slot       INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, address_id, slot_id, slot)
 );
 
@@ -107,7 +107,6 @@ CREATE INDEX median_slot_id_index
     ON maker.median_slot (slot_id);
 
 -- +goose Down
-
 DROP TABLE maker.median_val;
 DROP TABLE maker.median_bar;
 DROP TABLE maker.median_age;

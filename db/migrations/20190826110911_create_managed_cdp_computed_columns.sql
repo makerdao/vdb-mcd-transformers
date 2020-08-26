@@ -16,8 +16,10 @@ $$
 
 --- Extend managed_cdp with urn_snapshot
 CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS api.urn_snapshot
-       LANGUAGE sql STABLE
-       AS $$
+    LANGUAGE sql
+    STABLE
+AS
+$$
 SELECT *
 FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier, api.max_block())
 $$;

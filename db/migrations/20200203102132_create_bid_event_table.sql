@@ -16,7 +16,7 @@ CREATE INDEX bid_event_index ON maker.bid_event (contract_address, bid_id);
 CREATE INDEX bid_event_urn_index ON maker.bid_event (ilk_identifier, urn_identifier);
 
 
-CREATE OR REPLACE FUNCTION maker.insert_bid_event(log_id BIGINT, bid_id NUMERIC, address_id INTEGER, header_id INTEGER,
+CREATE OR REPLACE FUNCTION maker.insert_bid_event(log_id BIGINT, bid_id NUMERIC, address_id BIGINT, header_id INTEGER,
                                                   act api.bid_act, lot NUMERIC, bid_amount NUMERIC) RETURNS VOID AS
 $$
 INSERT
@@ -46,7 +46,7 @@ VALUES (insert_bid_event.log_id,
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION maker.insert_bid_event(log_id BIGINT, bid_id NUMERIC, address_id INTEGER, header_id INTEGER, act api.bid_act, lot NUMERIC, bid_amount NUMERIC)
+COMMENT ON FUNCTION maker.insert_bid_event(log_id BIGINT, bid_id NUMERIC, address_id BIGINT, header_id INTEGER, act api.bid_act, lot NUMERIC, bid_amount NUMERIC)
     IS E'@omit';
 
 -- +goose StatementBegin
@@ -222,6 +222,6 @@ DROP FUNCTION maker.update_bid_kick_tend_dent_event();
 DROP FUNCTION maker.insert_bid_event_urn(maker.flip_bid_usr, TEXT);
 DROP FUNCTION maker.clear_bid_event_ilk(maker.flip_ilk);
 DROP FUNCTION maker.insert_bid_event_ilk(maker.flip_ilk);
-DROP FUNCTION maker.insert_bid_event(BIGINT, NUMERIC, INTEGER, INTEGER, api.bid_act, NUMERIC, NUMERIC);
+DROP FUNCTION maker.insert_bid_event(BIGINT, NUMERIC, BIGINT, INTEGER, api.bid_act, NUMERIC, NUMERIC);
 
 DROP TABLE maker.bid_event CASCADE;
