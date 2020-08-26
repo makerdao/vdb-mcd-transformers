@@ -48,7 +48,7 @@ test: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	psql $(TEST_DB) < test_data/vulcanize_schema.sql
+	psql -q $(TEST_DB) < test_data/vulcanize_schema.sql
 	make migrate NAME=$(TEST_DB)
 	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
