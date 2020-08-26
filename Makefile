@@ -22,7 +22,6 @@ $(BIN)/gometalinter.v2:
 	go get -u gopkg.in/alecthomas/gometalinter.v2
 	$(METALINT) --install
 
-
 .PHONY: installtools
 installtools: | $(LINT) $(GINKGO)
 	echo "Installing tools"
@@ -113,7 +112,6 @@ rollback: checkdbvars
 	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down
 	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
 
-
 ## Rollback to a select migration (id/timestamp)
 .PHONY: rollback_to
 rollback_to: checkmigration checkdbvars
@@ -158,6 +156,13 @@ version_migrations:
 import:
 	test -n "$(NAME)" # $$NAME
 	psql $(NAME) < db/schema.sql
+
+# Update vulcanizedb version
+.PHONY: update_vulcanize
+update_vulcanize:
+	test -n "$(BRANCH)" # $$BRANCH
+	go get github.com/makerdao/vulcanizedb@$(BRANCH)
+	wget https://raw.githubusercontent.com/makerdao/vulcanizedb/$(BRANCH)/db/schema.sql --output-document=test_data/vulcanize_schema.sql
 
 # Build plugin
 .PHONY: plugin
