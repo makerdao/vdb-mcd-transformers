@@ -45,6 +45,10 @@ docker-compose -f dockerfiles/docker-compose.yml up
  - [VulcanizeDB](https://github.com/makerdao/vulcanizedb)
  - Go 1.12+
  - Postgres 11.2
+ 
+#### Updating VulcanizeDB
+
+Updating to a new version requires updating the dependency in go.mod and updating the vulcanizedb schema copy for testing, to keep them in sync. The simplest thing to do is run the `make update_vulcanize BRANCH=<branch name>` task which will handle both.
     
 ### Getting the project
 Download the transformer codebase to your local local `GOPATH` via: `go get github.com/makerdao/vdb-mcd-transformers`
