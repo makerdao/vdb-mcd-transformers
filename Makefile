@@ -168,3 +168,25 @@ update_vulcanize:
 .PHONY: plugin
 plugin:
 	go build -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
+
+# Docker actions
+# Build any docker image in dockerfiles
+.PHONY: dockerbuild
+dockerbuild:
+	test -n "$(IMAGE)" # $$IMAGE
+	docker build -t $(IMAGE) -f dockerfiles/$(IMAGE)/Dockerfile .
+
+.PHONY: execute
+execute: HOST ?= host.docker.internal
+execute: DATABASE_PASSWORD ?= postgres
+execute:
+	test -n "$(NAME)" # $$(NAME) - Database Name
+	docker run \
+		-it \
+		-p "5432:5432" \
+		-e "DATABASE_NAME=$(NAME)" \
+		-e "DATABASE_HOSTNAME=$(HOST)" \
+		-e "DATABASE_PORT=$(PORT)" \
+		-e "DATABASE_USER=$(USER)" \
+		-e "DATABASE_PASSWORD=$(DATABASE_PASSWORD)" \
+		execute:latest
