@@ -4,9 +4,6 @@ RUN apk --update --no-cache add make git g++ linux-headers
 
 # Build migration tool
 WORKDIR /go
-RUN GO111MODULE=auto go get -u -d github.com/pressly/goose/cmd/goose
-WORKDIR /go/src/github.com/pressly/goose/cmd/goose
-RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
 
 ARG VDB_VERSION=staging
 ENV GO111MODULE on
@@ -52,7 +49,6 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_events/startup_script.sh .
-COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
