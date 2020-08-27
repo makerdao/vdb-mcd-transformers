@@ -3,11 +3,6 @@ FROM golang:alpine as builder
 RUN apk --update --no-cache add g++ git linux-headers
 
 # Build migration tool
-WORKDIR /go
-RUN GO111MODULE=auto go get -u -d github.com/pressly/goose/cmd/goose
-WORKDIR /go/src/github.com/pressly/goose/cmd/goose
-RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
-
 ARG VDB_VERSION=staging
 ENV GO111MODULE on
 
@@ -20,6 +15,8 @@ RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
+# Build migration tool
+RUN go install -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
 
 # App container
 FROM golang:alpine
@@ -31,7 +28,8 @@ RUN apk update \
         && apk upgrade \
         && apk add --no-cache \
         ca-certificates \
-	    bash \
+        bash \
+        postgresql-client \
         && update-ca-certificates 2>/dev/null || true
 
 ARG CONFIG_FILE=environments/extractDiffs.toml
@@ -45,8 +43,8 @@ ARG CONFIG_FILE=environments/extractDiffs.toml
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/extract_diffs/startup_script.sh .
-COPY --from=builder /go/src/github.com/makerdao/vulcanizedb/db/migrations/* db/migrations/
-COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
+COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations db/vdb-mcd-transformers/migrations/
+COPY --from=builder /go/bin/goose goose
 # needed for waiting until postgres is ready before starting from docker-compose
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb/dockerfiles/wait-for-it.sh .
 
