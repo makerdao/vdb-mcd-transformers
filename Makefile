@@ -190,3 +190,20 @@ execute:
 		-e "DATABASE_USER=$(USER)" \
 		-e "DATABASE_PASSWORD=$(DATABASE_PASSWORD)" \
 		execute:latest
+
+.PHONY: extract_diffs
+extract_diffs: HOST ?= host.docker.internal
+extract_diffs: DATABASE_PASSWORD ?= postgres
+extract_diffs:
+	test -n "$(NAME)" # $$(NAME) - Database Name
+	test -n "$(CLIENT_IPCPATH)" # $$(CLIENT_IPCPATH)
+	docker run \
+		-it \
+		-p "5432:5432" \
+		-e "DATABASE_NAME=$(NAME)" \
+		-e "DATABASE_HOSTNAME=$(HOST)" \
+		-e "DATABASE_PORT=$(PORT)" \
+		-e "DATABASE_USER=$(USER)" \
+		-e "DATABASE_PASSWORD=$(DATABASE_PASSWORD)" \
+		-e "CLIENT_IPCPATH=$(CLIENT_IPCPATH)" \
+		extract_diffs:latest
