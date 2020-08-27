@@ -2,12 +2,6 @@ FROM golang:alpine as builder
 
 RUN apk --update --no-cache add make git g++ linux-headers
 
-# Build migration tool
-WORKDIR /go
-RUN GO111MODULE=off go get -u github.com/pressly/goose/cmd/goose
-WORKDIR /go/src/github.com/pressly/goose/cmd/goose
-RUN GO111MODULE=off go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
-
 ARG VDB_VERSION=staging
 ENV GO111MODULE on
 
