@@ -4,18 +4,6 @@
 # Verify required args present
 MISSING_VAR_MESSAGE=" is required and no value was given"
 
-if test -z "$STARTING_BLOCK_NUMBER"
-then
-    echo STARTING_BLOCK_NUMBER $MISSING_VAR_MESSAGE
-    exit 1
-fi
-
-if test -z "$ENDING_BLOCK_NUMBER"
-then
-    echo ENDING_BLOCK_NUMBER $MISSING_VAR_MESSAGE
-    exit 1
-fi
-
 function testDatabaseVariables() {
   for a in DATABASE_NAME DATABASE_HOSTNAME DATABASE_PORT DATABASE_USER DATABASE_PASSWORD
   do
@@ -40,5 +28,5 @@ if test -z "$VDB_PG_CONNECT"; then
 fi
 
 # Run getStorageValue
-echo "Running backfillStorage from block $STARTING_BLOCK_NUMBER to $ENDING_BLOCK_NUMBER"
-./vulcanizedb backfillStorage -s=$STARTING_BLOCK_NUMBER -e=$ENDING_BLOCK_NUMBER --config config.toml
+echo "Running backfillStorage from block 10534238 to 10555000"
+./vulcanizedb backfillStorage -s=10534238 -e=10555000 --config config.toml
