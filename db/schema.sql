@@ -13678,7 +13678,7 @@ CREATE TABLE public.storage_diff (
     storage_key bytea,
     storage_value bytea,
     eth_node_id integer NOT NULL,
-    checked boolean DEFAULT false NOT NULL,
+    status public.diff_status DEFAULT 'new'::public.diff_status NOT NULL,
     from_backfill boolean DEFAULT false NOT NULL,
     created timestamp without time zone DEFAULT now() NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL

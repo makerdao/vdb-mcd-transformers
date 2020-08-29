@@ -63,7 +63,7 @@ var _ = Describe("Urns repository", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			var persistedDiff types.PersistedDiff
-			readErr := db.Get(&persistedDiff, `SELECT id, hashed_address, block_hash, block_height, storage_key, storage_value, from_backfill FROM public.storage_diff LIMIT 1`)
+			readErr := db.Get(&persistedDiff, `SELECT id, address, block_hash, block_height, storage_key, storage_value, status, from_backfill FROM public.storage_diff LIMIT 1`)
 			Expect(readErr).NotTo(HaveOccurred())
 			Expect(persistedDiff.RawDiff).To(Equal(diff))
 			Expect(persistedDiff.FromBackfill).To(BeTrue())
