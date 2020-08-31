@@ -85,6 +85,9 @@ func VowABI() string  { return getContractABI("MCD_VOW") }
 
 func auctionFileMethod() string { return getSolidityFunctionSignature(FlipABI(), "file") }
 func biteMethod() string        { return getSolidityFunctionSignature(Cat100ABI(), "Bite") }
+func catFileBoxMethod() string {
+	return getOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "uint256"})
+}
 func catFileChopLumpMethod() string {
 	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
