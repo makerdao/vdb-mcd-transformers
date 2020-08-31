@@ -22,7 +22,7 @@ import (
 var _ = Describe("Cat file box transformer", func() {
 	var (
 		transformer = box.Transformer{}
-		db = test_config.NewTestDB(test_config.NewTestNode())
+		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
@@ -49,8 +49,8 @@ var _ = Describe("Cat file box transformer", func() {
 
 	It("returns an err if the log is missing topics", func() {
 		badLog := core.EventLog{
-			Log:         types.Log{
-				Topics:      []common.Hash{
+			Log: types.Log{
+				Topics: []common.Hash{
 					common.HexToHash("0xtest"),
 				},
 			},
