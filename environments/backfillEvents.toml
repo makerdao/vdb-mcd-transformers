@@ -2,7 +2,17 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = []
+    transformerNames = [
+        "cat_file_box"
+    ]
+
+    [exporter.cat_file_box]
+        path = "transformers/events/cat_file/box/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
 
 [contract]
     [contract.MCD_CAT_1.0.0]
