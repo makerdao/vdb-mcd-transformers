@@ -26,7 +26,11 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200826185308-26792e782fab
+	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200828231648-12cdd9a5273f
+	github.com/mattn/go-colorable v0.1.4 // indirect
+	github.com/mattn/go-isatty v0.0.10 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/olekukonko/tablewriter v0.0.3 // indirect
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.10.0
 	github.com/oschwald/maxminddb-golang v1.5.0 // indirect

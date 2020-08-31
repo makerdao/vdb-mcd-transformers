@@ -7539,10 +7539,66 @@ COMMENT ON FUNCTION public.ilk_time_created(ilk_id integer) IS '@omit';
 
 
 --
+-- Name: set_event_log_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_event_log_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: set_header_updated(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.set_header_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: set_receipt_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_receipt_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: set_storage_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_storage_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: set_transaction_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_transaction_updated() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -13476,7 +13532,9 @@ CREATE TABLE public.event_logs (
     tx_index integer,
     log_index integer,
     raw jsonb,
-    transformed boolean DEFAULT false NOT NULL
+    transformed boolean DEFAULT false NOT NULL,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -13582,7 +13640,9 @@ CREATE TABLE public.receipts (
     state_root character varying(66),
     status integer,
     tx_hash character varying(66),
-    rlp bytea
+    rlp bytea,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -13619,7 +13679,9 @@ CREATE TABLE public.storage_diff (
     storage_value bytea,
     eth_node_id integer NOT NULL,
     status public.diff_status DEFAULT 'new'::public.diff_status NOT NULL,
-    from_backfill boolean DEFAULT false NOT NULL
+    from_backfill boolean DEFAULT false NOT NULL,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -13658,7 +13720,9 @@ CREATE TABLE public.transactions (
     tx_from character varying(44),
     tx_index integer,
     tx_to character varying(44),
-    value numeric
+    value numeric,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -22117,10 +22181,38 @@ CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE PROCEDURE ma
 
 
 --
+-- Name: event_logs event_log_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER event_log_updated BEFORE UPDATE ON public.event_logs FOR EACH ROW EXECUTE PROCEDURE public.set_event_log_updated();
+
+
+--
 -- Name: headers header_updated; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER header_updated BEFORE UPDATE ON public.headers FOR EACH ROW EXECUTE PROCEDURE public.set_header_updated();
+
+
+--
+-- Name: receipts receipt_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER receipt_updated BEFORE UPDATE ON public.receipts FOR EACH ROW EXECUTE PROCEDURE public.set_receipt_updated();
+
+
+--
+-- Name: storage_diff storage_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER storage_updated BEFORE UPDATE ON public.storage_diff FOR EACH ROW EXECUTE PROCEDURE public.set_storage_updated();
+
+
+--
+-- Name: transactions transaction_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER transaction_updated BEFORE UPDATE ON public.transactions FOR EACH ROW EXECUTE PROCEDURE public.set_transaction_updated();
 
 
 --
