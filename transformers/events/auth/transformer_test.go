@@ -22,7 +22,7 @@ var _ = Describe("Auth Transformer", func() {
 
 	It("converts rely logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.RelyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.RelyEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.RelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var usrAddressID int64
@@ -41,7 +41,7 @@ var _ = Describe("Auth Transformer", func() {
 
 	It("converts deny logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.DenyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.DenyEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.DenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var usrAddressID int64
@@ -62,7 +62,7 @@ var _ = Describe("Auth Transformer", func() {
 		invalidLog := test_data.DenyEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

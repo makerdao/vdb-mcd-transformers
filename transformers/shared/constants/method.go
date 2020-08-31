@@ -17,7 +17,8 @@
 package constants
 
 // TODO Figure out signatures automatically from config somehow :(
-func CatABI() string        { return getContractABI("MCD_CAT") }
+func Cat100ABI() string     { return getContractABI("MCD_CAT_1.0.0") }
+func Cat110ABI() string     { return getContractABI("MCD_CAT_1.1.0") }
 func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
 func FlapABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
@@ -83,19 +84,19 @@ func VatABI() string  { return getContractABI("MCD_VAT") }
 func VowABI() string  { return getContractABI("MCD_VOW") }
 
 func auctionFileMethod() string { return getSolidityFunctionSignature(FlipABI(), "file") }
-func biteMethod() string        { return getSolidityFunctionSignature(CatABI(), "Bite") }
+func biteMethod() string        { return getSolidityFunctionSignature(Cat100ABI(), "Bite") }
 func catFileChopLumpMethod() string {
-	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func catFileFlipMethod() string {
-	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "bytes32", "address"})
+	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
 func catFileVowMethod() string {
-	return getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "address"})
+	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "address"})
 }
 func dealMethod() string     { return getSolidityFunctionSignature(FlipABI(), "deal") }
 func dentMethod() string     { return getSolidityFunctionSignature(FlipABI(), "dent") }
-func denyMethod() string     { return getSolidityFunctionSignature(CatABI(), "deny") }
+func denyMethod() string     { return getSolidityFunctionSignature(Cat100ABI(), "deny") }
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return getSolidityFunctionSignature(FlipABI(), "Kick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }
@@ -160,7 +161,7 @@ func potFileVowMethod() string {
 	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "address"})
 }
 func potJoinMethod() string    { return getSolidityFunctionSignature(PotABI(), "join") }
-func relyMethod() string       { return getSolidityFunctionSignature(CatABI(), "rely") }
+func relyMethod() string       { return getSolidityFunctionSignature(Cat100ABI(), "rely") }
 func setMinSellMethod() string { return getSolidityFunctionSignature(OasisABI(), "setMinSell") }
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})

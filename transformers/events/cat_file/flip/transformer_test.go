@@ -46,7 +46,7 @@ var _ = Describe("Cat file flip transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -57,12 +57,12 @@ var _ = Describe("Cat file flip transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		ilkID, ilkIDErr := shared.GetOrCreateIlk(test_data.CatFileFlipEventLog.Log.Topics[2].Hex(), db)
