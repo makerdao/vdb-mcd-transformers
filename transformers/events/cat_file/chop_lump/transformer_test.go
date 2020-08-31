@@ -42,7 +42,7 @@ var _ = Describe("Cat file chop lump transformer", func() {
 	Context("chop events", func() {
 		It("converts a chop log to a model", func() {
 			chopLog := test_data.CatFileChopEventLog
-			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{chopLog}, db)
+			models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{chopLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedModel := test_data.CatFileChopModel()
@@ -58,7 +58,7 @@ var _ = Describe("Cat file chop lump transformer", func() {
 	Context("lump events", func() {
 		It("converts a lump log to a model", func() {
 			lumpLog := test_data.CatFileLumpEventLog
-			models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{lumpLog}, db)
+			models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{lumpLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedModel := test_data.CatFileLumpModel()
@@ -79,7 +79,7 @@ var _ = Describe("Cat file chop lump transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -90,7 +90,7 @@ var _ = Describe("Cat file chop lump transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 })
