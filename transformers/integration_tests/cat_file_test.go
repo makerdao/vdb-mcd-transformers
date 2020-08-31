@@ -37,7 +37,7 @@ var _ = Describe("Cat File transformer", func() {
 	var logFetcher fetcher.ILogFetcher
 
 	var catFileConfig = event.TransformerConfig{
-		ContractAddresses: []string{test_data.CatAddress()},
+		ContractAddresses: []string{test_data.Cat100Address()},
 		ContractAbi:       constants.Cat100ABI(),
 	}
 
