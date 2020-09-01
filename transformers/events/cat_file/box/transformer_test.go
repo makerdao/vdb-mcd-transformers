@@ -3,12 +3,9 @@ package box_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-
 	//"github.com/ethereum/go-ethereum/core"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -33,16 +30,9 @@ var _ = Describe("Cat file box transformer", func() {
 		models, toModelsErr := transformer.ToModels(constants.Cat110ABI(), []core.EventLog{test_data.CatFileBoxEventLog}, db)
 		Expect(toModelsErr).NotTo(HaveOccurred())
 
-		contractAddressID, msgSenderErr := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
-		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
-		Expect(msgSenderErr).NotTo(HaveOccurred())
-
 		expectedModel := test_data.CatFileBoxModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+		test_data.AssignAddressID(test_data.CatFileBoxEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.CatFileBoxEventLog, expectedModel, db)
 
 		Expect(models).To(ConsistOf(expectedModel))
 	})
