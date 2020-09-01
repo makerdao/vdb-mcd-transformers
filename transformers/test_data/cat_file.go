@@ -202,6 +202,7 @@ var catFileVowModel = event.InsertionModel{
 	},
 }
 
+<<<<<<< HEAD
 var rawCatFileBoxLog = types.Log{
 	Address: common.HexToAddress(Cat110Address()),
 	Topics: []common.Hash{
@@ -229,15 +230,51 @@ var CatFileBoxEventLog = core.EventLog{
 var catFileBoxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileBoxTable,
+=======
+var rawCatFileDunkLog = types.Log{
+	Address: common.HexToAddress(CatAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.CatFileDunkSignature()),
+		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
+		common.HexToHash("0x555344432d420000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x64756e6b00000000000000000000000000000000000000000000000000000000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e01a0b287e555344432d42000000000000000000000000000000000000000000000000000064756e6b00000000000000000000000000000000000000000000000000000000000000000000000000000022361d8afcc93343e962029a7edab200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 87,
+	TxHash:      common.HexToHash("0x9125c2c8795a0a872386e1ceda091c603db94f737a4557e784a96352086bd985"),
+	TxIndex:     11,
+	BlockHash:   fakes.FakeHash,
+	Index:       2,
+	Removed:     false,
+}
+
+var CatFileDunkEventLog = core.EventLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileDunkLog,
+	Transformed: false,
+}
+
+func CatFileDunkModel() event.InsertionModel { return CopyModel(catFileDunkModel) }
+
+var catFileDunkModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.CatFileDunkTable,
+>>>>>>> 0ae4984b... Adds dunk event transformer
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
 		constants.MsgSenderColumn,
+<<<<<<< HEAD
+=======
+		constants.IlkColumn,
+>>>>>>> 0ae4984b... Adds dunk event transformer
 		constants.WhatColumn,
 		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
+<<<<<<< HEAD
 		event.HeaderFK: CatFileBoxEventLog.HeaderID,
 		event.LogFK:    CatFileBoxEventLog.ID,
 		//event.AddressFK
@@ -248,3 +285,14 @@ var catFileBoxModel = event.InsertionModel{
 }
 
 func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) }
+=======
+		event.HeaderFK:       CatFileDunkEventLog.HeaderID,
+		event.LogFK:          CatFileDunkEventLog.ID,
+		constants.WhatColumn: "dunk",
+		constants.DataColumn: "50000000000000000000000000000000000000000000000000",
+		//constants.IlkColumn
+		//event.AddressFK
+		//constants.MsgSenderColumn
+	},
+}
+>>>>>>> 0ae4984b... Adds dunk event transformer
