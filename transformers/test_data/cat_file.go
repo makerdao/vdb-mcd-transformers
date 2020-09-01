@@ -221,8 +221,8 @@ var catFileVowModel = event.InsertionModel{
 }
 
 var rawCatFileBoxLog = types.Log{
-	Address:     common.HexToAddress(Cat110Address()),
-	Topics:      []common.Hash{
+	Address: common.HexToAddress(Cat110Address()),
+	Topics: []common.Hash{
 		common.HexToHash("0x29ae811400000000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
 		common.HexToHash("0x626f780000000000000000000000000000000000000000000000000000000000"),
@@ -240,13 +240,13 @@ var rawCatFileBoxLog = types.Log{
 var CatFileBoxEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:        rawCatFileBoxLog,
+	Log:         rawCatFileBoxLog,
 	Transformed: false,
 }
 
 var catFileBoxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:      constants.CatFileBoxTable,
+	TableName:  constants.CatFileBoxTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
@@ -255,13 +255,14 @@ var catFileBoxModel = event.InsertionModel{
 		constants.WhatColumn,
 		constants.DataColumn,
 	},
-	ColumnValues:   event.ColumnValues{
+	ColumnValues: event.ColumnValues{
 		event.HeaderFK: CatFileBoxEventLog.HeaderID,
-		event.LogFK: CatFileBoxEventLog.ID,
+		event.LogFK:    CatFileBoxEventLog.ID,
 		//event.AddressFK
 		//constants.MsgSender
 		constants.WhatColumn: "box",
 		constants.DataColumn: "30000000000000000000000000000000000000000000000000000",
 	},
 }
-func CatFileBoxModel() event.InsertionModel {return CopyModel(catFileBoxModel)}
+
+func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) }

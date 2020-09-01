@@ -32,8 +32,8 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		result := event.InsertionModel{
-			SchemaName:     constants.MakerSchema,
-			TableName:      constants.CatFileBoxTable,
+			SchemaName: constants.MakerSchema,
+			TableName:  constants.CatFileBoxTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
@@ -42,13 +42,13 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				constants.WhatColumn,
 				constants.DataColumn,
 			},
-			ColumnValues:   event.ColumnValues{
-				event.HeaderFK: log.HeaderID,
-				event.LogFK: log.ID,
-				event.AddressFK: addressID,
+			ColumnValues: event.ColumnValues{
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
-				constants.WhatColumn: what,
-				constants.DataColumn: data.String(),
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data.String(),
 			},
 		}
 
