@@ -4,7 +4,8 @@
     save     = false
     transformerNames = [
         # storage
-        "cat",
+        "cat_v1_0_0",
+        "cat_v1_1_0",
         "cdp_manager",
         "flap_v1_0_0",
         "flap_v1_0_9",
@@ -120,8 +121,14 @@
         "yank"
     ]
 
-    [exporter.cat]
-        path = "transformers/storage/cat/initializer"
+    [exporter.cat_v1_0_0]
+        path = "transformers/storage/cat/v1_0_0/initializer"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.cat_v1_1_0]
+        path = "transformers/storage/cat/v1_1_0/initializer"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
