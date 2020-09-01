@@ -34,6 +34,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(CatFileChopLumpSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates cat file dunk signature", func() {
+		Expect(CatFileDunkSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates cat file flip signature", func() {
 		Expect(CatFileFlipSignature()).To(Equal("0xebecb39d00000000000000000000000000000000000000000000000000000000"))
 	})

@@ -219,3 +219,52 @@ var catFileVowModel = event.InsertionModel{
 		//constants.MsgSenderColumn
 	},
 }
+
+var rawCatFileDunkLog = types.Log{
+	Address: common.HexToAddress(CatAddress()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.CatFileDunkSignature()),
+		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
+		common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x64756e6b00000000000000000000000000000000000000000000000000000000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000044d4e8be83766f77000000000000000000000000000000000000000000000000000000000000000000000000000000000017560834075da3db54f737db74377e799c86582100000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 87,
+	TxHash:      common.HexToHash("0x6515c7dfe53f0ad83ce1173fa99032c24a07cfd8b5d5a1c1f80486c99dd52800"),
+	TxIndex:     11,
+	BlockHash:   fakes.FakeHash,
+	Index:       2,
+	Removed:     false,
+}
+
+var CatFileDunkEventLog = core.EventLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileDunkLog,
+	Transformed: false,
+}
+
+func CatFileDunkModel() event.InsertionModel { return CopyModel(catFileDunkModel) }
+
+var catFileDunkModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.CatFileDunkTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
+	},
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:       CatFileDunkEventLog.HeaderID,
+		event.LogFK:          CatFileDunkEventLog.ID,
+		constants.WhatColumn: "dunk",
+		constants.DataColumn: "",
+		//constants.IlkColumn
+		//event.AddressFK
+		//constants.MsgSenderColumn
+	},
+}
