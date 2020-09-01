@@ -73,7 +73,7 @@ var _ = Describe("Ilk file event computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			err := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
                     FROM api.ilk_file_event_ilk(
                         (SELECT (ilk_identifier, what, data, block_height, log_id)::api.ilk_file_event FROM api.all_ilk_file_events($1))
                     )`, test_helpers.FakeIlk.Identifier)
