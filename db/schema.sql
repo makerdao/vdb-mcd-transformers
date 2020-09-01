@@ -18373,13 +18373,6 @@ CREATE INDEX bite_urn_index ON maker.bite USING btree (urn_id);
 
 
 --
--- Name: cat_file_cho_lump_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX cat_file_cho_lump_msg_sender_index ON maker.cat_file_chop_lump USING btree (msg_sender);
-
-
---
 -- Name: cat_file_chop_lump_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18405,6 +18398,13 @@ CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btre
 --
 
 CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btree (log_id);
+
+
+--
+-- Name: cat_file_chop_lump_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_msg_sender_index ON maker.cat_file_chop_lump USING btree (msg_sender);
 
 
 --
