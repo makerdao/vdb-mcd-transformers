@@ -19,7 +19,7 @@ var _ = Describe("Rely transformer", func() {
 	Context("Cat rely events", func() {
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		msgSenderAddress := "0xa9ee75d81d78c36c4163004e6cc7a988eec9433e"
-		relyIntegrationTest(int64(8928165), test_data.CatAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928165), test_data.Cat100Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flap v1.0.0 rely events", func() {

@@ -29,7 +29,7 @@ import (
 )
 
 var rawCatFileChopLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -78,7 +78,7 @@ var catFileChopModel = event.InsertionModel{
 }
 
 var rawCatFileLumpLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileChopLumpSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -127,7 +127,7 @@ var catFileLumpModel = event.InsertionModel{
 }
 
 var rawCatFileFlipLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileFlipSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -174,7 +174,7 @@ var catFileFlipModel = event.InsertionModel{
 }
 
 var rawCatFileVowLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),

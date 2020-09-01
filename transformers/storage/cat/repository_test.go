@@ -34,7 +34,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = cat.StorageRepository{ContractAddress: test_data.CatAddress()}
+		repo = cat.StorageRepository{ContractAddress: test_data.Cat100Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -60,7 +60,7 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatLiveTable,
 				Repository:      &repo,
-				ContractAddress: test_data.CatAddress(),
+				ContractAddress: test_data.Cat100Address(),
 				Metadata:        liveMetadata,
 			}
 
@@ -75,7 +75,7 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatVatTable,
 				Repository:      &repo,
-				ContractAddress: test_data.CatAddress(),
+				ContractAddress: test_data.Cat100Address(),
 				Metadata:        vatMetadata,
 			}
 
@@ -90,7 +90,7 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatVowTable,
 				Repository:      &repo,
-				ContractAddress: test_data.CatAddress(),
+				ContractAddress: test_data.Cat100Address(),
 				Metadata:        vowMetadata,
 			}
 

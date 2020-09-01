@@ -13,7 +13,7 @@ import (
 )
 
 var rawDenyLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DenySignature()),
 		common.HexToHash("0x00000000000000000000000013141b8a5e4a82ebc6b636849dd6a515185d6237"),
