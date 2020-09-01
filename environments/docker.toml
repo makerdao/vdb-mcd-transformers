@@ -43,6 +43,7 @@
         # events
         "auction_file",
         "bite",
+        "cat_claw",
         "cat_file_box",
         "cat_file_chop_lump",
         "cat_file_flip",
@@ -349,6 +350,13 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_claw]
+        path = "transformers/events/cat_claw/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
         rank = "0"
     [exporter.cat_file_box]
         path = "transformers/events/cat_file/box/initializer"
