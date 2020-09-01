@@ -56,7 +56,7 @@ var _ = Describe("all poke events query", func() {
 
 			var result test_helpers.IlkSnapshot
 			err := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 				FROM api.poke_event_ilk(
 					(SELECT (ilk_id, val, spot, block_height, log_id)::api.poke_event FROM api.all_poke_events()))`)
 

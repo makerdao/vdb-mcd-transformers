@@ -77,7 +77,7 @@ var _ = Describe("Frob event computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
                     FROM api.frob_event_ilk(
                         (SELECT (ilk_identifier, urn_identifier, dink, dart, ilk_rate, block_height, log_id)::api.frob_event FROM api.all_frobs($1))
                     )`, test_helpers.FakeIlk.Identifier)
