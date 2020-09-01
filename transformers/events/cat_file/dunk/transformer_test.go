@@ -14,7 +14,7 @@ import (
 var _ = Describe("Cat file dunk transformer", func() {
 	var (
 		db          = test_config.NewTestDB(test_config.NewTestNode())
-		transformer dunk.Transformer
+		transformer = dunk.Transformer{}
 	)
 
 	BeforeEach(func() {

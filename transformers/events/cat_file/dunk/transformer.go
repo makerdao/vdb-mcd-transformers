@@ -39,7 +39,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.CatFileVowTable,
+			TableName:  constants.CatFileDunkTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
