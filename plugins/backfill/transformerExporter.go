@@ -15,8 +15,8 @@ var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{
-		cat_file_box.EventTransformerInitializer,
-	},
+			cat_file_box.EventTransformerInitializer,
+		},
 		[]storage.TransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
 }
