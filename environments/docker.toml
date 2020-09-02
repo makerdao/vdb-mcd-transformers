@@ -334,12 +334,14 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0",
-                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
-                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
-                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0",
-                     "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
+                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9",
+                     "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
+                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6",
+                     "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9",
+                     "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.bite]
         path = "transformers/events/bite/initializer"
@@ -381,23 +383,28 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0",
-                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
-                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
-                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0",
-                     "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
+                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9",
+                     "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
+                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6",
+                     "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9",
+                     "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.dent]
         path = "transformers/events/dent/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
-                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0",
-                     "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
-                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0",
-                     "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0",
+                     "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9",
+                     "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0",
+                     "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4",
+                     "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9",
+                     "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0",
+                     "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1",
+                     "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.deny]
         path = "transformers/events/auth/deny_initializer"
@@ -405,13 +412,15 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0",
-                     "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8",
-                     "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7",
-                     "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7",
-                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8",
-                     "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG", "MCD_POT", "MCD_SPOT",
-                     "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_MANA", "MEDIAN_WBTC", "MEDIAN_ZRX",
-                     "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_MANA", "OSM_WBTC", "OSM_ZRX"]
+                     "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
+                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7",
+                     "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9",
+                     "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
+                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8",
+                     "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG",
+                     "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_MANA",
+                     "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_MANA", "OSM_WBTC", "OSM_ZRX"]
         rank = "0"
     [exporter.flap_kick]
         path = "transformers/events/flap_kick/initializer"
@@ -425,10 +434,12 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
-                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0",
-                     "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
-                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0",
+        contracts = ["MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0",
+                     "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9",
+                     "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0",
+                     "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4",
+                     "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9",
+                     "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0",
                      "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0"]
         rank = "0"
     [exporter.flop_kick]
@@ -682,13 +693,15 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0", "MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0",
-                     "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8",
-                     "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7",
-                     "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7",
-                     "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8",
-                     "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG", "MCD_POT", "MCD_SPOT",
-                     "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_MANA", "MEDIAN_WBTC", "MEDIAN_ZRX",
-                     "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_MANA", "OSM_WBTC", "OSM_ZRX"]
+                     "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9",
+                     "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
+                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7",
+                     "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9",
+                     "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
+                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8",
+                     "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9", "MCD_JUG",
+                     "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_MANA",
+                     "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_ETH", "OSM_KNC", "OSM_MANA", "OSM_WBTC", "OSM_ZRX"]
         rank = "0"
     [exporter.set_min_sell]
         path = "transformers/events/set_min_sell/initializer"
@@ -730,23 +743,28 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0",
-                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
-                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
-                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
+                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9",
+                     "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
+                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6",
+                     "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9",
+                     "MCD_FLIP_ZRX_A_1.1.0"]
         rank = "0"
     [exporter.tick]
         path = "transformers/events/tick/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0",
-                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
-                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
-                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0",
-                     "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0", "MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
+                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9",
+                     "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
+                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6",
+                     "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9",
+                     "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
     [exporter.vat_deny]
         path = "transformers/events/vat_auth/deny_initializer"
@@ -900,12 +918,14 @@
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["MCD_FLAP_1.0.0","MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9", "MCD_FLIP_BAT_A_1.1.0",
-                     "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0",
-                     "MCD_FLIP_MANA_A_1.0.9", "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9", "MCD_FLIP_TUSD_A_1.1.0",
-                     "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0",
-                     "MCD_FLIP_WBTC_A_1.0.6", "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9", "MCD_FLIP_ZRX_A_1.1.0",
-                     "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
+        contracts = ["MCD_FLAP_1.0.0","MCD_FLAP_1.0.9", "MCD_FLIP_BAT_A_1.0.0", "MCD_FLIP_BAT_A_1.0.9",
+                     "MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_ETH_A_1.0.9", "MCD_FLIP_ETH_A_1.1.0",
+                     "MCD_FLIP_KNC_A_1.0.8", "MCD_FLIP_KNC_A_1.0.9", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.0.9",
+                     "MCD_FLIP_MANA_A_1.1.0", "MCD_FLIP_SAI_1.0.0", "MCD_FLIP_TUSD_A_1.0.7", "MCD_FLIP_TUSD_A_1.0.9",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.0.4", "MCD_FLIP_USDC_A_1.0.9", "MCD_FLIP_USDC_A_1.1.0",
+                     "MCD_FLIP_USDC_B_1.0.7", "MCD_FLIP_USDC_B_1.0.9", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.0.6",
+                     "MCD_FLIP_WBTC_A_1.0.9", "MCD_FLIP_WBTC_A_1.1.0", "MCD_FLIP_ZRX_A_1.0.8", "MCD_FLIP_ZRX_A_1.0.9",
+                     "MCD_FLIP_ZRX_A_1.1.0", "MCD_FLOP_1.0.1", "MCD_FLOP_1.0.9"]
         rank = "0"
 
 [contract]
