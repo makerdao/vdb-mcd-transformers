@@ -17,8 +17,6 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/bite"
@@ -32,18 +30,46 @@ import (
 )
 
 var _ = Describe("Bite Transformer", func() {
-	biteConfig := event.TransformerConfig{
-		TransformerName:   constants.BiteTable,
-		ContractAddresses: []string{test_data.Cat100Address()},
-		ContractAbi:       constants.Cat100ABI(),
-		Topic:             constants.BiteSignature(),
-	}
-
-	It("fetches and transforms a Bite event", func() {
-		test_config.CleanTestDB(db)
+	Context("fetches and transforms a Bite event from Cat v1.0.0", func() {
 		blockNumber := int64(8997324)
-		biteConfig.StartingBlockNumber = blockNumber
-		biteConfig.EndingBlockNumber = blockNumber
+		urn := "0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5"
+		ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
+		expectedResult := biteModel{
+			Ink:  "50000000000000000000",
+			Art:  "4460522851157616216837",
+			Tab:  "4466031366353941646208178591268931635087392443453",
+			Flip: test_data.FlipEthV100Address(),
+			Id:   "112",
+		}
+		biteIntegrationTest(blockNumber, test_data.Cat100Address(), constants.Cat100ABI(), ilk, urn, expectedResult)
+	})
+
+	Context("fetches and transforms a Bite event from Cat v1.1.0", func() {
+		blockNumber := int64(10782907)
+		urn := "0x8b7b68b93cb709976f4fefdc05408039e9927246"
+		ilk := "0x4241542d41000000000000000000000000000000000000000000000000000000"
+		expectedResult := biteModel{
+			Ink:  "2479962706275246500000",
+			Art:  "504881251104361771684",
+			Tab:  "515000000000000000000921515165752588303020959580",
+			Flip: test_data.FlipBatV110Address(),
+			Id:   "1",
+		}
+		biteIntegrationTest(blockNumber, test_data.Cat110Address(), constants.Cat110ABI(), ilk, urn, expectedResult)
+	})
+})
+
+func biteIntegrationTest(blockNumber int64, contractAddressHex, contractABI, ilk, urn string, expectedResult biteModel) {
+	It("persists event", func() {
+		test_config.CleanTestDB(db)
+		biteConfig := event.TransformerConfig{
+			ContractAbi:         contractABI,
+			ContractAddresses:   []string{contractAddressHex},
+			EndingBlockNumber:   blockNumber,
+			StartingBlockNumber: blockNumber,
+			Topic:               constants.BiteSignature(),
+			TransformerName:     constants.BiteTable,
+		}
 
 		header, err := persistHeader(db, blockNumber, blockChain)
 		Expect(err).NotTo(HaveOccurred())
@@ -66,31 +92,23 @@ var _ = Describe("Bite Transformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []biteModel
-		err = db.Select(&dbResult, `SELECT art, ink, flip, tab, urn_id, bid_id from maker.bite`)
+		var dbResult biteModel
+		err = db.Get(&dbResult, `SELECT art, ink, flip, tab, urn_id, bid_id from maker.bite`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Art).To(Equal("4460522851157616216837"))
-		urnID, err := shared.GetOrCreateUrn("0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5",
-			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].Ink).To(Equal("50000000000000000000"))
-		Expect(dbResult[0].Flip).To(Equal(test_data.FlipEthV100Address()))
-		Expect(dbResult[0].Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
-		Expect(dbResult[0].Id).To(Equal("112"))
+		urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
+		Expect(urnErr).NotTo(HaveOccurred())
+		expectedResult.Urn = urnID
+
+		Expect(dbResult).To(Equal(expectedResult))
 	})
-})
+}
 
 type biteModel struct {
-	Ilk      string
-	Urn      string `db:"urn_id"`
-	Ink      string
-	Art      string
-	Tab      string
-	Flip     string
-	Id       string `db:"bid_id"`
-	HeaderID int64
-	LogID    int64 `db:"log_id"`
+	Urn  int64 `db:"urn_id"`
+	Ink  string
+	Art  string
+	Tab  string
+	Flip string
+	Id   string `db:"bid_id"`
 }
