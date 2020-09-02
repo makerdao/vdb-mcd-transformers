@@ -142,6 +142,12 @@ type Exporter interface {
 	Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
+type StubMigrationManager struct{}
+
+func (s *StubMigrationManager) RunMigrations() error {
+	return nil
+}
+
 var _ = Describe("Plugin test", func() {
 	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
@@ -170,6 +176,7 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = eventConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(eventConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
@@ -284,6 +291,7 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = storageConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(storageConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
@@ -331,6 +339,7 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = combinedConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(combinedConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
