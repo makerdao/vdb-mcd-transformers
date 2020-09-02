@@ -46,10 +46,6 @@ var _ = Describe("Signature constants", func() {
 		Expect(CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates cat file box signature", func() {
-		Expect(CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates deal signature", func() {
 		Expect(DealSignature()).To(Equal("0xc959c42b00000000000000000000000000000000000000000000000000000000"))
 	})
