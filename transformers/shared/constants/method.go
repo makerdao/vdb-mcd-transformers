@@ -81,9 +81,6 @@ func MedianABI() string {
 		"MEDIAN_ZRX",
 	})
 }
-func OasisABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
-}
 func OsmABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"OSM_BAT",
@@ -134,26 +131,9 @@ func jugFileIlkMethod() string {
 func jugFileVowMethod() string {
 	return getOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string      { return getSolidityFunctionSignature(JugABI(), "init") }
-func logBumpEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogBump") }
-func logBuyEnabledEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogBuyEnabled") }
-func logDeleteEvent() string     { return getSolidityFunctionSignature(OasisABI(), "LogDelete") }
-func logInsertEvent() string     { return getSolidityFunctionSignature(OasisABI(), "LogInsert") }
-func logItemUpdateEvent() string { return getSolidityFunctionSignature(OasisABI(), "LogItemUpdate") }
-func logKillEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogKill") }
-func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(), "LogMake") }
-func logMatchingEnabledEvent() string {
-	return getSolidityFunctionSignature(OasisABI(), "LogMatchingEnabled")
-}
-func logMedianPriceEvent() string  { return getSolidityFunctionSignature(MedianABI(), "LogMedianPrice") }
-func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
-func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
-func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
-func logTradeEvent() string        { return getSolidityFunctionSignature(OasisABI(), "LogTrade") }
-func logUnsortedOfferMethod() string {
-	return getSolidityFunctionSignature(OasisABI(), "LogUnsortedOffer")
-}
-func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func jugInitMethod() string       { return getSolidityFunctionSignature(JugABI(), "init") }
+func logMedianPriceEvent() string { return getSolidityFunctionSignature(MedianABI(), "LogMedianPrice") }
+func logValueMethod() string      { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
 
 func medianDissBatchMethod() string {
 	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
@@ -184,9 +164,9 @@ func potFileDSRMethod() string {
 func potFileVowMethod() string {
 	return getOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "address"})
 }
-func potJoinMethod() string    { return getSolidityFunctionSignature(PotABI(), "join") }
-func relyMethod() string       { return getSolidityFunctionSignature(Cat110ABI(), "rely") }
-func setMinSellMethod() string { return getSolidityFunctionSignature(OasisABI(), "setMinSell") }
+func potJoinMethod() string { return getSolidityFunctionSignature(PotABI(), "join") }
+func relyMethod() string    { return getSolidityFunctionSignature(Cat110ABI(), "rely") }
+
 func spotFileMatMethod() string {
 	return getOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }

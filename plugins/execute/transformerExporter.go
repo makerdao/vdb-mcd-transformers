@@ -23,20 +23,7 @@ import (
 	jug_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk/initializer"
 	jug_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow/initializer"
 	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
-	log_bump "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_bump/initializer"
-	log_buy_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_buy_enabled/initializer"
-	log_delete "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete/initializer"
-	log_insert "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_insert/initializer"
-	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
-	log_kill "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_kill/initializer"
-	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
-	log_matching_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_matching_enabled/initializer"
 	log_median_price "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_median_price/initializer"
-	log_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_min_sell/initializer"
-	log_sorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_sorted_offer/initializer"
-	log_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_take/initializer"
-	log_trade "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_trade/initializer"
-	log_unsorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_unsorted_offer/initializer"
 	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
 	median_diss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch/initializer"
 	median_diss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single/initializer"
@@ -52,7 +39,6 @@ import (
 	pot_file_dsr "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr/initializer"
 	pot_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow/initializer"
 	pot_join "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join/initializer"
-	set_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/set_min_sell/initializer"
 	spot_file_mat "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat/initializer"
 	spot_file_par "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/par/initializer"
 	spot_file_pip "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip/initializer"
@@ -159,20 +145,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			jug_file_ilk.EventTransformerInitializer,
 			jug_file_vow.EventTransformerInitializer,
 			jug_init.EventTransformerInitializer,
-			log_bump.EventTransformerInitializer,
-			log_buy_enabled.EventTransformerInitializer,
-			log_delete.EventTransformerInitializer,
-			log_insert.EventTransformerInitializer,
-			log_item_update.EventTransformerInitializer,
-			log_kill.EventTransformerInitializer,
-			log_make.EventTransformerInitializer,
-			log_matching_enabled.EventTransformerInitializer,
 			log_median_price.EventTransformerInitializer,
-			log_min_sell.EventTransformerInitializer,
-			log_sorted_offer.EventTransformerInitializer,
-			log_take.EventTransformerInitializer,
-			log_trade.EventTransformerInitializer,
-			log_unsorted_offer.EventTransformerInitializer,
 			log_value.EventTransformerInitializer,
 			median_diss_batch.EventTransformerInitializer,
 			median_diss_single.EventTransformerInitializer,
@@ -189,7 +162,6 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			pot_file_vow.EventTransformerInitializer,
 			pot_join.EventTransformerInitializer,
 			rely.EventTransformerInitializer,
-			set_min_sell.EventTransformerInitializer,
 			spot_file_mat.EventTransformerInitializer,
 			spot_file_par.EventTransformerInitializer,
 			spot_file_pip.EventTransformerInitializer,
