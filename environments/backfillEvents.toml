@@ -2,9 +2,7 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = [
-        "cat_file_box"
-    ]
+    transformerNames = []
 
     [exporter.cat_file_box]
         path = "transformers/events/cat_file/box/initializer"
