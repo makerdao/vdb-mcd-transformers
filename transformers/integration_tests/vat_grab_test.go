@@ -75,7 +75,7 @@ var _ = Describe("Vat Grab Transformer", func() {
 			"0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult[0].Urn).To(Equal(strconv.FormatInt(urnID, 10)))
-		Expect(dbResult[0].V).To(Equal(test_data.CatAddress())) //cat contract address as bytes32
+		Expect(dbResult[0].V).To(Equal(test_data.Cat100Address())) //cat contract address as bytes32
 		Expect(dbResult[0].W).To(Equal("0xA950524441892A31ebddF91d3cEEFa04Bf454466"))
 		expectedDink := new(big.Int)
 		expectedDink.SetString("-50000000000000000000", 10)

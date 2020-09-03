@@ -34,7 +34,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = cat.StorageRepository{ContractAddress: test_data.CatAddress()}
+		repo = cat.StorageRepository{ContractAddress: test_data.Cat100Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error

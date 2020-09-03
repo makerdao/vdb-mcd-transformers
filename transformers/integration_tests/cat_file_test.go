@@ -21,6 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
@@ -36,168 +37,212 @@ import (
 var _ = Describe("Cat File transformer", func() {
 	var logFetcher fetcher.ILogFetcher
 
-	var catFileConfig = event.TransformerConfig{
-		ContractAddresses: []string{test_data.CatAddress()},
-		ContractAbi:       constants.Cat100ABI(),
-	}
-
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 	})
 
-	It("persists a chop lump event (lump)", func() {
-		chopLumpBlockNumber := int64(8928392)
-		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileChopLumpTable
-		catFileConfig.Topic = constants.CatFileChopLumpSignature()
-		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
-		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
-
-		initializer := event.ConfiguredTransformer{
-			Config:      catFileConfig,
-			Transformer: chop_lump.Transformer{},
+	Describe("1.0.0 Cat Contract", func() {
+		var catFileConfig = event.TransformerConfig{
+			ContractAddresses: []string{test_data.Cat100Address()},
+			ContractAbi:       constants.Cat100ABI(),
 		}
-		transformer := initializer.NewTransformer(db)
 
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
+		It("persists a chop lump event (lump)", func() {
+			chopLumpBlockNumber := int64(8928392)
+			header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileChopLumpTable
+			catFileConfig.Topic = constants.CatFileChopLumpSignature()
+			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
+			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
-		eventLogs := test_data.CreateLogs(header.Id, logs, db)
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: chop_lump.Transformer{},
+			}
+			transformer := initializer.NewTransformer(db)
 
-		err = transformer.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []catFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
-		Expect(err).NotTo(HaveOccurred())
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		Expect(len(dbResult)).To(Equal(1))
+			err = transformer.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
 
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].What).To(Equal("lump"))
-		Expect(dbResult[0].Data).To(Equal("50000000000000000000"))
+			var dbResult catFileChopLumpModel
+			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
+			Expect(err).NotTo(HaveOccurred())
+
+			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+			Expect(dbResult.What).To(Equal("lump"))
+			Expect(dbResult.Data).To(Equal("50000000000000000000"))
+		})
+
+		It("persists a chop lump event (chop)", func() {
+			chopLumpBlockNumber := int64(8928383)
+			header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileChopLumpTable
+			catFileConfig.Topic = constants.CatFileChopLumpSignature()
+			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
+			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
+
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: chop_lump.Transformer{},
+			}
+			transformer := initializer.NewTransformer(db)
+
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
+
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+			err = transformer.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
+
+			var dbResult catFileChopLumpModel
+			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
+			Expect(err).NotTo(HaveOccurred())
+
+			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+			Expect(dbResult.What).To(Equal("chop"))
+			Expect(dbResult.Data).To(Equal("1130000000000000000000000000"))
+		})
+
+		It("persists a flip event", func() {
+			flipBlockNumber := int64(8928180)
+			header, err := persistHeader(db, flipBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileFlipTable
+			catFileConfig.Topic = constants.CatFileFlipSignature()
+			catFileConfig.StartingBlockNumber = flipBlockNumber
+			catFileConfig.EndingBlockNumber = flipBlockNumber
+
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: flip.Transformer{},
+			}
+
+			t := initializer.NewTransformer(db)
+
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
+
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+			err = t.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
+
+			var dbResult catFileFlipModel
+			err = db.Get(&dbResult, `SELECT ilk_id, what, flip FROM maker.cat_file_flip`)
+			Expect(err).NotTo(HaveOccurred())
+
+			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+			Expect(dbResult.What).To(Equal("flip"))
+			Expect(dbResult.Flip).To(Equal(test_data.FlipEthV100Address()))
+		})
+
+		It("persists a vow event", func() {
+			vowBlockNumber := int64(8928165)
+			header, err := persistHeader(db, vowBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileVowTable
+			catFileConfig.Topic = constants.CatFileVowSignature()
+			catFileConfig.StartingBlockNumber = vowBlockNumber
+			catFileConfig.EndingBlockNumber = vowBlockNumber
+
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: vow.Transformer{},
+			}
+			t := initializer.NewTransformer(db)
+
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
+
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+			err = t.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
+
+			var headerID int64
+			err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, vowBlockNumber)
+			Expect(err).NotTo(HaveOccurred())
+
+			var dbResult catFileVowModel
+			err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.What).To(Equal("vow"))
+			Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
+		})
 	})
 
-	It("persists a chop lump event (chop)", func() {
-		chopLumpBlockNumber := int64(8928383)
-		header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileChopLumpTable
-		catFileConfig.Topic = constants.CatFileChopLumpSignature()
-		catFileConfig.StartingBlockNumber = chopLumpBlockNumber
-		catFileConfig.EndingBlockNumber = chopLumpBlockNumber
-
-		initializer := event.ConfiguredTransformer{
-			Config:      catFileConfig,
-			Transformer: chop_lump.Transformer{},
-		}
-		transformer := initializer.NewTransformer(db)
-
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		eventLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		err = transformer.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult []catFileChopLumpModel
-		err = db.Select(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(len(dbResult)).To(Equal(1))
-
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].What).To(Equal("chop"))
-		Expect(dbResult[0].Data).To(Equal("1130000000000000000000000000"))
-	})
-
-	It("persists a flip event", func() {
-		flipBlockNumber := int64(8928180)
-		header, err := persistHeader(db, flipBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileFlipTable
-		catFileConfig.Topic = constants.CatFileFlipSignature()
-		catFileConfig.StartingBlockNumber = flipBlockNumber
-		catFileConfig.EndingBlockNumber = flipBlockNumber
-
-		initializer := event.ConfiguredTransformer{
-			Config:      catFileConfig,
-			Transformer: flip.Transformer{},
+	Describe("1.1.0 Cat Contract", func() {
+		var catFileConfig = event.TransformerConfig{
+			ContractAddresses: []string{test_data.Cat110Address()},
+			ContractAbi:       constants.Cat110ABI(),
 		}
 
-		t := initializer.NewTransformer(db)
+		It("persists a box event", func() {
+			boxBlockNumber := int64(10769102)
+			header, err := persistHeader(db, boxBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileBoxTable
+			catFileConfig.Topic = constants.CatFileBoxSignature()
+			catFileConfig.StartingBlockNumber = boxBlockNumber
+			catFileConfig.EndingBlockNumber = boxBlockNumber
 
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: box.Transformer{},
+			}
+			transformer := initializer.NewTransformer(db)
 
-		eventLogs := test_data.CreateLogs(header.Id, logs, db)
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
 
-		err = t.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		var dbResult []catFileFlipModel
-		err = db.Select(&dbResult, `SELECT ilk_id, what, flip FROM maker.cat_file_flip`)
-		Expect(err).NotTo(HaveOccurred())
+			err = transformer.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult[0].Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
-		Expect(dbResult[0].What).To(Equal("flip"))
-		Expect(dbResult[0].Flip).To(Equal(test_data.FlipEthV100Address()))
-	})
+			var dbResult catFileBoxModel
+			err = db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_box`)
+			Expect(err).NotTo(HaveOccurred())
 
-	It("persists a vow event", func() {
-		vowBlockNumber := int64(8928165)
-		header, err := persistHeader(db, vowBlockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
-		catFileConfig.TransformerName = constants.CatFileVowTable
-		catFileConfig.Topic = constants.CatFileVowSignature()
-		catFileConfig.StartingBlockNumber = vowBlockNumber
-		catFileConfig.EndingBlockNumber = vowBlockNumber
-
-		initializer := event.ConfiguredTransformer{
-			Config:      catFileConfig,
-			Transformer: vow.Transformer{},
-		}
-		t := initializer.NewTransformer(db)
-
-		logs, err := logFetcher.FetchLogs(
-			[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
-			[]common.Hash{common.HexToHash(catFileConfig.Topic)},
-			header)
-		Expect(err).NotTo(HaveOccurred())
-
-		eventLogs := test_data.CreateLogs(header.Id, logs, db)
-
-		err = t.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
-
-		var headerID int64
-		err = db.Get(&headerID, `SELECT id FROM public.headers WHERE block_number = $1`, vowBlockNumber)
-		Expect(err).NotTo(HaveOccurred())
-
-		var dbResult catFileVowModel
-		err = db.Get(&dbResult, `SELECT what, data FROM maker.cat_file_vow`)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.What).To(Equal("vow"))
-		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
+			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			Expect(err).NotTo(HaveOccurred())
+			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(dbResult.AddressID).To(Equal(addressID))
+			Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
+			Expect(dbResult.What).To(Equal("box"))
+			Expect(dbResult.Data).To(Equal("30000000000000000000000000000000000000000000000000000"))
+		})
 	})
 })
 
@@ -216,4 +261,11 @@ type catFileFlipModel struct {
 type catFileVowModel struct {
 	What string
 	Data string
+}
+
+type catFileBoxModel struct {
+	AddressID   int64 `db:"address_id"`
+	MsgSenderID int64 `db:"msg_sender"`
+	What        string
+	Data        string
 }

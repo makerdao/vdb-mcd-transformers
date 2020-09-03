@@ -3,8 +3,8 @@
 package main
 
 import (
-	event "github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	storage "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	interface1 "github.com/makerdao/vulcanizedb/libraries/shared/transformer"
 )
 

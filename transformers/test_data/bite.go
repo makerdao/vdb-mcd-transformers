@@ -44,7 +44,7 @@ var (
 )
 
 var rawBiteLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.BiteSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),

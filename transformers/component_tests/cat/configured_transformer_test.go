@@ -39,7 +39,7 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.CatAddress()
+		contractAddress   = test_data.Cat100Address()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		repository        = cat.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
@@ -107,7 +107,7 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			catAddressID, catAddressErr := shared.GetOrCreateAddress(test_data.CatAddress(), db)
+			catAddressID, catAddressErr := shared.GetOrCreateAddress(test_data.Cat100Address(), db)
 			Expect(catAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"

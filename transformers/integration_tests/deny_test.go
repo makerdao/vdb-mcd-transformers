@@ -18,7 +18,7 @@ import (
 var _ = Describe("Deny transformer", func() {
 	Context("Cat deny events", func() {
 		usrAddress := "0xa9ee75d81d78c36c4163004e6cc7a988eec9433e"
-		denyIntegrationTest(int64(8928165), test_data.CatAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(8928165), test_data.Cat100Address(), usrAddress, usrAddress)
 	})
 
 	Context("Flap v1.0.0 deny events", func() {
