@@ -31,12 +31,12 @@ var _ = Describe("Flip file transformer", func() {
 				Data:   []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.AuctionFileEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.AuctionFileEventLog}, db)
 
 		expectedModel := test_data.AuctionFileModel()
 		addressID, addressErr := shared.GetOrCreateAddress(test_data.AuctionFileEventLog.Log.Address.Hex(), db)
