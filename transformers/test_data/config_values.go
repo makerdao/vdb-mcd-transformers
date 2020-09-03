@@ -55,6 +55,9 @@ func FlipEthV100Address() string {
 func FlipEthV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A_1.0.9"))
 }
+func FlipEthV110Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A_1.1.0"))
+}
 func FlipKncAV108Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_KNC_A_1.0.8"))
 }
