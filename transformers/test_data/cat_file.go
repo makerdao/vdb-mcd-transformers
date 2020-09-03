@@ -202,7 +202,6 @@ var catFileVowModel = event.InsertionModel{
 	},
 }
 
-<<<<<<< HEAD
 var rawCatFileBoxLog = types.Log{
 	Address: common.HexToAddress(Cat110Address()),
 	Topics: []common.Hash{
@@ -230,9 +229,28 @@ var CatFileBoxEventLog = core.EventLog{
 var catFileBoxModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileBoxTable,
-=======
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
+	},
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: CatFileBoxEventLog.HeaderID,
+		event.LogFK:    CatFileBoxEventLog.ID,
+		//event.AddressFK
+		//constants.MsgSender
+		constants.WhatColumn: "box",
+		constants.DataColumn: "30000000000000000000000000000000000000000000000000000",
+	},
+}
+
+func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) }
+
 var rawCatFileDunkLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat110Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileDunkSignature()),
 		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
@@ -255,37 +273,19 @@ var CatFileDunkEventLog = core.EventLog{
 	Transformed: false,
 }
 
-func CatFileDunkModel() event.InsertionModel { return CopyModel(catFileDunkModel) }
-
 var catFileDunkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.CatFileDunkTable,
->>>>>>> 0ae4984b... Adds dunk event transformer
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
 		constants.MsgSenderColumn,
-<<<<<<< HEAD
-=======
 		constants.IlkColumn,
->>>>>>> 0ae4984b... Adds dunk event transformer
 		constants.WhatColumn,
 		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-<<<<<<< HEAD
-		event.HeaderFK: CatFileBoxEventLog.HeaderID,
-		event.LogFK:    CatFileBoxEventLog.ID,
-		//event.AddressFK
-		//constants.MsgSender
-		constants.WhatColumn: "box",
-		constants.DataColumn: "30000000000000000000000000000000000000000000000000000",
-	},
-}
-
-func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) }
-=======
 		event.HeaderFK:       CatFileDunkEventLog.HeaderID,
 		event.LogFK:          CatFileDunkEventLog.ID,
 		constants.WhatColumn: "dunk",
@@ -295,4 +295,5 @@ func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) 
 		//constants.MsgSenderColumn
 	},
 }
->>>>>>> 0ae4984b... Adds dunk event transformer
+
+func CatFileDunkModel() event.InsertionModel { return CopyModel(catFileDunkModel) }
