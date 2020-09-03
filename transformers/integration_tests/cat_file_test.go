@@ -17,11 +17,10 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_dunk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
@@ -32,6 +31,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"strconv"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -203,6 +203,32 @@ var _ = Describe("Cat File transformer", func() {
 			ContractAddresses: []string{test_data.Cat110Address()},
 			ContractAbi:       constants.Cat110ABI(),
 		}
+		It("persists a chop dunk event (dunk)", func() {
+			chopDunkBlockNumber := int64(10769102)
+			header, err := persistHeader(db, chopDunkBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileChopDunkTable
+			catFileConfig.Topic = constants.CatFileChopDunkSignature()
+			catFileConfig.StartingBlockNumber = chopDunkBlockNumber
+			catFileConfig.EndingBlockNumber = chopDunkBlockNumber
+
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: chop_dunk.Transformer{},
+			}
+			transformer := initializer.NewTransformer(db)
+
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
+
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+			err = transformer.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		It("persists a box event", func() {
 			boxBlockNumber := int64(10769102)
