@@ -46,7 +46,7 @@ var _ = Describe("Tick EventTransformer", func() {
 		tickConfig = event.TransformerConfig{
 			TransformerName:   constants.TickTable,
 			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
-			ContractAbi:       constants.FlipABI(),
+			ContractAbi:       constants.FlipV100ABI(),
 			Topic:             constants.TickSignature(),
 		}
 

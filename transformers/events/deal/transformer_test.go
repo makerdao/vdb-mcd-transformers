@@ -40,7 +40,7 @@ var _ = Describe("Flip Deal Transformer", func() {
 	})
 
 	It("converts logs to models", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DealEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.DealEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.DealModel()
@@ -53,7 +53,7 @@ var _ = Describe("Flip Deal Transformer", func() {
 		invalidLog := test_data.DealEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
