@@ -19,9 +19,9 @@ package constants
 func AuctionFileSignature() string        { return getLogNoteTopicZero(auctionFileMethod()) }
 func BiteSignature() string               { return getEventTopicZero(biteMethod()) }
 func CatFileBoxSignature() string         { return getLogNoteTopicZero(catFileBoxMethod()) }
-func CatFileChopLumpSignature() string    { return getLogNoteTopicZero(catFileChopLumpMethod()) }
-func CatFileDunkSignature() string        { return getLogNoteTopicZero(catFileDunkMethod()) }
-func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFlipMethod()) }
+func CatFileChopDunkSignature() string { return getLogNoteTopicZero(catFileChopDunkMethod()) }
+func CatFileChopLumpSignature() string { return getLogNoteTopicZero(catFileChopLumpMethod()) }
+func CatFileFlipSignature() string     { return getLogNoteTopicZero(catFileFlipMethod()) }
 func CatFileVowSignature() string         { return getLogNoteTopicZero(catFileVowMethod()) }
 func DealSignature() string               { return getLogNoteTopicZero(dealMethod()) }
 func DentSignature() string               { return getLogNoteTopicZero(dentMethod()) }

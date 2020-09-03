@@ -1,10 +1,10 @@
-package dunk_test
+package chop_dunk_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/dunk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_dunk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -14,10 +14,10 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Cat file dunk transformer", func() {
+var _ = Describe("Cat file chop dunk transformer", func() {
 	var (
 		db          = test_config.NewTestDB(test_config.NewTestNode())
-		transformer = dunk.Transformer{}
+		transformer = chop_dunk.Transformer{}
 	)
 
 	BeforeEach(func() {

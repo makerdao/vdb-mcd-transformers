@@ -1,4 +1,4 @@
-package dunk
+package chop_dunk
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -39,7 +39,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.CatFileDunkTable,
+			TableName:  constants.CatFileChopDunkTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,

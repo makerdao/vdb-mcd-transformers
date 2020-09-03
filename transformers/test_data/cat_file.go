@@ -252,7 +252,7 @@ func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) 
 var rawCatFileDunkLog = types.Log{
 	Address: common.HexToAddress(Cat110Address()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.CatFileDunkSignature()),
+		common.HexToHash(constants.CatFileChopDunkSignature()),
 		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
 		common.HexToHash("0x555344432d420000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x64756e6b00000000000000000000000000000000000000000000000000000000"),
@@ -275,7 +275,7 @@ var CatFileDunkEventLog = core.EventLog{
 
 var catFileDunkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileDunkTable,
+	TableName:  constants.CatFileChopDunkTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
