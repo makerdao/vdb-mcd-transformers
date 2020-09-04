@@ -21,8 +21,8 @@ buckets_precompute AS (
     SELECT
         bucket_start,
         (extract(epoch FROM bucket_start))::INTEGER AS epoch_start,
-        (extract(epoch FROM bucket_start) + 60)::INTEGER AS epoch_start_eps,
-        (extract(epoch FROM bucket_start + bucket_interval) - 60)::INTEGER AS epoch_end_eps,
+        (extract(epoch FROM bucket_start) + 120)::INTEGER AS epoch_start_eps,
+        (extract(epoch FROM bucket_start + bucket_interval) - 120)::INTEGER AS epoch_end_eps,
         (extract(epoch FROM bucket_start + bucket_interval))::INTEGER AS epoch_end
     FROM buckets
 ),
