@@ -7726,6 +7726,40 @@ ALTER SEQUENCE maker.cat_file_box_id_seq OWNED BY maker.cat_file_box.id;
 
 
 --
+-- Name: cat_claw; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_claw (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    msg_sender bigint NOT NULL,
+    rad numeric
+);
+
+
+--
+-- Name: cat_claw_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_claw_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_claw_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_claw_id_seq OWNED BY maker.cat_claw.id;
+
+
+--
 -- Name: cat_file_chop_lump; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13719,6 +13753,13 @@ ALTER TABLE ONLY maker.cat_file_box ALTER COLUMN id SET DEFAULT nextval('maker.c
 
 
 --
+-- Name: cat_claw id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw ALTER COLUMN id SET DEFAULT nextval('maker.cat_claw_id_seq'::regclass);
+
+
+--
 -- Name: cat_file_chop_lump id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15148,6 +15189,22 @@ ALTER TABLE ONLY maker.cat_file_box
 
 ALTER TABLE ONLY maker.cat_file_box
     ADD CONSTRAINT cat_file_box_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_claw cat_claw_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: cat_claw cat_claw_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_pkey PRIMARY KEY (id);
 
 
 --
@@ -18327,6 +18384,34 @@ CREATE INDEX cat_file_box_log_index ON maker.cat_file_box USING btree (log_id);
 --
 
 CREATE INDEX cat_file_box_msg_sender ON maker.cat_file_box USING btree (msg_sender);
+
+
+--
+-- Name: cat_claw_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_claw_address_index ON maker.cat_claw USING btree (address_id);
+
+
+--
+-- Name: cat_claw_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_claw_header_index ON maker.cat_claw USING btree (header_id);
+
+
+--
+-- Name: cat_claw_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_claw_log_index ON maker.cat_claw USING btree (log_id);
+
+
+--
+-- Name: cat_claw_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_claw_msg_sender_index ON maker.cat_claw USING btree (msg_sender);
 
 
 --
@@ -22000,6 +22085,38 @@ ALTER TABLE ONLY maker.cat_file_box
 
 ALTER TABLE ONLY maker.cat_file_box
     ADD CONSTRAINT cat_file_box_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_claw cat_claw_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_claw cat_claw_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_claw cat_claw_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_claw cat_claw_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_claw
+    ADD CONSTRAINT cat_claw_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
