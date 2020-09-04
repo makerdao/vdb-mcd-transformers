@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
@@ -31,7 +33,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"strconv"
 )
 
 var _ = Describe("Cat File transformer", func() {
@@ -228,6 +229,20 @@ var _ = Describe("Cat File transformer", func() {
 
 			err = transformer.Execute(eventLogs)
 			Expect(err).NotTo(HaveOccurred())
+
+			var dbResult catFileChopDunkModel
+			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			Expect(err).NotTo(HaveOccurred())
+			err = db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_dunk`)
+			Expect(err).NotTo(HaveOccurred())
+			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(dbResult.AddressID).To(Equal(addressID))
+			Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
+			Expect(dbResult.What).Should(Or(Equal("dunk"), Equal("chop")))
+			Expect(dbResult.Data).Should(Or(Equal("1130000000000000000"),
+				Equal("50000000000000000000000000000000000000000000000000")))
 		})
 
 		It("persists a box event", func() {
@@ -290,6 +305,13 @@ type catFileVowModel struct {
 }
 
 type catFileBoxModel struct {
+	AddressID   int64 `db:"address_id"`
+	MsgSenderID int64 `db:"msg_sender"`
+	What        string
+	Data        string
+}
+
+type catFileChopDunkModel struct {
 	AddressID   int64 `db:"address_id"`
 	MsgSenderID int64 `db:"msg_sender"`
 	What        string
