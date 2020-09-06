@@ -17,21 +17,12 @@ CREATE FUNCTION api.time_frob_totals(ilk_identifier TEXT, range_start TIMESTAMP,
     RETURNS SETOF api.time_frob_total AS
 $$
 WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start),
-buckets_precompute AS (
-    SELECT
-        bucket_start,
-        (extract(epoch FROM bucket_start))::INTEGER AS epoch_start,
-        (extract(epoch FROM bucket_start) + 120)::INTEGER AS epoch_start_eps,
-        (extract(epoch FROM bucket_start + bucket_interval) - 120)::INTEGER AS epoch_end_eps,
-        (extract(epoch FROM bucket_start + bucket_interval))::INTEGER AS epoch_end
-    FROM buckets
-),
 buckets_headers AS (
     SELECT
         bucket_start,
-        (SELECT AVG(id) + (COUNT(id)/2.0) - 0.5 FROM public.headers WHERE block_timestamp >= epoch_start AND block_timestamp <= epoch_start_eps) AS header_id_start,
-        (SELECT AVG(id) + (COUNT(id)/2.0) - 0.5 FROM public.headers WHERE block_timestamp >= epoch_end_eps AND block_timestamp <= epoch_end) AS header_id_end
-    FROM buckets_precompute
+        (SELECT id FROM public.headers WHERE block_timestamp >= (extract(epoch FROM bucket_start))::INTEGER ORDER BY block_timestamp LIMIT 1) AS header_id_start,
+        (SELECT id FROM public.headers WHERE block_timestamp <= (extract(epoch FROM bucket_start + bucket_interval))::INTEGER ORDER BY block_timestamp DESC LIMIT 1) AS header_id_end
+    FROM buckets
 )
 SELECT buckets_headers.bucket_start AS bucket_start,
     buckets_headers.bucket_start + bucket_interval AS bucket_end,
