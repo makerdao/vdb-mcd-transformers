@@ -26,7 +26,7 @@ import (
 var _ = Describe("event signature generator", func() {
 	Describe("findSignatureInAbi", func() {
 		It("returns the signature if it exists in the ABI", func() {
-			signature, _ := findSignatureInAbi(CatABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+			signature, _ := findSignatureInAbi(Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 
 			Expect(signature).To(Equal("file(bytes32,bytes32,uint256)"))
 		})
@@ -34,7 +34,7 @@ var _ = Describe("event signature generator", func() {
 		It("returns error if signature not found in ABI", func() {
 			expectedError := errors.New("method file(bytes32,bytes32) does not exist in ABI")
 
-			_, err := findSignatureInAbi(CatABI(), "file", []string{"bytes32", "bytes32"})
+			_, err := findSignatureInAbi(Cat100ABI(), "file", []string{"bytes32", "bytes32"})
 
 			Expect(err).To(MatchError(expectedError))
 		})
@@ -42,7 +42,7 @@ var _ = Describe("event signature generator", func() {
 
 	Describe("getOverloadedFunctionSignature", func() {
 		It("panics if it encounters an error", func() {
-			Expect(func() { getOverloadedFunctionSignature(CatABI(), "file", []string{"bytes32", "bytes32"}) }).To(Panic())
+			Expect(func() { getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32"}) }).To(Panic())
 		})
 	})
 })

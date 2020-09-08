@@ -36,7 +36,7 @@ var _ = Describe("Cat File transformer", func() {
 
 	var catFileConfig = event.TransformerConfig{
 		ContractAddresses: []string{test_data.CatAddress()},
-		ContractAbi:       constants.CatABI(),
+		ContractAbi:       constants.Cat100ABI(),
 	}
 
 	BeforeEach(func() {
