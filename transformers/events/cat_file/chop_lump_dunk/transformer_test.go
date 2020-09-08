@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package chop_lump_test
+package chop_lump_dunk_test
 
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -31,7 +32,7 @@ import (
 
 var _ = Describe("Cat file chop lump transformer", func() {
 	var (
-		transformer = chop_lump.Transformer{}
+		transformer = chop_lump_dunk.Transformer{}
 		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
@@ -44,11 +45,16 @@ var _ = Describe("Cat file chop lump transformer", func() {
 			models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileChopEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileChopEventLog.Log.Topics[2].Hex())
+			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileChopEventLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileChopEventLog.Log.Address.Hex(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileChopEventLog.Log.Topics[1].Hex()).Hex(), db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+			expectedModel.ColumnValues[event.AddressFK] = addressID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
@@ -59,11 +65,38 @@ var _ = Describe("Cat file chop lump transformer", func() {
 			models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileLumpEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkID int64
-			ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileLumpEventLog.Log.Topics[2].Hex())
+			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileLumpEventLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileLumpEventLog.Log.Address.Hex(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileLumpEventLog.Log.Topics[1].Hex()).Hex(), db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
 			expectedModel := test_data.CatFileLumpModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
+			expectedModel.ColumnValues[event.AddressFK] = addressID
+
+			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+		})
+	})
+
+	Context("dunk events", func() {
+		It("converts a dunk log to a model", func() {
+			models, err := transformer.ToModels(constants.Cat110ABI(), []core.EventLog{test_data.CatFileDunkEventLog}, db)
+			Expect(err).NotTo(HaveOccurred())
+
+			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileDunkEventLog.Log.Topics[2].Hex(), db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileDunkEventLog.Log.Address.Hex(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileDunkEventLog.Log.Topics[1].Hex()).Hex(), db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
+			expectedModel := test_data.CatFileDunkModel()
+			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+			expectedModel.ColumnValues[event.AddressFK] = addressID
+			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})

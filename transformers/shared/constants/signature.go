@@ -20,6 +20,7 @@ func AuctionFileSignature() string        { return getLogNoteTopicZero(auctionFi
 func BiteSignature() string               { return getEventTopicZero(biteMethod()) }
 func CatClawSignature() string            { return getLogNoteTopicZero(catClawMethod()) }
 func CatFileBoxSignature() string         { return getLogNoteTopicZero(catFileBoxMethod()) }
+func CatFileChopDunkSignature() string    { return getLogNoteTopicZero(catFileChopDunkMethod()) }
 func CatFileChopLumpSignature() string    { return getLogNoteTopicZero(catFileChopLumpMethod()) }
 func CatFileFlipSignature() string        { return getLogNoteTopicZero(catFileFlipMethod()) }
 func CatFileVowSignature() string         { return getLogNoteTopicZero(catFileVowMethod()) }

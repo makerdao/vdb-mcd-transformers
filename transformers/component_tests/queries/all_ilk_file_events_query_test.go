@@ -40,6 +40,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
 		relevantIlkIdentifier  = test_helpers.GetValidNullString(test_helpers.FakeIlk.Identifier)
+		msgSender              string
 	)
 
 	BeforeEach(func() {
@@ -49,6 +50,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
+		msgSender = test_data.Cat110Address()
 	})
 
 	It("returns all ilk file events for ilk", func() {
@@ -56,10 +58,16 @@ var _ = Describe("Ilk File Events Query", func() {
 		catFileChopLump := test_data.CatFileChopModel()
 		ilkID, createIlkError := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 		Expect(createIlkError).NotTo(HaveOccurred())
+		addressID, addressErr := shared.GetOrCreateAddress(catFileChopLumpLog.Log.Address.Hex(), db)
+		Expect(addressErr).NotTo(HaveOccurred())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		catFileChopLump.ColumnValues[constants.IlkColumn] = ilkID
 		catFileChopLump.ColumnValues[event.HeaderFK] = headerOne.Id
 		catFileChopLump.ColumnValues[event.LogFK] = catFileChopLumpLog.ID
+		catFileChopLump.ColumnValues[event.AddressFK] = addressID
+		catFileChopLump.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 		chopLumpErr := event.PersistModels([]event.InsertionModel{catFileChopLump}, db)
 		Expect(chopLumpErr).NotTo(HaveOccurred())
 
