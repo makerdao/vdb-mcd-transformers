@@ -106,6 +106,7 @@ import (
 	flip_usdc_b_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_7"
 	flip_usdc_b_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_9"
 	flip_usdc_b_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_1_0"
+	flip_usdt_a_v1_1_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdt_a/v1_1_1"
 	flip_wbtc_a_v1_0_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_6"
 	flip_wbtc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_9"
 	flip_wbtc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_1_0"
@@ -119,6 +120,7 @@ import (
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
 	median_knc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_knc"
 	median_mana "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_mana"
+	median_usdt "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_usdt"
 	median_wbtc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc"
 	median_zrx "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_zrx"
 	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
@@ -241,6 +243,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_usdc_b_v1_0_7.StorageTransformerInitializer,
 			flip_usdc_b_v1_0_9.StorageTransformerInitializer,
 			flip_usdc_b_v1_1_0.StorageTransformerInitializer,
+			flip_usdt_a_v1_1_1.StorageTransformerInitializer,
 			flip_wbtc_a_v1_0_6.StorageTransformerInitializer,
 			flip_wbtc_a_v1_0_9.StorageTransformerInitializer,
 			flip_wbtc_a_v1_1_0.StorageTransformerInitializer,
@@ -254,6 +257,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			median_eth.StorageTransformerInitializer,
 			median_knc.StorageTransformerInitializer,
 			median_mana.StorageTransformerInitializer,
+			median_usdt.StorageTransformerInitializer,
 			median_wbtc.StorageTransformerInitializer,
 			median_zrx.StorageTransformerInitializer,
 			pot.StorageTransformerInitializer,
