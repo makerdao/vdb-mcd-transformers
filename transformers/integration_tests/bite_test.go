@@ -34,7 +34,7 @@ import (
 var _ = Describe("Bite Transformer", func() {
 	biteConfig := event.TransformerConfig{
 		TransformerName:   constants.BiteTable,
-		ContractAddresses: []string{test_data.CatAddress()},
+		ContractAddresses: []string{test_data.Cat100Address()},
 		ContractAbi:       constants.Cat100ABI(),
 		Topic:             constants.BiteSignature(),
 	}

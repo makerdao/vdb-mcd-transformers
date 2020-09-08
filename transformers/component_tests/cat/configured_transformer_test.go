@@ -38,7 +38,7 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db              = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress = common.HexToAddress(test_data.CatAddress())
+		contractAddress = common.HexToAddress(test_data.Cat100Address())
 		transformer     storage.Transformer
 		header          = fakes.FakeHeader
 	)

@@ -40,7 +40,7 @@ var _ = Describe("Cat storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = cat.NewKeysLoader(storageRepository, test_data.CatAddress())
+		storageKeysLoader = cat.NewKeysLoader(storageRepository, test_data.Cat100Address())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -126,7 +126,7 @@ var _ = Describe("Cat storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.CatAddress()))
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.Cat100Address()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 
