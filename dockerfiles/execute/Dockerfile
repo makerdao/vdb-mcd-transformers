@@ -13,8 +13,7 @@ RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
-# Build migration tool
-RUN go install -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
+RUN go get -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose@v2.7.0-rc5
 
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
