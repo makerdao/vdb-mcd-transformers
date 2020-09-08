@@ -16,7 +16,7 @@ WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
 # Build migration tool
-RUN go install -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
+RUN go get -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose@v2.7.0-rc5
 
 # App container
 FROM golang:alpine
@@ -31,8 +31,6 @@ RUN apk update \
         bash \
         postgresql-client \
         && update-ca-certificates 2>/dev/null || true
-
-ARG CONFIG_FILE=environments/extractDiffs.toml
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
