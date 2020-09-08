@@ -26,7 +26,6 @@ var _ = Describe("Cat Claw transformer", func() {
 		logFetcher = fetcher.NewLogFetcher(blockChain)
 	})
 
-
 	It("persists a cat_claw event", func() {
 		catClawBlockNumber := int64(10773034)
 		header, err := persistHeader(db, catClawBlockNumber, blockChain)
@@ -74,5 +73,5 @@ var _ = Describe("Cat Claw transformer", func() {
 type catClawModel struct {
 	MsgSender int64 `db:"msg_sender"`
 	AddressID int64 `db:"address_id"`
-	Rad string
+	Rad       string
 }

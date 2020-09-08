@@ -47,7 +47,7 @@ var _ = Describe("All Ilks query", func() {
 				headerOne.Timestamp, batIlkValuesTwo)
 
 			var actualIlks []ilkHelpers.IlkSnapshot
-			err := db.Select(&actualIlks, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks()`)
+			err := db.Select(&actualIlks, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated FROM api.all_ilks()`)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(actualIlks).To(ConsistOf(expectedEthIlk, expectedBatIlk))
@@ -62,7 +62,7 @@ var _ = Describe("All Ilks query", func() {
 				headerOne.Timestamp, batIlkValuesOne)
 
 			var actualIlks []ilkHelpers.IlkSnapshot
-			err := db.Select(&actualIlks, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated FROM api.all_ilks($1)`,
+			err := db.Select(&actualIlks, `SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated FROM api.all_ilks($1)`,
 				headerOne.BlockNumber)
 
 			Expect(err).NotTo(HaveOccurred())

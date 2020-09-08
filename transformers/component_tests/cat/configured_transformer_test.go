@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -42,7 +43,7 @@ var _ = Describe("Executing the transformer", func() {
 		contractAddress   = test_data.Cat100Address()
 		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
 		repository        = cat.StorageRepository{ContractAddress: contractAddress}
-		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		storageKeysLookup = storage.NewKeysLookup(v1_0_0.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
 		transformer       = storage.Transformer{
 			Address:           common.HexToAddress(contractAddress),
 			StorageKeysLookup: storageKeysLookup,

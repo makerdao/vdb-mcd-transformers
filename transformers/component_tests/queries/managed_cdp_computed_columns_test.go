@@ -63,7 +63,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 				FROM api.managed_cdp_ilk(
 					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
 					 FROM api.managed_cdp

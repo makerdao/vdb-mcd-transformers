@@ -82,7 +82,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 				FROM api.flip_bid_snapshot_ilk(
 					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot
 					 FROM api.get_flip($1, $2, $3))

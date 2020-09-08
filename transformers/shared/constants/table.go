@@ -105,9 +105,12 @@ const (
 
 // storage tables
 const (
+	CatBoxTable             = "cat_box"
 	CatIlkChopTable         = "cat_ilk_chop"
+	CatIlkDunkTable         = "cat_ilk_dunk"
 	CatIlkFlipTable         = "cat_ilk_flip"
 	CatIlkLumpTable         = "cat_ilk_lump"
+	CatLitterTable          = "cat_litter"
 	CatLiveTable            = "cat_live"
 	CatVatTable             = "cat_vat"
 	CatVowTable             = "cat_vow"
