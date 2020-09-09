@@ -26,7 +26,7 @@ require (
 	github.com/jmoiron/sqlx v0.0.0-20181024163419-82935fac6c1a
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200828231648-12cdd9a5273f
+	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200909202711-f8ff707f1605
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
