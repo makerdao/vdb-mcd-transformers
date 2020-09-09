@@ -87,22 +87,31 @@ import (
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	flip_bat_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_0"
 	flip_bat_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_9"
+	flip_bat_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_1_0"
 	flip_eth_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_0"
 	flip_eth_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_9"
+	flip_eth_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_1_0"
 	flip_knc_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_8"
 	flip_knc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_9"
+	flip_knc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_1_0"
 	flip_mana_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_0_9"
+	flip_mana_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_1_0"
 	flip_sai_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai/v1_0_0"
 	flip_tusd_a_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_7"
 	flip_tusd_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_9"
+	flip_tusd_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_1_0"
 	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
 	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
+	flip_usdc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_1_0"
 	flip_usdc_b_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_7"
 	flip_usdc_b_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_9"
+	flip_usdc_b_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_1_0"
 	flip_wbtc_a_v1_0_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_6"
 	flip_wbtc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_9"
+	flip_wbtc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_1_0"
 	flip_zrx_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_8"
 	flip_zrx_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_9"
+	flip_zrx_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_1_0"
 	flop_v1_0_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_1"
 	flop_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_9"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
@@ -213,22 +222,31 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flap_v1_0_9.StorageTransformerInitializer,
 			flip_bat_a_v1_0_0.StorageTransformerInitializer,
 			flip_bat_a_v1_0_9.StorageTransformerInitializer,
+			flip_bat_a_v1_1_0.StorageTransformerInitializer,
 			flip_eth_a_v1_0_0.StorageTransformerInitializer,
 			flip_eth_a_v1_0_9.StorageTransformerInitializer,
+			flip_eth_a_v1_1_0.StorageTransformerInitializer,
 			flip_knc_a_v1_0_8.StorageTransformerInitializer,
 			flip_knc_a_v1_0_9.StorageTransformerInitializer,
+			flip_knc_a_v1_1_0.StorageTransformerInitializer,
 			flip_mana_a_v1_0_9.StorageTransformerInitializer,
+			flip_mana_a_v1_1_0.StorageTransformerInitializer,
 			flip_sai_v1_0_0.StorageTransformerInitializer,
 			flip_tusd_a_v1_0_7.StorageTransformerInitializer,
 			flip_tusd_a_v1_0_9.StorageTransformerInitializer,
+			flip_tusd_a_v1_1_0.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_4.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_9.StorageTransformerInitializer,
+			flip_usdc_a_v1_1_0.StorageTransformerInitializer,
 			flip_usdc_b_v1_0_7.StorageTransformerInitializer,
 			flip_usdc_b_v1_0_9.StorageTransformerInitializer,
+			flip_usdc_b_v1_1_0.StorageTransformerInitializer,
 			flip_wbtc_a_v1_0_6.StorageTransformerInitializer,
 			flip_wbtc_a_v1_0_9.StorageTransformerInitializer,
+			flip_wbtc_a_v1_1_0.StorageTransformerInitializer,
 			flip_zrx_a_v1_0_8.StorageTransformerInitializer,
 			flip_zrx_a_v1_0_9.StorageTransformerInitializer,
+			flip_zrx_a_v1_1_0.StorageTransformerInitializer,
 			flop_v1_0_1.StorageTransformerInitializer,
 			flop_v1_0_9.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
