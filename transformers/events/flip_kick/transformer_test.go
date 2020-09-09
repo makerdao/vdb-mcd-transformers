@@ -42,7 +42,7 @@ var _ = Describe("FlipKick Transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.FlipKickEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.FlipKickEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlipKickModel()

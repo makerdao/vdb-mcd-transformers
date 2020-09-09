@@ -35,7 +35,7 @@ var _ = Describe("Tick transformer", func() {
 
 	Describe("ToModels", func() {
 		It("converts an eth log to a db model", func() {
-			models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.FlipTickEventLog}, db)
+			models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.FlipTickEventLog}, db)
 			Expect(err).NotTo(HaveOccurred())
 
 			var addressID int64
@@ -51,7 +51,7 @@ var _ = Describe("Tick transformer", func() {
 		It("returns an error if the expected amount of topics aren't in the log", func() {
 			invalidLog := test_data.FlipTickEventLog
 			invalidLog.Log.Topics = []common.Hash{}
-			_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
+			_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{invalidLog}, db)
 
 			Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))
 		})
