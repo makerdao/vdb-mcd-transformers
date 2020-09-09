@@ -26,6 +26,7 @@ const (
 const (
 	AuctionFileTable              = "auction_file"
 	BiteTable                     = "bite"
+	CatClawTable                  = "cat_claw"
 	CatFileBoxTable               = "cat_file_box"
 	CatFileChopLumpTable          = "cat_file_chop_lump"
 	CatFileFlipTable              = "cat_file_flip"

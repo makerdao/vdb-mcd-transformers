@@ -7,6 +7,7 @@ import (
 	deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/deny_initializer"
 	rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/rely_initializer"
 	bite "github.com/makerdao/vdb-mcd-transformers/transformers/events/bite/initializer"
+	cat_claw "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_claw/initializer"
 	cat_file_box "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box/initializer"
 	cat_file_chop_lump "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump/initializer"
 	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
@@ -127,6 +128,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 	return []event.TransformerInitializer{
 			auction_file.EventTransformerInitializer,
 			bite.EventTransformerInitializer,
+			cat_claw.EventTransformerInitializer,
 			cat_file_box.EventTransformerInitializer,
 			cat_file_chop_lump.EventTransformerInitializer,
 			cat_file_flip.EventTransformerInitializer,
