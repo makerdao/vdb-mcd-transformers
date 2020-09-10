@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Cat file box transformer", func() {
+var _ = Describe("Flip file cat transformer", func() {
 	var (
 		transformer = cat.Transformer{}
 		db          = test_config.NewTestDB(test_config.NewTestNode())

@@ -1,7 +1,7 @@
 package initializer
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_file/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -9,5 +9,5 @@ import (
 
 var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
 	Config:      shared.GetEventTransformerConfig(constants.FlipFileCatTable, constants.FlipFileCatSignature()),
-	Transformer: box.Transformer{},
+	Transformer: cat.Transformer{},
 }.NewTransformer
