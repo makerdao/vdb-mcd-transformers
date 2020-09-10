@@ -658,6 +658,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX",
             "OSM_BAT",
@@ -851,6 +852,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -915,6 +917,7 @@
             "OSM_ETH",
             "OSM_KNC",
             "OSM_MANA",
+            "OSM_USDT",
             "OSM_WBTC",
             "OSM_ZRX"
         ]
@@ -929,6 +932,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -943,6 +947,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -957,6 +962,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -971,6 +977,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -985,6 +992,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -999,6 +1007,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX"
         ]
@@ -1020,6 +1029,7 @@
             "OSM_ETH",
             "OSM_KNC",
             "OSM_MANA",
+            "OSM_USDT",
             "OSM_WBTC",
             "OSM_ZRX"
         ]
@@ -1115,6 +1125,7 @@
             "MEDIAN_ETH",
             "MEDIAN_KNC",
             "MEDIAN_MANA",
+            "MEDIAN_USDT",
             "MEDIAN_WBTC",
             "MEDIAN_ZRX",
             "OSM_BAT",
