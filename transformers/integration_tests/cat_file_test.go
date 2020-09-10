@@ -75,7 +75,7 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbResult catFileChopLumpModel
-			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump_dunk`)
+			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
 			Expect(err).NotTo(HaveOccurred())
 
 			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
@@ -112,7 +112,7 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbResult catFileChopLumpModel
-			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump_dunk`)
+			err = db.Get(&dbResult, `SELECT what, ilk_id, data FROM maker.cat_file_chop_lump`)
 			Expect(err).NotTo(HaveOccurred())
 
 			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
@@ -273,7 +273,7 @@ var _ = Describe("Cat File transformer", func() {
 			var dbResults []catFileChopLumpDunkModel
 			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
 			Expect(err).NotTo(HaveOccurred())
-			err = db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_lump_dunk`)
+			err = db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_lump`)
 			Expect(err).NotTo(HaveOccurred())
 			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
 			Expect(err).NotTo(HaveOccurred())

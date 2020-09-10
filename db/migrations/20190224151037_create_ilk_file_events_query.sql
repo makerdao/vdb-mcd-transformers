@@ -18,9 +18,9 @@ $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 
 SELECT ilk_identifier, what, data :: text, block_number, log_id
-FROM maker.cat_file_chop_lump_dunk
-         LEFT JOIN headers ON cat_file_chop_lump_dunk.header_id = headers.id
-WHERE cat_file_chop_lump_dunk.ilk_id = (SELECT id FROM ilk)
+FROM maker.cat_file_chop_lump
+         LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
+WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT ilk_identifier, what, flip AS data, block_number, log_id
 FROM maker.cat_file_flip
