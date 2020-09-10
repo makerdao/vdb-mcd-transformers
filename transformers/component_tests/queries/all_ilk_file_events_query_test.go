@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -50,7 +51,7 @@ var _ = Describe("Ilk File Events Query", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		logOneId = test_data.CreateTestLog(headerOne.Id, db).ID
-		msgSender = test_data.Cat110Address()
+		msgSender = "0x" + fakes.RandomString(40)
 	})
 
 	It("returns all ilk file events for ilk", func() {
