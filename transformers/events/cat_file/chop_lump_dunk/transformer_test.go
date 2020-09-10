@@ -47,14 +47,8 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileChopEventLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileChopEventLog.Log.Address.Hex(), db)
-			Expect(addressErr).NotTo(HaveOccurred())
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileChopEventLog.Log.Topics[1].Hex()).Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
 			expectedModel := test_data.CatFileChopModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
-			expectedModel.ColumnValues[event.AddressFK] = addressID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
@@ -67,15 +61,9 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileLumpEventLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileLumpEventLog.Log.Address.Hex(), db)
-			Expect(addressErr).NotTo(HaveOccurred())
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileLumpEventLog.Log.Topics[1].Hex()).Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			expectedModel := test_data.CatFileLumpModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
-			expectedModel.ColumnValues[event.AddressFK] = addressID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})
@@ -88,15 +76,9 @@ var _ = Describe("Cat file chop lump transformer", func() {
 
 			ilkID, ilkErr := shared.GetOrCreateIlk(test_data.CatFileDunkEventLog.Log.Topics[2].Hex(), db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			addressID, addressErr := shared.GetOrCreateAddress(test_data.CatFileDunkEventLog.Log.Address.Hex(), db)
-			Expect(addressErr).NotTo(HaveOccurred())
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(common.HexToAddress(test_data.CatFileDunkEventLog.Log.Topics[1].Hex()).Hex(), db)
-			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			expectedModel := test_data.CatFileDunkModel()
 			expectedModel.ColumnValues[constants.IlkColumn] = ilkID
-			expectedModel.ColumnValues[event.AddressFK] = addressID
-			expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 
 			Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 		})

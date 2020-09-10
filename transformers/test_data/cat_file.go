@@ -56,11 +56,9 @@ func CatFileChopModel() event.InsertionModel { return CopyModel(catFileChopModel
 
 var catFileChopModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileChopLumpDunkTable,
+	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
-		event.AddressFK,
-		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
@@ -103,11 +101,9 @@ func CatFileLumpModel() event.InsertionModel { return CopyModel(catFileLumpModel
 
 var catFileLumpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileChopLumpDunkTable,
+	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
-		event.AddressFK,
-		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,
@@ -279,11 +275,9 @@ var CatFileDunkEventLog = core.EventLog{
 
 var catFileDunkModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileChopLumpDunkTable,
+	TableName:  constants.CatFileChopLumpTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
-		event.AddressFK,
-		constants.MsgSenderColumn,
 		constants.IlkColumn,
 		constants.WhatColumn,
 		constants.DataColumn,

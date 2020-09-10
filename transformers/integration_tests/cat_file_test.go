@@ -52,7 +52,7 @@ var _ = Describe("Cat File transformer", func() {
 			chopLumpBlockNumber := int64(8928392)
 			header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 			Expect(err).NotTo(HaveOccurred())
-			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.TransformerName = constants.CatFileChopLumpTable
 			catFileConfig.Topic = constants.CatFileChopLumpSignature()
 			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
@@ -89,7 +89,7 @@ var _ = Describe("Cat File transformer", func() {
 			chopLumpBlockNumber := int64(8928383)
 			header, err := persistHeader(db, chopLumpBlockNumber, blockChain)
 			Expect(err).NotTo(HaveOccurred())
-			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.TransformerName = constants.CatFileChopLumpTable
 			catFileConfig.Topic = constants.CatFileChopLumpSignature()
 			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
@@ -248,7 +248,7 @@ var _ = Describe("Cat File transformer", func() {
 			chopDunkBlockNumber := int64(10769102)
 			header, err := persistHeader(db, chopDunkBlockNumber, blockChain)
 			Expect(err).NotTo(HaveOccurred())
-			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.TransformerName = constants.CatFileChopLumpTable
 			catFileConfig.Topic = constants.CatFileChopDunkSignature()
 			catFileConfig.StartingBlockNumber = chopDunkBlockNumber
 			catFileConfig.EndingBlockNumber = chopDunkBlockNumber
@@ -271,15 +271,9 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbResults []catFileChopLumpDunkModel
-			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
-			Expect(err).NotTo(HaveOccurred())
-			err = db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_lump`)
-			Expect(err).NotTo(HaveOccurred())
-			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			err = db.Select(&dbResults, `SELECT what, data FROM maker.cat_file_chop_lump`)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dbResults[0].AddressID).To(Equal(addressID))
-			Expect(dbResults[0].MsgSenderID).To(Equal(msgSenderID))
 			Expect(dbResults[0].What).Should(Or(Equal("dunk"), Equal("chop")))
 			Expect(dbResults[0].Data).Should(Or(Equal("1130000000000000000"),
 				Equal("50000000000000000000000000000000000000000000000000")))
@@ -312,8 +306,6 @@ type catFileBoxModel struct {
 	Data        string
 }
 type catFileChopLumpDunkModel struct {
-	AddressID   int64 `db:"address_id"`
-	MsgSenderID int64 `db:"msg_sender"`
-	What        string
-	Data        string
+	What string
+	Data string
 }
