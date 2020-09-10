@@ -78,6 +78,7 @@
         "dent",
         "deny",
         "flap_kick",
+        "flip_file_cat",
         "flip_kick",
         "flop_kick",
         "jug_drip",
@@ -679,6 +680,15 @@
             "MCD_FLAP_1.0.0",
             "MCD_FLAP_1.0.9"
         ]
+        rank = "0"
+    [exporter.flip_file_cat]
+        path = "transformers/events/flip_file/cat/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_FLIP_BAT_A_1.1.0", "MCD_FLIP_ETH_A_1.1.0", "MCD_FLIP_KNC_A_1.1.0", "MCD_FLIP_MANA_A_1.1.0",
+                     "MCD_FLIP_TUSD_A_1.1.0", "MCD_FLIP_USDC_A_1.1.0", "MCD_FLIP_USDC_B_1.1.0", "MCD_FLIP_WBTC_A_1.1.0",
+                     "MCD_FLIP_ZRX_A_1.1.0"]
         rank = "0"
     [exporter.flip_kick]
         path = "transformers/events/flip_kick/initializer"
