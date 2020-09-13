@@ -9045,8 +9045,8 @@ CREATE TABLE maker.log_item_update (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    offer_id numeric
+    offer_id numeric,
+    header_id integer NOT NULL
 );
 
 
