@@ -12,7 +12,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/backfill/grab"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/shared"
-	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/eth"
@@ -73,18 +72,6 @@ func init() {
 	viper.BindPFlag("database.user", backfillUrnsCmd.Flags().Lookup("database-user"))
 	viper.BindPFlag("database.password", backfillUrnsCmd.Flags().Lookup("database-password"))
 	viper.BindPFlag("client.ipcPath", backfillUrnsCmd.Flags().Lookup("client-ipcPath"))
-}
-
-func setViperConfigs(cmd *cobra.Command, args []string) {
-	ipc = viper.GetString("client.ipcpath")
-	databaseConfig = config.Database{
-		Name:     viper.GetString("database.name"),
-		Hostname: viper.GetString("database.hostname"),
-		Port:     viper.GetInt("database.port"),
-		User:     viper.GetString("database.user"),
-		Password: viper.GetString("database.password"),
-	}
-	viper.Set("database.config", databaseConfig)
 }
 
 func backfillUrns() error {
