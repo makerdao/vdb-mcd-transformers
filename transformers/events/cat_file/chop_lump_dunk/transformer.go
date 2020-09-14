@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package chop_lump
+package chop_lump_dunk
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -55,7 +55,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		result := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.CatFileChopLumpTable,
+			TableName:  constants.CatFileChopLumpDunkTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,

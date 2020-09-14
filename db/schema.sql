@@ -741,9 +741,9 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
 SELECT ilk_identifier, what, data :: text, block_number, log_id
-FROM maker.cat_file_chop_lump
-         LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
-WHERE cat_file_chop_lump.ilk_id = (SELECT id FROM ilk)
+FROM maker.cat_file_chop_lump_dunk
+         LEFT JOIN headers ON cat_file_chop_lump_dunk.header_id = headers.id
+WHERE cat_file_chop_lump_dunk.ilk_id = (SELECT id FROM ilk)
 UNION
 SELECT ilk_identifier, what, flip AS data, block_number, log_id
 FROM maker.cat_file_flip
@@ -12353,10 +12353,10 @@ ALTER TABLE ONLY maker.cat_file_box ALTER COLUMN id SET DEFAULT nextval('maker.c
 
 
 --
--- Name: cat_file_chop_lump id; Type: DEFAULT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump ALTER COLUMN id SET DEFAULT nextval('maker.cat_file_chop_lump_id_seq'::regclass);
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk ALTER COLUMN id SET DEFAULT nextval('maker.cat_file_chop_lump_dunk_id_seq'::regclass);
 
 
 --
@@ -13738,19 +13738,19 @@ ALTER TABLE ONLY maker.cat_file_box
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_header_id_log_id_key UNIQUE (header_id, log_id);
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_header_id_log_id_key UNIQUE (header_id, log_id);
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_pkey PRIMARY KEY (id);
 
 
 --
@@ -16816,38 +16816,38 @@ CREATE INDEX cat_file_box_msg_sender ON maker.cat_file_box USING btree (msg_send
 
 
 --
--- Name: cat_file_chop_lump_address_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cat_file_chop_lump_address_index ON maker.cat_file_chop_lump USING btree (address_id);
-
-
---
--- Name: cat_file_chop_lump_header_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX cat_file_chop_lump_header_index ON maker.cat_file_chop_lump USING btree (header_id);
+CREATE INDEX cat_file_chop_lump_dunk_address_index ON maker.cat_file_chop_lump_dunk USING btree (address_id);
 
 
 --
--- Name: cat_file_chop_lump_ilk_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cat_file_chop_lump_ilk_index ON maker.cat_file_chop_lump USING btree (ilk_id);
-
-
---
--- Name: cat_file_chop_lump_log_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX cat_file_chop_lump_log_index ON maker.cat_file_chop_lump USING btree (log_id);
+CREATE INDEX cat_file_chop_lump_dunk_header_index ON maker.cat_file_chop_lump_dunk USING btree (header_id);
 
 
 --
--- Name: cat_file_chop_lump_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk_ilk_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX cat_file_chop_lump_msg_sender_index ON maker.cat_file_chop_lump USING btree (msg_sender);
+CREATE INDEX cat_file_chop_lump_dunk_ilk_index ON maker.cat_file_chop_lump_dunk USING btree (ilk_id);
+
+
+--
+-- Name: cat_file_chop_lump_dunk_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_dunk_log_index ON maker.cat_file_chop_lump_dunk USING btree (log_id);
+
+
+--
+-- Name: cat_file_chop_lump_dunk_msg_sender_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_file_chop_lump_dunk_msg_sender_index ON maker.cat_file_chop_lump_dunk USING btree (msg_sender);
 
 
 --
@@ -20669,43 +20669,43 @@ ALTER TABLE ONLY maker.cat_file_box
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: cat_file_chop_lump cat_file_chop_lump_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
-
-
---
--- Name: cat_file_chop_lump cat_file_chop_lump_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
--- Name: cat_file_chop_lump cat_file_chop_lump_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
-ALTER TABLE ONLY maker.cat_file_chop_lump
-    ADD CONSTRAINT cat_file_chop_lump_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_file_chop_lump_dunk cat_file_chop_lump_dunk_msg_sender_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_file_chop_lump_dunk
+    ADD CONSTRAINT cat_file_chop_lump_dunk_msg_sender_fkey FOREIGN KEY (msg_sender) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
