@@ -86,6 +86,7 @@ func VatNopeSignature() string             { return getLogNoteTopicZero(vatNopeM
 func VatSlipSignature() string             { return getLogNoteTopicZero(vatSlipMethod()) }
 func VatSuckSignature() string             { return getLogNoteTopicZero(vatSuckMethod()) }
 func VowFessSignature() string             { return getLogNoteTopicZero(vowFessMethod()) }
+
 func VowFileAuctionAttributesSignature() string {
 	return getLogNoteTopicZero(vowFileAuctionAttributesMethod())
 }

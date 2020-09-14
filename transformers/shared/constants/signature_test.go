@@ -66,6 +66,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(FlapKickSignature()).To(Equal("0xe6dde59cbc017becba89714a037778d234a84ce7f0a137487142a007e580d609"))
 	})
 
+	It("generates flip file cat signature", func() {
+		Expect(FlipFileCatSignature()).To(Equal("0xd4e8be83c1157aa9a898b4b2665e7d31820308d74f3a60999496af58f6e22625"))
+	})
+
 	It("generates flip kick signature", func() {
 		Expect(FlipKickSignature()).To(Equal("0xc84ce3a1172f0dec3173f04caaa6005151a4bfe40d4c9f3ea28dba5f719b2a7a"))
 	})
