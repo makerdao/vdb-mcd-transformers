@@ -34,10 +34,6 @@ var _ = Describe("Signature constants", func() {
 		Expect(CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates cat file chop dunk signature", func() {
-		Expect(CatFileChopDunkSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates cat file chop lump signature", func() {
 		Expect(CatFileChopLumpSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})

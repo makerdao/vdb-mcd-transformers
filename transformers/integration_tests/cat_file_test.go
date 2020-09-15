@@ -249,7 +249,7 @@ var _ = Describe("Cat File transformer", func() {
 			header, err := persistHeader(db, chopDunkBlockNumber, blockChain)
 			Expect(err).NotTo(HaveOccurred())
 			catFileConfig.TransformerName = constants.CatFileChopLumpTable
-			catFileConfig.Topic = constants.CatFileChopDunkSignature()
+			catFileConfig.Topic = constants.CatFileChopLumpSignature()
 			catFileConfig.StartingBlockNumber = chopDunkBlockNumber
 			catFileConfig.EndingBlockNumber = chopDunkBlockNumber
 
