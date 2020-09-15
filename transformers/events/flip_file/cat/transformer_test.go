@@ -34,11 +34,13 @@ var _ = Describe("Flip file cat transformer", func() {
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbe8e3e3618f7474f8cb1d074a26affef007e98fb", db)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
+		dataColumnID, dataColumnErr := shared.GetOrCreateAddress("0xA950524441892A31ebddF91d3cEEFa04Bf454466", db)
+		Expect(dataColumnErr).NotTo(HaveOccurred())
+
 		expectedFlipFileCat := test_data.FlipFileCatModel()
 		expectedFlipFileCat.ColumnValues[event.AddressFK] = addressID
 		expectedFlipFileCat.ColumnValues[constants.MsgSenderColumn] = msgSenderID
-		expectedFlipFileCat.ColumnValues[constants.WhatColumn] = "cat"
-		expectedFlipFileCat.ColumnValues[constants.DataColumn] = "1030000000000000000"
+		expectedFlipFileCat.ColumnValues[constants.DataColumn] = dataColumnID
 
 		Expect(models[0]).To(Equal(expectedFlipFileCat))
 	})

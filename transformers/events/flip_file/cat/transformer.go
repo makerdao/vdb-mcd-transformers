@@ -13,13 +13,12 @@ type Transformer struct{}
 func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
-		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
 		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
 		if addressErr != nil {
@@ -29,6 +28,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
 		if msgSenderErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
+		dataColumnID, dataColumnErr := shared.GetOrCreateAddress(log.Log.Topics[3].Hex(), db)
+		if dataColumnErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(dataColumnErr)
 		}
 
 		result := event.InsertionModel{
@@ -48,7 +52,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
 				constants.WhatColumn:      what,
-				constants.DataColumn:      data.String(),
+				constants.DataColumn:      dataColumnID,
 			},
 		}
 
