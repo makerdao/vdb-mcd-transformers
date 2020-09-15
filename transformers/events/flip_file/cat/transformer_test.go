@@ -25,7 +25,7 @@ var _ = Describe("Flip file cat transformer", func() {
 	})
 
 	It("converts a flip file cat to a model", func() {
-		models, err := transformer.ToModels(constants.Flip110ABI(), []core.EventLog{test_data.FlipFileCatEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV110ABI(), []core.EventLog{test_data.FlipFileCatEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		addressID, addressErr := shared.GetOrCreateAddress(test_data.FlipEthV110Address(), db)
@@ -51,7 +51,7 @@ var _ = Describe("Flip file cat transformer", func() {
 				},
 			},
 		}
-		_, err := transformer.ToModels(constants.Flip100ABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 

@@ -44,7 +44,7 @@ var _ = Describe("Dent transformer", func() {
 
 		dentConfig = event.TransformerConfig{
 			TransformerName:   constants.DentTable,
-			ContractAddresses: append(test_data.FlipAddresses(), test_data.FlopV101Address()),
+			ContractAddresses: append(test_data.Flip100Addresses(), test_data.FlopV101Address()),
 			ContractAbi:       constants.FlipV100ABI(),
 			Topic:             constants.DentSignature(),
 		}

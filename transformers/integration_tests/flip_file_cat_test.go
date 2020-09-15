@@ -20,7 +20,7 @@ var _ = Describe("FlipFileCat Transformer", func() {
 	flipFileCatConfig := event.TransformerConfig{
 		TransformerName:   constants.FlipFileCatTable,
 		ContractAddresses: test_data.Flip110Addresses(),
-		ContractAbi:       constants.Flip110ABI(),
+		ContractAbi:       constants.FlipV110ABI(),
 		Topic:             constants.FlipFileCatSignature(),
 	}
 

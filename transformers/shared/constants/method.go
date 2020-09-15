@@ -119,6 +119,9 @@ func dealMethod() string     { return getSolidityFunctionSignature(FlipV100ABI()
 func dentMethod() string     { return getSolidityFunctionSignature(FlipV100ABI(), "dent") }
 func denyMethod() string     { return getSolidityFunctionSignature(Cat100ABI(), "deny") }
 func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
+func flipFileCatMethod() string {
+	return getOverloadedFunctionSignature(FlipV110ABI(), "file", []string{"bytes32", "address"})
+}
 func flipKickMethod() string { return getSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }
 func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
