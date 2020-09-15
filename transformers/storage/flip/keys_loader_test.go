@@ -54,6 +54,7 @@ var _ = Describe("Flip storage keys loader", func() {
 		Expect(mappings[flip.BegKey]).To(Equal(flip.BegMetadata))
 		Expect(mappings[flip.TTLAndTauStorageKey]).To(Equal(flip.TTLAndTauMetadata))
 		Expect(mappings[flip.KicksKey]).To(Equal(flip.KicksMetadata))
+		Expect(mappings[flip.CatKey]).To(Equal(flip.CatMetadata))
 	})
 
 	Describe("wards", func() {
