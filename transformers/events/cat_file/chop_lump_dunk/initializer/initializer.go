@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package chop_lump_test
+package initializer
 
 import (
-	"testing"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
-func TestChopLump(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "CatFileChopLump Event Transformer Suite")
-}
+var EventTransformerInitializer event.TransformerInitializer = event.ConfiguredTransformer{
+	Config:      shared.GetEventTransformerConfig(constants.CatFileChopLumpTable, constants.CatFileChopLumpSignature()),
+	Transformer: chop_lump_dunk.Transformer{},
+}.NewTransformer

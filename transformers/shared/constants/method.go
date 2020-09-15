@@ -107,7 +107,7 @@ func catFileBoxMethod() string {
 	return getOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "uint256"})
 }
 func catFileChopLumpMethod() string {
-	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return getOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func catFileFlipMethod() string {
 	return getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32", "address"})
