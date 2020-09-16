@@ -22,7 +22,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -59,7 +59,7 @@ var _ = Describe("Cat File transformer", func() {
 
 			initializer := event.ConfiguredTransformer{
 				Config:      catFileConfig,
-				Transformer: chop_lump_dunk.Transformer{},
+				Transformer: chop_lump.Transformer{},
 			}
 			transformer := initializer.NewTransformer(db)
 
@@ -96,7 +96,7 @@ var _ = Describe("Cat File transformer", func() {
 
 			initializer := event.ConfiguredTransformer{
 				Config:      catFileConfig,
-				Transformer: chop_lump_dunk.Transformer{},
+				Transformer: chop_lump.Transformer{},
 			}
 			transformer := initializer.NewTransformer(db)
 
@@ -255,7 +255,7 @@ var _ = Describe("Cat File transformer", func() {
 
 			initializer := event.ConfiguredTransformer{
 				Config:      catFileConfig,
-				Transformer: chop_lump_dunk.Transformer{},
+				Transformer: chop_lump.Transformer{},
 			}
 			transformer := initializer.NewTransformer(db)
 
