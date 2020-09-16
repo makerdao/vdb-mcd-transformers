@@ -35,6 +35,7 @@ const (
 	DentTable                  = "dent"
 	DenyTable                  = "deny"
 	FlapKickTable              = "flap_kick"
+	FlipFileCatTable           = "flip_file_cat"
 	FlipKickTable              = "flip_kick"
 	FlopKickTable              = "flop_kick"
 	JugDripTable               = "jug_drip"
