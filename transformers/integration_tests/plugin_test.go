@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	"plugin"
 	"time"
 
@@ -205,7 +206,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &fakes.MockStatusWriter{})
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -252,7 +253,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &fakes.MockStatusWriter{})
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -310,7 +311,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, -1)
+				w := watcher.NewStorageWatcher(db, -1, &fakes.MockStatusWriter{})
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -365,7 +366,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &fakes.MockStatusWriter{})
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
@@ -396,7 +397,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.FlipEthV100Address()))
 
-				sw := watcher.NewStorageWatcher(db, -1)
+				sw := watcher.NewStorageWatcher(db, -1, &fakes.MockStatusWriter{})
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
