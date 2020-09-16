@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package chop_lump_dunk
+package chop_lump
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
