@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Cat file box transformer", func() {
+var _ = Describe("Flip file cat transformer", func() {
 	var (
 		transformer = cat.Transformer{}
 		db          = test_config.NewTestDB(test_config.NewTestNode())
@@ -38,7 +38,7 @@ var _ = Describe("Cat file box transformer", func() {
 		expectedFlipFileCat.ColumnValues[event.AddressFK] = addressID
 		expectedFlipFileCat.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 		expectedFlipFileCat.ColumnValues[constants.WhatColumn] = "cat"
-		expectedFlipFileCat.ColumnValues[constants.DataColumn] = "1030000000000000000"
+		expectedFlipFileCat.ColumnValues[constants.DataColumn] = "0xA950524441892A31ebddF91d3cEEFa04Bf454466"
 
 		Expect(models[0]).To(Equal(expectedFlipFileCat))
 	})

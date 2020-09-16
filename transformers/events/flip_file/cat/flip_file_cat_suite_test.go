@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestBox(t *testing.T) {
+func TestFlipFileCat(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Flip File Cat Suite")
 }

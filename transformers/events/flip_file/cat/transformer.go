@@ -1,6 +1,7 @@
 package cat
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -13,13 +14,13 @@ type Transformer struct{}
 func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var results []event.InsertionModel
 	for _, log := range logs {
-		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
+		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
 		if err != nil {
 			return nil, err
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
-		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
+		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
 		if addressErr != nil {
@@ -48,7 +49,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
 				constants.WhatColumn:      what,
-				constants.DataColumn:      data.String(),
+				constants.DataColumn:      data,
 			},
 		}
 
