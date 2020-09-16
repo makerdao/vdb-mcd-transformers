@@ -47,9 +47,11 @@ func Flip110Addresses() []string {
 		"MCD_FLIP_ETH_A_1.1.0",
 		"MCD_FLIP_KNC_A_1.1.0",
 		"MCD_FLIP_MANA_A_1.1.0",
+		"MCD_FLIP_PAXUSD_A_1.1.1",
 		"MCD_FLIP_TUSD_A_1.1.0",
 		"MCD_FLIP_USDC_A_1.1.0",
 		"MCD_FLIP_USDC_B_1.1.0",
+		"MCD_FLIP_USDT_A_1.1.1",
 		"MCD_FLIP_WBTC_A_1.1.0",
 		"MCD_FLIP_ZRX_A_1.1.0",
 	})
