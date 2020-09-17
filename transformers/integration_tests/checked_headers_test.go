@@ -2,7 +2,6 @@ package integration_tests
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -36,11 +35,3 @@ var _ = Describe("Checked Headers model", func() {
 		Expect(noUncheckedHeaders).To(BeEmpty())
 	})
 })
-
-func getBlockNumbers(headers []core.Header) []int64 {
-	var headerBlockNumbers []int64
-	for _, header := range headers {
-		headerBlockNumbers = append(headerBlockNumbers, header.BlockNumber)
-	}
-	return headerBlockNumbers
-}
