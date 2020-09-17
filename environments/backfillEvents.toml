@@ -2,9 +2,340 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = []
+    transformerNames = [
+        "auction_file",
+        "bite",
+        "cat_claw",
+        "cat_file_box",
+        "cat_file_chop_lump",
+        "cat_file_flip",
+        "cat_file_vow",
+        "deal",
+        "dent",
+        "deny",
+        "flip_file_cat",
+        "flip_kick",
+        "log_median_price",
+        "log_value",
+        "median_diss_batch",
+        "median_diss_single",
+        "median_drop",
+        "median_kiss_batch",
+        "median_kiss_single",
+        "median_lift",
+        "osm_change",
+        "rely",
+        "tend",
+        "tick",
+        "yank"
+    ]
+    [exporter.auction_file]
+        path = "transformers/events/auction_file/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+        ]
+        rank = "0"
+    [exporter.bite]
+        path = "transformers/events/bite/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_claw]
+        path = "transformers/events/cat_claw/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_file_box]
+        path = "transformers/events/cat_file/box/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_file_chop_lump]
+        path = "transformers/events/cat_file/chop_lump/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_file_flip]
+        path = "transformers/events/cat_file/flip/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.cat_file_vow]
+        path = "transformers/events/cat_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MCD_CAT_1.1.0"]
+        rank = "0"
+    [exporter.deal]
+        path = "transformers/events/deal/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+        ]
+        rank = "0"
+    [exporter.dent]
+        path = "transformers/events/dent/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+         ]
+        rank = "0"
+    [exporter.deny]
+        path = "transformers/events/auth/deny_initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_CAT_1.1.0",
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+            "MEDIAN_USDT",
+            "OSM_USDT",
+        ]
+        rank = "0"
+    [exporter.flip_file_cat]
+        path = "transformers/events/flip_file/cat/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0"
+        ]
+        rank = "0"
+    [exporter.flip_kick]
+        path = "transformers/events/flip_kick/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0"
+        ]
+        rank = "0"
+    [exporter.log_median_price]
+        path = "transformers/events/log_median_price/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.log_value]
+        path = "transformers/events/log_value/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OSM_USDT"]
+        rank = "0"
+    [exporter.median_diss_batch]
+        path = "transformers/events/median_diss/batch/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.median_diss_single]
+        path = "transformers/events/median_diss/single/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.median_drop]
+        path = "transformers/events/median_drop/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.median_kiss_batch]
+        path = "transformers/events/median_kiss/batch/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.median_kiss_single]
+        path = "transformers/events/median_kiss/single/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.median_lift]
+        path = "transformers/events/median_lift/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["MEDIAN_USDT"]
+        rank = "0"
+    [exporter.osm_change]
+        path = "transformers/events/osm_change/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = ["OSM_USDT"]
+        rank = "0"
+    [exporter.rely]
+        path = "transformers/events/auth/rely_initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_CAT_1.1.0",
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+            "MEDIAN_USDT",
+            "OSM_USDT",
+        ]
+        rank = "0"
+    [exporter.tend]
+        path = "transformers/events/tend/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0"
+        ]
+        rank = "0"
+    [exporter.tick]
+        path = "transformers/events/tick/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+        ]
+        rank = "0"
+    [exporter.yank]
+        path = "transformers/events/yank/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_FLIP_BAT_A_1.1.0",
+            "MCD_FLIP_ETH_A_1.1.0",
+            "MCD_FLIP_KNC_A_1.1.0",
+            "MCD_FLIP_MANA_A_1.1.0",
+            "MCD_FLIP_PAXUSD_A_1.1.1",
+            "MCD_FLIP_TUSD_A_1.1.0",
+            "MCD_FLIP_USDC_A_1.1.0",
+            "MCD_FLIP_USDC_B_1.1.0",
+            "MCD_FLIP_USDT_A_1.1.1",
+            "MCD_FLIP_WBTC_A_1.1.0",
+            "MCD_FLIP_ZRX_A_1.1.0",
+        ]
+        rank = "0"
 
 [contract]
+    [contract.CDP_MANAGER]
+        address  = "0x5ef30b9986345249bc32d8928b7ee64de9435e39"
+        abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"own","type":"address"},{"indexed":true,"internalType":"uint256","name":"cdp","type":"uint256"}],"name":"NewCdp","type":"event"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"ok","type":"uint256"}],"name":"cdpAllow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"cdpCan","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"cdpi","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"count","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"uint256","name":"cdp","type":"uint256"}],"name":"enter","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"first","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"flux","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"flux","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"int256","name":"dink","type":"int256"},{"internalType":"int256","name":"dart","type":"int256"}],"name":"frob","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"dst","type":"address"}],"name":"give","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"ilks","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"last","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"list","outputs":[{"internalType":"uint256","name":"prev","type":"uint256"},{"internalType":"uint256","name":"next","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"rad","type":"uint256"}],"name":"move","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"address","name":"usr","type":"address"}],"name":"open","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"owns","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdp","type":"uint256"},{"internalType":"address","name":"dst","type":"address"}],"name":"quit","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"cdpSrc","type":"uint256"},{"internalType":"uint256","name":"cdpDst","type":"uint256"}],"name":"shift","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"ok","type":"uint256"}],"name":"urnAllow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"urnCan","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"urns","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}]'
+        deployed = 8928198
     [contract.MCD_CAT_1.0.0]
         address  = "0x78f2c2af65126834c51822f56be0d7469d7a523e"
         abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"ilk","type":"bytes32"},{"indexed":true,"internalType":"address","name":"urn","type":"address"},{"indexed":false,"internalType":"uint256","name":"ink","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"art","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":false,"internalType":"address","name":"flip","type":"address"},{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"}],"name":"Bite","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"address","name":"urn","type":"address"}],"name":"bite","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"address","name":"data","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"address","name":"flip","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"ilks","outputs":[{"internalType":"address","name":"flip","type":"address"},{"internalType":"uint256","name":"chop","type":"uint256"},{"internalType":"uint256","name":"lump","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vow","outputs":[{"internalType":"contract VowLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]'
@@ -156,6 +487,10 @@
     [contract.MCD_SPOT]
         address  = "0x65c79fcb50ca1594b025960e539ed7a9a6d434a3"
         abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"ilk","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"val","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"spot","type":"uint256"}],"name":"Poke","type":"event"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"address","name":"pip_","type":"address"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"ilks","outputs":[{"internalType":"contract PipLike","name":"pip","type":"address"},{"internalType":"uint256","name":"mat","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"par","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"}],"name":"poke","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]'
+        deployed = 8928152
+    [contract.MCD_VAT]
+        address  = "0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b"
+        abi      = '[{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg3","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"Line","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"cage","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"can","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"dai","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"debt","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"flux","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"i","type":"bytes32"},{"internalType":"address","name":"u","type":"address"},{"internalType":"int256","name":"rate","type":"int256"}],"name":"fold","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"int256","name":"dink","type":"int256"},{"internalType":"int256","name":"dart","type":"int256"}],"name":"fork","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"i","type":"bytes32"},{"internalType":"address","name":"u","type":"address"},{"internalType":"address","name":"v","type":"address"},{"internalType":"address","name":"w","type":"address"},{"internalType":"int256","name":"dink","type":"int256"},{"internalType":"int256","name":"dart","type":"int256"}],"name":"frob","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"}],"name":"gem","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"i","type":"bytes32"},{"internalType":"address","name":"u","type":"address"},{"internalType":"address","name":"v","type":"address"},{"internalType":"address","name":"w","type":"address"},{"internalType":"int256","name":"dink","type":"int256"},{"internalType":"int256","name":"dart","type":"int256"}],"name":"grab","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"rad","type":"uint256"}],"name":"heal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"hope","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"ilks","outputs":[{"internalType":"uint256","name":"Art","type":"uint256"},{"internalType":"uint256","name":"rate","type":"uint256"},{"internalType":"uint256","name":"spot","type":"uint256"},{"internalType":"uint256","name":"line","type":"uint256"},{"internalType":"uint256","name":"dust","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"live","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"rad","type":"uint256"}],"name":"move","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"nope","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"sin","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"ilk","type":"bytes32"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"int256","name":"wad","type":"int256"}],"name":"slip","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"u","type":"address"},{"internalType":"address","name":"v","type":"address"},{"internalType":"uint256","name":"rad","type":"uint256"}],"name":"suck","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"}],"name":"urns","outputs":[{"internalType":"uint256","name":"ink","type":"uint256"},{"internalType":"uint256","name":"art","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]'
         deployed = 8928152
     [contract.MCD_VOW]
         address  = "0xa950524441892a31ebddf91d3ceefa04bf454466"
