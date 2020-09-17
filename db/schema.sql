@@ -7452,6 +7452,37 @@ ALTER SEQUENCE maker.cdp_manager_vat_id_seq OWNED BY maker.cdp_manager_vat.id;
 
 
 --
+-- Name: checked_headers; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.checked_headers (
+    id integer NOT NULL,
+    check_count integer,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: checked_headers_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.checked_headers_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: checked_headers_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.checked_headers_id_seq OWNED BY maker.checked_headers.id;
+
+
+--
 -- Name: deal; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -12293,6 +12324,13 @@ ALTER TABLE ONLY maker.cdp_manager_vat ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: checked_headers id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.checked_headers ALTER COLUMN id SET DEFAULT nextval('maker.checked_headers_id_seq'::regclass);
+
+
+--
 -- Name: deal id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13810,6 +13848,22 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 ALTER TABLE ONLY maker.cdp_manager_vat
     ADD CONSTRAINT cdp_manager_vat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: checked_headers checked_headers_header_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.checked_headers
+    ADD CONSTRAINT checked_headers_header_id_key UNIQUE (header_id);
+
+
+--
+-- Name: checked_headers checked_headers_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.checked_headers
+    ADD CONSTRAINT checked_headers_pkey PRIMARY KEY (id);
 
 
 --
@@ -16735,6 +16789,20 @@ CREATE INDEX cdp_manager_urns_urn_index ON maker.cdp_manager_urns USING btree (u
 --
 
 CREATE INDEX cdp_manager_vat_header_id_index ON maker.cdp_manager_vat USING btree (header_id);
+
+
+--
+-- Name: checked_headers_check_count; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX checked_headers_check_count ON maker.checked_headers USING btree (check_count);
+
+
+--
+-- Name: checked_headers_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX checked_headers_header_index ON maker.checked_headers USING btree (header_id);
 
 
 --
@@ -20444,6 +20512,14 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 ALTER TABLE ONLY maker.cdp_manager_vat
     ADD CONSTRAINT cdp_manager_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: checked_headers checked_headers_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.checked_headers
+    ADD CONSTRAINT checked_headers_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
