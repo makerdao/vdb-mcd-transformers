@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	storage2 "github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -19,22 +18,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var blockNumber int
+var (
+	blockNumber int
+	ilks        []string
+)
+
 var assignIlkLumpToZeroCmd = &cobra.Command{
 	Use:   "assignIlkLumpToZero",
 	Short: "Create a diff with a zero ilk lump value.",
-	Long: `Inserts an artificial storage_diff with the storage_key for cat_ilk_lump, and a
-storage_value of zero for all ilks for the given block height. This storage_diff will then be picked up in the execute
-process to be transformed into maker.cat_ilk_lump record.
+	Long: `Inserts artificial cat_ilk_lump storage_diffs with storage_values of zero for the given ilks at the given block
+height. The storage_diffs will then be picked up in the execute process to be transformed into maker.cat_ilk_lump records.
+The block-number (b) and ilks (i) arguments are required.
+
+Note: the ilk argument(s) passed in need to be the hex representation of the ilk.
 
 Note: this command should only be run for the block height when the Cat contract upgrade change takes place, i.e. this
-should only be run for the block after the first cat_ilk_dunk was set.
+should only be run for the block where the first cat_ilk_dunk was set for the given ilks.
 `,
-	Example: "",
-	//"./vdb-mcd-transformers assignIlkLumpToZero --blockHeight=1000",
-	ValidArgs: nil,
-	Args:      nil,
-	PreRun:    setViperConfigs,
+	Example: `./vdb-mcd-transformers assignIlkLumpToZero --blockHeight=10769102
+		--ilk 0x4241542d41000000000000000000000000000000000000000000000000000000
+		--ilk 0x4554482d41000000000000000000000000000000000000000000000000000000
+	`,
+	PreRun:  setViperConfigs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := zeroOutIlkLump()
 		if err != nil {
@@ -49,34 +54,32 @@ func init() {
 	rootCmd.AddCommand(assignIlkLumpToZeroCmd)
 	assignIlkLumpToZeroCmd.Flags().IntVarP(&blockNumber, "block-number", "b", -1, "the block associated with artificial ilk lump diffs")
 	assignIlkLumpToZeroCmd.MarkFlagRequired("block-number")
+	assignIlkLumpToZeroCmd.Flags().StringSliceVarP(&ilks, "ilks", "i", []string{}, "the ilk to set lump to zero")
+	assignIlkLumpToZeroCmd.MarkFlagRequired("ilk")
 }
 
 func zeroOutIlkLump() error {
 	blockChain := getBlockChain()
 	db := utils.LoadPostgres(databaseConfig, blockChain.Node())
 	generator := NewZeroValueDiffGenerator(db)
-	return generator.CreateZeroValueIlkLumpDiff(blockNumber)
+	return generator.CreateZeroValueIlkLumpDiff(blockNumber, ilks)
 }
 
 type ZeroValueDiffGenerator struct {
-	MakerStorageRepo storage.IMakerStorageRepository
 	HeaderRepository datastore.HeaderRepository
 	DiffRepo         storage2.DiffRepository
-	ilks             []string
 }
 
 func NewZeroValueDiffGenerator(db postgres.DB) ZeroValueDiffGenerator {
-	makerStorageRepo := storage.MakerStorageRepository{}
-	makerStorageRepo.SetDB(&db)
 	return ZeroValueDiffGenerator{
-		MakerStorageRepo: &makerStorageRepo,
 		HeaderRepository: repositories.NewHeaderRepository(&db),
 		DiffRepo:         storage2.NewDiffRepository(&db),
 	}
 }
 
-func (generator ZeroValueDiffGenerator) CreateZeroValueIlkLumpDiff(blockNumber int) error {
-	keys, getKeysErr := generator.getIlkLumpKeys()
+func (generator ZeroValueDiffGenerator) CreateZeroValueIlkLumpDiff(blockNumber int, ilks []string) error {
+	fmt.Println("ilks", ilks)
+	keys, getKeysErr := generator.getIlkLumpKey(ilks)
 	if getKeysErr != nil {
 		return fmt.Errorf("error getting ilk lump keys %w", getKeysErr)
 	}
@@ -85,17 +88,11 @@ func (generator ZeroValueDiffGenerator) CreateZeroValueIlkLumpDiff(blockNumber i
 	if getHeaderErr != nil {
 		return fmt.Errorf("error gettting header %w", getHeaderErr)
 	}
-
-	return generator.createDiff(keys, header)
+	logrus.Infof("Creating zero value lump diffs for the following ilks: %s", strings.Join(ilks, ", "))
+	return generator.createDiffs(keys, header)
 }
 
-func (generator *ZeroValueDiffGenerator) getIlkLumpKeys() ([]string, error) {
-	ilks, getIlksErr := generator.MakerStorageRepo.GetIlks()
-	if getIlksErr != nil {
-		return nil, fmt.Errorf("error retriving ilks from db %w", getIlksErr)
-	}
-	generator.ilks = ilks
-
+func (generator *ZeroValueDiffGenerator) getIlkLumpKey(ilks []string) ([]string, error) {
 	var keys []string
 	for _, ilk := range ilks {
 		keys = append(keys, v1_0_0.GetIlkLumpKey(ilk).Hex())
@@ -104,9 +101,7 @@ func (generator *ZeroValueDiffGenerator) getIlkLumpKeys() ([]string, error) {
 	return keys, nil
 }
 
-func (generator ZeroValueDiffGenerator) createDiff(keys []string, header core.Header) error {
-	fmt.Println(generator.ilks)
-	logrus.Infof("Creating zero value lump diffs for the following ilks: %s", strings.Join(generator.ilks, ", "))
+func (generator ZeroValueDiffGenerator) createDiffs(keys []string, header core.Header) error {
 	for _, key := range keys {
 		rawDiff := types.RawDiff{
 			HashedAddress: common.HexToHash(test_data.Cat110Address()),
