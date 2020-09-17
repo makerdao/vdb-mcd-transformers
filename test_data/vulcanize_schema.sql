@@ -388,7 +388,6 @@ CREATE TABLE public.headers (
     block_number bigint NOT NULL,
     raw jsonb,
     block_timestamp numeric,
-    check_count integer DEFAULT 0 NOT NULL,
     eth_node_id integer NOT NULL,
     created timestamp without time zone DEFAULT now() NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL
@@ -813,13 +812,6 @@ CREATE INDEX headers_block_number ON public.headers USING btree (block_number);
 --
 
 CREATE INDEX headers_block_timestamp_index ON public.headers USING btree (block_timestamp);
-
-
---
--- Name: headers_check_count; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX headers_check_count ON public.headers USING btree (check_count);
 
 
 --

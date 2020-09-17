@@ -180,7 +180,8 @@ var _ = Describe("Plugin test", func() {
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo := repositories.NewCheckedHeadersRepository(db, "maker")
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
 			statusWriter = fakes.MockStatusWriter{}
 		})
@@ -343,7 +344,8 @@ var _ = Describe("Plugin test", func() {
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo := repositories.NewCheckedHeadersRepository(db, "maker")
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
 		})
 
