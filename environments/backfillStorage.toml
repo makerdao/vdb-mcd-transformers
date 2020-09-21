@@ -2,7 +2,101 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = []
+    transformerNames = [
+        # storage
+        "cat_v1_1_0",
+        "flip_bat_a_v1_1_0",
+        "flip_eth_a_v1_1_0",
+        "flip_knc_a_v1_1_0",
+        "flip_mana_a_v1_1_0",
+        "flip_paxusd_a_v1_1_1",
+        "flip_tusd_a_v1_1_0",
+        "flip_usdc_a_v1_1_0",
+        "flip_usdc_b_v1_1_0",
+        "flip_usdt_a_v1_1_1",
+        "flip_wbtc_a_v1_1_0",
+        "flip_zrx_a_v1_1_0",
+        "median_usdt",
+    ]
+
+    [exporter.cat_v1_1_0]
+        path = "transformers/storage/cat/v1_1_0/initializer"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_bat_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/bat_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_eth_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/eth_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_knc_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/knc_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_mana_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/mana_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_paxusd_a_v1_1_1]
+        path = "transformers/storage/flip/initializers/paxusd_a/v1_1_1"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_tusd_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/tusd_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_usdc_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/usdc_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_usdc_b_v1_1_0]
+        path = "transformers/storage/flip/initializers/usdc_b/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_usdt_a_v1_1_1]
+        path = "transformers/storage/flip/initializers/usdt_a/v1_1_1"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_wbtc_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/wbtc_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.flip_zrx_a_v1_1_0]
+        path = "transformers/storage/flip/initializers/zrx_a/v1_1_0"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.median_usdt]
+        path = "transformers/storage/median/initializers/median_usdt"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
 
 [contract]
     [contract.CDP_MANAGER]
