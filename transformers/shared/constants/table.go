@@ -137,6 +137,7 @@ const (
 	FlapTtlTable            = "flap_ttl"
 	FlapVatTable            = "flap_vat"
 	FlipBegTable            = "flip_beg"
+	FlipCatTable            = "flip_cat"
 	FlipBidBidTable         = "flip_bid_bid"
 	FlipBidEndTable         = "flip_bid_end"
 	FlipBidGalTable         = "flip_bid_gal"

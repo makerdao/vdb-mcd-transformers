@@ -19,6 +19,7 @@ const (
 	insertFlipTTLQuery   = `INSERT INTO maker.flip_ttl (diff_id, header_id, address_id, ttl) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertFlipTauQuery   = `INSERT INTO maker.flip_tau (diff_id, header_id, address_id, tau) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	InsertFlipKicksQuery = `INSERT INTO maker.flip_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertFlipCatQuery   = `INSERT INTO maker.flip_cat (diff_id, header_id, address_id, cat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
 	InsertFlipBidBidQuery = `INSERT INTO maker.flip_bid_bid (diff_id, header_id, address_id, bid_id, bid) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertFlipBidLotQuery = `INSERT INTO maker.flip_bid_lot (diff_id, header_id, address_id, bid_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
@@ -45,6 +46,8 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 		return repository.insertBeg(diffID, headerID, value.(string))
 	case storage.Kicks:
 		return repository.insertKicks(diffID, headerID, value.(string))
+	case storage.Cat:
+		return repository.insertCat(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
 	case storage.BidBid:
@@ -164,6 +167,25 @@ func (repository *StorageRepository) insertKicks(diffID, headerID int64, kicks s
 		msgToFormat := "error inserting flip %s kicks %s from diff ID %d"
 		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, kicks, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertCat(diffID, headerID int64, cat string) error {
+	catAddressID, addressErr := shared.GetOrCreateAddress(cat, repository.db)
+	if addressErr != nil {
+		return fmt.Errorf("error inserting flip cat: %w", addressErr)
+	}
+	insertErr := shared.InsertRecordWithAddress(
+		diffID,
+		headerID,
+		insertFlipCatQuery,
+		strconv.FormatInt(catAddressID, 10),
+		repository.ContractAddress,
+		repository.db)
+	if insertErr != nil {
+		msgToFormat := "error inserting flip %s cat %s from diff ID %d: %w"
+		return fmt.Errorf(msgToFormat, repository.ContractAddress, cat, diffID, insertErr)
 	}
 	return nil
 }
