@@ -28,7 +28,7 @@ const (
 	BiteTable                     = "bite"
 	CatClawTable                  = "cat_claw"
 	CatFileBoxTable               = "cat_file_box"
-	CatFileChopLumpTable          = "cat_file_chop_lump"
+	CatFileChopLumpDunkTable      = "cat_file_chop_lump_dunk"
 	CatFileFlipTable              = "cat_file_flip"
 	CatFileVowTable               = "cat_file_vow"
 	DealTable                     = "deal"

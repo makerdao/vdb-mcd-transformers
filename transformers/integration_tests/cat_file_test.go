@@ -17,10 +17,12 @@
 package integration_tests
 
 import (
+	"sort"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -49,14 +51,14 @@ var _ = Describe("Cat File transformer", func() {
 			chopLumpBlockNumber := int64(8928392)
 			header, headerErr := persistHeader(db, chopLumpBlockNumber, blockChain)
 			Expect(headerErr).NotTo(HaveOccurred())
-			catFileConfig.TransformerName = constants.CatFileChopLumpTable
-			catFileConfig.Topic = constants.CatFileChopLumpSignature()
+			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.Topic = constants.CatFileChopLumpDunkSignature()
 			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 			initializer := event.ConfiguredTransformer{
 				Config:      catFileConfig,
-				Transformer: chop_lump.Transformer{},
+				Transformer: chop_lump_dunk.Transformer{},
 			}
 			transformer := initializer.NewTransformer(db)
 
@@ -71,8 +73,8 @@ var _ = Describe("Cat File transformer", func() {
 			executeErr := transformer.Execute(eventLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 
-			var dbResult catFileChopLumpModel
-			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
+			var dbResult catFileChopLumpDunkModel
+			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump_dunk`)
 			Expect(getErr).NotTo(HaveOccurred())
 
 			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
@@ -92,14 +94,14 @@ var _ = Describe("Cat File transformer", func() {
 			chopLumpBlockNumber := int64(8928383)
 			header, headerErr := persistHeader(db, chopLumpBlockNumber, blockChain)
 			Expect(headerErr).NotTo(HaveOccurred())
-			catFileConfig.TransformerName = constants.CatFileChopLumpTable
-			catFileConfig.Topic = constants.CatFileChopLumpSignature()
+			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.Topic = constants.CatFileChopLumpDunkSignature()
 			catFileConfig.StartingBlockNumber = chopLumpBlockNumber
 			catFileConfig.EndingBlockNumber = chopLumpBlockNumber
 
 			initializer := event.ConfiguredTransformer{
 				Config:      catFileConfig,
-				Transformer: chop_lump.Transformer{},
+				Transformer: chop_lump_dunk.Transformer{},
 			}
 			transformer := initializer.NewTransformer(db)
 
@@ -114,8 +116,8 @@ var _ = Describe("Cat File transformer", func() {
 			executeErr := transformer.Execute(eventLogs)
 			Expect(executeErr).NotTo(HaveOccurred())
 
-			var dbResult catFileChopLumpModel
-			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump`)
+			var dbResult catFileChopLumpDunkModel
+			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump_dunk`)
 			Expect(getErr).NotTo(HaveOccurred())
 
 			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
@@ -266,6 +268,49 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(dbResult.What).To(Equal("box"))
 			Expect(dbResult.Data).To(Equal("30000000000000000000000000000000000000000000000000000"))
 		})
+
+		It("persists a chop lump dunk event (dunk)", func() {
+			chopDunkBlockNumber := int64(10769102)
+			header, err := persistHeader(db, chopDunkBlockNumber, blockChain)
+			Expect(err).NotTo(HaveOccurred())
+			catFileConfig.TransformerName = constants.CatFileChopLumpDunkTable
+			catFileConfig.Topic = constants.CatFileChopLumpDunkSignature()
+			catFileConfig.StartingBlockNumber = chopDunkBlockNumber
+			catFileConfig.EndingBlockNumber = chopDunkBlockNumber
+
+			initializer := event.ConfiguredTransformer{
+				Config:      catFileConfig,
+				Transformer: chop_lump_dunk.Transformer{},
+			}
+			transformer := initializer.NewTransformer(db)
+
+			logs, err := logFetcher.FetchLogs(
+				[]common.Address{common.HexToAddress(catFileConfig.ContractAddresses[0])},
+				[]common.Hash{common.HexToHash(catFileConfig.Topic)},
+				header)
+			Expect(err).NotTo(HaveOccurred())
+
+			eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+			err = transformer.Execute(eventLogs)
+			Expect(err).NotTo(HaveOccurred())
+
+			var dbResults []catFileChopLumpDunkModel
+			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			Expect(err).NotTo(HaveOccurred())
+			err = db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_lump_dunk`)
+			Expect(err).NotTo(HaveOccurred())
+			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(len(dbResults)).To(Equal(18))
+			sort.Sort(byData(dbResults))
+			dbResult := dbResults[9]
+			Expect(dbResult.AddressID).To(Equal(addressID))
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+			Expect(dbResult.What).To(Equal("dunk"))
+			Expect(dbResult.Data).To(Equal("50000000000000000000000000000000000000000000000000"))
+		})
 	})
 })
 
@@ -276,7 +321,7 @@ type catFileBoxModel struct {
 	Data        string
 }
 
-type catFileChopLumpModel struct {
+type catFileChopLumpDunkModel struct {
 	AddressID int64 `db:"address_id"`
 	MsgSender int64 `db:"msg_sender"`
 	Ilk       int64 `db:"ilk_id"`
@@ -297,4 +342,18 @@ type catFileVowModel struct {
 	MsgSender int64 `db:"msg_sender"`
 	What      string
 	Data      string
+}
+
+type byData []catFileChopLumpDunkModel
+
+func (b byData) Len() int {
+	return len(b)
+}
+
+func (b byData) Less(i, j int) bool {
+	return b[i].Data < b[j].Data
+}
+
+func (b byData) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
 }

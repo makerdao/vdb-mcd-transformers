@@ -20,7 +20,7 @@ CREATE INDEX cat_file_box_msg_sender
 CREATE INDEX cat_file_box_header_index
     ON maker.cat_file_box (header_id);
 
-CREATE TABLE maker.cat_file_chop_lump
+CREATE TABLE maker.cat_file_chop_lump_dunk
 (
     id         SERIAL PRIMARY KEY,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
@@ -33,16 +33,16 @@ CREATE TABLE maker.cat_file_chop_lump
     UNIQUE (header_id, log_id)
 );
 
-CREATE INDEX cat_file_chop_lump_header_index
-    ON maker.cat_file_chop_lump (header_id);
-CREATE INDEX cat_file_chop_lump_log_index
-    ON maker.cat_file_chop_lump (log_id);
-CREATE INDEX cat_file_chop_lump_address_index
-    ON maker.cat_file_chop_lump (address_id);
-CREATE INDEX cat_file_chop_lump_msg_sender_index
-    ON maker.cat_file_chop_lump (msg_sender);
-CREATE INDEX cat_file_chop_lump_ilk_index
-    ON maker.cat_file_chop_lump (ilk_id);
+CREATE INDEX cat_file_chop_lump_dunk_header_index
+    ON maker.cat_file_chop_lump_dunk (header_id);
+CREATE INDEX cat_file_chop_lump_dunk_log_index
+    ON maker.cat_file_chop_lump_dunk (log_id);
+CREATE INDEX cat_file_chop_lump_dunk_address_index
+    ON maker.cat_file_chop_lump_dunk (address_id);
+CREATE INDEX cat_file_chop_lump_dunk_msg_sender_index
+    ON maker.cat_file_chop_lump_dunk (msg_sender);
+CREATE INDEX cat_file_chop_lump_dunk_ilk_index
+    ON maker.cat_file_chop_lump_dunk (ilk_id);
 
 CREATE TABLE maker.cat_file_flip
 (
@@ -92,6 +92,6 @@ CREATE INDEX cat_file_vow_msg_sender
 
 -- +goose Down
 DROP TABLE maker.cat_file_box;
-DROP TABLE maker.cat_file_chop_lump;
+DROP TABLE maker.cat_file_chop_lump_dunk;
 DROP TABLE maker.cat_file_flip;
 DROP TABLE maker.cat_file_vow;
