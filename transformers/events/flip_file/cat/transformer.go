@@ -1,7 +1,6 @@
 package cat
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -20,7 +19,6 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
-		data := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
 		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
 		if addressErr != nil {
@@ -30,6 +28,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
 		if msgSenderErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
+		dataColumnID, dataColumnErr := shared.GetOrCreateAddress(log.Log.Topics[3].Hex(), db)
+		if dataColumnErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(dataColumnErr)
 		}
 
 		result := event.InsertionModel{
@@ -49,7 +52,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.AddressFK:           addressID,
 				constants.MsgSenderColumn: msgSenderID,
 				constants.WhatColumn:      what,
-				constants.DataColumn:      data,
+				constants.DataColumn:      dataColumnID,
 			},
 		}
 

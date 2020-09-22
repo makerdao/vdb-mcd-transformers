@@ -7,7 +7,7 @@ CREATE TABLE maker.flip_file_cat
     address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     what       TEXT,
-    data       TEXT,
+    data       INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );
 

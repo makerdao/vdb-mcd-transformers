@@ -50,9 +50,11 @@ var flipFileCatModel = event.InsertionModel{
 		constants.DataColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: FlipFileCatEventLog.HeaderID,
-		event.LogFK:    FlipFileCatEventLog.ID,
+		event.HeaderFK:       FlipFileCatEventLog.HeaderID,
+		event.LogFK:          FlipFileCatEventLog.ID,
+		constants.WhatColumn: "cat",
 		//AddressFK
 		//MsgSender
+		//DataFK
 	},
 }

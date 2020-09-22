@@ -8139,6 +8139,39 @@ ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
 
 
 --
+-- Name: flip_cat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_cat (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    cat integer NOT NULL
+);
+
+
+--
+-- Name: flip_cat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_cat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_cat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_cat_id_seq OWNED BY maker.flip_cat.id;
+
+
+--
 -- Name: flip_file_cat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8149,7 +8182,7 @@ CREATE TABLE maker.flip_file_cat (
     address_id integer NOT NULL,
     msg_sender integer NOT NULL,
     what text,
-    data text
+    data integer NOT NULL
 );
 
 
@@ -12934,6 +12967,13 @@ ALTER TABLE ONLY maker.flip_bid_usr ALTER COLUMN id SET DEFAULT nextval('maker.f
 
 
 --
+-- Name: flip_cat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat ALTER COLUMN id SET DEFAULT nextval('maker.flip_cat_id_seq'::regclass);
+
+
+--
 -- Name: flip_file_cat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14775,6 +14815,22 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 ALTER TABLE ONLY maker.flip_bid_usr
     ADD CONSTRAINT flip_bid_usr_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_cat flip_cat_diff_id_header_id_address_id_cat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_diff_id_header_id_address_id_cat_key UNIQUE (diff_id, header_id, address_id, cat);
+
+
+--
+-- Name: flip_cat flip_cat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_pkey PRIMARY KEY (id);
 
 
 --
@@ -18018,6 +18074,27 @@ CREATE INDEX flip_bid_usr_bid_id_index ON maker.flip_bid_usr USING btree (bid_id
 --
 
 CREATE INDEX flip_bid_usr_header_id_index ON maker.flip_bid_usr USING btree (header_id);
+
+
+--
+-- Name: flip_cat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_address_index ON maker.flip_cat USING btree (address_id);
+
+
+--
+-- Name: flip_cat_cat_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_cat_index ON maker.flip_cat USING btree (cat);
+
+
+--
+-- Name: flip_cat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_header_id_index ON maker.flip_cat USING btree (header_id);
 
 
 --
@@ -22273,11 +22350,51 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 
 --
+-- Name: flip_cat flip_cat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_cat_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_cat_fkey FOREIGN KEY (cat) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: flip_file_cat flip_file_cat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.flip_file_cat
     ADD CONSTRAINT flip_file_cat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_file_cat flip_file_cat_data_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_file_cat
+    ADD CONSTRAINT flip_file_cat_data_fkey FOREIGN KEY (data) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
