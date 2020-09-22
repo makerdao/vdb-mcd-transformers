@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	storage2 "github.com/makerdao/vulcanizedb/libraries/shared/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
@@ -36,10 +36,10 @@ Note: this command should only be run for the block height when the Cat contract
 should only be run for the block where the first cat_ilk_dunk was set for the given ilks.
 `,
 	Example: `./vdb-mcd-transformers assignIlkLumpToZero --blockHeight=10769102
-		--ilk 0x4241542d41000000000000000000000000000000000000000000000000000000
-		--ilk 0x4554482d41000000000000000000000000000000000000000000000000000000
+		--ilks 0x4241542d41000000000000000000000000000000000000000000000000000000
+		--ilks 0x4554482d41000000000000000000000000000000000000000000000000000000
 	`,
-	PreRun:  setViperConfigs,
+	PreRun: setViperConfigs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := zeroOutIlkLump()
 		if err != nil {
@@ -67,18 +67,17 @@ func zeroOutIlkLump() error {
 
 type ZeroValueDiffGenerator struct {
 	HeaderRepository datastore.HeaderRepository
-	DiffRepo         storage2.DiffRepository
+	DiffRepo         storage.DiffRepository
 }
 
 func NewZeroValueDiffGenerator(db postgres.DB) ZeroValueDiffGenerator {
 	return ZeroValueDiffGenerator{
 		HeaderRepository: repositories.NewHeaderRepository(&db),
-		DiffRepo:         storage2.NewDiffRepository(&db),
+		DiffRepo:         storage.NewDiffRepository(&db),
 	}
 }
 
 func (generator ZeroValueDiffGenerator) CreateZeroValueIlkLumpDiff(blockNumber int, ilks []string) error {
-	fmt.Println("ilks", ilks)
 	keys, getKeysErr := generator.getIlkLumpKey(ilks)
 	if getKeysErr != nil {
 		return fmt.Errorf("error getting ilk lump keys %w", getKeysErr)
