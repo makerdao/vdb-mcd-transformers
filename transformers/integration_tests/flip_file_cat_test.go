@@ -24,7 +24,7 @@ var _ = Describe("FlipFileCat Transformer", func() {
 		Topic:             constants.FlipFileCatSignature(),
 	}
 
-	XIt("fetches and transforms a Flip File Cat event", func() {
+	It("fetches and transforms a Flip File Cat event", func() {
 		//TODO: Needs real integration test data when it shows up on chain
 
 		blockNumber := int64(10769102)
