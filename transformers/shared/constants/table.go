@@ -105,9 +105,12 @@ const (
 
 // storage tables
 const (
+	CatBoxTable             = "cat_box"
 	CatIlkChopTable         = "cat_ilk_chop"
+	CatIlkDunkTable         = "cat_ilk_dunk"
 	CatIlkFlipTable         = "cat_ilk_flip"
 	CatIlkLumpTable         = "cat_ilk_lump"
+	CatLitterTable          = "cat_litter"
 	CatLiveTable            = "cat_live"
 	CatVatTable             = "cat_vat"
 	CatVowTable             = "cat_vow"
@@ -134,6 +137,7 @@ const (
 	FlapTtlTable            = "flap_ttl"
 	FlapVatTable            = "flap_vat"
 	FlipBegTable            = "flip_beg"
+	FlipCatTable            = "flip_cat"
 	FlipBidBidTable         = "flip_bid_bid"
 	FlipBidEndTable         = "flip_bid_end"
 	FlipBidGalTable         = "flip_bid_gal"

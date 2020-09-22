@@ -812,7 +812,8 @@ CREATE TABLE api.ilk_snapshot (
     pip text,
     mat numeric,
     created timestamp without time zone,
-    updated timestamp without time zone
+    updated timestamp without time zone,
+    dunk numeric
 );
 
 
@@ -2635,6 +2636,75 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.insert_new_chop(new_diff maker.cat_ilk_chop) IS '@omit';
+
+
+--
+-- Name: cat_ilk_dunk; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_ilk_dunk (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dunk numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_dunk(maker.cat_ilk_dunk); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_dunk(new_diff maker.cat_ilk_dunk) RETURNS maker.cat_ilk_dunk
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_ilk_identifier  TEXT      := (
+        SELECT identifier
+        FROM maker.ilks
+        WHERE id = new_diff.ilk_id);
+    diff_block_timestamp TIMESTAMP := (
+        SELECT api.epoch_to_datetime(block_timestamp)
+        FROM public.headers
+        WHERE headers.id = new_diff.header_id);
+    diff_block_number    NUMERIC   := (
+        SELECT block_number
+        FROM public.headers
+        WHERE headers.id = new_diff.header_id);
+BEGIN
+    INSERT
+    INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
+                           duty, pip, mat, dunk, created, updated)
+    VALUES (diff_ilk_identifier,
+            diff_block_number,
+            ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_art_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_spot_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_line_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_dust_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_chop_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_lump_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_flip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_rho_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_duty_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
+            ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
+            new_diff.dunk,
+            ilk_time_created(new_diff.ilk_id),
+            diff_block_timestamp)
+    ON CONFLICT (ilk_identifier, block_number)
+        DO UPDATE SET dunk = new_diff.dunk;
+    RETURN new_diff;
+END
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_dunk(new_diff maker.cat_ilk_dunk); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_dunk(new_diff maker.cat_ilk_dunk) IS '@omit';
 
 
 --
@@ -4491,6 +4561,47 @@ COMMENT ON FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_i
 
 
 --
+-- Name: update_dunks_until_next_diff(maker.cat_ilk_dunk, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_dunks_until_next_diff(start_at_diff maker.cat_ilk_dunk, new_dunk numeric) RETURNS maker.cat_ilk_dunk
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_ilk_identifier  TEXT   := (
+        SELECT identifier
+        FROM maker.ilks
+        WHERE ilks.id = start_at_diff.ilk_id);
+    diff_block_number    BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_dunk_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.cat_ilk_dunk
+                 LEFT JOIN public.headers ON cat_ilk_dunk.header_id = headers.id
+        WHERE cat_ilk_dunk.ilk_id = start_at_diff.ilk_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE api.ilk_snapshot
+    SET dunk = new_dunk
+    WHERE ilk_snapshot.ilk_identifier = diff_ilk_identifier
+      AND ilk_snapshot.block_number >= diff_block_number
+      AND (next_dunk_diff_block IS NULL
+        OR ilk_snapshot.block_number < next_dunk_diff_block);
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_dunks_until_next_diff(start_at_diff maker.cat_ilk_dunk, new_dunk numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_dunks_until_next_diff(start_at_diff maker.cat_ilk_dunk, new_dunk numeric) IS '@omit';
+
+
+--
 -- Name: update_dusts_until_next_diff(maker.vat_ilk_dust, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -5809,6 +5920,26 @@ $$;
 
 
 --
+-- Name: update_ilk_dunks(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_ilk_dunks() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_dunk(NEW);
+        PERFORM maker.update_dunks_until_next_diff(NEW, NEW.dunk);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_dunks_until_next_diff(OLD, ilk_dunk_before_block(OLD.ilk_id, OLD.header_id));
+        PERFORM maker.delete_redundant_ilk_snapshot(OLD.ilk_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
 -- Name: update_ilk_dusts(); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -6572,6 +6703,39 @@ ALTER SEQUENCE maker.bite_id_seq OWNED BY maker.bite.id;
 
 
 --
+-- Name: cat_box; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_box (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    box numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: cat_box_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_box_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_box_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_box_id_seq OWNED BY maker.cat_box.id;
+
+
+--
 -- Name: cat_claw; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -6768,6 +6932,26 @@ ALTER SEQUENCE maker.cat_ilk_chop_id_seq OWNED BY maker.cat_ilk_chop.id;
 
 
 --
+-- Name: cat_ilk_dunk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_ilk_dunk_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_ilk_dunk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_ilk_dunk_id_seq OWNED BY maker.cat_ilk_dunk.id;
+
+
+--
 -- Name: cat_ilk_flip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -6805,6 +6989,39 @@ CREATE SEQUENCE maker.cat_ilk_lump_id_seq
 --
 
 ALTER SEQUENCE maker.cat_ilk_lump_id_seq OWNED BY maker.cat_ilk_lump.id;
+
+
+--
+-- Name: cat_litter; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.cat_litter (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    litter numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: cat_litter_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.cat_litter_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cat_litter_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.cat_litter_id_seq OWNED BY maker.cat_litter.id;
 
 
 --
@@ -7919,6 +8136,39 @@ CREATE SEQUENCE maker.flip_bid_usr_id_seq
 --
 
 ALTER SEQUENCE maker.flip_bid_usr_id_seq OWNED BY maker.flip_bid_usr.id;
+
+
+--
+-- Name: flip_cat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.flip_cat (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    address_id integer NOT NULL,
+    cat integer NOT NULL
+);
+
+
+--
+-- Name: flip_cat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.flip_cat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flip_cat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.flip_cat_id_seq OWNED BY maker.flip_cat.id;
 
 
 --
@@ -12339,6 +12589,13 @@ ALTER TABLE ONLY maker.bite ALTER COLUMN id SET DEFAULT nextval('maker.bite_id_s
 
 
 --
+-- Name: cat_box id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box ALTER COLUMN id SET DEFAULT nextval('maker.cat_box_id_seq'::regclass);
+
+
+--
 -- Name: cat_claw id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -12381,6 +12638,13 @@ ALTER TABLE ONLY maker.cat_ilk_chop ALTER COLUMN id SET DEFAULT nextval('maker.c
 
 
 --
+-- Name: cat_ilk_dunk id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk ALTER COLUMN id SET DEFAULT nextval('maker.cat_ilk_dunk_id_seq'::regclass);
+
+
+--
 -- Name: cat_ilk_flip id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -12392,6 +12656,13 @@ ALTER TABLE ONLY maker.cat_ilk_flip ALTER COLUMN id SET DEFAULT nextval('maker.c
 --
 
 ALTER TABLE ONLY maker.cat_ilk_lump ALTER COLUMN id SET DEFAULT nextval('maker.cat_ilk_lump_id_seq'::regclass);
+
+
+--
+-- Name: cat_litter id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter ALTER COLUMN id SET DEFAULT nextval('maker.cat_litter_id_seq'::regclass);
 
 
 --
@@ -12658,6 +12929,13 @@ ALTER TABLE ONLY maker.flip_bid_tic ALTER COLUMN id SET DEFAULT nextval('maker.f
 --
 
 ALTER TABLE ONLY maker.flip_bid_usr ALTER COLUMN id SET DEFAULT nextval('maker.flip_bid_usr_id_seq'::regclass);
+
+
+--
+-- Name: flip_cat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat ALTER COLUMN id SET DEFAULT nextval('maker.flip_cat_id_seq'::regclass);
 
 
 --
@@ -13706,6 +13984,22 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: cat_box cat_box_diff_id_header_id_box_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_diff_id_header_id_box_key UNIQUE (diff_id, header_id, box);
+
+
+--
+-- Name: cat_box cat_box_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cat_claw cat_claw_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13802,6 +14096,22 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 
 
 --
+-- Name: cat_ilk_dunk cat_ilk_dunk_diff_id_header_id_ilk_id_dunk_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_diff_id_header_id_ilk_id_dunk_key UNIQUE (diff_id, header_id, ilk_id, dunk);
+
+
+--
+-- Name: cat_ilk_dunk cat_ilk_dunk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cat_ilk_flip cat_ilk_flip_diff_id_header_id_ilk_id_flip_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -13831,6 +14141,22 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_litter cat_litter_diff_id_header_id_litter_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_diff_id_header_id_litter_key UNIQUE (diff_id, header_id, litter);
+
+
+--
+-- Name: cat_litter cat_litter_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_pkey PRIMARY KEY (id);
 
 
 --
@@ -14447,6 +14773,22 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 ALTER TABLE ONLY maker.flip_bid_usr
     ADD CONSTRAINT flip_bid_usr_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flip_cat flip_cat_diff_id_header_id_address_id_cat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_diff_id_header_id_address_id_cat_key UNIQUE (diff_id, header_id, address_id, cat);
+
+
+--
+-- Name: flip_cat flip_cat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_pkey PRIMARY KEY (id);
 
 
 --
@@ -16760,6 +17102,20 @@ CREATE INDEX bite_urn_index ON maker.bite USING btree (urn_id);
 
 
 --
+-- Name: cat_box_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_box_address_id_index ON maker.cat_box USING btree (address_id);
+
+
+--
+-- Name: cat_box_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_box_header_id_index ON maker.cat_box USING btree (header_id);
+
+
+--
 -- Name: cat_claw_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -16935,6 +17291,27 @@ CREATE INDEX cat_ilk_chop_ilk_index ON maker.cat_ilk_chop USING btree (ilk_id);
 
 
 --
+-- Name: cat_ilk_dunk_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_dunk_address_id_index ON maker.cat_ilk_dunk USING btree (address_id);
+
+
+--
+-- Name: cat_ilk_dunk_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_dunk_header_id_index ON maker.cat_ilk_dunk USING btree (header_id);
+
+
+--
+-- Name: cat_ilk_dunk_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_ilk_dunk_ilk_index ON maker.cat_ilk_dunk USING btree (ilk_id);
+
+
+--
 -- Name: cat_ilk_flip_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -16974,6 +17351,20 @@ CREATE INDEX cat_ilk_lump_header_id_index ON maker.cat_ilk_lump USING btree (hea
 --
 
 CREATE INDEX cat_ilk_lump_ilk_index ON maker.cat_ilk_lump USING btree (ilk_id);
+
+
+--
+-- Name: cat_litter_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_litter_address_id_index ON maker.cat_litter USING btree (address_id);
+
+
+--
+-- Name: cat_litter_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX cat_litter_header_id_index ON maker.cat_litter USING btree (header_id);
 
 
 --
@@ -17625,6 +18016,27 @@ CREATE INDEX flip_bid_usr_bid_id_index ON maker.flip_bid_usr USING btree (bid_id
 --
 
 CREATE INDEX flip_bid_usr_header_id_index ON maker.flip_bid_usr USING btree (header_id);
+
+
+--
+-- Name: flip_cat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_address_index ON maker.flip_cat USING btree (address_id);
+
+
+--
+-- Name: flip_cat_cat_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_cat_index ON maker.flip_cat USING btree (cat);
+
+
+--
+-- Name: flip_cat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_cat_header_id_index ON maker.flip_cat USING btree (header_id);
 
 
 --
@@ -20393,6 +20805,13 @@ CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop F
 
 
 --
+-- Name: cat_ilk_dunk ilk_dunk; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER ilk_dunk AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_dunk FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dunks();
+
+
+--
 -- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -20605,6 +21024,30 @@ ALTER TABLE ONLY maker.bite
 
 
 --
+-- Name: cat_box cat_box_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_box cat_box_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_box cat_box_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_box
+    ADD CONSTRAINT cat_box_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_claw cat_claw_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -20813,6 +21256,38 @@ ALTER TABLE ONLY maker.cat_ilk_chop
 
 
 --
+-- Name: cat_ilk_dunk cat_ilk_dunk_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_ilk_dunk cat_ilk_dunk_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_ilk_dunk cat_ilk_dunk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_ilk_dunk cat_ilk_dunk_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_ilk_dunk
+    ADD CONSTRAINT cat_ilk_dunk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cat_ilk_flip cat_ilk_flip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -20874,6 +21349,30 @@ ALTER TABLE ONLY maker.cat_ilk_lump
 
 ALTER TABLE ONLY maker.cat_ilk_lump
     ADD CONSTRAINT cat_ilk_lump_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_litter cat_litter_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_litter cat_litter_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cat_litter cat_litter_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.cat_litter
+    ADD CONSTRAINT cat_litter_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
@@ -21762,6 +22261,38 @@ ALTER TABLE ONLY maker.flip_bid_usr
 
 ALTER TABLE ONLY maker.flip_bid_usr
     ADD CONSTRAINT flip_bid_usr_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_cat_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_cat_fkey FOREIGN KEY (cat) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flip_cat flip_cat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.flip_cat
+    ADD CONSTRAINT flip_cat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

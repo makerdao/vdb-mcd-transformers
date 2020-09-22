@@ -24,7 +24,7 @@ import (
 var _ = Describe("Flip storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 = &flip.StorageRepository{ContractAddress: test_data.FlipEthV100Address()}
+		repo                 = &flip.StorageRepository{ContractAddress: test_data.FlipEthV110Address()}
 		diffID, fakeHeaderID int64
 	)
 
@@ -74,6 +74,37 @@ var _ = Describe("Flip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
+		Describe("Cat", func() {
+			It("writes row", func() {
+				catMetadata := types.ValueMetadata{Name: storage.Cat}
+				insertErr := repo.Create(diffID, fakeHeaderID, catMetadata, FakeAddress)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				var result VariableRes
+				query := fmt.Sprintf(`SELECT diff_id, header_id, cat AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipCatTable))
+				getErr := db.Get(&result, query)
+				Expect(getErr).NotTo(HaveOccurred())
+				addressID, addressErr := shared.GetOrCreateAddress(FakeAddress, db)
+				Expect(addressErr).NotTo(HaveOccurred())
+				AssertVariable(result, diffID, fakeHeaderID, strconv.FormatInt(addressID, 10))
+			})
+
+			It("does not duplicate row", func() {
+				catMetadata := types.ValueMetadata{Name: storage.Cat}
+				insertOneErr := repo.Create(diffID, fakeHeaderID, catMetadata, FakeAddress)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, catMetadata, FakeAddress)
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipCatTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+		})
+
 		Describe("Wards", func() {
 			var fakeUint256 = strconv.Itoa(rand.Intn(1000000))
 
@@ -121,7 +152,6 @@ var _ = Describe("Flip storage repository", func() {
 
 		Describe("Ilk", func() {
 			It("writes row", func() {
-
 				ilkMetadata := types.ValueMetadata{Name: storage.Ilk}
 				insertErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, FakeIlk)
 				Expect(insertErr).NotTo(HaveOccurred())

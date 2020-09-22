@@ -229,6 +229,7 @@ var _ = Describe("Cat File transformer", func() {
 			ContractAddresses: []string{test_data.Cat110Address()},
 			ContractAbi:       constants.Cat110ABI(),
 		}
+
 		It("persists a box event", func() {
 			boxBlockNumber := int64(10769102)
 			header, err := persistHeader(db, boxBlockNumber, blockChain)

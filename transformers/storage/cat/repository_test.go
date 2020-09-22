@@ -34,7 +34,7 @@ var _ = Describe("Cat storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = cat.StorageRepository{ContractAddress: test_data.Cat100Address()}
+		repo = cat.StorageRepository{ContractAddress: test_data.Cat110Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -60,7 +60,7 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatLiveTable,
 				Repository:      &repo,
-				ContractAddress: test_data.Cat100Address(),
+				ContractAddress: test_data.Cat110Address(),
 				Metadata:        liveMetadata,
 			}
 
@@ -75,7 +75,7 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatVatTable,
 				Repository:      &repo,
-				ContractAddress: test_data.Cat100Address(),
+				ContractAddress: test_data.Cat110Address(),
 				Metadata:        vatMetadata,
 			}
 
@@ -90,8 +90,38 @@ var _ = Describe("Cat storage repository", func() {
 				Schema:          constants.MakerSchema,
 				TableName:       constants.CatVowTable,
 				Repository:      &repo,
-				ContractAddress: test_data.Cat100Address(),
+				ContractAddress: test_data.Cat110Address(),
 				Metadata:        vowMetadata,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
+
+		Describe("Box", func() {
+			boxMetadata := types.GetValueMetadata(cat.Box, nil, types.Uint256)
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  cat.Box,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.CatBoxTable,
+				Repository:      &repo,
+				ContractAddress: test_data.Cat110Address(),
+				Metadata:        boxMetadata,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
+
+		Describe("Litter", func() {
+			litterMetadata := types.GetValueMetadata(cat.Litter, nil, types.Uint256)
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  cat.Litter,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.CatLitterTable,
+				Repository:      &repo,
+				ContractAddress: test_data.Cat110Address(),
+				Metadata:        litterMetadata,
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
@@ -305,6 +335,54 @@ var _ = Describe("Cat storage repository", func() {
 				PropertyValue: strconv.Itoa(rand.Int()),
 				Schema:        constants.MakerSchema,
 				TableName:     constants.CatIlkLumpTable,
+			})
+		})
+
+		Describe("Dunk", func() {
+			It("writes a row", func() {
+				ilkDunkMetadata := types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, ilkDunkMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingRes
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, dunk AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkDunkTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(err).NotTo(HaveOccurred())
+				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
+			})
+
+			It("does not duplicate row", func() {
+				ilkDunkMetadata := types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkDunkMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkDunkMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.CatIlkDunkTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing ilk", func() {
+				malformedIlkDunkMetadata := types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkDunkMetadata, fakeAddress)
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			})
+
+			shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
+				Repository:    &repo,
+				Metadata:      types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
+				PropertyName:  "Dunk",
+				PropertyValue: strconv.Itoa(rand.Int()),
+				Schema:        constants.MakerSchema,
+				TableName:     constants.CatIlkDunkTable,
 			})
 		})
 	})

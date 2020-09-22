@@ -235,45 +235,24 @@ CREATE INDEX flip_kicks_header_id_index
 CREATE INDEX flip_kicks_address_index
     ON maker.flip_kicks (address_id);
 
--- +goose Down
-DROP INDEX maker.flip_kicks_address_index;
-DROP INDEX maker.flip_kicks_header_id_index;
-DROP INDEX maker.flip_tau_address_index;
-DROP INDEX maker.flip_tau_header_id_index;
-DROP INDEX maker.flip_ttl_address_index;
-DROP INDEX maker.flip_ttl_header_id_index;
-DROP INDEX maker.flip_beg_address_index;
-DROP INDEX maker.flip_beg_header_id_index;
-DROP INDEX maker.flip_ilk_address_index;
-DROP INDEX maker.flip_ilk_ilk_id_index;
-DROP INDEX maker.flip_ilk_header_id_index;
-DROP INDEX maker.flip_vat_address_index;
-DROP INDEX maker.flip_vat_header_id_index;
-DROP INDEX maker.flip_bid_tab_address_index;
-DROP INDEX maker.flip_bid_tab_bid_id_index;
-DROP INDEX maker.flip_bid_tab_header_id_index;
-DROP INDEX maker.flip_bid_gal_address_index;
-DROP INDEX maker.flip_bid_gal_bid_id_index;
-DROP INDEX maker.flip_bid_gal_header_id_index;
-DROP INDEX maker.flip_bid_usr_address_index;
-DROP INDEX maker.flip_bid_usr_bid_id_index;
-DROP INDEX maker.flip_bid_usr_header_id_index;
-DROP INDEX maker.flip_bid_end_address_index;
-DROP INDEX maker.flip_bid_end_bid_id_index;
-DROP INDEX maker.flip_bid_end_header_id_index;
-DROP INDEX maker.flip_bid_tic_address_index;
-DROP INDEX maker.flip_bid_tic_bid_id_index;
-DROP INDEX maker.flip_bid_tic_header_id_index;
-DROP INDEX maker.flip_bid_guy_address_index;
-DROP INDEX maker.flip_bid_guy_bid_id_index;
-DROP INDEX maker.flip_bid_guy_header_id_index;
-DROP INDEX maker.flip_bid_lot_address_index;
-DROP INDEX maker.flip_bid_lot_bid_id_index;
-DROP INDEX maker.flip_bid_lot_header_id_index;
-DROP INDEX maker.flip_bid_bid_address_index;
-DROP INDEX maker.flip_bid_bid_bid_id_index;
-DROP INDEX maker.flip_bid_bid_header_id_index;
+CREATE TABLE maker.flip_cat
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    cat        INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE ,
+    UNIQUE (diff_id, header_id, address_id, cat)
+);
 
+CREATE INDEX flip_cat_header_id_index
+    ON maker.flip_cat (header_id);
+CREATE INDEX flip_cat_address_index
+    ON maker.flip_cat (address_id);
+CREATE INDEX flip_cat_cat_index
+    ON maker.flip_cat (cat);
+
+-- +goose Down
 DROP TABLE maker.flip_kicks;
 DROP TABLE maker.flip_tau;
 DROP TABLE maker.flip_ttl;
@@ -288,3 +267,4 @@ DROP TABLE maker.flip_bid_tic;
 DROP TABLE maker.flip_bid_guy;
 DROP TABLE maker.flip_bid_lot;
 DROP TABLE maker.flip_bid_bid;
+DROP TABLE maker.flip_cat;
