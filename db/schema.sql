@@ -6641,10 +6641,10 @@ ALTER SEQUENCE maker.cat_file_box_id_seq OWNED BY maker.cat_file_box.id;
 
 
 --
--- Name: cat_file_chop_lump; Type: TABLE; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.cat_file_chop_lump (
+CREATE TABLE maker.cat_file_chop_lump_dunk (
     id integer NOT NULL,
     log_id bigint NOT NULL,
     address_id bigint NOT NULL,
@@ -6657,10 +6657,10 @@ CREATE TABLE maker.cat_file_chop_lump (
 
 
 --
--- Name: cat_file_chop_lump_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE SEQUENCE maker.cat_file_chop_lump_id_seq
+CREATE SEQUENCE maker.cat_file_chop_lump_dunk_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -6670,10 +6670,10 @@ CREATE SEQUENCE maker.cat_file_chop_lump_id_seq
 
 
 --
--- Name: cat_file_chop_lump_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+-- Name: cat_file_chop_lump_dunk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
-ALTER SEQUENCE maker.cat_file_chop_lump_id_seq OWNED BY maker.cat_file_chop_lump.id;
+ALTER SEQUENCE maker.cat_file_chop_lump_dunk_id_seq OWNED BY maker.cat_file_chop_lump_dunk.id;
 
 
 --

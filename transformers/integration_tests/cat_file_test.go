@@ -17,6 +17,8 @@
 package integration_tests
 
 import (
+	"sort"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box"
@@ -301,12 +303,13 @@ var _ = Describe("Cat File transformer", func() {
 			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dbResults[0].AddressID).To(Equal(addressID))
-			Expect(dbResults[0].MsgSender).To(Equal(msgSenderID))
-			Expect(dbResults[0].What).Should(Or(Equal("dunk"), Equal("chop")))
-			Expect(dbResults[0].Data).Should(Or(Equal("1130000000000000000"),
-				Equal("50000000000000000000000000000000000000000000000000")))
 			Expect(len(dbResults)).To(Equal(18))
+			sort.Sort(byData(dbResults))
+			dbResult := dbResults[9]
+			Expect(dbResult.AddressID).To(Equal(addressID))
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+			Expect(dbResult.What).To(Equal("dunk"))
+			Expect(dbResult.Data).To(Equal("50000000000000000000000000000000000000000000000000"))
 		})
 	})
 })
@@ -339,4 +342,18 @@ type catFileVowModel struct {
 	MsgSender int64 `db:"msg_sender"`
 	What      string
 	Data      string
+}
+
+type byData []catFileChopLumpDunkModel
+
+func (b byData) Len() int {
+	return len(b)
+}
+
+func (b byData) Less(i, j int) bool {
+	return b[i].Data < b[j].Data
+}
+
+func (b byData) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
 }
