@@ -1,6 +1,7 @@
 package cmd_test
 
 import (
+	"math/big"
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -83,5 +84,17 @@ var _ = Describe("Assigns Ilk Lump to zero", func() {
 			expectedDiffs := []types.RawDiff{ethAIlkLumpRawDiff, batAIlkLumpRawDiff}
 			Expect(mockDiffRepo.CreatePassedRawDiffs).To(Equal(expectedDiffs))
 		})
+
+		It("allows for converting an empty hash to a storage value of 0", func() {
+			// this conversion from an empty hash -> empty byte slice -> big int -> string mimics how a storage value
+			// that is being decoded into a Uint256 is being done in the VDB storage decoder:
+			// https://github.com/makerdao/vulcanizedb/blob/staging/libraries/shared/storage/decoder.go#L54
+			emptyHashBytes := common.Hash{}.Bytes()
+			decodedStorageValue := big.NewInt(0).SetBytes(emptyHashBytes).String()
+
+			Expect(decodedStorageValue).To(Equal("0"))
+		})
+
+
 	})
 })
