@@ -66,9 +66,9 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(10510886), test_data.FlipManaAV109Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip USDT-A v1.1.1 deny events", func() {
+	Context("Flip PAXUSD-A v1.1.1 deny events", func() {
 		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
-		denyIntegrationTest(int64(10790678), test_data.FlipUsdtAV111Address(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(10790678), test_data.FlipPaxusdAV111Address(), usrAddress, usrAddress)
 	})
 
 	Context("Flip TUSD-A v1.0.7 deny events", func() {

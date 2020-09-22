@@ -96,6 +96,7 @@ import (
 	flip_knc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_1_0"
 	flip_mana_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_0_9"
 	flip_mana_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_1_0"
+	flip_paxusd_a_v1_1_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/paxusd_a/v1_1_1"
 	flip_sai_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai/v1_0_0"
 	flip_tusd_a_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_7"
 	flip_tusd_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_9"
@@ -233,6 +234,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_knc_a_v1_1_0.StorageTransformerInitializer,
 			flip_mana_a_v1_0_9.StorageTransformerInitializer,
 			flip_mana_a_v1_1_0.StorageTransformerInitializer,
+			flip_paxusd_a_v1_1_1.StorageTransformerInitializer,
 			flip_sai_v1_0_0.StorageTransformerInitializer,
 			flip_tusd_a_v1_0_7.StorageTransformerInitializer,
 			flip_tusd_a_v1_0_9.StorageTransformerInitializer,
