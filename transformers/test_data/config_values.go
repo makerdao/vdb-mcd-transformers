@@ -67,6 +67,9 @@ func FlipKncAV109Address() string {
 func FlipManaAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_MANA_A_1.0.9"))
 }
+func FlipPaxusdAV111Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_PAXUSD_A_1.1.1"))
+}
 func FlipTusdAV107Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_TUSD_A_1.0.7"))
 }
@@ -84,6 +87,9 @@ func FlipUsdcBV107Address() string {
 }
 func FlipUsdcBV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_USDC_B_1.0.9"))
+}
+func FlipUsdtAV111Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_USDT_A_1.1.1"))
 }
 func FlipWbtcAV106Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A_1.0.6"))
@@ -120,6 +126,7 @@ func MedianBatAddress() string  { return checksum(constants.GetContractAddress("
 func MedianEthAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
 func MedianKncAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_KNC")) }
 func MedianManaAddress() string { return checksum(constants.GetContractAddress("MEDIAN_MANA")) }
+func MedianUsdtAddress() string { return checksum(constants.GetContractAddress("MEDIAN_USDT")) }
 func MedianWbtcAddress() string { return checksum(constants.GetContractAddress("MEDIAN_WBTC")) }
 func MedianZrxAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ZRX")) }
 func OasisAddresses() []string {
@@ -153,6 +160,7 @@ func OsmBatAddress() string     { return checksum(constants.GetContractAddress("
 func OsmEthAddress() string     { return checksum(constants.GetContractAddress("OSM_ETH")) }
 func OsmKncAddress() string     { return checksum(constants.GetContractAddress("OSM_KNC")) }
 func OsmManaAddress() string    { return checksum(constants.GetContractAddress("OSM_MANA")) }
+func OsmUsdtAddress() string    { return checksum(constants.GetContractAddress("OSM_USDT")) }
 func OsmWbtcAddress() string    { return checksum(constants.GetContractAddress("OSM_WBTC")) }
 func OsmZrxAddress() string     { return checksum(constants.GetContractAddress("OSM_ZRX")) }
 func PotAddress() string        { return checksum(constants.GetContractAddress("MCD_POT")) }

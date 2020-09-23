@@ -76,6 +76,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510886), test_data.FlipManaAV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip PAXUSD-A v1.1.1 rely events", func() {
+		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(10821399), test_data.FlipPaxusdAV111Address(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip TUSD-A v1.0.7 rely events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
@@ -110,6 +116,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		relyIntegrationTest(int64(10510885), test_data.FlipUsdcBV109Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip USDT-A v1.1.1 rely events", func() {
+		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(10821399), test_data.FlipUsdtAV111Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip WBTC v1.0.6 rely events", func() {
@@ -178,6 +190,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10511187), test_data.MedianManaAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median USDT rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(10740129), test_data.MedianUsdtAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median WBTC rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
@@ -206,6 +224,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(10352556), test_data.OsmKncAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM USDT rely events", func() {
+		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(10821399), test_data.OsmUsdtAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM MANA rely events", func() {
