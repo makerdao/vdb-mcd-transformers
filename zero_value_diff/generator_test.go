@@ -1,4 +1,4 @@
-package cmd_test
+package zero_value_diff_test
 
 import (
 	"math/big"
@@ -6,9 +6,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/makerdao/vdb-mcd-transformers/cmd"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/zero_value_diff"
 	"github.com/makerdao/vulcanizedb/libraries/shared/mocks"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -19,7 +19,7 @@ import (
 
 var _ = Describe("Assigns Ilk Lump to zero", func() {
 	var (
-		generator            cmd.ZeroValueDiffGenerator
+		generator            zero_value_diff.ZeroValueDiffGenerator
 		mockDiffRepo         mocks.MockStorageDiffRepository
 		mockHeaderRepository fakes.MockHeaderRepository
 		blockNumber          int
@@ -41,7 +41,7 @@ var _ = Describe("Assigns Ilk Lump to zero", func() {
 			mockHeaderRepository = fakes.MockHeaderRepository{}
 			mockDiffRepo = mocks.MockStorageDiffRepository{}
 			blockNumber = rand.Int()
-			generator = cmd.ZeroValueDiffGenerator{
+			generator = zero_value_diff.ZeroValueDiffGenerator{
 				HeaderRepository: &mockHeaderRepository,
 				DiffRepo:         &mockDiffRepo,
 			}
@@ -94,7 +94,5 @@ var _ = Describe("Assigns Ilk Lump to zero", func() {
 
 			Expect(decodedStorageValue).To(Equal("0"))
 		})
-
-
 	})
 })
