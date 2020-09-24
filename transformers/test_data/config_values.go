@@ -11,7 +11,7 @@ func Cat100Address() string   { return checksum(constants.GetContractAddress("MC
 func Cat110Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1.1.0")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1.0.0")) }
 func FlapV109Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1.0.9")) }
-func FlipAddresses() []string {
+func FlipV100Addresses() []string {
 	var addressesResult []string
 	flipAddresses := constants.GetContractAddresses([]string{
 		"MCD_FLIP_BAT_A_1.0.0",
@@ -32,6 +32,28 @@ func FlipAddresses() []string {
 		"MCD_FLIP_WBTC_A_1.0.9",
 		"MCD_FLIP_ZRX_A_1.0.8",
 		"MCD_FLIP_ZRX_A_1.0.9",
+	})
+
+	for _, address := range flipAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+}
+
+func FlipV110Addresses() []string {
+	var addressesResult []string
+	flipAddresses := constants.GetContractAddresses([]string{
+		"MCD_FLIP_BAT_A_1.1.0",
+		"MCD_FLIP_ETH_A_1.1.0",
+		"MCD_FLIP_KNC_A_1.1.0",
+		"MCD_FLIP_MANA_A_1.1.0",
+		"MCD_FLIP_PAXUSD_A_1.1.1",
+		"MCD_FLIP_TUSD_A_1.1.0",
+		"MCD_FLIP_USDC_A_1.1.0",
+		"MCD_FLIP_USDC_B_1.1.0",
+		"MCD_FLIP_USDT_A_1.1.1",
+		"MCD_FLIP_WBTC_A_1.1.0",
+		"MCD_FLIP_ZRX_A_1.1.0",
 	})
 
 	for _, address := range flipAddresses {
