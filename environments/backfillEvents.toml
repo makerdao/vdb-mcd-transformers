@@ -2,6 +2,7 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
+    schema   = "maker"
     transformerNames = []
 
 [contract]

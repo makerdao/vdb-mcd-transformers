@@ -14,6 +14,7 @@
 [exporter]
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
+    schema   = "maker"
     save     = true
     transformerNames = [
         # storage
