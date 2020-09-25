@@ -39,16 +39,25 @@ func init() {
 }
 
 func SetTestConfig() {
-	viper.SetConfigName("testing")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal(err)
+
+	viper.SetConfigName("testDatabase")
+	mergeConfigErr := viper.ReadInConfig()
+	if mergeConfigErr != nil {
+		log.Fatal(mergeConfigErr)
 	}
+
+	viper.SetConfigName("docker")
+	readConfigErr := viper.MergeInConfig()
+	if readConfigErr != nil {
+		log.Fatal(readConfigErr)
+	}
+
 	ipc := viper.GetString("client.ipcPath")
 	hn := viper.GetString("database.hostname")
 	port := viper.GetInt("database.port")
 	name := viper.GetString("database.name")
+
 	DBConfig = config.Database{
 		Hostname: hn,
 		Name:     name,
