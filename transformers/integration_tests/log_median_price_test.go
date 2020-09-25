@@ -44,6 +44,12 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		logMedianPriceIntegrationTest(10951425, test_data.MedianLinkAddress(), val, age)
 	})
 
+	Context("LogMedianPrice event on Median LRC", func() {
+		val := "230146503900000000"
+		age := "1601317186"
+		logMedianPriceIntegrationTest(10952523, test_data.MedianLrcAddress(), val, age)
+	})
+
 	Context("LogMedianPrice event on Median MANA", func() {
 		val := "42028498300000000"
 		age := "1595917269"
