@@ -28,29 +28,27 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-var TestConfig *viper.Viper
 var DBConfig config.Database
 var TestClient config.Client
 var ABIFilePath string
 var wipeTableQueries []string
 
 func init() {
-	setTestConfig()
+	SetTestConfig()
 	setABIPath()
 }
 
-func setTestConfig() {
-	TestConfig = viper.New()
-	TestConfig.SetConfigName("testing")
-	TestConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	err := TestConfig.ReadInConfig()
+func SetTestConfig() {
+	viper.SetConfigName("testing")
+	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
+	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-	ipc := TestConfig.GetString("client.ipcPath")
-	hn := TestConfig.GetString("database.hostname")
-	port := TestConfig.GetInt("database.port")
-	name := TestConfig.GetString("database.name")
+	ipc := viper.GetString("client.ipcPath")
+	hn := viper.GetString("database.hostname")
+	port := viper.GetInt("database.port")
+	name := viper.GetString("database.name")
 	DBConfig = config.Database{
 		Hostname: hn,
 		Name:     name,
