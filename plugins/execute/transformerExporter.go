@@ -82,6 +82,7 @@ import (
 	flip_knc_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_8"
 	flip_knc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_9"
 	flip_knc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_1_0"
+	flip_link_a_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/link_a/v1_1_2"
 	flip_mana_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_0_9"
 	flip_mana_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_1_0"
 	flip_paxusd_a_v1_1_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/paxusd_a/v1_1_1"
@@ -109,6 +110,7 @@ import (
 	median_comp "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_comp"
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
 	median_knc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_knc"
+	median_link "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_link"
 	median_mana "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_mana"
 	median_usdt "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_usdt"
 	median_wbtc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc"
@@ -209,6 +211,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_knc_a_v1_0_8.StorageTransformerInitializer,
 			flip_knc_a_v1_0_9.StorageTransformerInitializer,
 			flip_knc_a_v1_1_0.StorageTransformerInitializer,
+			flip_link_a_v1_1_2.StorageTransformerInitializer,
 			flip_mana_a_v1_0_9.StorageTransformerInitializer,
 			flip_mana_a_v1_1_0.StorageTransformerInitializer,
 			flip_paxusd_a_v1_1_1.StorageTransformerInitializer,
@@ -236,6 +239,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			median_comp.StorageTransformerInitializer,
 			median_eth.StorageTransformerInitializer,
 			median_knc.StorageTransformerInitializer,
+			median_link.StorageTransformerInitializer,
 			median_mana.StorageTransformerInitializer,
 			median_wbtc.StorageTransformerInitializer,
 			median_usdt.StorageTransformerInitializer,
