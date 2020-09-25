@@ -25,7 +25,7 @@ var (
 
 var _ = BeforeSuite(func() {
 	testConfig := viper.New()
-	testConfig.SetConfigName("testing")
+	testConfig.SetConfigName("docker")
 	testConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 	err := testConfig.ReadInConfig()
 	Expect(err).To(BeNil())
