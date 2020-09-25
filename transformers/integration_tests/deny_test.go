@@ -66,6 +66,11 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(10510886), test_data.FlipKncAV109Address(), usrAddress, usrAddress)
 	})
 
+	Context("Flip LINK-A v1.1.2 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10950765), test_data.FlipLinkV112Address(), usrAddress, usrAddress)
+	})
+
 	Context("Flip MANA-A v1.0.9 deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(10510886), test_data.FlipManaAV109Address(), usrAddress, usrAddress)
