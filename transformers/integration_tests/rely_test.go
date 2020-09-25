@@ -46,6 +46,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510871), test_data.FlipBatV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip COMP v1.1.2 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		relyIntegrationTest(int64(10932692), test_data.FlipCompV112Address(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip ETH v1.0.0 rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
@@ -172,6 +178,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8956961), test_data.MedianBatAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median COMP rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225d1f3ea4385627efdc5b4709cab4a21c"
+		relyIntegrationTest(int64(10933587), test_data.MedianCompAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median ETH rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
@@ -212,6 +224,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(9529100), test_data.OsmBatAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM COMP rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(10933766), test_data.OsmCompAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM ETH rely events", func() {

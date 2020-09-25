@@ -89,6 +89,7 @@ import (
 	flip_bat_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_0"
 	flip_bat_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_9"
 	flip_bat_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_1_0"
+	flip_comp_a_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/comp_a/v1_1_2"
 	flip_eth_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_0"
 	flip_eth_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_9"
 	flip_eth_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_1_0"
@@ -119,6 +120,7 @@ import (
 	flop_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_9"
 	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
 	median_bat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_bat"
+	median_comp "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_comp"
 	median_eth "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
 	median_knc "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_knc"
 	median_mana "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_mana"
@@ -228,6 +230,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_bat_a_v1_0_0.StorageTransformerInitializer,
 			flip_bat_a_v1_0_9.StorageTransformerInitializer,
 			flip_bat_a_v1_1_0.StorageTransformerInitializer,
+			flip_comp_a_v1_1_2.StorageTransformerInitializer,
 			flip_eth_a_v1_0_0.StorageTransformerInitializer,
 			flip_eth_a_v1_0_9.StorageTransformerInitializer,
 			flip_eth_a_v1_1_0.StorageTransformerInitializer,
@@ -258,6 +261,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flop_v1_0_9.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
 			median_bat.StorageTransformerInitializer,
+			median_comp.StorageTransformerInitializer,
 			median_eth.StorageTransformerInitializer,
 			median_knc.StorageTransformerInitializer,
 			median_mana.StorageTransformerInitializer,
