@@ -82,6 +82,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10932697), test_data.FlipLinkV112Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip LRC v1.1.2 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		relyIntegrationTest(int64(10932697), test_data.FlipLrcV112Address(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip MANA-A v1.0.9 rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
@@ -208,6 +214,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10933602), test_data.MedianLinkAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median LRC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(10933624), test_data.MedianLrcAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median MANA rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
@@ -260,6 +272,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
 		relyIntegrationTest(int64(10933793), test_data.OsmLinkAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM LRC rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225d1f3ea4385627efdc5b4709cab4a21c"
+		relyIntegrationTest(int64(10933928), test_data.OsmLrcAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM MANA rely events", func() {
