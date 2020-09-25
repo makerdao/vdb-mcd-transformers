@@ -51,6 +51,7 @@ func FlipV100ABI() string {
 func FlipV110ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLIP_BAT_A_1.1.0",
+		"MCD_FLIP_COMP_A_1.1.2",
 		"MCD_FLIP_ETH_A_1.1.0",
 		"MCD_FLIP_KNC_A_1.1.0",
 		"MCD_FLIP_MANA_A_1.1.0",
@@ -73,6 +74,7 @@ func JugABI() string { return getContractABI("MCD_JUG") }
 func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
+		"MEDIAN_COMP",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
 		"MEDIAN_MANA",
@@ -84,6 +86,7 @@ func MedianABI() string {
 func OsmABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"OSM_BAT",
+		"OSM_COMP",
 		"OSM_ETH",
 		"OSM_KNC",
 		"OSM_MANA",
