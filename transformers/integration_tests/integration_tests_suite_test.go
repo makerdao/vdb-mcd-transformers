@@ -24,17 +24,12 @@ var (
 )
 
 var _ = BeforeSuite(func() {
-	testConfig := viper.New()
-	testConfig.SetConfigName("docker")
-	testConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	err := testConfig.ReadInConfig()
-	Expect(err).To(BeNil())
-	ipc = testConfig.GetString("client.ipcPath")
+	ipc = viper.GetString("client.ipcPath")
 	// If we don't have an ipc path in the config file, check the env variable
 	if ipc == "" {
-		configErr := testConfig.BindEnv("url", "CLIENT_IPCPATH")
+		configErr := viper.BindEnv("url", "CLIENT_IPCPATH")
 		Expect(configErr).To(BeNil(), "Unable to bind url to CLIENT_IPCPATH env var")
-		ipc = testConfig.GetString("url")
+		ipc = viper.GetString("url")
 	}
 	Expect(ipc).NotTo(BeEmpty(), "testing.toml IPC path or $CLIENT_IPCPATH env variable need to be set")
 
@@ -44,6 +39,7 @@ var _ = BeforeSuite(func() {
 	blockChain, blockChainErr = getBlockChain(rpcClient, ethClient)
 	Expect(blockChainErr).NotTo(HaveOccurred())
 
+	// the init function in test_config set the config files for the test database and transformers
 	db = test_config.NewTestDB(blockChain.Node())
 	test_config.CleanTestDB(db)
 
