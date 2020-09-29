@@ -174,7 +174,7 @@ plugin:
 .PHONY: dockerbuild
 dockerbuild:
 	test -n "$(IMAGE)" # $$IMAGE
-	docker build -t $(IMAGE) -f dockerfiles/$(IMAGE)/Dockerfile .
+	docker build -t vdb-mcd-$(IMAGE) -f dockerfiles/$(IMAGE)/Dockerfile .
 
 .PHONY: execute
 execute: HOST ?= host.docker.internal
@@ -191,4 +191,4 @@ execute:
 		-e "DATABASE_USER=$(USER)" \
 		-e "DATABASE_PASSWORD=$(DATABASE_PASSWORD)" \
 		-e "CLIENT_IPCPATH=$(CLIENT_IPCPATH)" \
-		execute:latest
+		vdb-mcd-execute:latest
