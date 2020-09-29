@@ -1,4 +1,4 @@
-FROM golang:stretch as builder
+FROM golang:1.15.2-buster as builder
 
 RUN apt-get update && \
 apt-get install -y make git g++ linux-headers-amd64
@@ -26,7 +26,7 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
 
 
 # app container
-FROM golang:stretch
+FROM golang:1.15.2-buster
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
