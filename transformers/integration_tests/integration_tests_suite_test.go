@@ -31,7 +31,7 @@ var _ = BeforeSuite(func() {
 		Expect(configErr).To(BeNil(), "Unable to bind url to CLIENT_IPCPATH env var")
 		ipc = viper.GetString("url")
 	}
-	Expect(ipc).NotTo(BeEmpty(), "testing.toml IPC path or $CLIENT_IPCPATH env variable need to be set")
+	Expect(ipc).NotTo(BeEmpty(), "$CLIENT_IPCPATH env variable need to be set")
 
 	rpcClient, ethClient, clientErr := getClients(ipc)
 	Expect(clientErr).NotTo(HaveOccurred())
