@@ -5,10 +5,7 @@ Visit the changelog for the latest release, ie https://changelog.makerdao.com/
 
 ## Overview
 ### Updating Toml Files
-Use the Contract Addresses and ABIs from the changelog to update the following toml files
-* `mcdTransformers.toml`
-* `testing.toml`
-* `docker.toml`
+Use the Contract Addresses and ABIs from the changelog to update the toml config file: `mcdTransformers.toml`.
 
 Replace the contract address in the toml files with the updated contract address from the changelog.
 

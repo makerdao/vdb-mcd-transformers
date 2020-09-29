@@ -119,8 +119,8 @@ you do not, yet, as this is most likely.
 Finally you can add the transformer to the list of transformers by updating the
 configuration, and creating an initializer for the transformer.
  
-1. In the environments (docker.toml, testing.toml and mcdTransformers.toml) add
-   the new package name the list of `transformerNames` in the exporter - alphabetically.
+1. In the config file (environments/mcdTransformers.toml) add the new package name the list of `transformerNames`
+ in the exporter - alphabetically.
 1. Underneath that list add a configuration (alphabetically again) to list of
    configurations. For example:
    
