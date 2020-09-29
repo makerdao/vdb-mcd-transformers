@@ -40,7 +40,7 @@ RUN apt-get update \
         postgresql-client \
         && update-ca-certificates 2>/dev/null || true
 
-ARG CONFIG_FILE=environments/docker.toml
+ARG CONFIG_FILE=environments/mcdTransformers.toml
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log

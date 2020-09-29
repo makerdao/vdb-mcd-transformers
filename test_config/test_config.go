@@ -47,7 +47,7 @@ func SetTestConfig() {
 		log.Fatal(mergeConfigErr)
 	}
 
-	viper.SetConfigName("docker")
+	viper.SetConfigName("mcdTransformers")
 	readConfigErr := viper.MergeInConfig()
 	if readConfigErr != nil {
 		log.Fatal(readConfigErr)
