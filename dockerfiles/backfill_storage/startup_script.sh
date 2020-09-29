@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Starts the getStorageValue command
 
 # Verify required args present
