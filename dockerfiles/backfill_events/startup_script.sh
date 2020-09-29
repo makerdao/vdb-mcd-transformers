@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if test -z "$ENDING_BLOCK_NUMBER"
 then
