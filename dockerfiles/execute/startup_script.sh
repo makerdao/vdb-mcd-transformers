@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source run_migrations.sh
 
 NEW_DIFF_STARTING_BLOCK="-1"

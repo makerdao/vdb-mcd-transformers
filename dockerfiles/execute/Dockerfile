@@ -1,8 +1,10 @@
-FROM golang:alpine as builder
+FROM golang:stretch as builder
 
-RUN apk --update --no-cache add make git g++ linux-headers
+RUN apt-get update && \
+apt-get install -y make git g++ linux-headers-amd64
 
 ARG VDB_VERSION=staging
+
 ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
@@ -24,20 +26,18 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
 
 
 # app container
-FROM golang:alpine
+FROM golang:stretch
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
 # bash for wait-for-it
-RUN apk update \
-        && apk upgrade \
-        && apk add --no-cache \
+RUN apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y \
         ca-certificates \
         bash \
+        postgresql-client \
         && update-ca-certificates 2>/dev/null || true
-
-# add go so we can build the plugin
-RUN apk add --update --no-cache postgresql-client git g++ linux-headers
 
 ARG CONFIG_FILE=environments/docker.toml
 
