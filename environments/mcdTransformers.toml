@@ -231,13 +231,13 @@
         migrations = "db/migrations"
         rank = "0"
     [exporter.flip_link_a_v1_1_2]
-        path = "transformers/storage/flip/initializers/link/v1_1_2"
+        path = "transformers/storage/flip/initializers/link_a/v1_1_2"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         rank = "0"
     [exporter.flip_lrc_a_v1_1_2]
-        path = "transformers/storage/flip/initializers/lrc/v1_1_2"
+        path = "transformers/storage/flip/initializers/lrc_a/v1_1_2"
         type = "eth_storage"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"

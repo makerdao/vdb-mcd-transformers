@@ -44,7 +44,7 @@ RUN apk update \
 # add go so we can build the plugin
 RUN apk add --update --no-cache git g++ linux-headers
 
-ARG CONFIG_FILE=environments/docker.toml
+ARG CONFIG_FILE=environments/mcdTransformers.toml
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
