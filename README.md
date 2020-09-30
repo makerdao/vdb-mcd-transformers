@@ -87,7 +87,7 @@ Note that, as with other commands, executing this requires either a config file 
 **NOTE** The database must be migrated once before running the `headerSync` command, otherwise the database will not be able to properly create its schema. Assuming you are not using the `docker-compose` setup above you can migrate the database once using:
 
 ```
-docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e CLIENT_IPCPATH=<path> makerdao/vdb-execute:latest ./run_migrations.sh
+docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e CLIENT_IPCPATH=<path> makerdao/vdb-mcd-execute:latest ./run_migrations.sh
 ```
 
 #### Running `headerSync`
@@ -103,7 +103,7 @@ docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAM
   - when running on MacOSX use `host.docker.internal` as the `DATABASE_HOSTNAME` and as the host in the `CLIENT_IPCPATH`
 
 #### Running `execute`
-`execute` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-execute). See the [Docker README](./dockerfiles/README.md) for further information.
+`execute` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-mcd-execute). See the [Docker README](./dockerfiles/README.md) for further information.
 
 ### With the CLI
 

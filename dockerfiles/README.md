@@ -4,10 +4,12 @@
 Builds an alpine image for running the vulcanizedb `execute` command against transformers in this repo.
 
 ### Build
-Build from the project root directory with: `docker build -f dockerfiles/execute/Dockerfile . -t execute:latest`.
+Build from the project root directory with: `docker build -f dockerfiles/execute/Dockerfile . -t vdb-mcd-execute:latest`.
 The following options are available at build time:
-- `VDB_VERSION` - target a specific vulcanizedb branch/release to generate the binary (ex: `docker build -f dockerfiles/execute/Dockerfile --build-arg VDB_VERSION=v0.0.14-rc.1 . -t execute:latest`).
-- `CONFIG_FILE` - path to desired config file for this container (ex: `docker build -f dockerfiles/execute/Dockerfile --build-arg CONFIG_FILE=path . -t execute:latest`).
+- `VDB_VERSION` - target a specific vulcanizedb branch/release to generate the binary (ex: `docker build -f dockerfiles/execute/Dockerfile --build-arg VDB_VERSION=v0.0.14-rc.1 . -t vdb-mcd-execute:latest`).
+- `CONFIG_FILE` - path to desired config file for this container (ex: `docker build -f dockerfiles/execute/Dockerfile --build-arg CONFIG_FILE=path . -t vdb-mcd-execute:latest`).
+
+There is a `make` task as well named `dockerbuild` which can quickly build the image with `make dockerbuild IMAGE=execute`, but that is not suitable for a production build.
 
 ### Run
 Running the container requires an existing DB with which the container can interact.
@@ -26,7 +28,7 @@ The following arguments are required at runtime:
 With arguments correctly populated, the following command will run the container on OS X:
 
 ```
-docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://mainnet.infura.io/v3/token -it execute:latest
+docker run -e DATABASE_NAME=vulcanize_public -e DATABASE_HOSTNAME=host.docker.internal -e DATABASE_PORT=5432 -e DATABASE_USER=user -e DATABASE_PASSWORD=pw -e CLIENT_IPCPATH=https://mainnet.infura.io/v3/token -it vdb-mcd-execute:latest
 ```
 
 #### Explanation
