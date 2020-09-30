@@ -51,7 +51,7 @@ services:
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
 
   execute:
-    image: makerdao/vdb-execute:latest # (needs wait-for-it.sh)
+    image: makerdao/vdb-mcd-execute:latest # (needs wait-for-it.sh)
     environment:
       - CLIENT_IPCPATH=ws://geth-statediffing:8546
       - DATABASE_NAME=vdb
