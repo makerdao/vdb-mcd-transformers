@@ -36,6 +36,7 @@ RUN apt-get update \
         && apt-get install -y \
         ca-certificates \
         bash \
+        busybox \
         postgresql-client \
         && update-ca-certificates 2>/dev/null || true
 
