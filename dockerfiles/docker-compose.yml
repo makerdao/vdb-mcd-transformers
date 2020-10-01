@@ -110,11 +110,14 @@ services:
       "--statediff.watchedaddresses", "0x5EdF770FC81E7b8C2c89f71F30f211226a4d7495", # CONTRACT_MCD_FLIP_BAT_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0xF7C569B2B271354179AaCC9fF1e42390983110BA", # CONTRACT_MCD_FLIP_BAT_A_1.1.0_ADDRESS
       "--statediff.watchedaddresses", "0xd8a04F5412223F513DC55F839574430f5EC15531", # CONTRACT_MCD_FLIP_ETH_A_1.0.0_ADDRESS
+      "--statediff.watchedaddresses", "0x524826F84cB3A19B6593370a5889A58c00554739", # CONTRACT_MCD_FLIP_COMP_A_1.1.2_ADDRESS
       "--statediff.watchedaddresses", "0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1", # CONTRACT_MCD_FLIP_ETH_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0xF32836B9E1f47a0515c6Ec431592D5EbC276407f", # CONTRACT_MCD_FLIP_ETH_A_1.1.0_ADDRESS
       "--statediff.watchedaddresses", "0xAbBCB9Ae89cDD3C27E02D279480C7fF33083249b", # CONTRACT_MCD_FLIP_KNC_A_1.0.8_ADDRESS
       "--statediff.watchedaddresses", "0xAD4a0B5F3c6Deb13ADE106Ba6E80Ca6566538eE6", # CONTRACT_MCD_FLIP_KNC_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0x57B01F1B3C59e2C0bdfF3EC9563B71EEc99a3f2f", # CONTRACT_MCD_FLIP_KNC_A_1.1.0_ADDRESS
+      "--statediff.watchedaddresses", "0xB907EEdD63a30A3381E6D898e5815Ee8c9fd2c85", # CONTRACT_MCD_FLIP_LINK_A_1.1.2_ADDRESS
+      "--statediff.watchedaddresses", "0x7FdDc36dcdC435D8F54FDCB3748adcbBF70f3dAC", # CONTRACT_MCD_FLIP_LRC_A_1.1.2_ADDRESS
       "--statediff.watchedaddresses", "0x4bf9D2EBC4c57B9B783C12D30076507660B58b3a", # CONTRACT_MCD_FLIP_MANA_A_1.0.9_ADDRESS
       "--statediff.watchedaddresses", "0x0a1D75B4f49BA80724a214599574080CD6B68357", # CONTRACT_MCD_FLIP_MANA_A_1.1.0_ADDRESS
       "--statediff.watchedaddresses", "0x52D5D1C05CC79Fc24A629Cb24cB06C5BE5d766E7", # CONTRACT_MCD_FLIP_PAXUSD_A_1.1.1_ADDRESS
@@ -143,8 +146,11 @@ services:
       "--statediff.watchedaddresses", "0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b", # CONTRACT_MCD_VAT_ADDRESS
       "--statediff.watchedaddresses", "0xa950524441892a31ebddf91d3ceefa04bf454466", # CONTRACT_MCD_VOW_ADDRESS
       "--statediff.watchedaddresses", "0x18B4633D6E39870f398597f3c1bA8c4A41294966", # CONTRACT_MEDIAN_BAT_ADDRESS
+      "--statediff.watchedaddresses", "0xA3421Be733125405Ea20aA853839D34b364eB524", # CONTRACT_MEDIAN_COMP_ADDRESS
       "--statediff.watchedaddresses", "0x64DE91F5A373Cd4c28de3600cB34C7C6cE410C85", # CONTRACT_MEDIAN_ETH_ADDRESS
       "--statediff.watchedaddresses", "0x83076a2F42dc1925537165045c9FDe9A4B71AD97", # CONTRACT_MEDIAN_KNC_ADDRESS
+      "--statediff.watchedaddresses", "0xbAd4212d73561B240f10C56F27e6D9608963f17b", # CONTRACT_MEDIAN_LINK_ADDRESS
+      "--statediff.watchedaddresses", "0xcCe92282d9fe310F4c232b0DA9926d5F24611C7B", # CONTRACT_MEDIAN_LRC_ADDRESS
       "--statediff.watchedaddresses", "0x681c4F8f69cF68852BAd092086ffEaB31F5B812c", # CONTRACT_MEDIAN_MANA_ADDRESS
       "--statediff.watchedaddresses", "0x56d4bbf358d7790579b55ea6af3f605bca2c0c3a", # CONTRACT_MEDIAN_USDT_ADDRESS
       "--statediff.watchedaddresses", "0xe0F30cb149fAADC7247E953746Be9BbBB6B5751f", # CONTRACT_MEDIAN_WBTC_ADDRESS
