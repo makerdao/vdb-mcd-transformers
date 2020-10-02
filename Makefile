@@ -167,7 +167,7 @@ update_vulcanize:
 # Build plugin
 .PHONY: plugin
 plugin:
-	go build -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
+	go build -mod=mod -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
 
 # Docker actions
 # Build any docker image in dockerfiles
