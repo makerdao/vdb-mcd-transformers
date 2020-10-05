@@ -149,7 +149,7 @@ func (s *StubMigrationManager) RunMigrations() error {
 }
 
 var _ = Describe("Plugin test", func() {
-	viper.SetConfigName("testing")
+	viper.SetConfigName("mcdTransformers")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 
 	var (
