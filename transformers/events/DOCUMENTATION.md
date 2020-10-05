@@ -125,12 +125,12 @@ configuration, and creating an initializer for the transformer.
    configurations. For example:
    
     ``` toml
-    [exporter.log_delete]
-        path = "transformers/events/log_delete/initializer"
+    [exporter.vat_init]
+        path = "transformers/events/vat_init/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        contracts = ["MCD_VAT"]
         rank = "0"
     ```
 1. Note the path to the initializer is a directory named initializer in your new event transformer package. Of course you haven't created that yet. Create that directory and inside it create a file named `initializer.go`. 
