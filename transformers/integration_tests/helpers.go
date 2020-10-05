@@ -17,34 +17,10 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-	"github.com/makerdao/vulcanizedb/pkg/eth/client"
-	"github.com/makerdao/vulcanizedb/pkg/eth/converters"
-	"github.com/makerdao/vulcanizedb/pkg/eth/node"
 )
-
-var ipc string
-
-func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
-	raw, err := rpc.Dial(ipc)
-	if err != nil {
-		return client.RpcClient{}, &ethclient.Client{}, err
-	}
-	return client.NewRpcClient(raw, ipc), ethclient.NewClient(raw), nil
-}
-
-func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) (core.BlockChain, error) {
-	testClient := client.NewEthClient(ethClient)
-	testNode := node.MakeNode(rpcClient)
-	transactionConverter := converters.NewTransactionConverter(testClient)
-	blockChain := eth.NewBlockChain(testClient, rpcClient, testNode, transactionConverter)
-	return blockChain, nil
-}
 
 // Persist the header for a given block to postgres. Returns the header if successful.
 func persistHeader(db *postgres.DB, blockNumber int64, blockChain core.BlockChain) (core.Header, error) {
