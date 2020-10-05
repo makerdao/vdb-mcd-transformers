@@ -54,11 +54,11 @@ func (generator *ZeroValueDiffGenerator) getIlkLumpKey(ilks []string) ([]string,
 func (generator ZeroValueDiffGenerator) createDiffs(keys []string, header core.Header) error {
 	for _, key := range keys {
 		rawDiff := types.RawDiff{
-			HashedAddress: common.HexToHash(test_data.Cat110Address()),
-			BlockHash:     common.HexToHash(header.Hash),
-			BlockHeight:   int(header.BlockNumber),
-			StorageKey:    common.HexToHash(key),
-			StorageValue:  common.Hash{},
+			Address:      common.HexToAddress(test_data.Cat110Address()),
+			BlockHash:    common.HexToHash(header.Hash),
+			BlockHeight:  int(header.BlockNumber),
+			StorageKey:   common.HexToHash(key),
+			StorageValue: common.Hash{},
 		}
 		_, createDiffErr := generator.DiffRepo.CreateStorageDiff(rawDiff)
 		if createDiffErr != nil {

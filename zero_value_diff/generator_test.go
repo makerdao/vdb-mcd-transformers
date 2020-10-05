@@ -67,19 +67,19 @@ var _ = Describe("Assigns Ilk Lump to zero", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			ethAIlkLumpRawDiff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.Cat110Address()),
-				BlockHash:     fakes.FakeHash,
-				BlockHeight:   blockNumber,
-				StorageKey:    common.HexToHash(ethALumpKey),
-				StorageValue:  common.Hash{},
+				Address:      common.HexToAddress(test_data.Cat110Address()),
+				BlockHash:    fakes.FakeHash,
+				BlockHeight:  blockNumber,
+				StorageKey:   common.HexToHash(ethALumpKey),
+				StorageValue: common.Hash{},
 			}
 
 			batAIlkLumpRawDiff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.Cat110Address()),
-				BlockHash:     fakes.FakeHash,
-				BlockHeight:   blockNumber,
-				StorageKey:    common.HexToHash(batALumpKey),
-				StorageValue:  common.Hash{},
+				Address:      common.HexToAddress(test_data.Cat110Address()),
+				BlockHash:    fakes.FakeHash,
+				BlockHeight:  blockNumber,
+				StorageKey:   common.HexToHash(batALumpKey),
+				StorageValue: common.Hash{},
 			}
 			expectedDiffs := []types.RawDiff{ethAIlkLumpRawDiff, batAIlkLumpRawDiff}
 			Expect(mockDiffRepo.CreatePassedRawDiffs).To(Equal(expectedDiffs))
