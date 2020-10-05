@@ -2,52 +2,7 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = [
-        # storage
-        "flip_comp_a_v1_1_2",
-        "flip_link_a_v1_1_2",
-        "flip_lrc_a_v1_1_2",
-        "median_comp",
-        "median_link",
-        "median_lrc",
-    ]
-
-    [exporter.flip_comp_a_v1_1_2]
-        path = "transformers/storage/flip/initializers/comp_a/v1_1_2"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.flip_link_a_v1_1_2]
-        path = "transformers/storage/flip/initializers/link_a/v1_1_2"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.flip_lrc_a_v1_1_2]
-        path = "transformers/storage/flip/initializers/lrc_a/v1_1_2"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.median_comp]
-        path = "transformers/storage/median/initializers/median_comp"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.median_link]
-        path = "transformers/storage/median/initializers/median_link"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
-    [exporter.median_lrc]
-        path = "transformers/storage/median/initializers/median_lrc"
-        type = "eth_storage"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        migrations = "db/migrations"
-        rank = "0"
+    transformerNames = []
 
 [contract]
     [contract.CDP_MANAGER]
