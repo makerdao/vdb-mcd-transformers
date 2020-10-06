@@ -95,7 +95,7 @@ func NewTestBlockchain() (core.BlockChain, error) {
 		return nil, fmt.Errorf("failed to get test clients: %w", clientErr)
 	}
 
-	return getBlockChain(rpcClient, ethClient)
+	return getBlockChain(rpcClient, ethClient), nil
 }
 
 func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
@@ -106,12 +106,11 @@ func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
 	return client.NewRpcClient(raw, ipc), ethclient.NewClient(raw), nil
 }
 
-func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) (core.BlockChain, error) {
+func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) core.BlockChain {
 	testClient := client.NewEthClient(ethClient)
 	testNode := node.MakeNode(rpcClient)
 	transactionConverter := converters.NewTransactionConverter(testClient)
-	blockChain := eth.NewBlockChain(testClient, rpcClient, testNode, transactionConverter)
-	return blockChain, nil
+	return eth.NewBlockChain(testClient, rpcClient, testNode, transactionConverter)
 }
 
 func NewTestDB(node core.Node) *postgres.DB {
