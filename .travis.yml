@@ -15,6 +15,11 @@ before_install:
 - sudo pip3 install awscli
 - docker build -f dockerfiles/gomoderator/Dockerfile .
 script:
+- docker build -f dockerfiles/execute/Dockerfile . -t execute:latest
+- dropdb --if-exists vulcanize_testing
+- createdb vulcanize_testing
+- psql -U travis -d vulcanize_testing -c "ALTER ROLE travis WITH PASSWORD 'pw';"
+- docker run -e DATABASE_USER -e DATABASE_PASSWORD -e DATABASE_HOSTNAME -e DATABASE_PORT -e DATABASE_NAME -e CLIENT_IPCPATH --network="host" -it execute:latest
 - set -e
 - scripts/check_config.sh
 - env GO111MODULE=on make validatemigrationorder
