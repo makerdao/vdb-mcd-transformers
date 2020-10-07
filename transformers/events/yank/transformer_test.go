@@ -36,8 +36,9 @@ var _ = Describe("Yank Transformer", func() {
 	)
 
 	It("converts logs to models", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.YankEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.YankEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
+
 		expectedModel := test_data.YankModel()
 		test_data.AssignAddressID(test_data.YankEventLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.YankEventLog, expectedModel, db)
@@ -48,7 +49,7 @@ var _ = Describe("Yank Transformer", func() {
 		invalidLog := test_data.YankEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

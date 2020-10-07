@@ -690,11 +690,11 @@ var _ = Describe("Maker storage repository", func() {
 			msgSenderAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
-			insertAuthEvent(1, test_data.CatAddress(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
+			insertAuthEvent(1, test_data.Cat100Address(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
 			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
 			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
 
-			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.CatAddress())
+			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.Cat100Address())
 			Expect(catUserErr).NotTo(HaveOccurred())
 			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
 

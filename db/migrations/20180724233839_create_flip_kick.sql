@@ -9,7 +9,7 @@ CREATE TABLE maker.flip_kick
     tab        NUMERIC,
     usr        TEXT,
     gal        TEXT,
-    address_id INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );

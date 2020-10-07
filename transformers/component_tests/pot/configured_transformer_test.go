@@ -13,7 +13,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -24,11 +23,10 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(pot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, test_data.PotAddress()))
-		contractAddress   = test_data.PotAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = pot.StorageRepository{ContractAddress: contractAddress}
+		contractAddress   = common.HexToAddress(test_data.PotAddress())
+		repository        = pot.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -59,7 +57,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		key := common.HexToHash("727c626d1f473b2fe91b66946682443a691c9d83c3d5816a53bc3365286f89f4")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		potPieDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potPieDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potPieDiff)
 		Expect(executeErr).NotTo(HaveOccurred())
@@ -73,7 +71,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot Pie storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		potPieDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potPieDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potPieDiff)
 
@@ -87,7 +85,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot dsr storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		potDsrDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potDsrDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potDsrDiff)
 
@@ -101,7 +99,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot chi storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		potChiDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potChiDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potChiDiff)
 
@@ -115,7 +113,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
 		value := common.HexToHash("00000000000000000000000057aa8b02f5d3e28371fedcf672c8668869f9aac7")
-		potVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potVatDiff)
 		Expect(executeErr).NotTo(HaveOccurred())
@@ -131,7 +129,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot vow storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006")
 		value := common.HexToHash("00000000000000000000000057aa8b02f5d3e28371fedcf672c8668869f9aac7")
-		potVowDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potVowDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potVowDiff)
 		Expect(executeErr).NotTo(HaveOccurred())
@@ -147,7 +145,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Pot rho storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		potRhoDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potRhoDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potRhoDiff)
 
@@ -163,7 +161,7 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			potAddressID, potAddressErr := shared.GetOrCreateAddress(test_data.PotAddress(), db)
+			potAddressID, potAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(potAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
@@ -184,7 +182,7 @@ var _ = Describe("Executing the transformer", func() {
 
 			key := common.HexToHash("b6d2a4300cc4010859f67ce7c804312ce9cc8f1032cdeb24e96d4b5562a4d01b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -192,15 +190,14 @@ var _ = Describe("Executing the transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(potAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, potAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
 	It("reads in a Pot live storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		potLiveDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		potLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(potLiveDiff)
 

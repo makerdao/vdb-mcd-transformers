@@ -81,7 +81,7 @@ var _ = Describe("Vat Auth Transformer", func() {
 		invalidLog := test_data.VatDenyEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := converter.ToModels(constants.CatABI(), []core.EventLog{invalidLog}, db)
+		_, err := converter.ToModels(constants.Cat100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(2, 0)))

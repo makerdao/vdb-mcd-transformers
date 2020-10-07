@@ -29,9 +29,9 @@ import (
 )
 
 var rawCatFileChopLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.CatFileChopLumpSignature()),
+		common.HexToHash(constants.CatFileChopLumpDunkSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
 		common.HexToHash("0x434f4c342d410000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x63686f7000000000000000000000000000000000000000000000000000000000"),
@@ -56,7 +56,7 @@ func CatFileChopModel() event.InsertionModel { return CopyModel(catFileChopModel
 
 var catFileChopModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileChopLumpTable,
+	TableName:  constants.CatFileChopLumpDunkTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
@@ -78,9 +78,9 @@ var catFileChopModel = event.InsertionModel{
 }
 
 var rawCatFileLumpLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
-		common.HexToHash(constants.CatFileChopLumpSignature()),
+		common.HexToHash(constants.CatFileChopLumpDunkSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
 		common.HexToHash("0x434f4c342d410000000000000000000000000000000000000000000000000000"),
 		common.HexToHash("0x6c756d7000000000000000000000000000000000000000000000000000000000"),
@@ -105,7 +105,7 @@ func CatFileLumpModel() event.InsertionModel { return CopyModel(catFileLumpModel
 
 var catFileLumpModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
-	TableName:  constants.CatFileChopLumpTable,
+	TableName:  constants.CatFileChopLumpDunkTable,
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
@@ -127,7 +127,7 @@ var catFileLumpModel = event.InsertionModel{
 }
 
 var rawCatFileFlipLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileFlipSignature()),
 		common.HexToHash("0x000000000000000000000000dc984d513a0f9ca9aa602d4df8517677918936e3"),
@@ -174,7 +174,7 @@ var catFileFlipModel = event.InsertionModel{
 }
 
 var rawCatFileVowLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.CatFileVowSignature()),
 		common.HexToHash("0x0000000000000000000000003652c2af10cbbdb753c3b46489db5226b73e6497"),
@@ -219,3 +219,99 @@ var catFileVowModel = event.InsertionModel{
 		//constants.MsgSenderColumn
 	},
 }
+
+var rawCatFileBoxLog = types.Log{
+	Address: common.HexToAddress(Cat110Address()),
+	Topics: []common.Hash{
+		common.HexToHash("0x29ae811400000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
+		common.HexToHash("0x626f780000000000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x00000000000000000000502ed53dc07790272afdb61a19509130000000000000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e029ae8114626f78000000000000000000000000000000000000000000000000000000000000000000000000000000502ed53dc07790272afdb61a19509130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 10769102,
+	TxHash:      common.HexToHash("0x9125c2c8795a0a872386e1ceda091c603db94f737a4557e784a96352086bd985"),
+	TxIndex:     0,
+	BlockHash:   common.HexToHash("0xb93041a471202a65f3dbbd8cbedd319e9802f2633d8531eed17696155d43ea83"),
+	Index:       0,
+	Removed:     false,
+}
+
+var CatFileBoxEventLog = core.EventLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileBoxLog,
+	Transformed: false,
+}
+
+var catFileBoxModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.CatFileBoxTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
+	},
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK: CatFileBoxEventLog.HeaderID,
+		event.LogFK:    CatFileBoxEventLog.ID,
+		//event.AddressFK
+		//constants.MsgSender
+		constants.WhatColumn: "box",
+		constants.DataColumn: "30000000000000000000000000000000000000000000000000000",
+	},
+}
+
+func CatFileBoxModel() event.InsertionModel { return CopyModel(catFileBoxModel) }
+
+var rawCatFileDunkLog = types.Log{
+	Address: common.HexToAddress(Cat110Address()),
+	Topics: []common.Hash{
+		common.HexToHash(constants.CatFileChopLumpDunkSignature()),
+		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),
+		common.HexToHash("0x555344432d420000000000000000000000000000000000000000000000000000"),
+		common.HexToHash("0x64756e6b00000000000000000000000000000000000000000000000000000000"),
+	},
+	Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e01a0b287e555344432d42000000000000000000000000000000000000000000000000000064756e6b00000000000000000000000000000000000000000000000000000000000000000000000000000022361d8afcc93343e962029a7edab200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+	BlockNumber: 87,
+	TxHash:      common.HexToHash("0x9125c2c8795a0a872386e1ceda091c603db94f737a4557e784a96352086bd985"),
+	TxIndex:     11,
+	BlockHash:   fakes.FakeHash,
+	Index:       2,
+	Removed:     false,
+}
+
+var CatFileDunkEventLog = core.EventLog{
+	ID:          int64(rand.Int31()),
+	HeaderID:    int64(rand.Int31()),
+	Log:         rawCatFileDunkLog,
+	Transformed: false,
+}
+
+var catFileDunkModel = event.InsertionModel{
+	SchemaName: constants.MakerSchema,
+	TableName:  constants.CatFileChopLumpDunkTable,
+	OrderedColumns: []event.ColumnName{
+		event.HeaderFK,
+		event.LogFK,
+		event.AddressFK,
+		constants.MsgSenderColumn,
+		constants.IlkColumn,
+		constants.WhatColumn,
+		constants.DataColumn,
+	},
+	ColumnValues: event.ColumnValues{
+		event.HeaderFK:       CatFileDunkEventLog.HeaderID,
+		constants.WhatColumn: "dunk",
+		constants.DataColumn: "50000000000000000000000000000000000000000000000000",
+		event.LogFK:          CatFileDunkEventLog.ID,
+		//constants.IlkColumn
+		//event.AddressFK
+		//constants.MsgSenderColumn
+	},
+}
+
+func CatFileDunkModel() event.InsertionModel { return CopyModel(catFileDunkModel) }

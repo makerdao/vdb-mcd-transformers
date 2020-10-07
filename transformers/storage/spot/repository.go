@@ -68,6 +68,7 @@ func (repository StorageRepository) insertIlkPip(diffID, headerID int64, metadat
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk pip: %w", err)
 	}
+
 	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkPip, InsertSpotIlkPipQuery, pip, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s pip %s from diff ID %d: %w", ilk, pip, diffID, insertErr)
@@ -80,6 +81,7 @@ func (repository StorageRepository) insertIlkMat(diffID, headerID int64, metadat
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk mat: %w", err)
 	}
+
 	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkMat, InsertSpotIlkMatQuery, mat, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s mat %s from diff ID %d: %w", ilk, mat, diffID, insertErr)

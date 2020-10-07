@@ -41,7 +41,8 @@ import (
 )
 
 var eventConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -70,7 +71,8 @@ var eventConfig = config.Plugin{
 }
 
 var storageConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"jug": {
 			Path:           "transformers/storage/jug/initializer",
@@ -91,7 +93,8 @@ var storageConfig = config.Plugin{
 }
 
 var combinedConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -139,8 +142,14 @@ type Exporter interface {
 	Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
+type StubMigrationManager struct{}
+
+func (s *StubMigrationManager) RunMigrations() error {
+	return nil
+}
+
 var _ = Describe("Plugin test", func() {
-	viper.SetConfigName("testing")
+	viper.SetConfigName("mcdTransformers")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 
 	var (
@@ -167,10 +176,13 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = eventConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(eventConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo, checkedHeaderErr := repositories.NewCheckedHeadersRepository(db, "maker")
+			Expect(checkedHeaderErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
 			statusWriter = fakes.MockStatusWriter{}
 		})
@@ -281,6 +293,7 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = storageConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(storageConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
@@ -313,7 +326,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, -1, &statusWriter)
+				w := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -328,10 +341,13 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = combinedConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(combinedConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo, checkedHeaderErr := repositories.NewCheckedHeadersRepository(db, "maker")
+			Expect(checkedHeaderErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
 		})
 
@@ -399,7 +415,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.FlipEthV100Address()))
 
-				sw := watcher.NewStorageWatcher(db, -1, &statusWriter)
+				sw := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

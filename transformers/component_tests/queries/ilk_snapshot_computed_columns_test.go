@@ -70,7 +70,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 			var actualFrobs []test_helpers.FrobEvent
 			getFrobsErr := db.Select(&actualFrobs,
 				`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_snapshot_frobs(
-					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 					 FROM api.ilk_snapshot))`)
 			Expect(getFrobsErr).NotTo(HaveOccurred())
 
@@ -115,7 +115,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
 					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_snapshot_frobs(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1)`,
 					maxResults)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
@@ -135,7 +135,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualFrobs []test_helpers.FrobEvent
 				getFrobsErr := db.Select(&actualFrobs,
 					`SELECT ilk_identifier, urn_identifier, dink, dart FROM api.ilk_snapshot_frobs(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getFrobsErr).NotTo(HaveOccurred())
@@ -166,7 +166,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 			var actualFiles []test_helpers.IlkFileEvent
 			getFilesErr := db.Select(&actualFiles,
 				`SELECT ilk_identifier, what, data FROM api.ilk_snapshot_ilk_file_events(
-					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 					 FROM api.ilk_snapshot))`)
 			Expect(getFilesErr).NotTo(HaveOccurred())
 
@@ -214,7 +214,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualFiles []test_helpers.IlkFileEvent
 				getFilesErr := db.Select(&actualFiles,
 					`SELECT ilk_identifier, what, data FROM api.ilk_snapshot_ilk_file_events(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1)`,
 					maxResults)
 				Expect(getFilesErr).NotTo(HaveOccurred())
@@ -233,7 +233,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualFiles []test_helpers.IlkFileEvent
 				getFilesErr := db.Select(&actualFiles,
 					`SELECT ilk_identifier, what, data FROM api.ilk_snapshot_ilk_file_events(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getFilesErr).NotTo(HaveOccurred())
@@ -257,7 +257,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 			var actualBites []test_helpers.BiteEvent
 			getBitesErr := db.Select(&actualBites, `
 				SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_snapshot_bites(
-					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+					(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 					 FROM api.ilk_snapshot))`)
 			Expect(getBitesErr).NotTo(HaveOccurred())
 
@@ -296,7 +296,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
 					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_snapshot_bites(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1)`,
 					maxResults)
 				Expect(getBitesErr).NotTo(HaveOccurred())
@@ -317,7 +317,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 				var actualBites []test_helpers.BiteEvent
 				getBitesErr := db.Select(&actualBites, `
 					SELECT ilk_identifier, urn_identifier, ink, art, tab FROM api.ilk_snapshot_bites(
-						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated)::api.ilk_snapshot
+						(SELECT (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated, dunk)::api.ilk_snapshot
 						 FROM api.ilk_snapshot), $1, $2)`,
 					maxResults, resultOffset)
 				Expect(getBitesErr).NotTo(HaveOccurred())

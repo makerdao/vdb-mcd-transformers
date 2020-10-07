@@ -40,7 +40,7 @@ var _ = Describe("Dent Transformer", func() {
 	})
 
 	It("converts an eth log to a db model", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DentEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.DentEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.DentModel()
@@ -53,7 +53,7 @@ var _ = Describe("Dent Transformer", func() {
 	It("returns an error if the expected amount of topics aren't in the log", func() {
 		invalidLog := test_data.DentEventLog
 		invalidLog.Log.Topics = []common.Hash{}
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(4, 0)))
@@ -62,7 +62,7 @@ var _ = Describe("Dent Transformer", func() {
 	It("returns an error if the log data is empty", func() {
 		emptyDataLog := test_data.DentEventLog
 		emptyDataLog.Log.Data = []byte{}
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{emptyDataLog}, db)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{emptyDataLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingData))

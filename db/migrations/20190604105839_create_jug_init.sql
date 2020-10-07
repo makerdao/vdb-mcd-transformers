@@ -3,8 +3,8 @@ CREATE TABLE maker.jug_init
 (
     id         SERIAL PRIMARY KEY,
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
+    msg_sender BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    msg_sender INTEGER NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     ilk_id     INTEGER NOT NULL REFERENCES maker.ilks (id) ON DELETE CASCADE,
     UNIQUE (header_id, log_id)
 );

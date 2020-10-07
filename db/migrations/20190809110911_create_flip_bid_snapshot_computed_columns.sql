@@ -48,13 +48,15 @@ $$
 
 --- Extend managed_cdp with urn_snapshot
 CREATE FUNCTION api.flip_bid_snapshot_urn(flip api.flip_bid_snapshot) RETURNS api.urn_snapshot
-       LANGUAGE sql STABLE
-       AS $$
+    LANGUAGE sql
+    STABLE
+AS
+$$
 SELECT *
 FROM api.get_urn(
-     (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
-     (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
-     flip.block_height)
+            (SELECT identifier FROM maker.ilks WHERE ilks.id = flip.ilk_id),
+            (SELECT identifier FROM maker.urns WHERE urns.id = flip.urn_id),
+            flip.block_height)
 $$;
 
 

@@ -119,18 +119,18 @@ you do not, yet, as this is most likely.
 Finally you can add the transformer to the list of transformers by updating the
 configuration, and creating an initializer for the transformer.
  
-1. In the environments (docker.toml, testing.toml and mcdTransformers.toml) add
-   the new package name the list of `transformerNames` in the exporter - alphabetically.
+1. In the config file (environments/mcdTransformers.toml) add the new package name the list of `transformerNames`
+ in the exporter - alphabetically.
 1. Underneath that list add a configuration (alphabetically again) to list of
    configurations. For example:
    
     ``` toml
-    [exporter.log_delete]
-        path = "transformers/events/log_delete/initializer"
+    [exporter.vat_init]
+        path = "transformers/events/vat_init/initializer"
         type = "eth_event"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
-        contracts = ["OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"]
+        contracts = ["MCD_VAT"]
         rank = "0"
     ```
 1. Note the path to the initializer is a directory named initializer in your new event transformer package. Of course you haven't created that yet. Create that directory and inside it create a file named `initializer.go`. 

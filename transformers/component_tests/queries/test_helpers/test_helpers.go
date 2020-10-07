@@ -65,6 +65,7 @@ var (
 	FakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	FakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
+	fakeIlkDunkMetadata = types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
@@ -81,6 +82,7 @@ var (
 	}
 	FakeIlkCatMetadatas = []types.ValueMetadata{
 		fakeIlkChopMetadata,
+		fakeIlkDunkMetadata,
 		fakeIlkLumpMetadata,
 		fakeIlkFlipMetadata,
 	}
@@ -99,6 +101,7 @@ var (
 	anotherFakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
+	anotherFakeIlkDunkMetadata = types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Address)
 	anotherFakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
@@ -115,6 +118,7 @@ var (
 	}
 	AnotherFakeIlkCatMetadatas = []types.ValueMetadata{
 		anotherFakeIlkChopMetadata,
+		anotherFakeIlkDunkMetadata,
 		anotherFakeIlkLumpMetadata,
 		anotherFakeIlkFlipMetadata,
 	}
@@ -142,6 +146,7 @@ type IlkSnapshot struct {
 	Line          string
 	Dust          string
 	Chop          string
+	Dunk          string
 	Lump          string
 	Flip          string
 	Rho           string
@@ -160,12 +165,13 @@ func GetIlkValues(seed int) map[string]interface{} {
 	valuesMap[vat.IlkLine] = strconv.Itoa(4 + seed)
 	valuesMap[vat.IlkDust] = strconv.Itoa(5 + seed)
 	valuesMap[cat.IlkChop] = strconv.Itoa(6 + seed)
-	valuesMap[cat.IlkLump] = strconv.Itoa(7 + seed)
+	valuesMap[cat.IlkDunk] = strconv.Itoa(7 + seed)
+	valuesMap[cat.IlkLump] = strconv.Itoa(8 + seed)
 	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
-	valuesMap[jug.IlkRho] = strconv.Itoa(8 + seed)
-	valuesMap[jug.IlkDuty] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkRho] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkDuty] = strconv.Itoa(10 + seed)
 	valuesMap[spot.IlkPip] = "an address2" + strconv.Itoa(seed)
-	valuesMap[spot.IlkMat] = strconv.Itoa(10 + seed)
+	valuesMap[spot.IlkMat] = strconv.Itoa(11 + seed)
 
 	return valuesMap
 }
@@ -185,6 +191,7 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 		Line:          ilkValues[vat.IlkLine].(string),
 		Dust:          ilkValues[vat.IlkDust].(string),
 		Chop:          ilkValues[cat.IlkChop].(string),
+		Dunk:          ilkValues[cat.IlkDunk].(string),
 		Lump:          ilkValues[cat.IlkLump].(string),
 		Flip:          ilkValues[cat.IlkFlip].(string),
 		Rho:           ilkValues[jug.IlkRho].(string),
@@ -396,7 +403,7 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 			panic(fmt.Sprintf("valuesMap value type not recognized %v", v))
 		}
 
-		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Hash{}, key, valueForDiffRecord)
+		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Address{}, key, valueForDiffRecord)
 
 		err := repo.Create(persistedDiff.ID, header.Id, metadata, valueForStorageRecord)
 		Expect(err).NotTo(HaveOccurred())

@@ -13,7 +13,7 @@ import (
 )
 
 var rawRelyLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.RelySignature()),
 		common.HexToHash("0x00000000000000000000000039ad5d336a4c08fac74879f796e1ea0af26c1521"),

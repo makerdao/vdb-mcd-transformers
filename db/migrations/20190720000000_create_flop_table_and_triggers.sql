@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE maker.flop
 (
-    address_id   INTEGER   NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    address_id   BIGINT    NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     block_number BIGINT    NOT NULL,
     bid_id       NUMERIC   NOT NULL,
     guy          TEXT      DEFAULT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE maker.flop
 CREATE INDEX flop_address_index
     ON maker.flop (address_id);
 
-CREATE FUNCTION flop_bid_guy_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS TEXT AS
+CREATE FUNCTION flop_bid_guy_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
 $$
 SELECT guy
 FROM maker.flop_bid_guy
@@ -33,7 +33,7 @@ $$
 COMMENT ON FUNCTION flop_bid_guy_before_block
     IS E'@omit';
 
-CREATE FUNCTION flop_bid_tic_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS BIGINT AS
+CREATE FUNCTION flop_bid_tic_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS BIGINT AS
 $$
 SELECT tic
 FROM maker.flop_bid_tic
@@ -49,7 +49,7 @@ $$
 COMMENT ON FUNCTION flop_bid_tic_before_block
     IS E'@omit';
 
-CREATE FUNCTION flop_bid_end_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS BIGINT AS
+CREATE FUNCTION flop_bid_end_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS BIGINT AS
 $$
 SELECT "end"
 FROM maker.flop_bid_end
@@ -65,7 +65,7 @@ $$
 COMMENT ON FUNCTION flop_bid_end_before_block
     IS E'@omit';
 
-CREATE FUNCTION flop_bid_lot_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION flop_bid_lot_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
 SELECT lot
 FROM maker.flop_bid_lot
@@ -81,7 +81,7 @@ $$
 COMMENT ON FUNCTION flop_bid_lot_before_block
     IS E'@omit';
 
-CREATE FUNCTION flop_bid_bid_before_block(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION flop_bid_bid_before_block(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
 SELECT bid
 FROM maker.flop_bid_bid
@@ -97,7 +97,7 @@ $$
 COMMENT ON FUNCTION flop_bid_bid_before_block
     IS E'@omit';
 
-CREATE FUNCTION flop_bid_time_created(address_id INTEGER, bid_id NUMERIC) RETURNS TIMESTAMP AS
+CREATE FUNCTION flop_bid_time_created(address_id BIGINT, bid_id NUMERIC) RETURNS TIMESTAMP AS
 $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
 FROM public.headers
@@ -111,7 +111,7 @@ COMMENT ON FUNCTION flop_bid_time_created
     IS E'@omit';
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.delete_obsolete_flop(bid_id NUMERIC, address_id INTEGER, header_id INTEGER) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION maker.delete_obsolete_flop(bid_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS VOID AS
 $$
 DECLARE
     flop_block      BIGINT     := (
@@ -653,13 +653,13 @@ DROP FUNCTION maker.update_flop_ends();
 DROP FUNCTION maker.update_flop_lots();
 DROP FUNCTION maker.update_flop_bids();
 DROP FUNCTION maker.update_flop_created();
-DROP FUNCTION maker.delete_obsolete_flop(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_guy_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_tic_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_end_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_lot_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_bid_before_block(NUMERIC, INTEGER, INTEGER);
-DROP FUNCTION flop_bid_time_created(INTEGER, NUMERIC);
+DROP FUNCTION maker.delete_obsolete_flop(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_guy_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_tic_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_end_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_lot_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_bid_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION flop_bid_time_created(BIGINT, NUMERIC);
 
 DROP INDEX maker.flop_address_index;
 DROP TABLE maker.flop;

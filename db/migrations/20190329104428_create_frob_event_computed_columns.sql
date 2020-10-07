@@ -18,8 +18,10 @@ $$
 
 --- Extend frob_event with urn_snapshot
 CREATE FUNCTION api.frob_event_urn(event api.frob_event) RETURNS api.urn_snapshot
-       LANGUAGE sql STABLE
-       AS $$
+    LANGUAGE sql
+    STABLE
+AS
+$$
 SELECT *
 FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
 $$;

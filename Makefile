@@ -9,10 +9,7 @@ $(BIN)/ginkgo:
 	go get -u github.com/onsi/ginkgo/ginkgo
 
 ## Migration tool
-GOOSE = $(BIN)/goose
-$(BIN)/goose:
-	go get -u -d github.com/pressly/goose/cmd/goose
-	go build -tags='no_mysql no_sqlite' -o $(BIN)/goose github.com/pressly/goose/cmd/goose
+GOOSE = go run -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose
 
 ## Source linter
 LINT = $(BIN)/golint
@@ -25,9 +22,8 @@ $(BIN)/gometalinter.v2:
 	go get -u gopkg.in/alecthomas/gometalinter.v2
 	$(METALINT) --install
 
-
 .PHONY: installtools
-installtools: | $(LINT) $(GOOSE) $(GINKGO)
+installtools: | $(LINT) $(GINKGO)
 	echo "Installing tools"
 
 .PHONY: metalint
@@ -51,10 +47,9 @@ test: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	cd db/migrations;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" up
-	cd db/migrations/;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" reset
+	psql -q $(TEST_DB) < test_data/vulcanize_schema.sql
+	make migrate NAME=$(TEST_DB)
+	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
 	$(GINKGO) -r --skipPackage=integration_tests,integration
 
@@ -64,10 +59,9 @@ integrationtest: | $(GINKGO) $(LINT)
 	go fmt ./...
 	dropdb --if-exists $(TEST_DB)
 	createdb $(TEST_DB)
-	cd db/migrations;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" up
-	cd db/migrations/;\
-		$(GOOSE) postgres "$(TEST_CONNECT_STRING)" reset
+	psql -q $(TEST_DB) < test_data/vulcanize_schema.sql
+	make migrate NAME=$(TEST_DB)
+	make reset NAME=$(TEST_DB)
 	make migrate NAME=$(TEST_DB)
 	$(GINKGO) -r transformers/integration_tests/
 
@@ -113,34 +107,41 @@ checkmigname:
 # Migration operations
 ## Rollback the last migration
 .PHONY: rollback
-rollback: $(GOOSE) checkdbvars
+rollback: checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" down
-	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
-
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
 
 ## Rollback to a select migration (id/timestamp)
 .PHONY: rollback_to
-rollback_to: $(GOOSE) checkmigration checkdbvars
+rollback_to: checkmigration checkdbvars
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" down-to "$(MIGRATION)"
 
 ## Apply all migrations not already run
 .PHONY: migrate
-migrate: $(GOOSE) checkdbvars
+migrate: checkdbvars
+	psql $(NAME) -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 	cd db/migrations;\
-	  $(GOOSE) postgres "$(CONNECT_STRING)" up
-	pg_dump -O -s $(CONNECT_STRING) > db/schema.sql
+	  $(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" up
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
+
+.PHONY: reset
+reset: checkdbvars
+	cd db/migrations/;\
+		$(GOOSE) -table "maker.goose_db_version" postgres "$(CONNECT_STRING)" reset
+	pg_dump -n 'maker' -n 'api' -O -s $(CONNECT_STRING) > db/schema.sql
+	psql $(NAME) -c 'DROP SCHEMA maker CASCADE;'
 
 ## Create a new migration file
 .PHONY: new_migration
-new_migration: $(GOOSE) checkmigname
+new_migration: checkmigname
 	cd db/migrations;\
 	  $(GOOSE) create $(NAME) sql
 
 ## Check which migrations are applied at the moment
 .PHONY: migration_status
-migration_status: $(GOOSE) checkdbvars
+migration_status: checkdbvars
 	cd db/migrations;\
 	  $(GOOSE) postgres "$(CONNECT_STRING)" status
 
@@ -156,7 +157,38 @@ import:
 	test -n "$(NAME)" # $$NAME
 	psql $(NAME) < db/schema.sql
 
+# Update vulcanizedb version
+.PHONY: update_vulcanize
+update_vulcanize:
+	test -n "$(BRANCH)" # $$BRANCH
+	go get github.com/makerdao/vulcanizedb@$(BRANCH)
+	wget https://raw.githubusercontent.com/makerdao/vulcanizedb/$(BRANCH)/db/schema.sql --output-document=test_data/vulcanize_schema.sql
+
 # Build plugin
 .PHONY: plugin
 plugin:
-	go build -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
+	go build -mod=mod -buildmode=plugin -o $(OUTPUT_LOCATION) $(TARGET_LOCATION)
+
+# Docker actions
+# Build any docker image in dockerfiles
+.PHONY: dockerbuild
+dockerbuild:
+	test -n "$(IMAGE)" # $$IMAGE
+	docker build -t vdb-mcd-$(IMAGE) -f dockerfiles/$(IMAGE)/Dockerfile .
+
+.PHONY: execute
+execute: HOST ?= host.docker.internal
+execute: DATABASE_PASSWORD ?= postgres
+execute:
+	test -n "$(NAME)" # $$(NAME) - Database Name
+	test -n "$(CLIENT_IPCPATH)" # $$(CLIENT_IPCPATH) - Node URL
+	docker run \
+		-it \
+		-p "$(PORT):$(PORT)" \
+		-e "DATABASE_NAME=$(NAME)" \
+		-e "DATABASE_HOSTNAME=$(HOST)" \
+		-e "DATABASE_PORT=$(PORT)" \
+		-e "DATABASE_USER=$(USER)" \
+		-e "DATABASE_PASSWORD=$(DATABASE_PASSWORD)" \
+		-e "CLIENT_IPCPATH=$(CLIENT_IPCPATH)" \
+		vdb-mcd-execute:latest
