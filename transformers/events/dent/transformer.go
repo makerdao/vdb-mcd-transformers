@@ -17,6 +17,7 @@
 package dent
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -33,6 +34,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		validateErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataRequired)
 		if validateErr != nil {
 			return nil, validateErr
+		}
+
+		msgSender := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 
 		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
@@ -52,15 +59,16 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.DentTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.AddressFK, event.LogFK, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
+				event.HeaderFK, event.AddressFK, event.LogFK, constants.MsgSenderColumn, constants.BidIDColumn, constants.LotColumn, constants.BidColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.LogFK:           log.ID,
-				event.AddressFK:       addressID,
-				constants.BidIDColumn: bidId.String(),
-				constants.LotColumn:   lot.String(),
-				constants.BidColumn:   bid.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				event.AddressFK:           addressID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.BidIDColumn:     bidId.String(),
+				constants.LotColumn:       lot.String(),
+				constants.BidColumn:       bid.String(),
 			},
 		}
 		models = append(models, model)

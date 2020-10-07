@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -62,12 +61,8 @@ var _ = Describe("Median lift transformer", func() {
 		address3 := common.BytesToAddress(a3Bytes).String()
 
 		expectedModel := test_data.MedianLiftModelWithFiveAccounts()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianLiftLogWithFiveAccounts.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianLiftLogWithFiveAccounts.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignAddressID(test_data.MedianLiftLogWithFiveAccounts, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.MedianLiftLogWithFiveAccounts, expectedModel, db)
 		expectedModel.ColumnValues[constants.AColumn] = pq.Array([]string{address0, address1, address2, address3})
 
 		Expect(models[0]).To(Equal(expectedModel))
@@ -82,12 +77,8 @@ var _ = Describe("Median lift transformer", func() {
 		address0 := common.BytesToAddress(a0Bytes).Hex()
 
 		expectedModel := test_data.MedianLiftModelWithOneAccount()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianLiftLogWithOneAccount.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianLiftLogWithOneAccount.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignAddressID(test_data.MedianLiftLogWithOneAccount, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.MedianLiftLogWithOneAccount, expectedModel, db)
 		expectedModel.ColumnValues[constants.AColumn] = pq.Array([]string{address0})
 
 		Expect(models[0]).To(Equal(expectedModel))

@@ -18,8 +18,6 @@ package flip_kick_test
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
@@ -42,14 +40,11 @@ var _ = Describe("FlipKick Transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.FlipKickEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.FlipKickEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedKick := test_data.FlipKickModel()
-		addressId, addressErr := shared.GetOrCreateAddress(test_data.FlipKickEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedKick.ColumnValues[event.AddressFK] = addressId
-
+		test_data.AssignAddressID(test_data.FlipKickEventLog, expectedKick, db)
 		Expect(models).To(ConsistOf(expectedKick))
 	})
 

@@ -52,31 +52,31 @@ var _ = Describe("Urns repository", func() {
 	Describe("InsertDiff", func() {
 		It("inserts a back filled diff", func() {
 			diff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.RandomString(64)),
-				BlockHash:     common.HexToHash(test_data.RandomString(64)),
-				BlockHeight:   rand.Int(),
-				StorageKey:    common.HexToHash(test_data.RandomString(64)),
-				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+				Address:      common.HexToAddress(test_data.RandomString(40)),
+				BlockHash:    common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:  rand.Int(),
+				StorageKey:   common.HexToHash(test_data.RandomString(64)),
+				StorageValue: common.HexToHash(test_data.RandomString(64)),
 			}
 
 			err := repo.InsertDiff(diff)
 
 			Expect(err).NotTo(HaveOccurred())
 			var persistedDiff types.PersistedDiff
-			readErr := db.Get(&persistedDiff, `SELECT * FROM public.storage_diff LIMIT 1`)
+			readErr := db.Get(&persistedDiff, `SELECT id, address, block_hash, block_height, storage_key, storage_value, status, from_backfill FROM public.storage_diff LIMIT 1`)
 			Expect(readErr).NotTo(HaveOccurred())
 			Expect(persistedDiff.RawDiff).To(Equal(diff))
 			Expect(persistedDiff.FromBackfill).To(BeTrue())
-			Expect(persistedDiff.Checked).To(BeFalse())
+			Expect(persistedDiff.Status).To(Equal("new"))
 		})
 
 		It("doesn't duplicate diffs", func() {
 			diff := types.RawDiff{
-				HashedAddress: common.HexToHash(test_data.RandomString(64)),
-				BlockHash:     common.HexToHash(test_data.RandomString(64)),
-				BlockHeight:   rand.Int(),
-				StorageKey:    common.HexToHash(test_data.RandomString(64)),
-				StorageValue:  common.HexToHash(test_data.RandomString(64)),
+				Address:      common.HexToAddress(test_data.RandomString(40)),
+				BlockHash:    common.HexToHash(test_data.RandomString(64)),
+				BlockHeight:  rand.Int(),
+				StorageKey:   common.HexToHash(test_data.RandomString(64)),
+				StorageValue: common.HexToHash(test_data.RandomString(64)),
 			}
 
 			err := repo.InsertDiff(diff)

@@ -23,7 +23,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -62,11 +61,11 @@ var logValueModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.LogValueTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, event.LogFK, log_value.Val,
+		event.HeaderFK, event.LogFK, event.AddressFK, constants.ValColumn,
 	},
 	ColumnValues: event.ColumnValues{
-		event.HeaderFK: LogValueEventLog.HeaderID,
-		event.LogFK:    LogValueEventLog.ID,
-		log_value.Val:  logValueVal.String(),
+		event.HeaderFK:      LogValueEventLog.HeaderID,
+		event.LogFK:         LogValueEventLog.ID,
+		constants.ValColumn: logValueVal.String(),
 	},
 }

@@ -24,7 +24,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/crypto"
-
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
@@ -43,7 +42,7 @@ func getSolidityFunctionSignature(abi, name string) string {
 	parsedAbi, _ := eth.ParseAbi(abi)
 
 	if method, ok := parsedAbi.Methods[name]; ok {
-		return method.Sig()
+		return method.Sig
 	} else if event, ok := parsedAbi.Events[name]; ok {
 		return getEventSignature(event)
 	}

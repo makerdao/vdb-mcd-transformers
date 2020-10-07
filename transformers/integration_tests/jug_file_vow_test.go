@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -66,17 +67,22 @@ var _ = Describe("Jug File Vow EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []jugFileVowModel
-		err = db.Select(&dbResult, `SELECT what, data FROM maker.jug_file_vow`)
+		var dbResult jugFileVowModel
+		err = db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.jug_file_vow`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].What).To(Equal("vow"))
-		Expect(dbResult[0].Data).To(Equal(test_data.VowAddress()))
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
+		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		Expect(dbResult.MsgSender).To(Equal(msgSenderId))
+		Expect(dbResult.What).To(Equal("vow"))
+		Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
 	})
 })
 
 type jugFileVowModel struct {
-	What string
-	Data string
+	MsgSender int64 `db:"msg_sender"`
+	What      string
+	Data      string
 }

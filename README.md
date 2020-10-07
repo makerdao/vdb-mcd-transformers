@@ -45,6 +45,10 @@ docker-compose -f dockerfiles/docker-compose.yml up
  - [VulcanizeDB](https://github.com/makerdao/vulcanizedb)
  - Go 1.12+
  - Postgres 11.2
+ 
+#### Updating VulcanizeDB
+
+Updating to a new version requires updating the dependency in go.mod and updating the vulcanizedb schema copy for testing, to keep them in sync. The simplest thing to do is run the `make update_vulcanize BRANCH=<branch name>` task which will handle both.
     
 ### Getting the project
 Download the transformer codebase to your local local `GOPATH` via: `go get github.com/makerdao/vdb-mcd-transformers`
@@ -83,7 +87,7 @@ Note that, as with other commands, executing this requires either a config file 
 **NOTE** The database must be migrated once before running the `headerSync` command, otherwise the database will not be able to properly create its schema. Assuming you are not using the `docker-compose` setup above you can migrate the database once using:
 
 ```
-docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e CLIENT_IPCPATH=<path> makerdao/vdb-execute:latest ./run_migrations.sh
+docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAME=<host> -e DATABASE_PORT=<port> -e DATABASE_NAME=<name> -e CLIENT_IPCPATH=<path> makerdao/vdb-mcd-execute:latest ./run_migrations.sh
 ```
 
 #### Running `headerSync`
@@ -99,7 +103,7 @@ docker run -e DATABASE_USER=<user> -e DATABASE_PASSWORD=<pw> -e DATABASE_HOSTNAM
   - when running on MacOSX use `host.docker.internal` as the `DATABASE_HOSTNAME` and as the host in the `CLIENT_IPCPATH`
 
 #### Running `execute`
-`execute` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-execute). See the [Docker README](./dockerfiles/README.md) for further information.
+`execute` Docker images are located in the [MakerDao Dockerhub organization](https://hub.docker.com/repository/docker/makerdao/vdb-mcd-execute). See the [Docker README](./dockerfiles/README.md) for further information.
 
 ### With the CLI
 
@@ -121,7 +125,12 @@ There is a convenience command called `composeAndExecute` in `vulcanizedb` which
 executing it. 
 
 ```
-./vulcanizedb composeAndExecute --config=$GOPATH/makerdao/vdb-mcd-transformers/environments/mcdTransformers.toml
+./vulcanizedb composeAndExecute --config=$GOPATH/makerdao/vdb-mcd-transformers/environments/mcdTransformers.toml \
+    DATABASE_NAME=vulcanize_public \
+    DATABASE_PASSWORD=vulcanize \
+    DATABASE_HOST=localhost \
+    DATABASE_PORT=5432 \
+    DATABASE_USER=vulcanize
 ```
    
 Notes:
@@ -144,9 +153,7 @@ shell's `$PATH`.
 [Postgraphile](https://www.graphile.org/postgraphile/) is used to expose GraphQL endpoints for our database schemas, this is described in detail [here](https://github.com/makerdao/vulcanizedb/blob/staging/documentation/postgraphile.md).
 
 ### Tests
-- Set the ipc path to a Kovan node either by:
-    - replacing the empty `ipcPath` in the `environments/testing.toml` with a path to a full node's eth_jsonrpc endpoint (e.g. local geth node ipc path or infura url)
-    - Or, setting the CLIENT_IPCPATH environment variable
+- Set the ipc path to a node by setting the CLIENT_IPCPATH environment variable.
 - `make test` will run the unit tests and skip the integration tests
 - `make integrationtest` will run just the integration tests
 - `make test` and `make integrationtest` setup a clean `vulcanize_testing` db

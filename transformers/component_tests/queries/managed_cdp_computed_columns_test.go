@@ -63,7 +63,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 				FROM api.managed_cdp_ilk(
 					(SELECT (id, cdpi, usr, urn_identifier, ilk_identifier, created)::api.managed_cdp
 					 FROM api.managed_cdp
@@ -76,7 +76,7 @@ var _ = Describe("Managed CDP computed columns", func() {
 	})
 
 	Describe("managed_cdp_urn", func() {
-		It("returns urn_state for a managed_cdp", func() {
+		It("returns urn_snapshot for a managed_cdp", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FakeUrn)
 			vatRepository := vat.StorageRepository{}

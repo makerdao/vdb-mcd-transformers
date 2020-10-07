@@ -18,52 +18,137 @@ import (
 var _ = Describe("Deny transformer", func() {
 	Context("Cat deny events", func() {
 		usrAddress := "0xa9ee75d81d78c36c4163004e6cc7a988eec9433e"
-		denyIntegrationTest(int64(8928165), test_data.CatAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(8928165), test_data.Cat100Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flap deny events", func() {
+	Context("Flap v1.0.0 deny events", func() {
 		usrAddress := "0xd27a5f3416d8791fc238c148c93630d9e3c882e5"
-		denyIntegrationTest(int64(8928163), test_data.FlapAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(8928163), test_data.FlapV100Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip ETH deny events", func() {
+	Context("Flap v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlapV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip BAT v1.0.0 deny events", func() {
+		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
+		denyIntegrationTest(int64(8928267), test_data.FlipBatV100Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip BAT v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipBatV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip COMP v1.1.2 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10950765), test_data.FlipCompV112Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip ETH v1.0.0 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(8928180), test_data.FlipEthAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(8928180), test_data.FlipEthV100Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip KNC deny events", func() {
+	Context("Flip ETH v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipEthV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip KNC-A v1.0.8 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(10323245), test_data.FlipKncAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(10323245), test_data.FlipKncAV108Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip TUSD deny events", func() {
+	Context("Flip KNC-A v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipKncAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip LINK-A v1.1.2 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10950765), test_data.FlipLinkV112Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip LRC-A v1.1.2 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10950765), test_data.FlipLinkV112Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip MANA-A v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipManaAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip PAXUSD-A v1.1.1 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10790678), test_data.FlipPaxusdAV111Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip TUSD-A v1.0.7 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(10144451), test_data.FlipTusdAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(10144451), test_data.FlipTusdAV107Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip USDC-A deny events", func() {
+	Context("Flip TUSD-A v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipTusdAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-A v1.0.4 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(9686502), test_data.FlipUsdcAAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(9686502), test_data.FlipUsdcAV104Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip USDC-B deny events", func() {
+	Context("Flip USDC-A v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipUsdcAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDC-B v1.0.7 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(10144450), test_data.FlipUsdcBAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(10144450), test_data.FlipUsdcBV107Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip WBTC deny events", func() {
+	Context("Flip USDC-B v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipUsdcBV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip USDT-A v1.1.1 deny events", func() {
+		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		denyIntegrationTest(int64(10790678), test_data.FlipUsdtAV111Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip WBTC v1.0.6 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(9975625), test_data.FlipWbtcAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(9975625), test_data.FlipWbtcAV106Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip ZRX deny events", func() {
+	Context("Flip WBTC v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipWbtcAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip ZRX-A v1.0.8 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		denyIntegrationTest(int64(10323245), test_data.FlipZrxAddress(), usrAddress, usrAddress)
+		denyIntegrationTest(int64(10323245), test_data.FlipZrxAV108Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flop deny events", func() {
-		usrAddress := "0xddb108893104de4e1c6d0e47c42237db4e617acc"
-		denyIntegrationTest(int64(9008144), test_data.FlopAddress(), usrAddress, usrAddress)
+	Context("Flip ZRX-A v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlipZrxAV109Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flop v1.0.1 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(9008144), test_data.FlopV101Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flop v1.0.9 deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10510886), test_data.FlopV109Address(), usrAddress, usrAddress)
 	})
 
 	Context("Jug deny events", func() {
@@ -84,6 +169,11 @@ var _ = Describe("Deny transformer", func() {
 	Context("Median KNC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(10350821), test_data.MedianKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Median MANA deny events", func() {
+		usrAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		denyIntegrationTest(int64(10542736), test_data.MedianManaAddress(), usrAddress, usrAddress)
 	})
 
 	Context("Median WBTC deny events", func() {
@@ -109,6 +199,11 @@ var _ = Describe("Deny transformer", func() {
 	Context("OSM KNC deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(int64(10350821), test_data.OsmKncAddress(), usrAddress, usrAddress)
+	})
+
+	Context("OSM MANA deny events", func() {
+		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
+		denyIntegrationTest(int64(10524041), test_data.OsmManaAddress(), usrAddress, usrAddress)
 	})
 
 	Context("OSM WBTC deny events", func() {

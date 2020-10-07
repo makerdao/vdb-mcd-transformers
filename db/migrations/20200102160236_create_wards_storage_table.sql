@@ -2,10 +2,10 @@
 CREATE TABLE maker.wards
 (
     id         SERIAL PRIMARY KEY,
-    diff_id    BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id  INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    address_id INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
-    usr        INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    usr        BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     wards      INTEGER NOT NULL,
     UNIQUE (diff_id, header_id, address_id, usr, wards)
 );

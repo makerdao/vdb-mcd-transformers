@@ -32,6 +32,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	p2 "github.com/makerdao/vulcanizedb/pkg/plugin"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/helpers"
 	. "github.com/onsi/ginkgo"
@@ -40,7 +41,8 @@ import (
 )
 
 var eventConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -69,7 +71,8 @@ var eventConfig = config.Plugin{
 }
 
 var storageConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"jug": {
 			Path:           "transformers/storage/jug/initializer",
@@ -90,7 +93,8 @@ var storageConfig = config.Plugin{
 }
 
 var combinedConfig = config.Plugin{
-	Home: "github.com/makerdao/vdb-mcd-transformers",
+	Home:   "github.com/makerdao/vdb-mcd-transformers",
+	Schema: "maker",
 	Transformers: map[string]config.Transformer{
 		"bite": {
 			Path:           "transformers/events/bite/initializer",
@@ -138,8 +142,14 @@ type Exporter interface {
 	Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []transformer.ContractTransformerInitializer)
 }
 
+type StubMigrationManager struct{}
+
+func (s *StubMigrationManager) RunMigrations() error {
+	return nil
+}
+
 var _ = Describe("Plugin test", func() {
-	viper.SetConfigName("testing")
+	viper.SetConfigName("mcdTransformers")
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 
 	var (
@@ -153,6 +163,7 @@ var _ = Describe("Plugin test", func() {
 		retryInterval                = 2 * time.Second
 		delegator                    logs.ILogDelegator
 		extractor                    logs.ILogExtractor
+		statusWriter                 fakes.MockStatusWriter
 	)
 
 	BeforeEach(func() {
@@ -165,11 +176,15 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = eventConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(eventConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo, checkedHeaderErr := repositories.NewCheckedHeadersRepository(db, "maker")
+			Expect(checkedHeaderErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
+			statusWriter = fakes.MockStatusWriter{}
 		})
 
 		AfterEach(func() {
@@ -205,7 +220,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 
@@ -234,7 +249,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.FlipEthAddress()))
+				}).Should(Equal(test_data.FlipEthV100Address()))
 			})
 
 			It("rechecks checked headers for event logs", func() {
@@ -252,7 +267,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventTransformerInitializers, _, _ := exporter.Export()
 
-				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				w := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addErr := w.AddTransformers(eventTransformerInitializers)
 				Expect(addErr).NotTo(HaveOccurred())
 				var executeErrOne, executeErrTwo error
@@ -278,6 +293,7 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = storageConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(storageConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
@@ -310,7 +326,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, -1)
+				w := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -325,10 +341,13 @@ var _ = Describe("Plugin test", func() {
 			goPath, soPath, pathErr = combinedConfig.GetPluginPaths()
 			Expect(pathErr).ToNot(HaveOccurred())
 			g, initErr = p2.NewGenerator(combinedConfig, dbConfig)
+			g.SetMigrationManager(&StubMigrationManager{})
 			Expect(initErr).ToNot(HaveOccurred())
 			generateErr = g.GenerateExporterPlugin()
 			Expect(generateErr).ToNot(HaveOccurred())
-			extractor = logs.NewLogExtractor(db, blockChain)
+			checkedHeaderRepo, checkedHeaderErr := repositories.NewCheckedHeadersRepository(db, "maker")
+			Expect(checkedHeaderErr).ToNot(HaveOccurred())
+			extractor = logs.NewLogExtractor(db, blockChain, checkedHeaderRepo)
 			delegator = logs.NewLogDelegator(db)
 		})
 
@@ -365,7 +384,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				eventInitializers, storageInitializers, _ := exporter.Export()
 
-				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval)
+				ew := watcher.NewEventWatcher(db, blockChain, extractor, delegator, maxConsecutiveUnexpectedErrs, retryInterval, &statusWriter)
 				addTransformersErr := ew.AddTransformers(eventInitializers)
 				Expect(addTransformersErr).NotTo(HaveOccurred())
 
@@ -394,9 +413,9 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.FlipEthAddress()))
+				}).Should(Equal(test_data.FlipEthV100Address()))
 
-				sw := watcher.NewStorageWatcher(db, -1)
+				sw := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()

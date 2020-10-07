@@ -19,20 +19,23 @@ package vow_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Cat file vow transformer", func() {
-	var transformer vow.Transformer
+	var (
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+		transformer vow.Transformer
+	)
 
 	BeforeEach(func() {
-		transformer = vow.Transformer{}
+		test_config.CleanTestDB(db)
 	})
 
 	It("returns err if log is missing topics", func() {
@@ -42,7 +45,7 @@ var _ = Describe("Cat file vow transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -53,14 +56,17 @@ var _ = Describe("Cat file vow transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
-	It("converts a log to an model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileVowEventLog}, nil)
+	It("converts a log to a model", func() {
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileVowEventLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]event.InsertionModel{test_data.CatFileVowModel()}))
+		expectedModel := test_data.CatFileVowModel()
+		test_data.AssignAddressID(test_data.CatFileVowEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.CatFileVowEventLog, expectedModel, db)
+		Expect(models).To(ConsistOf(expectedModel))
 	})
 })

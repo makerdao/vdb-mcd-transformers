@@ -68,6 +68,7 @@ func (repository StorageRepository) insertIlkRho(diffID, headerID int64, metadat
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk rho: %w", err)
 	}
+
 	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRho, InsertJugIlkRhoQuery, rho, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s rho %s from diff ID %d: %w", ilk, rho, diffID, insertErr)
@@ -80,6 +81,7 @@ func (repository StorageRepository) insertIlkDuty(diffID, headerID int64, metada
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk duty: %w", err)
 	}
+
 	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDuty, InsertJugIlkDutyQuery, duty, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s duty %s from diff ID %d: %w", ilk, duty, diffID, insertErr)

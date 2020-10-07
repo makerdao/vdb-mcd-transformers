@@ -124,6 +124,32 @@ func InsertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value 
 	return tx.Commit()
 }
 
+func InsertFieldWithIlkAndAddress(diffID, headerID, addressID int64, ilk, variableName, query, value string, db *postgres.DB) error {
+	tx, txErr := db.Beginx()
+	if txErr != nil {
+		return fmt.Errorf("error beginning transaction: %w", txErr)
+	}
+
+	ilkID, ilkErr := GetOrCreateIlkInTransaction(ilk, tx)
+	if ilkErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError("ilk", ilkErr)
+		}
+		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
+	}
+	_, writeErr := tx.Exec(query, diffID, headerID, addressID, ilkID, value)
+
+	if writeErr != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			return FormatRollbackError(variableName, writeErr)
+		}
+		return fmt.Errorf("error inserting field with ilk: %w", writeErr)
+	}
+	return tx.Commit()
+}
+
 func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddress string, db *postgres.DB) error {
 	tx, txErr := db.Beginx()
 	if txErr != nil {
@@ -173,4 +199,8 @@ func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value
 		return insertErr
 	}
 	return tx.Commit()
+}
+
+func GetChecksumAddressString(address string) string {
+	return common.HexToAddress(address).Hex()
 }

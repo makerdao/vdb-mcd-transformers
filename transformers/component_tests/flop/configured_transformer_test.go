@@ -38,19 +38,18 @@ import (
 
 var _ = Describe("Executing the flop transformer", func() {
 	var (
-		db                     = test_config.NewTestDB(test_config.NewTestNode())
-		flopperContractAddress = test_data.FlopAddress()
-		keccakOfAddress        = types.HexToKeccak256Hash(flopperContractAddress)
-		repository             = flop.StorageRepository{ContractAddress: flopperContractAddress}
-		storageKeysLookup      = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, flopperContractAddress))
-		header                 = fakes.FakeHeader
-		transformer            storage.Transformer
+		db                = test_config.NewTestDB(test_config.NewTestNode())
+		contractAddress   = common.HexToAddress(test_data.FlopV101Address())
+		repository        = flop.StorageRepository{ContractAddress: contractAddress.Hex()}
+		storageKeysLookup = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		header            = fakes.FakeHeader
+		transformer       storage.Transformer
 	)
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
-			Address:           common.HexToAddress(flopperContractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -65,7 +64,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		vat := "0x1CC5ABe5C0464F3af2a10df0c711236a8446BF75"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("0000000000000000000000001cc5abe5c0464f3af2a10df0c711236a8446bf75")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -80,7 +79,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		gem := "0xAaF64BFCC32d0F15873a02163e7E500671a4ffcD"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("000000000000000000000000aaf64bfcc32d0f15873a02163e7e500671a4ffcd")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -94,7 +93,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		beg := "1050000000000000000000000000"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -108,7 +107,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		pad := "1500000000000000000000000000"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
 		value := common.HexToHash("000000000000000000000000000000000000000004d8c55aefb8c05b5c000000")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -122,7 +121,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		ttl := "10800"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006")
 		value := common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -136,7 +135,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		ttl := "172800"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006")
 		value := common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -153,7 +152,7 @@ var _ = Describe("Executing the flop transformer", func() {
 	It("reads in a live storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000008")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -167,7 +166,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		vow := "0x1CC5ABe5C0464F3af2a10df0c711236a8446BF75"
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
 		value := common.HexToHash("0000000000000000000000001cc5abe5c0464f3af2a10df0c711236a8446bf75")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -183,7 +182,7 @@ var _ = Describe("Executing the flop transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flopAddressID, flopAddressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+			flopAddressID, flopAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(flopAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
@@ -204,7 +203,7 @@ var _ = Describe("Executing the flop transformer", func() {
 
 			key := common.HexToHash("4f3fc9e802fdeddd3e9ba88447e1731d7cfb3279d1b86a2328ef7efe1d42ac84")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -212,8 +211,7 @@ var _ = Describe("Executing the flop transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flopAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, flopAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -229,9 +227,9 @@ var _ = Describe("Executing the flop transformer", func() {
 				bidId = 1
 				key := common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931")
 				value := common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d")
-				diff = test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+				diff = test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-				addressId, addressErr := shared.GetOrCreateAddress(flopperContractAddress, db)
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, diff.ID, header.Id, addressId, bidId)

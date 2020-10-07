@@ -22,18 +22,8 @@ var _ = Describe("Auth Transformer", func() {
 
 	It("converts rely logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.RelyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.RelyEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.RelyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.RelyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		var msgSenderAddressID int64
-		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.RelyEventLog.Log.Topics[1].Hex()).Hex())
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
@@ -41,8 +31,9 @@ var _ = Describe("Auth Transformer", func() {
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.RelyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+
+		test_data.AssignAddressID(test_data.RelyEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.RelyEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
@@ -50,18 +41,8 @@ var _ = Describe("Auth Transformer", func() {
 
 	It("converts deny logs to models", func() {
 		transformer := auth.Transformer{TableName: constants.DenyTable}
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.DenyEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.DenyEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-
-		var contractAddressID int64
-		contractAddressErr := db.Get(&contractAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			test_data.DenyEventLog.Log.Address.String())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		var msgSenderAddressID int64
-		msgSenderAddressErr := db.Get(&msgSenderAddressID, `SELECT id FROM addresses WHERE address = $1`,
-			common.HexToAddress(test_data.DenyEventLog.Log.Topics[1].Hex()).Hex())
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		var usrAddressID int64
 		usrAddressErr := db.Get(&usrAddressID, `SELECT id FROM addresses WHERE address = $1`,
@@ -69,8 +50,8 @@ var _ = Describe("Auth Transformer", func() {
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.DenyModel()
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+		test_data.AssignAddressID(test_data.DenyEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.DenyEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.UsrColumn] = usrAddressID
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
@@ -81,7 +62,7 @@ var _ = Describe("Auth Transformer", func() {
 		invalidLog := test_data.DenyEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

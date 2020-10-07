@@ -20,6 +20,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
+	"github.com/makerdao/vulcanizedb/pkg/eth/client"
+	"github.com/makerdao/vulcanizedb/pkg/eth/converters"
+	"github.com/makerdao/vulcanizedb/pkg/eth/node"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -28,29 +34,36 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
-var TestConfig *viper.Viper
 var DBConfig config.Database
 var TestClient config.Client
 var ABIFilePath string
 var wipeTableQueries []string
 
 func init() {
-	setTestConfig()
+	SetTestConfig()
 	setABIPath()
 }
 
-func setTestConfig() {
-	TestConfig = viper.New()
-	TestConfig.SetConfigName("testing")
-	TestConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	err := TestConfig.ReadInConfig()
-	if err != nil {
-		log.Fatal(err)
+func SetTestConfig() {
+	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
+
+	viper.SetConfigName("testDatabase")
+	mergeConfigErr := viper.ReadInConfig()
+	if mergeConfigErr != nil {
+		log.Fatal(mergeConfigErr)
 	}
-	ipc := TestConfig.GetString("client.ipcPath")
-	hn := TestConfig.GetString("database.hostname")
-	port := TestConfig.GetInt("database.port")
-	name := TestConfig.GetString("database.name")
+
+	viper.SetConfigName("mcdTransformers")
+	readConfigErr := viper.MergeInConfig()
+	if readConfigErr != nil {
+		log.Fatal(readConfigErr)
+	}
+
+	ipc := viper.GetString("client.ipcPath")
+	hn := viper.GetString("database.hostname")
+	port := viper.GetInt("database.port")
+	name := viper.GetString("database.name")
+
 	DBConfig = config.Database{
 		Hostname: hn,
 		Name:     name,
@@ -64,6 +77,40 @@ func setTestConfig() {
 func setABIPath() {
 	gp := os.Getenv("GOPATH")
 	ABIFilePath = gp + "/src/github.com/makerdao/vulcanizedb/pkg/eth/testing/"
+}
+
+func NewTestBlockchain() (core.BlockChain, error) {
+	ipc := TestClient.IPCPath
+	// If we don't have an ipc path in the config file, check the env variable
+	if ipc == "" {
+		configErr := viper.BindEnv("url", "CLIENT_IPCPATH")
+		if configErr != nil {
+			return nil, fmt.Errorf("unable to bind url to CLIENT_IPCPATH env var %w", configErr)
+		}
+		ipc = viper.GetString("url")
+	}
+
+	rpcClient, ethClient, clientErr := getClients(ipc)
+	if clientErr != nil {
+		return nil, fmt.Errorf("failed to get test clients: %w", clientErr)
+	}
+
+	return getBlockChain(rpcClient, ethClient), nil
+}
+
+func getClients(ipc string) (client.RpcClient, *ethclient.Client, error) {
+	raw, err := rpc.Dial(ipc)
+	if err != nil {
+		return client.RpcClient{}, &ethclient.Client{}, err
+	}
+	return client.NewRpcClient(raw, ipc), ethclient.NewClient(raw), nil
+}
+
+func getBlockChain(rpcClient client.RpcClient, ethClient *ethclient.Client) core.BlockChain {
+	testClient := client.NewEthClient(ethClient)
+	testNode := node.MakeNode(rpcClient)
+	transactionConverter := converters.NewTransactionConverter(testClient)
+	return eth.NewBlockChain(testClient, rpcClient, testNode, transactionConverter)
 }
 
 func NewTestDB(node core.Node) *postgres.DB {

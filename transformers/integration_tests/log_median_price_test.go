@@ -20,6 +20,12 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		logMedianPriceIntegrationTest(9957995, test_data.MedianBatAddress(), val, age)
 	})
 
+	Context("LogMedianPrice event on Median COMP", func() {
+		val := "136240785441850000000"
+		age := "1601305976"
+		logMedianPriceIntegrationTest(10951676, test_data.MedianCompAddress(), val, age)
+	})
+
 	Context("LogMedianPrice event on Median ETH", func() {
 		val := "192578360000000000000"
 		age := "1588003362"
@@ -30,6 +36,30 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		val := "1692228609000000000"
 		age := "1594112655"
 		logMedianPriceIntegrationTest(10411362, test_data.MedianKncAddress(), val, age)
+	})
+
+	Context("LogMedianPrice event on Median LINK", func() {
+		val := "10658915841150000000"
+		age := "1601302284"
+		logMedianPriceIntegrationTest(10951425, test_data.MedianLinkAddress(), val, age)
+	})
+
+	Context("LogMedianPrice event on Median LRC", func() {
+		val := "230146503900000000"
+		age := "1601317186"
+		logMedianPriceIntegrationTest(10952523, test_data.MedianLrcAddress(), val, age)
+	})
+
+	Context("LogMedianPrice event on Median MANA", func() {
+		val := "42028498300000000"
+		age := "1595917269"
+		logMedianPriceIntegrationTest(10546364, test_data.MedianManaAddress(), val, age)
+	})
+
+	Context("LogMedianPrice event on Median USDT-A", func() {
+		val := "1000732490700000000"
+		age := "1599686517"
+		logMedianPriceIntegrationTest(10829955, test_data.MedianUsdtAddress(), val, age)
 	})
 
 	Context("LogMedianPrice event on Median WBTC", func() {

@@ -82,7 +82,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 				FROM api.flip_bid_snapshot_ilk(
 					(SELECT (block_height, bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated)::api.flip_bid_snapshot
 					 FROM api.get_flip($1, $2, $3))
@@ -94,7 +94,7 @@ var _ = Describe("flip_bid_snapshot computed columns", func() {
 	})
 
 	Describe("flip_bid_snapshot_urn", func() {
-		It("returns urn_state for a flip_bid_snapshot", func() {
+		It("returns urn_snapshot for a flip_bid_snapshot", func() {
 			urnSetupData := test_helpers.GetUrnSetupData()
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string))
 			vatRepository := vat.StorageRepository{}

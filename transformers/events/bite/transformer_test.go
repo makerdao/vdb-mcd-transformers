@@ -33,7 +33,7 @@ var _ = Describe("Bite Transformer", func() {
 	var transformer = bite.Transformer{}
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.BiteEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.BiteEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var urnID int64
@@ -41,7 +41,7 @@ var _ = Describe("Bite Transformer", func() {
 		Expect(urnErr).NotTo(HaveOccurred())
 		expectedModel := test_data.BiteModel()
 		expectedModel.ColumnValues[constants.UrnColumn] = urnID
-
+		test_data.AssignAddressID(test_data.BiteEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

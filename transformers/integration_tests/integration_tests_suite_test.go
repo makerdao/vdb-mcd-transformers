@@ -10,7 +10,6 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/spf13/viper"
 )
 
 func TestIntegrationTests(t *testing.T) {
@@ -24,24 +23,9 @@ var (
 )
 
 var _ = BeforeSuite(func() {
-	testConfig := viper.New()
-	testConfig.SetConfigName("testing")
-	testConfig.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
-	err := testConfig.ReadInConfig()
-	Expect(err).To(BeNil())
-	ipc = testConfig.GetString("client.ipcPath")
-	// If we don't have an ipc path in the config file, check the env variable
-	if ipc == "" {
-		configErr := testConfig.BindEnv("url", "CLIENT_IPCPATH")
-		Expect(configErr).To(BeNil(), "Unable to bind url to CLIENT_IPCPATH env var")
-		ipc = testConfig.GetString("url")
-	}
-	Expect(ipc).NotTo(BeEmpty(), "testing.toml IPC path or $CLIENT_IPCPATH env variable need to be set")
-
-	rpcClient, ethClient, clientErr := getClients(ipc)
-	Expect(clientErr).NotTo(HaveOccurred())
+	test_config.SetTestConfig()
 	var blockChainErr error
-	blockChain, blockChainErr = getBlockChain(rpcClient, ethClient)
+	blockChain, blockChainErr = test_config.NewTestBlockchain()
 	Expect(blockChainErr).NotTo(HaveOccurred())
 
 	db = test_config.NewTestDB(blockChain.Node())

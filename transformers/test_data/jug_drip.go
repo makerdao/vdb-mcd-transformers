@@ -56,11 +56,15 @@ var jugDripModel = event.InsertionModel{
 	SchemaName: constants.MakerSchema,
 	TableName:  constants.JugDripTable,
 	OrderedColumns: []event.ColumnName{
-		event.HeaderFK, constants.IlkColumn, event.LogFK,
+		event.HeaderFK,
+		event.LogFK,
+		constants.MsgSenderColumn,
+		constants.IlkColumn,
 	},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: JugDripEventLog.HeaderID,
 		event.LogFK:    JugDripEventLog.ID,
+		// msg.sender
 		// Ilk column
 	},
 }

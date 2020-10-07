@@ -24,7 +24,7 @@ import (
 var _ = Describe("Flop storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 = &flop.StorageRepository{ContractAddress: test_data.FlopAddress()}
+		repo                 = &flop.StorageRepository{ContractAddress: test_data.FlopV101Address()}
 		blockNumber          int64
 		diffID, fakeHeaderID int64
 	)
@@ -246,8 +246,7 @@ var _ = Describe("Flop storage repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {

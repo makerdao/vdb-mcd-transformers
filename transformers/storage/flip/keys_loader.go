@@ -49,6 +49,9 @@ var (
 
 	KicksKey      = common.HexToHash(vdbStorage.IndexSix)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
+
+	CatKey      = common.HexToHash(vdbStorage.IndexSeven)
+	CatMetadata = types.GetValueMetadata(mcdStorage.Cat, nil, types.Address)
 )
 
 type keysLoader struct {
@@ -115,6 +118,7 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[BegKey] = BegMetadata
 	mappings[TTLAndTauStorageKey] = TTLAndTauMetadata
 	mappings[KicksKey] = KicksMetadata
+	mappings[CatKey] = CatMetadata
 	return mappings
 }
 

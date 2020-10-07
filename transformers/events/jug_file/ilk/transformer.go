@@ -35,8 +35,14 @@ func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgr
 			return nil, verifyErr
 		}
 
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		ilk := log.Log.Topics[2].Hex()
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
@@ -51,14 +57,15 @@ func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgr
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugFileIlkTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, constants.IlkColumn, constants.WhatColumn, constants.DataColumn, event.LogFK,
+				event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.IlkColumn, constants.WhatColumn, constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.WhatColumn: what,
-				constants.DataColumn: data.String(),
-				constants.IlkColumn:  ilkId,
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.IlkColumn:       ilkID,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data.String(),
 			},
 		}
 		models = append(models, model)

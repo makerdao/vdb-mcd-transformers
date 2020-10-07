@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -41,10 +40,9 @@ var _ = Describe("Executing the transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
 		repository        = vat.StorageRepository{}
-		contractAddress   = test_data.VatAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
+		contractAddress   = common.HexToAddress(test_data.VatAddress())
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -64,7 +62,7 @@ var _ = Describe("Executing the transformer", func() {
 		vatDenyLog := test_data.CreateTestLog(header.Id, db)
 		vatDenyModel := test_data.VatDenyModel()
 
-		vatAddressID, vatAddressErr := shared.GetOrCreateAddress(test_data.VatAddress(), db)
+		vatAddressID, vatAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 		Expect(vatAddressErr).NotTo(HaveOccurred())
 
 		userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
@@ -85,7 +83,7 @@ var _ = Describe("Executing the transformer", func() {
 
 		key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		transformErr := transformer.Execute(wardsDiff)
 		Expect(transformErr).NotTo(HaveOccurred())
@@ -93,14 +91,13 @@ var _ = Describe("Executing the transformer", func() {
 		var wardsResult test_helpers.MappingResWithAddress
 		err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(vatAddressID, 10)))
-		test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+		test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, vatAddressID, strconv.FormatInt(userAddressID, 10), "1")
 	})
 
 	It("reads in a Vat debt storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007")
 		value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
-		vatDebtDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vatDebtDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vatDebtDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -114,7 +111,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vat Line storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
 		value := common.HexToHash("0000000000000000000002ac3a4edbbfb8014e3ba83411e915e8000000000000")
-		vatLineDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vatLineDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vatLineDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -128,7 +125,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Vat live storage diff row and persists it", func() {
 		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		vatLiveDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vatLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vatLiveDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -154,7 +151,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk Art storage diff row and persists it", func() {
 			key := common.HexToHash("5cd43a2b0a7e767504a508ed07c6f6d26130368a2a5ce573193b4c24eba603bb")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000de0b6b3a7640000")
-			ilkArtDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ilkArtDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(ilkArtDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -168,7 +165,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk rate storage diff row and persists it", func() {
 			key := common.HexToHash("5cd43a2b0a7e767504a508ed07c6f6d26130368a2a5ce573193b4c24eba603bc")
 			value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-			ilkRateDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ilkRateDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(ilkRateDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -182,7 +179,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat ilk spot storage diff row and persists it", func() {
 			key := common.HexToHash("5cd43a2b0a7e767504a508ed07c6f6d26130368a2a5ce573193b4c24eba603bd")
 			value := common.HexToHash("0000000000000000000000000000000000000001215a061b4dc8dbb48e000000")
-			ilkSpotDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ilkSpotDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(ilkSpotDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -193,28 +190,10 @@ var _ = Describe("Executing the transformer", func() {
 			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(ilkId, 10), "89550000000000000000000000000")
 		})
 
-		It("reads in a Vat ilk spot storage diff with a hashed storage key", func() {
-			anotherIlk := "0x474e542d41000000000000000000000000000000000000000000000000000000"
-			anotherIlkID, err := shared.GetOrCreateIlk(anotherIlk, db)
-			Expect(err).NotTo(HaveOccurred())
-
-			key := common.HexToHash("2165edb4e1c37b99b60fa510d84f939dd35d5cd1d1c8f299d6456ea09df65a76")
-			value := common.HexToHash("00000000000000000000000000000000000000008b1bb2b1a88f91522d765555")
-			ilkSpotDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
-
-			err = transformer.Execute(ilkSpotDiff)
-			Expect(err).NotTo(HaveOccurred())
-
-			var spotResult test_helpers.MappingRes
-			err = db.Get(&spotResult, `SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM maker.vat_ilk_spot`)
-			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(spotResult, ilkSpotDiff.ID, header.Id, strconv.FormatInt(anotherIlkID, 10), "43051901220750297886077900117")
-		})
-
 		It("reads in a Vat ilk line storage diff row and persists it", func() {
 			key := common.HexToHash("5cd43a2b0a7e767504a508ed07c6f6d26130368a2a5ce573193b4c24eba603be")
 			value := common.HexToHash("00000000000000000000000000047bf19673df52e37f2410011d100000000000")
-			ilkLineDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ilkLineDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(ilkLineDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -242,7 +221,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat urn ink storage diff row and persists it", func() {
 			key := common.HexToHash("f61b39a22cef8e61a5dc6836ca1a1d267a584ca41782d5b2832fb973dc4731e7")
 			value := common.HexToHash("000000000000000000000000000000000000000000000002b5e3af16b1880000")
-			urnInkDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			urnInkDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(urnInkDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -256,7 +235,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat urn art storage diff row and persists it", func() {
 			key := common.HexToHash("f61b39a22cef8e61a5dc6836ca1a1d267a584ca41782d5b2832fb973dc4731e8")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000de0b6b3a7640000")
-			urnArtDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			urnArtDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(urnArtDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -290,7 +269,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat gem storage diff row and persists it", func() {
 			key := common.HexToHash("f4cd303dafe86407ce2225d1c13f4a50accf4db0b5187d7cf268acff9841cfa4")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000")
-			vatGemDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			vatGemDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(vatGemDiff)
 			Expect(err).NotTo(HaveOccurred())
@@ -324,7 +303,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Vat dai storage diff row and persists it", func() {
 			key := common.HexToHash("de69de809d681089810c52d4e65d3489177732d304a5eda082bcf61b015d3918")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000")
-			vatDaiDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			vatDaiDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(vatDaiDiff)
 			Expect(err).NotTo(HaveOccurred())

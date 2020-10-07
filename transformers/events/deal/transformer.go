@@ -41,6 +41,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.DealTable,
@@ -48,13 +53,15 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				event.HeaderFK,
 				event.AddressFK,
 				event.LogFK,
+				constants.MsgSenderColumn,
 				constants.BidIDColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:        log.HeaderID,
-				event.AddressFK:       addressID,
-				event.LogFK:           log.ID,
-				constants.BidIDColumn: bidId.String(),
+				event.HeaderFK:            log.HeaderID,
+				event.AddressFK:           addressID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.BidIDColumn:     bidId.String(),
 			},
 		}
 		models = append(models, model)

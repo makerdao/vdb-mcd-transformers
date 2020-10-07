@@ -53,7 +53,8 @@ var _ = Describe("Sin queue events query", func() {
 			fakeEra := strconv.Itoa(timestampOne)
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			vowFessEvent := test_data.VowFessModel
+			vowFessEvent := test_data.VowFessModel()
+			test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
@@ -76,6 +77,8 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
+
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -91,8 +94,10 @@ var _ = Describe("Sin queue events query", func() {
 		It("returns events from multiple blocks", func() {
 			fakeEra := strconv.Itoa(timestampOne)
 
-			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
-			vowFessEvent := test_data.VowFessModel
+			vowFessLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFessEventLog.Log, db)
+			vowFessEvent := test_data.VowFessModel()
+			test_data.AssignMessageSenderID(vowFessLog, vowFessEvent, db)
+
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
@@ -107,6 +112,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -131,6 +137,7 @@ var _ = Describe("Sin queue events query", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 
@@ -146,11 +153,12 @@ var _ = Describe("Sin queue events query", func() {
 
 			BeforeEach(func() {
 				fakeEra = strconv.Itoa(timestampOne)
-				logId := test_data.CreateTestLog(headerOne.Id, db).ID
+				vowFessEventLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFessEventLog.Log, db)
+				vowFessEvent := test_data.VowFessModel()
+				test_data.AssignMessageSenderID(vowFessEventLog, vowFessEvent, db)
 
-				vowFessEvent := test_data.VowFessModel
 				vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
-				vowFessEvent.ColumnValues[event.LogFK] = logId
+				vowFessEvent.ColumnValues[event.LogFK] = vowFessEventLog.ID
 				vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)
 				Expect(vowFessErr).NotTo(HaveOccurred())
 
@@ -163,6 +171,7 @@ var _ = Describe("Sin queue events query", func() {
 				vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 				vowFlogEvent.ColumnValues[event.HeaderFK] = headerTwo.Id
 				vowFlogEvent.ColumnValues[event.LogFK] = logTwoId
+				test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
 				vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 				Expect(vowFlogErr).NotTo(HaveOccurred())
 			})

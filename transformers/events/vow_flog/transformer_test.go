@@ -18,6 +18,7 @@ package vow_flog_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -27,7 +28,10 @@ import (
 )
 
 var _ = Describe("Vow flog transformer", func() {
-	var transformer = vow_flog.Transformer{}
+	var (
+		transformer = vow_flog.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
 
 	It("returns err if log is missing topics", func() {
 		badLog := core.EventLog{
@@ -35,15 +39,18 @@ var _ = Describe("Vow flog transformer", func() {
 				Data: []byte{1, 1, 1, 1, 1},
 			}}
 
-		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.VowABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFlogEventLog}, nil)
+		models, err := transformer.ToModels(constants.VowABI(), []core.EventLog{test_data.VowFlogEventLog}, db)
+
+		expectedModel := test_data.VowFlogModel
+		test_data.AssignMessageSenderID(test_data.VowFlogEventLog, expectedModel, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(len(models)).To(Equal(1))
-		Expect(models[0]).To(Equal(test_data.VowFlogModel))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

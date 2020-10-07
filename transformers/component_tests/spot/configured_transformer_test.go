@@ -29,7 +29,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,12 +38,11 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.SpotAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		repository        = spot.StorageRepository{ContractAddress: contractAddress}
+		contractAddress   = common.HexToAddress(test_data.SpotAddress())
+		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		repository        = spot.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -63,7 +61,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Spot Vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("00000000000000000000000057aa8b02f5d3e28371fedcf672c8668869f9aac7")
-		spotVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		spotVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(spotVatDiff)
 
@@ -77,7 +75,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Spot Par storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-		spotParDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		spotParDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(spotParDiff)
 
@@ -91,7 +89,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Spot Live storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		spotLiveDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		spotLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		executeErr := transformer.Execute(spotLiveDiff)
 
@@ -107,7 +105,7 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			spotAddressID, spotAddressErr := shared.GetOrCreateAddress(test_data.SpotAddress(), db)
+			spotAddressID, spotAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(spotAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x2be4b34a34c3cda056dc9e514a30040b6358bf89"
@@ -128,7 +126,7 @@ var _ = Describe("Executing the transformer", func() {
 
 			key := common.HexToHash("acbda0c7abc278c8fb8df441982ecd46bd66bed192fdc761196288a48630eb70")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
@@ -136,8 +134,7 @@ var _ = Describe("Executing the transformer", func() {
 			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(spotAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, spotAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -154,7 +151,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Spot Ilk Pip storage diff row and persists it", func() {
 			key := common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc6")
 			value := common.HexToHash("000000000000000000000000a53e6efb4cbed841eace02220498860905e94998")
-			spotIlkPipDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			spotIlkPipDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			executeErr := transformer.Execute(spotIlkPipDiff)
 
@@ -168,7 +165,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a Spot Ilk Mat storage diff row and persists it", func() {
 			key := common.HexToHash("1730ac98111482efebd8acadb14d7fa301298e0d95bf3c34c3378ef524670bc7")
 			value := common.HexToHash("000000000000000000000000000000000000000006765c793fa10079d0000000")
-			spotIlkMatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			spotIlkMatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			executeErr := transformer.Execute(spotIlkMatDiff)
 

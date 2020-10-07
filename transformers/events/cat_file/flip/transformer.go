@@ -34,12 +34,20 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		if verifyErr != nil {
 			return nil, verifyErr
 		}
+		addressID, addressErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
+		if addressErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
+		msgSender := log.Log.Topics[1].Hex()
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
 		ilk := log.Log.Topics[2].Hex()
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
-
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 		flipBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
@@ -55,14 +63,18 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 				constants.IlkColumn,
 				constants.WhatColumn,
 				constants.FlipColumn,
+				constants.MsgSenderColumn,
 				event.LogFK,
+				event.AddressFK,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       log.HeaderID,
-				constants.IlkColumn:  ilkId,
-				constants.WhatColumn: what,
-				constants.FlipColumn: flip,
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				constants.IlkColumn:       ilkID,
+				constants.WhatColumn:      what,
+				constants.FlipColumn:      flip,
+				constants.MsgSenderColumn: msgSenderID,
+				event.LogFK:               log.ID,
+				event.AddressFK:           addressID,
 			},
 		}
 
