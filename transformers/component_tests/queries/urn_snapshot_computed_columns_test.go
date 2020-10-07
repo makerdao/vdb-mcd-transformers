@@ -47,9 +47,9 @@ var _ = Describe("urn_snapshot computed columns", func() {
 		headerTwo core.Header
 		logIdOne,
 		logIdTwo int64
-		vatRepository    vat.VatStorageRepository
-		catRepository    cat.CatStorageRepository
-		jugRepository    jug.JugStorageRepository
+		vatRepository    vat.StorageRepository
+		catRepository    cat.StorageRepository
+		jugRepository    jug.StorageRepository
 		headerRepository datastore.HeaderRepository
 	)
 
@@ -88,7 +88,7 @@ var _ = Describe("urn_snapshot computed columns", func() {
 
 			var result test_helpers.IlkSnapshot
 			getIlkErr := db.Get(&result,
-				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, created, updated
+				`SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
 					FROM api.urn_snapshot_ilk(
 					(SELECT (urn_identifier, ilk_identifier, block_height, ink, art, created, updated)::api.urn_snapshot
 					FROM api.urn_snapshot))`)

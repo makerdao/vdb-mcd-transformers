@@ -44,9 +44,9 @@ var _ = Describe("Deal transformer", func() {
 		dealConfig = event.TransformerConfig{
 			TransformerName: constants.DealTable,
 			ContractAddresses: []string{
-				test_data.FlapAddress(),
-				test_data.FlipEthAddress(),
-				test_data.FlopAddress(),
+				test_data.FlapV100Address(),
+				test_data.FlipEthV100Address(),
+				test_data.FlopV101Address(),
 			},
 			Topic: constants.DealSignature(),
 		}
@@ -78,16 +78,18 @@ var _ = Describe("Deal transformer", func() {
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []dealModel
-		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
+		var dbResult dealModel
+		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAddress(), db)
+		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
 		Expect(flipAddressErr).NotTo(HaveOccurred())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x00aBe7471ec9b6953A3BD0ed3C06c46F29Aa4280", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidID).To(Equal("115"))
-		Expect(dbResult[0].AddressID).To(Equal(flipAddressID))
+		Expect(dbResult.BidID).To(Equal("115"))
+		Expect(dbResult.AddressID).To(Equal(flipAddressID))
+		Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
 	})
 
 	It("persists a flop deal log event", func() {
@@ -107,16 +109,18 @@ var _ = Describe("Deal transformer", func() {
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []dealModel
-		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal`)
+		var dbResult dealModel
+		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopAddress(), db)
+		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x06C36BEA54A74dB813Af0fc136c2E8d0B08e2FB1", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidID).To(Equal("102"))
-		Expect(dbResult[0].AddressID).To(Equal(flopAddressID))
+		Expect(dbResult.BidID).To(Equal("102"))
+		Expect(dbResult.AddressID).To(Equal(flopAddressID))
+		Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
 	})
 
 	It("persists a flap deal log event", func() {
@@ -136,20 +140,23 @@ var _ = Describe("Deal transformer", func() {
 		transformErr := transformer.Execute(eventLogs)
 		Expect(transformErr).NotTo(HaveOccurred())
 
-		var dbResult []dealModel
-		err := db.Select(&dbResult, `SELECT bid_id, address_id FROM maker.deal ORDER BY log_id`)
+		var dbResult dealModel
+		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal ORDER BY log_id`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xFDc7768e92B479F27dD11635c9207d542177ae72", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].BidID).To(Equal("48"))
-		Expect(dbResult[0].AddressID).To(Equal(flapAddressID))
+		Expect(dbResult.BidID).To(Equal("48"))
+		Expect(dbResult.AddressID).To(Equal(flapAddressID))
+		Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
 	})
 })
 
 type dealModel struct {
-	BidID     string `db:"bid_id"`
-	AddressID int64  `db:"address_id"`
+	BidID       string `db:"bid_id"`
+	AddressID   int64  `db:"address_id"`
+	MsgSenderID int64  `db:"msg_sender"`
 }

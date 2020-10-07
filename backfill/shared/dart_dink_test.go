@@ -198,11 +198,11 @@ var _ = Describe("Dart Dink helpers", func() {
 			Expect(padErr).NotTo(HaveOccurred())
 			expectedUrnInkKey := storage.GetKeyForNestedMapping(storage.IndexThree, fakeUrn.Ilk, paddedUrn)
 			expectedDiff := types.RawDiff{
-				HashedAddress: shared.HashedVatAddress,
-				BlockHash:     common.HexToHash(fakeHeader.Hash),
-				BlockHeight:   int(fakeHeader.BlockNumber),
-				StorageKey:    crypto.Keccak256Hash(expectedUrnInkKey.Bytes()),
-				StorageValue:  common.BytesToHash(fakeValue),
+				Address:      shared.VatAddress,
+				BlockHash:    common.HexToHash(fakeHeader.Hash),
+				BlockHeight:  int(fakeHeader.BlockNumber),
+				StorageKey:   crypto.Keccak256Hash(expectedUrnInkKey.Bytes()),
+				StorageValue: common.BytesToHash(fakeValue),
 			}
 			Expect(mockStorageRepository.InsertDiffPassedDiff).To(Equal(expectedDiff))
 		})

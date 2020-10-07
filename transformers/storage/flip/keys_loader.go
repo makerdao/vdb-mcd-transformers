@@ -17,6 +17,8 @@
 package flip
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -40,13 +42,16 @@ var (
 	BegKey      = common.HexToHash(vdbStorage.IndexFour)
 	BegMetadata = types.GetValueMetadata(mcdStorage.Beg, nil, types.Uint256)
 
-	TtlAndTauStorageKey = common.HexToHash(vdbStorage.IndexFive)
+	TTLAndTauStorageKey = common.HexToHash(vdbStorage.IndexFive)
 	ttlAndTauTypes      = map[int]types.ValueType{0: types.Uint48, 1: types.Uint48}
 	ttlAndTauNames      = map[int]string{0: mcdStorage.Ttl, 1: mcdStorage.Tau}
-	TtlAndTauMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
+	TTLAndTauMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, ttlAndTauNames, ttlAndTauTypes)
 
 	KicksKey      = common.HexToHash(vdbStorage.IndexSix)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
+
+	CatKey      = common.HexToHash(vdbStorage.IndexSeven)
+	CatMetadata = types.GetValueMetadata(mcdStorage.Cat, nil, types.Address)
 )
 
 type keysLoader struct {
@@ -69,35 +74,39 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	mappings := loadStaticMappings()
 	mappings, wardsErr := loader.loadWardsKeys(mappings)
 	if wardsErr != nil {
-		return nil, wardsErr
+		return nil, fmt.Errorf("error adding ward keys to flip keys loader: %w", wardsErr)
 	}
-	return loader.loadBidKeys(mappings)
+	mappings, bidErr := loader.loadBidKeys(mappings)
+	if bidErr != nil {
+		return nil, fmt.Errorf("error adding bid keys to flip keys loader: %w", bidErr)
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) loadWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
 	}
 	return wards.AddWardsKeys(mappings, addresses)
 }
 
 func (loader *keysLoader) loadBidKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	bidIds, bidErr := loader.storageRepository.GetFlipBidIds(loader.contractAddress)
+	bidIDs, bidErr := loader.storageRepository.GetFlipBidIDs(loader.contractAddress)
 	if bidErr != nil {
-		return nil, bidErr
+		return nil, fmt.Errorf("error getting flip bid IDs: %w", bidErr)
 	}
-	for _, bidId := range bidIds {
-		hexBidId, convertErr := shared.ConvertIntStringToHex(bidId)
+	for _, bidID := range bidIDs {
+		hexBidID, convertErr := shared.ConvertIntStringToHex(bidID)
 		if convertErr != nil {
-			return nil, convertErr
+			return nil, fmt.Errorf("error converting int string to hex: %w", convertErr)
 		}
-		mappings[getBidBidKey(hexBidId)] = getBidBidMetadata(bidId)
-		mappings[getBidLotKey(hexBidId)] = getBidLotMetadata(bidId)
-		mappings[getBidGuyTicEndKey(hexBidId)] = getBidGuyTicEndMetadata(bidId)
-		mappings[getBidUsrKey(hexBidId)] = getBidUsrMetadata(bidId)
-		mappings[getBidGalKey(hexBidId)] = getBidGalMetadata(bidId)
-		mappings[getBidTabKey(hexBidId)] = getBidTabMetadata(bidId)
+		mappings[getBidBidKey(hexBidID)] = getBidBidMetadata(bidID)
+		mappings[getBidLotKey(hexBidID)] = getBidLotMetadata(bidID)
+		mappings[getBidGuyTicEndKey(hexBidID)] = getBidGuyTicEndMetadata(bidID)
+		mappings[getBidUsrKey(hexBidID)] = getBidUsrMetadata(bidID)
+		mappings[getBidGalKey(hexBidID)] = getBidGalMetadata(bidID)
+		mappings[getBidTabKey(hexBidID)] = getBidTabMetadata(bidID)
 	}
 	return mappings, nil
 }
@@ -107,63 +116,64 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[VatKey] = VatMetadata
 	mappings[IlkKey] = IlkMetadata
 	mappings[BegKey] = BegMetadata
-	mappings[TtlAndTauStorageKey] = TtlAndTauMetadata
+	mappings[TTLAndTauStorageKey] = TTLAndTauMetadata
 	mappings[KicksKey] = KicksMetadata
+	mappings[CatKey] = CatMetadata
 	return mappings
 }
 
-func getBidBidKey(hexBidId string) common.Hash {
-	return vdbStorage.GetKeyForMapping(BidsMappingIndex, hexBidId)
+func getBidBidKey(hexBidID string) common.Hash {
+	return vdbStorage.GetKeyForMapping(BidsMappingIndex, hexBidID)
 }
 
-func getBidBidMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidBidMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	return types.GetValueMetadata(mcdStorage.BidBid, keys, types.Uint256)
 }
 
-func getBidLotKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 1)
+func getBidLotKey(hexBidID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidID), 1)
 }
 
-func getBidLotMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidLotMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	return types.GetValueMetadata(mcdStorage.BidLot, keys, types.Uint256)
 }
 
-func getBidGuyTicEndKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 2)
+func getBidGuyTicEndKey(hexBidID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidID), 2)
 }
 
-func getBidGuyTicEndMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidGuyTicEndMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	packedTypes := map[int]types.ValueType{0: types.Address, 1: types.Uint48, 2: types.Uint48}
 	packedNames := map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd}
 	return types.GetValueMetadataForPackedSlot(mcdStorage.Packed, keys, types.PackedSlot, packedNames, packedTypes)
 }
 
-func getBidUsrKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 3)
+func getBidUsrKey(hexBidID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidID), 3)
 }
 
-func getBidUsrMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidUsrMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	return types.GetValueMetadata(mcdStorage.BidUsr, keys, types.Address)
 }
 
-func getBidGalKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 4)
+func getBidGalKey(hexBidID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidID), 4)
 }
 
-func getBidGalMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidGalMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	return types.GetValueMetadata(mcdStorage.BidGal, keys, types.Address)
 }
 
-func getBidTabKey(hexBidId string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidId), 5)
+func getBidTabKey(hexBidID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getBidBidKey(hexBidID), 5)
 }
 
-func getBidTabMetadata(bidId string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.BidId: bidId}
+func getBidTabMetadata(bidID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.BidId: bidID}
 	return types.GetValueMetadata(mcdStorage.BidTab, keys, types.Uint256)
 }

@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/tend"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -42,8 +43,8 @@ var _ = Describe("Tend EventTransformer", func() {
 
 		tendConfig = event.TransformerConfig{
 			TransformerName:   constants.TendTable,
-			ContractAddresses: []string{test_data.FlipEthAddress()},
-			ContractAbi:       constants.FlipABI(),
+			ContractAddresses: []string{test_data.FlipEthV100Address(), test_data.FlapV100Address()},
+			ContractAbi:       constants.FlipV100ABI(),
 			Topic:             constants.TendSignature(),
 		}
 
@@ -74,22 +75,70 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []tendModel
-		err = db.Select(&dbResult, `SELECT bid_id, lot, bid FROM maker.tend`)
+		var flipTend tendModel
+		err = db.Get(&flipTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Bid).To(Equal("76840636079422693500873675445736719538580144543"))
-		Expect(dbResult[0].BidId).To(Equal("121"))
-		Expect(dbResult[0].Lot).To(Equal("700000000000000000"))
+		flipAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
+		Expect(addrErr).NotTo(HaveOccurred())
+
+		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000000abe7471ec9b6953a3bd0ed3c06c46f29aa4280")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		expectedFlipTend := tendModel{
+			AddressID: flipAddressID,
+			MsgSender: msgSenderID,
+			Bid:       "76840636079422693500873675445736719538580144543",
+			BidId:     "121",
+			Lot:       "700000000000000000",
+		}
+		Expect(flipTend).To(Equal(expectedFlipTend))
 	})
 
-	//TODO: There are currently no Flap Tend events
-	It("fetches and transforms a Flap Tend event", func() {})
+	It("fetches and transforms a Flap Tend event", func() {
+		blockNumber := int64(9656046)
+		initializer.Config.StartingBlockNumber = blockNumber
+		initializer.Config.EndingBlockNumber = blockNumber
+
+		header, err := persistHeader(db, blockNumber, blockChain)
+		Expect(err).NotTo(HaveOccurred())
+
+		logs, err := logFetcher.FetchLogs(addresses, topics, header)
+		Expect(err).NotTo(HaveOccurred())
+
+		eventLogs := test_data.CreateLogs(header.Id, logs, db)
+
+		transformer := initializer.NewTransformer(db)
+		err = transformer.Execute(eventLogs)
+		Expect(err).NotTo(HaveOccurred())
+
+		var flapTend tendModel
+		err = db.Get(&flapTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
+		Expect(err).NotTo(HaveOccurred())
+
+		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
+		Expect(addrErr).NotTo(HaveOccurred())
+
+		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000d9d1e81bb35db066986fa441113a27708663d70b")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		expectedFlapTend := tendModel{
+			AddressID: flapAddressID,
+			MsgSender: msgSenderID,
+			Bid:       "22836140232828485845",
+			BidId:     "55",
+			Lot:       "10000000000000000000000000000000000000000000000000",
+		}
+		Expect(flapTend).To(Equal(expectedFlapTend))
+	})
 })
 
 type tendModel struct {
-	BidId string `db:"bid_id"`
-	Lot   string
-	Bid   string
+	AddressID int64 `db:"address_id"`
+	MsgSender int64 `db:"msg_sender"`
+	Bid       string
+	BidId     string `db:"bid_id"`
+	Lot       string
 }

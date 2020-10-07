@@ -23,7 +23,7 @@ var _ = Describe("urn bid events query", func() {
 		bidTwoID,
 		bidThreeID int
 		usrOne, usrTwo string
-		ethFlipAddress = test_data.FlipEthAddress()
+		ethFlipAddress = test_data.FlipEthV100Address()
 		batFlipAddress = common.HexToAddress("0x" + test_data.RandomString(40)).Hex()
 	)
 
@@ -49,7 +49,7 @@ var _ = Describe("urn bid events query", func() {
 		logFourID := test_data.CreateTestLog(headerOneID, db).ID
 
 		// insert records used in join
-		repo := flip.FlipStorageRepository{ContractAddress: ethFlipAddress}
+		repo := flip.StorageRepository{ContractAddress: ethFlipAddress}
 		repo.SetDB(db)
 
 		ethIlkErr := repo.Create(diffID, headerOneID, flip.IlkMetadata, test_helpers.FakeIlk.Hex)

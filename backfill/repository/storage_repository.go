@@ -45,10 +45,10 @@ func (repo storageRepository) GetUrnByID(id int64) (Urn, error) {
 }
 
 func (repo storageRepository) InsertDiff(diff types.RawDiff) error {
-	_, err := repo.db.Exec(`INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key,
-                storage_value, from_backfill) VALUES ($1, $2, $3, $4, $5, true) ON CONFLICT DO NOTHING;`,
-		diff.BlockHeight, diff.BlockHash.Bytes(), diff.HashedAddress.Bytes(), diff.StorageKey.Bytes(),
-		diff.StorageValue.Bytes())
+	_, err := repo.db.Exec(`INSERT INTO public.storage_diff (block_height, block_hash, address, storage_key,
+                storage_value, from_backfill, eth_node_id) VALUES ($1, $2, $3, $4, $5, true, $6) ON CONFLICT DO NOTHING;`,
+		diff.BlockHeight, diff.BlockHash.Bytes(), diff.Address.Bytes(), diff.StorageKey.Bytes(),
+		diff.StorageValue.Bytes(), repo.db.NodeID)
 	return err
 }
 

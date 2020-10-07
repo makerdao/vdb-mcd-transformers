@@ -23,7 +23,7 @@ import (
 var _ = Describe("Pot storage repository", func() {
 	var (
 		db                   = test_config.NewTestDB(test_config.NewTestNode())
-		repo                 pot.PotStorageRepository
+		repo                 pot.StorageRepository
 		fakeAddress          = "0x" + fakes.RandomString(40)
 		fakeUint256          = strconv.Itoa(rand.Intn(1000000))
 		diffID, fakeHeaderID int64
@@ -31,7 +31,7 @@ var _ = Describe("Pot storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = pot.PotStorageRepository{ContractAddress: test_data.PotAddress()}
+		repo = pot.StorageRepository{ContractAddress: test_data.PotAddress()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -218,7 +218,7 @@ var _ = Describe("Pot storage repository", func() {
 			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
 			Expect(setupErr).NotTo(HaveOccurred())
 
-			var result WardsMappingRes
+			var result MappingResWithAddress
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
@@ -226,8 +226,7 @@ var _ = Describe("Pot storage repository", func() {
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
 			Expect(userAddressErr).NotTo(HaveOccurred())
-			Expect(result.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
-			AssertMapping(result.MappingRes, diffID, fakeHeaderID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
 
 		It("does not duplicate row", func() {

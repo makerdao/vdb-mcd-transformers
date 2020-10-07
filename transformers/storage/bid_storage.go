@@ -17,16 +17,18 @@
 package storage
 
 var (
-	Vat    = "vat"
-	Ilk    = "ilk"
-	Gem    = "gem"
-	Beg    = "beg"
-	Pad    = "pad"
-	Ttl    = "ttl"
-	Tau    = "tau"
-	Kicks  = "kicks"
-	Live   = "live"
-	Vow    = "vow"
+	Beg   = "beg"
+	Cat   = "cat"
+	Gem   = "gem"
+	Ilk   = "ilk"
+	Kicks = "kicks"
+	Live  = "live"
+	Pad   = "pad"
+	Tau   = "tau"
+	Ttl   = "ttl"
+	Vat   = "vat"
+	Vow   = "vow"
+
 	Packed = "packed_storage_values"
 
 	BidBid = "bid_bid"

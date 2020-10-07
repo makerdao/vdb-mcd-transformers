@@ -4,9 +4,10 @@ import (
 	"math/rand"
 	"strconv"
 
+	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	storage_helper "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -18,7 +19,7 @@ import (
 
 var _ = Describe("Single urn view", func() {
 	var (
-		vatRepo                vat.VatStorageRepository
+		vatRepo                vat.StorageRepository
 		headerRepo             datastore.HeaderRepository
 		urnOne, urnTwo         string
 		blockOne, timestampOne int
@@ -30,7 +31,7 @@ var _ = Describe("Single urn view", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		vatRepo = vat.VatStorageRepository{}
+		vatRepo = vat.StorageRepository{}
 		vatRepo.SetDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
 

@@ -17,8 +17,6 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_drip"
@@ -70,18 +68,24 @@ var _ = Describe("JugDrip Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []jugDripModel
-		err = db.Select(&dbResults, `SELECT ilk_id from maker.jug_drip`)
+		var result jugDripModel
+		err = db.Get(&result, `SELECT msg_sender, ilk_id from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(1))
-		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+		ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+		expectedResult := jugDripModel{
+			IlkID:     ilkID,
+			MsgSender: msgSenderID,
+		}
+
+		Expect(result).To(Equal(expectedResult))
 	})
 })
 
 type jugDripModel struct {
-	Ilk string `db:"ilk_id"`
+	IlkID     int64 `db:"ilk_id"`
+	MsgSender int64 `db:"msg_sender"`
 }

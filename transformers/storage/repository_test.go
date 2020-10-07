@@ -24,15 +24,18 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -64,7 +67,7 @@ const (
 var _ = Describe("Maker storage repository", func() {
 	var (
 		address             = fakes.FakeAddress.Hex()
-		addressId           int64
+		addressID           int64
 		addressErr          error
 		db                  = test_config.NewTestDB(test_config.NewTestNode())
 		repository          storage.IMakerStorageRepository
@@ -87,70 +90,70 @@ var _ = Describe("Maker storage repository", func() {
 		test_config.CleanTestDB(db)
 		repository = &storage.MakerStorageRepository{}
 		repository.SetDB(db)
-		addressId, addressErr = shared.GetOrCreateAddress(address, db)
+		addressID, addressErr = shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 	})
 
 	Describe("getting flap bid ids", func() {
 		var (
-			bidId1, bidId2, bidId3, bidId4, bidId5, bidId6 string
+			bidID1, bidID2, bidID3, bidID4, bidID5, bidID6 string
 		)
 		BeforeEach(func() {
-			bidId1 = strconv.FormatInt(rand.Int63(), 10)
-			bidId2 = strconv.FormatInt(rand.Int63(), 10)
-			bidId3 = strconv.FormatInt(rand.Int63(), 10)
-			bidId4 = strconv.FormatInt(rand.Int63(), 10)
-			bidId5 = strconv.FormatInt(rand.Int63(), 10)
-			bidId6 = strconv.FormatInt(rand.Int63(), 10)
+			bidID1 = strconv.FormatInt(rand.Int63(), 10)
+			bidID2 = strconv.FormatInt(rand.Int63(), 10)
+			bidID3 = strconv.FormatInt(rand.Int63(), 10)
+			bidID4 = strconv.FormatInt(rand.Int63(), 10)
+			bidID5 = strconv.FormatInt(rand.Int63(), 10)
+			bidID6 = strconv.FormatInt(rand.Int63(), 10)
 		})
 
 		It("fetches unique bid ids from Flap methods", func() {
-			insertFlapKick(1, bidId1, addressId, db)
-			insertFlapKick(2, bidId1, addressId, db)
+			insertFlapKick(1, bidID1, addressID, db)
+			insertFlapKick(2, bidID1, addressID, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIDs, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(1))
-			Expect(bidIds[0]).To(Equal(bidId1))
+			Expect(len(bidIDs)).To(Equal(1))
+			Expect(bidIDs[0]).To(Equal(bidID1))
 		})
 
 		It("fetches unique bid ids from flap_kick, tend, deal and yank", func() {
-			duplicateBidId := bidId1
-			insertFlapKick(1, bidId1, addressId, db)
-			insertFlapKicks(2, bidId2, addressId, db)
-			insertTend(3, bidId3, addressId, db)
-			insertDeal(4, bidId4, addressId, db)
-			insertYank(5, bidId5, addressId, db)
-			insertYank(6, duplicateBidId, addressId, db)
+			duplicateBidID := bidID1
+			insertFlapKick(1, bidID1, addressID, db)
+			insertFlapKicks(2, bidID2, addressID, db)
+			insertTend(3, bidID3, addressID, db)
+			insertDeal(4, bidID4, addressID, db)
+			insertYank(5, bidID5, addressID, db)
+			insertYank(6, duplicateBidID, addressID, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIDs, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(5))
-			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+			Expect(len(bidIDs)).To(Equal(5))
+			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			anotherAddressId, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			anotherAddressID, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			insertFlapKick(1, bidId1, addressId, db)
-			insertFlapKick(2, bidId2, addressId, db)
-			insertTend(3, bidId3, addressId, db)
-			insertDeal(4, bidId4, addressId, db)
-			insertYank(5, bidId5, addressId, db)
-			insertYank(6, bidId6, anotherAddressId, db)
+			insertFlapKick(1, bidID1, addressID, db)
+			insertFlapKick(2, bidID2, addressID, db)
+			insertTend(3, bidID3, addressID, db)
+			insertDeal(4, bidID4, addressID, db)
+			insertYank(5, bidID5, addressID, db)
+			insertYank(6, bidID6, anotherAddressID, db)
 
-			bidIds, err := repository.GetFlapBidIds(address)
+			bidIDs, err := repository.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(5))
-			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+			Expect(len(bidIDs)).To(Equal(5))
+			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIds, err := repository.GetFlapBidIds(fakes.FakeAddress.Hex())
+			bidIDs, err := repository.GetFlapBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(BeZero())
+			Expect(len(bidIDs)).To(BeZero())
 		})
 	})
 
@@ -504,121 +507,151 @@ var _ = Describe("Maker storage repository", func() {
 
 	Describe("getting flip bid ids", func() {
 		var (
-			bidId1  string
-			bidId2  string
-			bidId3  string
-			bidId4  string
-			bidId5  string
-			bidId6  string
-			bidId7  string
-			address = fakes.FakeAddress.Hex()
+			bidID1, bidID2, bidID3, bidID4, bidID5, bidID6, bidID7 string
+			address                                                = fakes.FakeAddress.Hex()
 		)
 
 		BeforeEach(func() {
-			bidId1 = strconv.FormatInt(rand.Int63(), 10)
-			bidId2 = strconv.FormatInt(rand.Int63(), 10)
-			bidId3 = strconv.FormatInt(rand.Int63(), 10)
-			bidId4 = strconv.FormatInt(rand.Int63(), 10)
-			bidId5 = strconv.FormatInt(rand.Int63(), 10)
-			bidId6 = strconv.FormatInt(rand.Int63(), 10)
-			bidId7 = strconv.FormatInt(rand.Int63(), 10)
+			bidID1 = strconv.FormatInt(rand.Int63(), 10)
+			bidID2 = strconv.FormatInt(rand.Int63(), 10)
+			bidID3 = strconv.FormatInt(rand.Int63(), 10)
+			bidID4 = strconv.FormatInt(rand.Int63(), 10)
+			bidID5 = strconv.FormatInt(rand.Int63(), 10)
+			bidID6 = strconv.FormatInt(rand.Int63(), 10)
+			bidID7 = strconv.FormatInt(rand.Int63(), 10)
 		})
 
 		It("fetches unique bid ids from flip methods", func() {
-			insertFlipKick(1, bidId1, addressId, db)
-			insertFlipKick(2, bidId1, addressId, db)
+			insertFlipKick(1, bidID1, addressID, db)
+			insertFlipKick(2, bidID1, addressID, db)
 
-			bidIds, err := repository.GetFlipBidIds(address)
+			bidIDs, err := repository.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(1))
-			Expect(bidIds[0]).To(Equal(bidId1))
+			Expect(len(bidIDs)).To(Equal(1))
+			Expect(bidIDs[0]).To(Equal(bidID1))
 		})
 
 		It("fetches unique bid ids from tick, flip_kick, flip_kicks, tend, dent, deal and yank", func() {
-			duplicateBidId := bidId1
-			insertTick(1, bidId1, addressId, db)
-			insertFlipKick(2, bidId2, addressId, db)
-			insertFlipKicks(3, bidId3, addressId, db)
-			insertTend(4, bidId4, addressId, db)
-			insertDent(5, bidId5, addressId, db)
-			insertDeal(6, bidId6, addressId, db)
-			insertYank(7, bidId7, addressId, db)
-			insertYank(8, duplicateBidId, addressId, db)
+			duplicateBidID := bidID1
+			insertTick(1, bidID1, addressID, db)
+			insertFlipKick(2, bidID2, addressID, db)
+			insertFlipKicks(3, bidID3, addressID, db)
+			insertTend(4, bidID4, addressID, db)
+			insertDent(5, bidID5, addressID, db)
+			insertDeal(6, bidID6, addressID, db)
+			insertYank(7, bidID7, addressID, db)
+			insertYank(8, duplicateBidID, addressID, db)
 
-			bidIds, err := repository.GetFlipBidIds(address)
+			bidIDs, err := repository.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(7))
-			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5, bidId6, bidId7))
+			Expect(len(bidIDs)).To(Equal(7))
+			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5, bidID6, bidID7))
 		})
 	})
 
 	Describe("getting flop bid ids", func() {
 		var (
-			bidId1  string
-			bidId2  string
-			bidId3  string
-			bidId4  string
-			bidId5  string
-			bidId6  string
-			address = fakes.FakeAddress.Hex()
+			bidID1, bidID2, bidID3, bidID4, bidID5, bidID6 string
+			address                                        = fakes.FakeAddress.Hex()
 		)
 
 		BeforeEach(func() {
-			bidId1 = strconv.FormatInt(rand.Int63(), 10)
-			bidId2 = strconv.FormatInt(rand.Int63(), 10)
-			bidId3 = strconv.FormatInt(rand.Int63(), 10)
-			bidId4 = strconv.FormatInt(rand.Int63(), 10)
-			bidId5 = strconv.FormatInt(rand.Int63(), 10)
-			bidId6 = strconv.FormatInt(rand.Int63(), 10)
+			bidID1 = strconv.FormatInt(rand.Int63(), 10)
+			bidID2 = strconv.FormatInt(rand.Int63(), 10)
+			bidID3 = strconv.FormatInt(rand.Int63(), 10)
+			bidID4 = strconv.FormatInt(rand.Int63(), 10)
+			bidID5 = strconv.FormatInt(rand.Int63(), 10)
+			bidID6 = strconv.FormatInt(rand.Int63(), 10)
 		})
 
 		It("fetches unique flop bid ids from flop methods", func() {
-			insertFlopKick(1, bidId1, addressId, db)
-			insertFlopKick(2, bidId1, addressId, db)
+			insertFlopKick(1, bidID1, addressID, db)
+			insertFlopKick(2, bidID1, addressID, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIDs, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(1))
-			Expect(bidIds[0]).To(Equal(bidId1))
+			Expect(len(bidIDs)).To(Equal(1))
+			Expect(bidIDs[0]).To(Equal(bidID1))
 		})
 
 		It("fetches unique bid ids from flop_kick, dent, deal, and yank", func() {
-			duplicateBidId := bidId1
-			insertFlopKick(1, bidId1, addressId, db)
-			insertFlopKicks(2, bidId2, addressId, db)
-			insertDent(3, bidId3, addressId, db)
-			insertDeal(4, bidId4, addressId, db)
-			insertYank(5, bidId5, addressId, db)
-			insertYank(6, duplicateBidId, addressId, db)
+			duplicateBidID := bidID1
+			insertFlopKick(1, bidID1, addressID, db)
+			insertFlopKicks(2, bidID2, addressID, db)
+			insertDent(3, bidID3, addressID, db)
+			insertDeal(4, bidID4, addressID, db)
+			insertYank(5, bidID5, addressID, db)
+			insertYank(6, duplicateBidID, addressID, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIDs, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(5))
-			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+			Expect(len(bidIDs)).To(Equal(5))
+			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			anotherAddressId, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			anotherAddressID, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			insertFlopKick(1, bidId1, addressId, db)
-			insertFlopKick(2, bidId2, addressId, db)
-			insertDent(3, bidId3, addressId, db)
-			insertDeal(4, bidId4, addressId, db)
-			insertYank(5, bidId5, addressId, db)
-			insertYank(6, bidId6, anotherAddressId, db)
+			insertFlopKick(1, bidID1, addressID, db)
+			insertFlopKick(2, bidID2, addressID, db)
+			insertDent(3, bidID3, addressID, db)
+			insertDeal(4, bidID4, addressID, db)
+			insertYank(5, bidID5, addressID, db)
+			insertYank(6, bidID6, anotherAddressID, db)
 
-			bidIds, err := repository.GetFlopBidIds(address)
+			bidIDs, err := repository.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(Equal(5))
-			Expect(bidIds).To(ConsistOf(bidId1, bidId2, bidId3, bidId4, bidId5))
+			Expect(len(bidIDs)).To(Equal(5))
+			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIds, err := repository.GetFlopBidIds(fakes.FakeAddress.Hex())
+			bidIDs, err := repository.GetFlopBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(bidIds)).To(BeZero())
+			Expect(len(bidIDs)).To(BeZero())
+		})
+	})
+
+	Describe("getting bud keys", func() {
+		It("fetches unique addresses from kiss and diss (single and batch) events", func() {
+			a1 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a2 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			insertMedianKissSingle(a1, medianAddressID, db)
+			insertMedianDissSingle(a2, medianAddressID, db)
+			insertMedianKissBatch([]string{a1, a3}, medianAddressID, db)
+			insertMedianDissBatch([]string{a2, a4}, medianAddressID, db)
+			insertMedianKissSingle(a5, addressID, db)
+
+			aAddresses, err := repository.GetMedianBudAddresses(test_data.MedianEthAddress())
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4))
+		})
+	})
+
+	Describe("getting orcl keys", func() {
+		It("fetches unique addresses from lift and drop events", func() {
+			a1 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a2 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
+			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			Expect(addressErr).NotTo(HaveOccurred())
+			insertMedianLiftAddresses([]string{a1, a2, a3}, medianAddressID, db)
+			insertMedianDropAddresses([]string{a4, a5}, medianAddressID, db)
+
+			aAddresses, err := repository.GetMedianOrclAddresses(test_data.MedianEthAddress())
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4, a5))
 		})
 	})
 
@@ -657,11 +690,11 @@ var _ = Describe("Maker storage repository", func() {
 			msgSenderAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressOne := common.HexToAddress(test_data.RandomString(40)).Hex()
 			userAddressTwo := common.HexToAddress(test_data.RandomString(40)).Hex()
-			insertAuthEvent(1, test_data.CatAddress(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
+			insertAuthEvent(1, test_data.Cat100Address(), msgSenderAddressOne, userAddressOne, "maker.rely", db)
 			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
 			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
 
-			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.CatAddress())
+			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.Cat100Address())
 			Expect(catUserErr).NotTo(HaveOccurred())
 			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
 
@@ -693,111 +726,194 @@ var _ = Describe("Maker storage repository", func() {
 	})
 })
 
-func insertFlapKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertFlapKick(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	//inserting a flap kick log event record
 	headerID := insertHeader(db, blockNumber)
 
 	flapKickLog := test_data.CreateTestLog(headerID, db)
 	_, insertErr := db.Exec(insertFlapKickQuery,
-		headerID, bidId, 0, 0, contractAddressId, flapKickLog.ID,
+		headerID, bidID, 0, 0, contractAddressID, flapKickLog.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlapKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
+func insertFlapKicks(blockNumber int64, kicks string, contractAddressID int64, db *postgres.DB) {
 	//inserting a flap kicks storage record
 	headerID := insertHeader(db, blockNumber)
 	diffID := test_helpers.CreateFakeDiffRecord(db)
 	_, insertErr := db.Exec(flap.InsertKicksQuery,
-		diffID, headerID, contractAddressId, kicks,
+		diffID, headerID, contractAddressID, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertTick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertTick(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	// tick event record
 	headerID := insertHeader(db, blockNumber)
 	flapTickLog := test_data.CreateTestLog(headerID, db)
-	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id)
-				VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidId, contractAddressId, flapTickLog.ID,
+
+	msgSender := shared.GetChecksumAddressString(test_data.FlipTickEventLog.Log.Topics[1].Hex())
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
+	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id, msg_sender)
+				VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, flapTickLog.ID, msgSenderID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertFlipKick(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	// flip kick event record
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
 	_, insertErr := db.Exec(insertFlipKickQuery,
-		headerID, bidId, 0, 0, 0, "", "", contractAddressId, log.ID,
+		headerID, bidID, 0, 0, 0, "", "", contractAddressID, log.ID,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlipKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
+func insertFlipKicks(blockNumber int64, kicks string, contractAddressID int64, db *postgres.DB) {
 	// flip kicks storage record
 	headerID := insertHeader(db, blockNumber)
 	diffID := test_helpers.CreateFakeDiffRecord(db)
 	_, insertErr := db.Exec(flip.InsertFlipKicksQuery,
-		diffID, headerID, contractAddressId, kicks,
+		diffID, headerID, contractAddressID, kicks,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlopKick(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertFlopKick(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	// inserting a flop kick log event record
-	headerId := insertHeader(db, blockNumber)
-	flopKickLog := test_data.CreateTestLog(headerId, db)
-	_, insertErr := db.Exec(insertFlopKickQuery, headerId, bidId, contractAddressId, flopKickLog.ID)
+	headerID := insertHeader(db, blockNumber)
+	flopKickLog := test_data.CreateTestLog(headerID, db)
+	_, insertErr := db.Exec(insertFlopKickQuery, headerID, bidID, contractAddressID, flopKickLog.ID)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertFlopKicks(blockNumber int64, kicks string, contractAddressId int64, db *postgres.DB) {
+func insertFlopKicks(blockNumber int64, kicks string, contractAddressID int64, db *postgres.DB) {
 	// inserting a flop kicks storage record
 	diffID := test_helpers.CreateFakeDiffRecord(db)
 	headerID := insertHeader(db, blockNumber)
-	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, diffID, headerID, contractAddressId, kicks)
+	_, insertErr := db.Exec(flop.InsertFlopKicksQuery, diffID, headerID, contractAddressID, kicks)
 	Expect(insertErr).NotTo(HaveOccurred())
 }
 
-func insertTend(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertTend(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
-	tendLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.tend (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidId, 0, 0, contractAddressId, tendLog.ID,
-	)
-	Expect(err).NotTo(HaveOccurred())
+	tendLog := test_data.CreateTestLogFromEventLog(headerID, test_data.TendEventLog.Log, db)
+	tendModel := test_data.TendModel()
+	tendModel.ColumnValues[event.HeaderFK] = headerID
+	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	tendModel.ColumnValues[constants.BidIDColumn] = bidID
+	tendModel.ColumnValues[event.AddressFK] = contractAddressID
+	test_data.AssignMessageSenderID(tendLog, tendModel, db)
+	tendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
+	Expect(tendErr).NotTo(HaveOccurred())
 }
 
-func insertDent(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dentLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6)`,
-		headerID, bidId, 0, 0, contractAddressId, dentLog.ID,
+
+	msgSender := shared.GetChecksumAddressString(test_data.DentEventLog.Log.Topics[1].Hex())
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
+	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, msg_sender, address_id, log_id)
+		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5, $6, $7)`,
+		headerID, bidID, 0, 0, msgSenderID, contractAddressID, dentLog.ID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func insertDeal(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dealLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidId, contractAddressId, dealLog.ID,
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DealEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, dealLog.ID, msgSenderID,
 	)
 	Expect(err).NotTo(HaveOccurred())
 }
 
-func insertYank(blockNumber int64, bidId string, contractAddressId int64, db *postgres.DB) {
+func insertYank(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	yankLog := test_data.CreateTestLog(headerID, db)
-	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id)
-		VALUES($1, $2::NUMERIC, $3, $4)`,
-		headerID, bidId, contractAddressId, yankLog.ID,
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.YankEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id, msg_sender)
+		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
+		headerID, bidID, contractAddressID, yankLog.ID, msgSenderID,
 	)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianKissSingle(a string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	kissLog := test_data.CreateTestLog(headerID, db)
+	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_kiss_single (header_id, address_id, log_id, msg_sender, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
+		headerID, contractAddressID, kissLog.ID, addressID)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianDissSingle(a string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	dissLog := test_data.CreateTestLog(headerID, db)
+	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_diss_single (header_id, address_id, log_id, msg_sender, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
+		headerID, contractAddressID, dissLog.ID, addressID)
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianKissBatch(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	kissLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_kiss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, kissLog.ID, msgSenderID, len(a), pq.Array(a))
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianDissBatch(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	dissLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT into maker.median_diss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, dissLog.ID, msgSenderID, len(a), pq.Array(a))
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianLiftAddresses(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	liftLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT INTO maker.median_lift (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, liftLog.ID, msgSenderID, len(a), pq.Array(a))
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func insertMedianDropAddresses(a []string, contractAddressID int64, db *postgres.DB) {
+	headerID := insertHeader(db, rand.Int63n(1000))
+	dropLog := test_data.CreateTestLog(headerID, db)
+	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	Expect(addressErr).NotTo(HaveOccurred())
+	_, err := db.Exec(`INSERT INTO maker.median_drop (header_id, address_id, log_id, msg_sender, a_length, a)
+		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
+		headerID, contractAddressID, dropLog.ID, msgSenderID, len(a), pq.Array(a))
 	Expect(err).NotTo(HaveOccurred())
 }
 
@@ -826,11 +942,15 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFlogEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	vowFlogLog := test_data.CreateTestLog(headerID, db)
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_flog (header_id, era, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, era, vowFlogLog.ID,
+		`INSERT INTO maker.vow_flog (header_id, era, log_id, msg_sender)
+			VALUES($1, $2, $3, $4)`,
+		headerID, era, vowFlogLog.ID, msgSenderID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }
@@ -840,12 +960,15 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	fakeHeader := fakes.GetFakeHeaderWithTimestamp(timestamp, blockNumber)
 	headerID, err := headerRepository.CreateOrUpdateHeader(fakeHeader)
 	vowFessLog := test_data.CreateTestLog(headerID, db)
-
 	Expect(err).NotTo(HaveOccurred())
+
+	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
+	Expect(msgSenderErr).NotTo(HaveOccurred())
+
 	_, execErr := db.Exec(
-		`INSERT INTO maker.vow_fess (header_id, tab, log_id)
-			VALUES($1, $2, $3)`,
-		headerID, tab, vowFessLog.ID,
+		`INSERT INTO maker.vow_fess (header_id, msg_sender, tab, log_id)
+			VALUES($1, $2, $3, $4)`,
+		headerID, msgSenderID, tab, vowFessLog.ID,
 	)
 	Expect(execErr).NotTo(HaveOccurred())
 }

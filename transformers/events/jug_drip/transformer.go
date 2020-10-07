@@ -34,6 +34,11 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, err
 		}
 
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		ilk := log.Log.Topics[2].Hex()
 		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
@@ -44,12 +49,16 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugDripTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, constants.IlkColumn, event.LogFK,
+				event.HeaderFK,
+				event.LogFK,
+				constants.MsgSenderColumn,
+				constants.IlkColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      log.HeaderID,
-				event.LogFK:         log.ID,
-				constants.IlkColumn: ilkID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.IlkColumn:       ilkID,
 			},
 		}
 		models = append(models, model)

@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -63,11 +64,11 @@ var _ = Describe("Spot file mat transformer", func() {
 		models, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{test_data.SpotFileMatEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotFileMatEventLog.Log.Topics[2].Hex())
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.SpotFileMatEventLog.Log.Topics[2].Hex(), db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.SpotFileMatModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
+		test_data.AssignMessageSenderID(test_data.SpotFileMatEventLog, expectedModel, db)
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

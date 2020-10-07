@@ -26,7 +26,7 @@ import (
 
 type Transformer struct{}
 
-func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
+func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
 	for _, log := range logs {
 		err := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
@@ -37,17 +37,24 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]e
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		data := shared.ConvertUint256HexToBigInt(log.Log.Topics[3].Hex())
 
+		msgSender := shared.GetChecksumAddressString(log.Log.Topics[1].Hex())
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		if msgSenderErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
+		}
+
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.JugFileBaseTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, constants.WhatColumn, constants.DataColumn, event.LogFK,
+				event.HeaderFK, event.LogFK, constants.MsgSenderColumn, constants.WhatColumn, constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				constants.WhatColumn: what,
-				constants.DataColumn: data.String(),
-				event.HeaderFK:       log.HeaderID,
-				event.LogFK:          log.ID,
+				event.HeaderFK:            log.HeaderID,
+				event.LogFK:               log.ID,
+				constants.MsgSenderColumn: msgSenderID,
+				constants.WhatColumn:      what,
+				constants.DataColumn:      data.String(),
 			},
 		}
 		models = append(models, model)

@@ -17,6 +17,8 @@
 package jug
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
@@ -62,26 +64,30 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 }
 
 func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
-	mappings := getStaticMappings()
-	mappings, wardsErr := loader.loadWardsKeys(mappings)
+	mappings := addStaticMappings()
+	mappings, wardsErr := loader.addWardsKeys(mappings)
 	if wardsErr != nil {
-		return nil, wardsErr
+		return nil, fmt.Errorf("error adding wards keys to jug keys loader: %w", wardsErr)
 	}
-	return loader.loadIlksKeys(mappings)
+	mappings, ilksErr := loader.addIlksKeys(mappings)
+	if ilksErr != nil {
+		return nil, fmt.Errorf("error adding ilks keys to jug keys loader: %w", ilksErr)
+	}
+	return mappings, nil
 }
 
-func (loader *keysLoader) loadWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+func (loader *keysLoader) addWardsKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	addresses, err := loader.storageRepository.GetWardsAddresses(loader.contractAddress)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
 	}
 	return wards.AddWardsKeys(mappings, addresses)
 }
 
-func (loader *keysLoader) loadIlksKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+func (loader *keysLoader) addIlksKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
 	ilks, err := loader.storageRepository.GetIlks()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting ilks: %w", err)
 	}
 	for _, ilk := range ilks {
 		mappings[getDutyKey(ilk)] = getDutyMetadata(ilk)
@@ -90,7 +96,7 @@ func (loader *keysLoader) loadIlksKeys(mappings map[common.Hash]types.ValueMetad
 	return mappings, nil
 }
 
-func getStaticMappings() map[common.Hash]types.ValueMetadata {
+func addStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings := make(map[common.Hash]types.ValueMetadata)
 	mappings[VatKey] = VatMetadata
 	mappings[VowKey] = VowMetadata

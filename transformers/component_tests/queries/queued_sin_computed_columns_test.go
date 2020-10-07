@@ -43,7 +43,7 @@ var _ = Describe("Queued sin computed columns", func() {
 			headerOne              core.Header
 			fakeTab                = strconv.Itoa(rand.Int())
 			sinMappingMetadata     types.ValueMetadata
-			vowRepository          vow.VowStorageRepository
+			vowRepository          vow.StorageRepository
 			headerRepository       datastore.HeaderRepository
 			diffID                 int64
 		)
@@ -59,25 +59,28 @@ var _ = Describe("Queued sin computed columns", func() {
 
 			diffID = storage_helper.CreateFakeDiffRecord(db)
 
-			vowRepository = vow.VowStorageRepository{}
+			vowRepository = vow.StorageRepository{}
 			vowRepository.SetDB(db)
 			sinMappingKeys := map[types.Key]string{constants.Timestamp: fakeEra}
 			sinMappingMetadata = types.GetValueMetadata(vow.SinMapping, sinMappingKeys, types.Uint256)
 			insertSinMappingErr := vowRepository.Create(diffID, headerOne.Id, sinMappingMetadata, fakeTab)
 			Expect(insertSinMappingErr).NotTo(HaveOccurred())
 
-			vowFlogLog := test_data.CreateTestLog(headerOne.Id, db)
+			vowFlogLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.VowFlogEventLog.Log, db)
 			vowFlogEvent := test_data.VowFlogModel
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = vowFlogLog.ID
+			test_data.AssignMessageSenderID(vowFlogLog, vowFlogEvent, db)
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 		})
 
 		It("returns sin queue events for queued sin", func() {
 			vowFessLog := test_data.CreateTestLog(headerOne.Id, db)
-			vowFessEvent := test_data.VowFessModel
+			vowFessEvent := test_data.VowFessModel()
+
+			test_data.AssignMessageSenderID(test_data.VowFessEventLog, vowFessEvent, db)
 			vowFessEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFessEvent.ColumnValues[event.LogFK] = vowFessLog.ID
 			vowFessErr := event.PersistModels([]event.InsertionModel{vowFessEvent}, db)

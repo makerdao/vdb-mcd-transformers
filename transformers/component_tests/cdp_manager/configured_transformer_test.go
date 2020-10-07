@@ -28,7 +28,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,11 +38,10 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(cdp_manager.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = cdp_manager.CdpManagerStorageRepository{}
-		contractAddress   = test_data.CdpManagerAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
+		repository        = cdp_manager.StorageRepository{}
+		contractAddress   = common.HexToAddress(test_data.CdpManagerAddress())
 		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -62,7 +60,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000")
 		value := common.HexToHash("00000000000000000000000004c67ea772ebb467383772cb1b64c7a9b1e02bca")
-		vatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		vatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(vatDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -76,7 +74,7 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a cdpi storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
-		cdpiDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		cdpiDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(cdpiDiff)
 		Expect(err).NotTo(HaveOccurred())
@@ -93,7 +91,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in an urns storage diff row and persists it", func() {
 			key := common.HexToHash("679795a0195a1b76cdebb7c51d74e058aee92919b8c3389af86ef24535e8a28c")
 			value := common.HexToHash("00000000000000000000000031f92649bf2d780be06bab1c5f591d0f1cc4b0d2")
-			urnsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			urnsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, urnsDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -110,7 +108,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a list prev storage diff row and persists it", func() {
 			key := common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4d")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			listPrevDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			listPrevDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listPrevDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -127,7 +125,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a list next storage diff row and persists it", func() {
 			key := common.HexToHash("c3a24b0501bd2c13a7e57f2db4369ec4c223447539fc0724a9d55ac4a06ebd4e")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
-			listNextDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			listNextDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, listNextDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -144,7 +142,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in an owns storage diff row and persists it", func() {
 			key := common.HexToHash("91da3fd0782e51c6b3986e9e672fd566868e71f3dbc2d6c2cd6fbb3e361af2a7")
 			value := common.HexToHash("00000000000000000000000016fb96a5fa0427af0c8f7cf1eb4870231c8154b6")
-			ownsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ownsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ownsDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -161,7 +159,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in an ilks storage diff row and persists it", func() {
 			key := common.HexToHash("89832631fb3c3307a103ba2c84ab569c64d6182a18893dcd163f0f1c2090733a")
 			value := common.HexToHash("4554482d41000000000000000000000000000000000000000000000000000000")
-			ilksDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			ilksDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertCdpiQuery, ilksDiff.ID, header.Id, cdpi)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -185,7 +183,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a first storage diff row and persists it", func() {
 			key := common.HexToHash("361ac87b78b4b96bd716b22773b802e3ec15c69f4ba42c6d6f8cb594e4914397")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			firstDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			firstDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, firstDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -202,7 +200,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a last storage diff row and persists it", func() {
 			key := common.HexToHash("4f62af9d63bc3c7d5e96c3d1083b2438d0fa9b6244cdfc09d00d09b1afbd7438")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
-			lastDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			lastDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, lastDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())
@@ -219,7 +217,7 @@ var _ = Describe("Executing the transformer", func() {
 		It("reads in a count storage diff row and persists it", func() {
 			key := common.HexToHash("0b29a919802754cc12fe9af109d06c6ac93a8cac604ffa44ff5474c8c41bd5c0")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
-			countDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			countDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			_, insertErr := db.Exec(cdp_manager.InsertOwnsQuery, countDiff.ID, header.Id, rand.Int(), owner)
 			Expect(insertErr).NotTo(HaveOccurred())

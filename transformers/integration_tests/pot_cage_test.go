@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -67,15 +68,21 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 		})
 
 		It("fetches and transforms a Pot.cage event", func() {
-			var dbResult []potCageModel
-			getFileErr := db.Select(&dbResult, `SELECT id FROM maker.pot_cage`)
+			var dbResult potCage
+			err := db.Get(&dbResult, `SELECT id, msg_sender FROM maker.pot_cage`)
+			Expect(err).NotTo(HaveOccurred())
 
-			Expect(getFileErr).NotTo(HaveOccurred())
-			Expect(len(dbResult)).To(Equal(1))
+			msgSender := common.HexToAddress("0xe06ac4777f04ac7638f736a0b95f7bfeadcee556").Hex()
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
+			Expect(dbResult.ID).To(Equal(1))
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 		})
 	})
 })
 
-type potCageModel struct {
-	Id string
+type potCage struct {
+	ID        int64
+	MsgSender int64 `db:"msg_sender"`
 }

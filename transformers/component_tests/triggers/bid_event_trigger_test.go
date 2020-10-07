@@ -39,7 +39,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a flip_kick event triggers a bid_event insertion", func() {
-		flipAddress := test_data.FlipEthAddress()
+		flipAddress := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		flipKickModel := test_data.FlipKickModel()
@@ -58,7 +58,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a flop_kick event triggers a bid_event insertion", func() {
-		flopAddress := test_data.FlopAddress()
+		flopAddress := test_data.FlopV101Address()
 		addressID, addressErr := shared.GetOrCreateAddress(flopAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -78,7 +78,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a flap_kick event triggers a bid_event insertion", func() {
-		flapAddress := test_data.FlapAddress()
+		flapAddress := test_data.FlapV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(flapAddress, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -98,14 +98,16 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a tend event triggers a bid_event insertion", func() {
-		address := test_data.FlipEthAddress()
+		address := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
-		logID := test_data.CreateTestLog(headerOne.Id, db).ID
+
+		tendLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.TendEventLog.Log, db)
 		tendModel := test_data.TendModel()
 		tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		tendModel.ColumnValues[event.AddressFK] = addressID
-		tendModel.ColumnValues[event.LogFK] = logID
+		tendModel.ColumnValues[event.LogFK] = tendLog.ID
+		test_data.AssignMessageSenderID(tendLog, tendModel, db)
 		expectedEvent := expectedBidEvent(tendModel, "tend", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
@@ -118,7 +120,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a dent event triggers a bid_event insertion", func() {
-		address := test_data.FlipEthAddress()
+		address := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -126,6 +128,7 @@ var _ = Describe("Updating bid_event table", func() {
 		dentModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		dentModel.ColumnValues[event.AddressFK] = addressID
 		dentModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, db)
 		expectedEvent := expectedBidEvent(dentModel, "dent", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{dentModel}, db)
@@ -138,7 +141,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a tick event triggers a bid_event insertion", func() {
-		address := test_data.FlipEthAddress()
+		address := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -146,6 +149,7 @@ var _ = Describe("Updating bid_event table", func() {
 		tickModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		tickModel.ColumnValues[event.AddressFK] = addressID
 		tickModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.FlipTickEventLog, tickModel, db)
 		expectedEvent := expectedBidEventNullStrings(tickModel, "tick", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{tickModel}, db)
@@ -158,7 +162,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a deal event triggers a bid_event insertion", func() {
-		address := test_data.FlipEthAddress()
+		address := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -166,6 +170,7 @@ var _ = Describe("Updating bid_event table", func() {
 		dealModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		dealModel.ColumnValues[event.AddressFK] = addressID
 		dealModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.DealEventLog, dealModel, db)
 		expectedEvent := expectedBidEventNullStrings(dealModel, "deal", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{dealModel}, db)
@@ -178,7 +183,7 @@ var _ = Describe("Updating bid_event table", func() {
 	})
 
 	Specify("inserting a yank event triggers a bid_event insertion", func() {
-		address := test_data.FlipEthAddress()
+		address := test_data.FlipEthV100Address()
 		addressID, addressErr := shared.GetOrCreateAddress(address, db)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
@@ -186,6 +191,7 @@ var _ = Describe("Updating bid_event table", func() {
 		yankModel.ColumnValues[event.HeaderFK] = headerOne.Id
 		yankModel.ColumnValues[event.AddressFK] = addressID
 		yankModel.ColumnValues[event.LogFK] = logID
+		test_data.AssignMessageSenderID(test_data.YankEventLog, yankModel, db)
 		expectedEvent := expectedBidEventNullStrings(yankModel, "yank", address, headerOne.BlockNumber)
 
 		insertErr := event.PersistModels([]event.InsertionModel{yankModel}, db)
@@ -199,8 +205,8 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Describe("inserting events after flip-specific diffs", func() {
 		var (
-			flipAddress   = test_data.FlipEthAddress()
-			flipRepo      flip.FlipStorageRepository
+			flipAddress   = test_data.FlipEthV100Address()
+			flipRepo      flip.StorageRepository
 			flipKickModel event.InsertionModel
 			diffID        int64
 		)
@@ -208,7 +214,7 @@ var _ = Describe("Updating bid_event table", func() {
 		BeforeEach(func() {
 			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 			flipKickModel = test_data.FlipKickModel()
@@ -255,16 +261,16 @@ var _ = Describe("Updating bid_event table", func() {
 	Describe("when flip-specific diffs are inserted after events", func() {
 		var (
 			flipAddress   string
-			flipRepo      flip.FlipStorageRepository
+			flipRepo      flip.StorageRepository
 			diffID        int64
 			flipKickModel event.InsertionModel
 		)
 
 		BeforeEach(func() {
-			flipAddress = test_data.FlipEthAddress()
+			flipAddress = test_data.FlipEthV100Address()
 			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(addressErr).NotTo(HaveOccurred())
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 			flipKickModel = test_data.FlipKickModel()
@@ -318,7 +324,7 @@ var _ = Describe("Updating bid_event table", func() {
 			headerTwo          core.Header
 			flipAddress        string
 			usrOne, usrTwo     string
-			flipRepo           flip.FlipStorageRepository
+			flipRepo           flip.StorageRepository
 			bidOneID, bidTwoID int
 			diffID,
 			logTwoID,
@@ -333,11 +339,11 @@ var _ = Describe("Updating bid_event table", func() {
 			logTwoID = test_data.CreateTestLog(headerTwo.Id, db).ID
 			logThreeID = test_data.CreateTestLog(headerTwo.Id, db).ID
 
-			flipAddress = test_data.FlipEthAddress()
+			flipAddress = test_data.FlipEthV100Address()
 			ethFlipAddressID, ethFlipAddressErr := shared.GetOrCreateAddress(flipAddress, db)
 			Expect(ethFlipAddressErr).NotTo(HaveOccurred())
 
-			flipRepo = flip.FlipStorageRepository{ContractAddress: flipAddress}
+			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
 			diffID = CreateFakeDiffRecord(db)
 
@@ -367,11 +373,13 @@ var _ = Describe("Updating bid_event table", func() {
 			insertKickErrOne := event.PersistModels([]event.InsertionModel{flipKickModelOne}, db)
 			Expect(insertKickErrOne).NotTo(HaveOccurred())
 
+			tendLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.TendEventLog.Log, db)
 			tendModel = test_data.TendModel()
 			tendModel.ColumnValues[event.HeaderFK] = headerOne.Id
 			tendModel.ColumnValues[event.AddressFK] = ethFlipAddressID
 			tendModel.ColumnValues[event.LogFK] = logTwoID
 			tendModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(bidOneID)
+			test_data.AssignMessageSenderID(tendLog, tendModel, db)
 			insertTendErr := event.PersistModels([]event.InsertionModel{tendModel}, db)
 			Expect(insertTendErr).NotTo(HaveOccurred())
 

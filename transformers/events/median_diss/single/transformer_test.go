@@ -6,7 +6,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -33,14 +32,10 @@ var _ = Describe("Median diss (single) transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianDissSingleModel()
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianDissSingleLog.Log.Address.String(), db)
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(test_data.MedianDissSingleLog.Log.Topics[1].Hex(), db)
-		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+		test_data.AssignAddressID(test_data.MedianDissSingleLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.MedianDissSingleLog, expectedModel, db)
 		aAddressID, aAddressErr := shared.GetOrCreateAddress(test_data.MedianDissSingleLog.Log.Topics[2].Hex(), db)
 		Expect(aAddressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = contractAddressID
-		expectedModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
 		expectedModel.ColumnValues[constants.AColumn] = aAddressID
 
 		Expect(models).To(ConsistOf(expectedModel))

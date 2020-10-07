@@ -65,6 +65,7 @@ var (
 	FakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	FakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
+	fakeIlkDunkMetadata = types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
 	fakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: FakeIlk.Hex}, types.Uint256)
@@ -81,6 +82,7 @@ var (
 	}
 	FakeIlkCatMetadatas = []types.ValueMetadata{
 		fakeIlkChopMetadata,
+		fakeIlkDunkMetadata,
 		fakeIlkLumpMetadata,
 		fakeIlkFlipMetadata,
 	}
@@ -99,6 +101,7 @@ var (
 	anotherFakeIlkLineMetadata = types.GetValueMetadata(vat.IlkLine, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkDustMetadata = types.GetValueMetadata(vat.IlkDust, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkChopMetadata = types.GetValueMetadata(cat.IlkChop, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
+	anotherFakeIlkDunkMetadata = types.GetValueMetadata(cat.IlkDunk, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkLumpMetadata = types.GetValueMetadata(cat.IlkLump, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
 	anotherFakeIlkFlipMetadata = types.GetValueMetadata(cat.IlkFlip, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Address)
 	anotherFakeIlkRhoMetadata  = types.GetValueMetadata(jug.IlkRho, map[types.Key]string{constants.Ilk: AnotherFakeIlk.Hex}, types.Uint256)
@@ -115,6 +118,7 @@ var (
 	}
 	AnotherFakeIlkCatMetadatas = []types.ValueMetadata{
 		anotherFakeIlkChopMetadata,
+		anotherFakeIlkDunkMetadata,
 		anotherFakeIlkLumpMetadata,
 		anotherFakeIlkFlipMetadata,
 	}
@@ -142,6 +146,7 @@ type IlkSnapshot struct {
 	Line          string
 	Dust          string
 	Chop          string
+	Dunk          string
 	Lump          string
 	Flip          string
 	Rho           string
@@ -160,12 +165,13 @@ func GetIlkValues(seed int) map[string]interface{} {
 	valuesMap[vat.IlkLine] = strconv.Itoa(4 + seed)
 	valuesMap[vat.IlkDust] = strconv.Itoa(5 + seed)
 	valuesMap[cat.IlkChop] = strconv.Itoa(6 + seed)
-	valuesMap[cat.IlkLump] = strconv.Itoa(7 + seed)
+	valuesMap[cat.IlkDunk] = strconv.Itoa(7 + seed)
+	valuesMap[cat.IlkLump] = strconv.Itoa(8 + seed)
 	valuesMap[cat.IlkFlip] = "an address" + strconv.Itoa(seed)
-	valuesMap[jug.IlkRho] = strconv.Itoa(8 + seed)
-	valuesMap[jug.IlkDuty] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkRho] = strconv.Itoa(9 + seed)
+	valuesMap[jug.IlkDuty] = strconv.Itoa(10 + seed)
 	valuesMap[spot.IlkPip] = "an address2" + strconv.Itoa(seed)
-	valuesMap[spot.IlkMat] = strconv.Itoa(10 + seed)
+	valuesMap[spot.IlkMat] = strconv.Itoa(11 + seed)
 
 	return valuesMap
 }
@@ -185,6 +191,7 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 		Line:          ilkValues[vat.IlkLine].(string),
 		Dust:          ilkValues[vat.IlkDust].(string),
 		Chop:          ilkValues[cat.IlkChop].(string),
+		Dunk:          ilkValues[cat.IlkDunk].(string),
 		Lump:          ilkValues[cat.IlkLump].(string),
 		Flip:          ilkValues[cat.IlkFlip].(string),
 		Rho:           ilkValues[jug.IlkRho].(string),
@@ -246,24 +253,24 @@ func BucketedIlkSnapshotFromValues(ilk, updated, created, interval string, bucke
 	}
 }
 
-func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.VatStorageRepository) {
+func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.CatStorageRepository) {
+func CreateCatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository cat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository jug.JugStorageRepository) {
+func CreateJugRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository jug.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
-func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository spot.SpotStorageRepository) {
+func CreateSpotRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository spot.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
 
 // Creates urn by creating necessary state diffs and the corresponding header
-func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.VatStorageRepository) {
+func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.Header, metadata UrnMetadata, vatRepo vat.StorageRepository) {
 	// This also creates the ilk if it doesn't exist
 	urnMetadata := []types.ValueMetadata{metadata.UrnInk, metadata.UrnArt}
 	InsertValues(db, &vatRepo, header, setupData, urnMetadata)
@@ -271,10 +278,10 @@ func CreateUrn(db *postgres.DB, setupData map[string]interface{}, header core.He
 
 func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, vatMetadatas, catMetadatas, jugMetadatas, spotMetadatas []types.ValueMetadata) {
 	var (
-		vatRepo  vat.VatStorageRepository
-		catRepo  cat.CatStorageRepository
-		jugRepo  jug.JugStorageRepository
-		spotRepo spot.SpotStorageRepository
+		vatRepo  vat.StorageRepository
+		catRepo  cat.StorageRepository
+		jugRepo  jug.StorageRepository
+		spotRepo spot.StorageRepository
 	)
 	vatRepo.SetDB(db)
 	catRepo.SetDB(db)
@@ -336,13 +343,13 @@ type UrnState struct {
 }
 
 func AssertUrn(actual, expected UrnState) {
-	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier))
-	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier))
-	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight))
-	Expect(actual.Ink).To(Equal(expected.Ink))
-	Expect(actual.Art).To(Equal(expected.Art))
-	Expect(actual.Created).To(Equal(expected.Created))
-	Expect(actual.Updated).To(Equal(expected.Updated))
+	Expect(actual.UrnIdentifier).To(Equal(expected.UrnIdentifier), "Urn Identifier")
+	Expect(actual.IlkIdentifier).To(Equal(expected.IlkIdentifier), "Ilk Identifier")
+	Expect(actual.BlockHeight).To(Equal(expected.BlockHeight), "Block Height")
+	Expect(actual.Ink).To(Equal(expected.Ink), "Ink")
+	Expect(actual.Art).To(Equal(expected.Art), "Art")
+	Expect(actual.Created).To(Equal(expected.Created), "Created")
+	Expect(actual.Updated).To(Equal(expected.Updated), "Updated")
 }
 
 func GetCommonBidMetadatas(bidId string) []types.ValueMetadata {
@@ -446,7 +453,7 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 			panic(fmt.Sprintf("valuesMap value type not recognized %v", v))
 		}
 
-		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Hash{}, key, valueForDiffRecord)
+		persistedDiff := test_helpers.CreateDiffRecord(db, header, common.Address{}, key, valueForDiffRecord)
 
 		err := repo.Create(persistedDiff.ID, header.Id, metadata, valueForStorageRecord)
 		Expect(err).NotTo(HaveOccurred())
@@ -454,25 +461,25 @@ func InsertValues(db *postgres.DB, repo vdbStorageFactory.Repository, header cor
 }
 
 func CreateFlop(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flopMetadatas []types.ValueMetadata, contractAddress string) {
-	flopRepo := flop.FlopStorageRepository{ContractAddress: contractAddress}
+	flopRepo := flop.StorageRepository{ContractAddress: contractAddress}
 	flopRepo.SetDB(db)
 	InsertValues(db, &flopRepo, header, valuesMap, flopMetadatas)
 }
 
 func CreateFlap(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flapMetadatas []types.ValueMetadata, contractAddress string) {
-	flapRepo := flap.FlapStorageRepository{ContractAddress: contractAddress}
+	flapRepo := flap.StorageRepository{ContractAddress: contractAddress}
 	flapRepo.SetDB(db)
 	InsertValues(db, &flapRepo, header, valuesMap, flapMetadatas)
 }
 
 func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, flipMetadatas []types.ValueMetadata, contractAddress string) {
-	flipRepo := flip.FlipStorageRepository{ContractAddress: contractAddress}
+	flipRepo := flip.StorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
 	InsertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
 }
 
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
-	cdpManagerRepo := cdp_manager.CdpManagerStorageRepository{}
+	cdpManagerRepo := cdp_manager.StorageRepository{}
 	cdpManagerRepo.SetDB(db)
 	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {
@@ -642,6 +649,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 	dealModel.ColumnValues[event.HeaderFK] = input.DealHeaderId
 	dealModel.ColumnValues[event.LogFK] = dealLog.ID
 	dealModel.ColumnValues[event.AddressFK] = addressID
+	test_data.AssignMessageSenderID(test_data.DealEventLog, dealModel, input.DB)
 	deals := []event.InsertionModel{dealModel}
 	return event.PersistModels(deals, input.DB)
 }
@@ -691,6 +699,7 @@ func CreateTend(input TendCreationInput) (err error) {
 	tendModel.ColumnValues[event.AddressFK] = addressID
 	tendModel.ColumnValues[event.HeaderFK] = input.TendHeaderId
 	tendModel.ColumnValues[event.LogFK] = tendLog.ID
+	test_data.AssignMessageSenderID(test_data.TendEventLog, tendModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tendModel}, input.DB)
 }
 
@@ -704,6 +713,7 @@ func CreateDent(input DentCreationInput) (err error) {
 	dentModel.ColumnValues[event.AddressFK] = addressID
 	dentModel.ColumnValues[event.HeaderFK] = input.DentHeaderId
 	dentModel.ColumnValues[event.LogFK] = input.DentLogId
+	test_data.AssignMessageSenderID(test_data.DentEventLog, dentModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
@@ -711,10 +721,11 @@ func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.YankModel()
-	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	yankModel.ColumnValues[event.AddressFK] = addressID
 	yankModel.ColumnValues[event.HeaderFK] = input.YankHeaderId
 	yankModel.ColumnValues[event.LogFK] = input.YankLogId
+	test_data.AssignMessageSenderID(test_data.YankEventLog, yankModel, input.DB)
+	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
 }
 
@@ -727,6 +738,7 @@ func CreateTick(input TickCreationInput) (err error) {
 	tickModel.ColumnValues[event.AddressFK] = addressID
 	tickModel.ColumnValues[event.HeaderFK] = input.TickHeaderId
 	tickModel.ColumnValues[event.LogFK] = tickLog.ID
+	test_data.AssignMessageSenderID(test_data.FlipTickEventLog, tickModel, input.DB)
 	return event.PersistModels([]event.InsertionModel{tickModel}, input.DB)
 }
 

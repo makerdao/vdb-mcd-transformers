@@ -1,0 +1,6 @@
+[database]
+    name     = "vulcanize_testing"
+    hostname = "localhost"
+    user     = "vulcanize"
+    password = "vulcanize"
+    port     = 5432

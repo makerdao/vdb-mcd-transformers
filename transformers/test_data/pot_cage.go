@@ -38,10 +38,11 @@ var PotCageEventLog = core.EventLog{
 var potCageModel = event.InsertionModel{
 	SchemaName:     constants.MakerSchema,
 	TableName:      constants.PotCageTable,
-	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK},
+	OrderedColumns: []event.ColumnName{event.HeaderFK, event.LogFK, constants.MsgSenderColumn},
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: PotCageEventLog.HeaderID,
 		event.LogFK:    PotCageEventLog.ID,
+		//constants.MsgSender
 	},
 }
 

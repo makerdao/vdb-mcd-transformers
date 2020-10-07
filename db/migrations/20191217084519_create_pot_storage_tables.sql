@@ -1,12 +1,11 @@
 -- +goose Up
--- SQL in this section is executed when the migration is applied.
 CREATE TABLE maker.pot_user_pie
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    "user"    INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    "user"    BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     pie       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, "user", pie)
 );
 
@@ -18,9 +17,9 @@ CREATE INDEX pot_user_pie_user_index
 CREATE TABLE maker.pot_pie
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
     pie       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, pie)
 );
 
@@ -30,9 +29,9 @@ CREATE INDEX pot_pie_header_id_index
 CREATE TABLE maker.pot_dsr
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
     dsr       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, dsr)
 );
 
@@ -42,9 +41,9 @@ CREATE INDEX pot_dsr_header_id_index
 CREATE TABLE maker.pot_chi
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
     chi       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, chi)
 );
 
@@ -54,9 +53,9 @@ CREATE INDEX pot_chi_header_id_index
 CREATE TABLE maker.pot_vat
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    vat       INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    vat       BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vat)
 );
 
@@ -68,9 +67,9 @@ CREATE INDEX pot_vat_vat_index
 CREATE TABLE maker.pot_vow
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    vow       INTEGER NOT NULL REFERENCES addresses (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    vow       BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vow)
 );
 
@@ -82,9 +81,9 @@ CREATE INDEX pot_vow_vow_index
 CREATE TABLE maker.pot_rho
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
     rho       NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, rho)
 );
 
@@ -94,9 +93,9 @@ CREATE INDEX pot_rho_header_id_index
 CREATE TABLE maker.pot_live
 (
     id        SERIAL PRIMARY KEY,
-    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    diff_id   BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
     live      NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, live)
 );
 
@@ -104,7 +103,6 @@ CREATE INDEX pot_live_header_id_index
     ON maker.pot_live (header_id);
 
 -- +goose Down
--- SQL in this section is executed when the migration is rolled back.
 DROP INDEX maker.pot_live_header_id_index;
 DROP INDEX maker.pot_rho_header_id_index;
 DROP INDEX maker.pot_vow_vow_index;

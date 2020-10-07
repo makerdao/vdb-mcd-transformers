@@ -21,9 +21,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -42,11 +42,11 @@ var _ = Describe("Cat file flip transformer", func() {
 	It("returns err if log is missing topics", func() {
 		badLog := core.EventLog{
 			Log: types.Log{
-				Data: []byte{1, 1, 1, 1, 1},
+				Data: []byte{1, 1, 1, 1, 2},
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -57,20 +57,23 @@ var _ = Describe("Cat file flip transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to an model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileFlipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.CatFileFlipEventLog.Log.Topics[2].Hex())
-		Expect(ilkErr).NotTo(HaveOccurred())
+		ilkID, ilkIDErr := shared.GetOrCreateIlk(test_data.CatFileFlipEventLog.Log.Topics[2].Hex(), db)
+		Expect(ilkIDErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.CatFileFlipModel()
+		test_data.AssignAddressID(test_data.CatFileFlipEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.CatFileFlipEventLog, expectedModel, db)
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID
 
-		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+		Expect(len(models)).To(Equal(1))
+		Expect(models[0]).To(Equal(expectedModel))
 	})
 })

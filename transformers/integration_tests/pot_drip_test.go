@@ -1,8 +1,6 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_drip"
@@ -54,16 +52,12 @@ var _ = Describe("PotDrip Transformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult potDripModel
-		err = db.Get(&dbResult, `SELECT msg_sender from maker.pot_drip`)
+		var msgSender int64
+		err = db.Get(&msgSender, `SELECT msg_sender from maker.pot_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		addrID, addrErr := shared.GetOrCreateAddress("0x825100c63933cABA16C8CE40814DAc88305D8810", db)
+		expectedAddrID, addrErr := shared.GetOrCreateAddress("0x825100c63933cABA16C8CE40814DAc88305D8810", db)
 		Expect(addrErr).NotTo(HaveOccurred())
-		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addrID, 10)))
+		Expect(msgSender).To(Equal(expectedAddrID))
 	})
 })
-
-type potDripModel struct {
-	MsgSender string `db:"msg_sender"`
-}

@@ -19,6 +19,7 @@ package vow_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -29,7 +30,14 @@ import (
 )
 
 var _ = Describe("Jug file vow transformer", func() {
-	var transformer = vow.Transformer{}
+	var (
+		transformer = vow.Transformer{}
+		db          = test_config.NewTestDB(test_config.NewTestNode())
+	)
+
+	BeforeEach(func() {
+		test_config.CleanTestDB(db)
+	})
 
 	It("returns err if log missing topics", func() {
 		badLog := core.EventLog{
@@ -44,9 +52,11 @@ var _ = Describe("Jug file vow transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileVowEventLog}, nil)
-
+		models, err := transformer.ToModels(constants.JugABI(), []core.EventLog{test_data.JugFileVowEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(models).To(Equal([]event.InsertionModel{test_data.JugFileVowModel()}))
+
+		expectedModel := test_data.JugFileVowModel()
+		test_data.AssignMessageSenderID(test_data.JugFileVowEventLog, expectedModel, db)
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

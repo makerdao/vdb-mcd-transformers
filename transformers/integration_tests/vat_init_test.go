@@ -17,8 +17,6 @@
 package integration_tests
 
 import (
-	"strconv"
-
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -66,18 +64,13 @@ var _ = Describe("VatInit EventTransformer", func() {
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResults []vatInitModel
-		err = db.Select(&dbResults, `SELECT ilk_id from maker.vat_init`)
+		var ilkID int64
+		err = db.Get(&ilkID, `SELECT ilk_id from maker.vat_init`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResults)).To(Equal(1))
-		dbResult := dbResults[0]
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
+		expectedIlkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+
+		Expect(ilkID).To(Equal(expectedIlkID))
 	})
 })
-
-type vatInitModel struct {
-	Ilk string `db:"ilk_id"`
-}

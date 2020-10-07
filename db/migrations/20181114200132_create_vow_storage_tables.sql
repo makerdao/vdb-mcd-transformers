@@ -3,8 +3,8 @@ CREATE TABLE maker.vow_vat
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     vat       TEXT,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, vat)
 );
 
@@ -15,8 +15,8 @@ CREATE TABLE maker.vow_flapper
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     flapper   TEXT,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, flapper)
 );
 
@@ -27,8 +27,8 @@ CREATE TABLE maker.vow_flopper
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     flopper   TEXT,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, flopper)
 );
 
@@ -39,8 +39,8 @@ CREATE TABLE maker.vow_sin_integer
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    sin       NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    sin       numeric,
     UNIQUE (diff_id, header_id, sin)
 );
 
@@ -51,9 +51,9 @@ CREATE TABLE maker.vow_sin_mapping
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    era       NUMERIC,
+    tab       NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    era       numeric,
-    tab       numeric,
     UNIQUE (diff_id, header_id, era, tab)
 );
 
@@ -66,8 +66,8 @@ CREATE TABLE maker.vow_ash
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    ash       NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    ash       numeric,
     UNIQUE (diff_id, header_id, ash)
 );
 
@@ -78,8 +78,8 @@ CREATE TABLE maker.vow_wait
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    wait      NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    wait      numeric,
     UNIQUE (diff_id, header_id, wait)
 );
 
@@ -90,8 +90,8 @@ CREATE TABLE maker.vow_dump
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
-    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     dump      NUMERIC,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
     UNIQUE (diff_id, header_id, dump)
 );
 
@@ -102,8 +102,8 @@ CREATE TABLE maker.vow_sump
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    sump      NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    sump      numeric,
     UNIQUE (diff_id, header_id, sump)
 );
 
@@ -114,8 +114,8 @@ CREATE TABLE maker.vow_bump
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    bump      NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    bump      numeric,
     UNIQUE (diff_id, header_id, bump)
 );
 
@@ -126,28 +126,27 @@ CREATE TABLE maker.vow_hump
 (
     id        SERIAL PRIMARY KEY,
     diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    hump      NUMERIC,
     header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
-    hump      numeric,
     UNIQUE (diff_id, header_id, hump)
 );
 
 CREATE INDEX vow_hump_header_id_index
     ON maker.vow_hump (header_id);
 
--- +goose Down
-DROP INDEX maker.vow_vat_header_id_index;
-DROP INDEX maker.vow_flapper_header_id_index;
-DROP INDEX maker.vow_flopper_header_id_index;
-DROP INDEX maker.vow_sin_integer_header_id_index;
-DROP INDEX maker.vow_sin_mapping_header_id_index;
-DROP INDEX maker.vow_sin_mapping_era_index;
-DROP INDEX maker.vow_ash_header_id_index;
-DROP INDEX maker.vow_wait_header_id_index;
-DROP INDEX maker.vow_dump_header_id_index;
-DROP INDEX maker.vow_sump_header_id_index;
-DROP INDEX maker.vow_bump_header_id_index;
-DROP INDEX maker.vow_hump_header_id_index;
+CREATE TABLE maker.vow_live
+(
+    id        SERIAL PRIMARY KEY,
+    diff_id   BIGINT  NOT NULL REFERENCES storage_diff (id) ON DELETE CASCADE,
+    live      NUMERIC NOT NULL,
+    header_id INTEGER NOT NULL REFERENCES headers (id) ON DELETE CASCADE,
+    UNIQUE (diff_id, header_id, live)
+);
 
+CREATE INDEX vow_live_header_id_index
+    ON maker.vow_live (header_id);
+
+-- +goose Down
 DROP TABLE maker.vow_vat;
 DROP TABLE maker.vow_flapper;
 DROP TABLE maker.vow_flopper;
@@ -159,3 +158,4 @@ DROP TABLE maker.vow_dump;
 DROP TABLE maker.vow_sump;
 DROP TABLE maker.vow_bump;
 DROP TABLE maker.vow_hump;
+DROP TABLE maker.vow_live;

@@ -40,13 +40,12 @@ var _ = Describe("Flip Deal Transformer", func() {
 	})
 
 	It("converts logs to models", func() {
-		models, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{test_data.DealEventLog}, db)
+		models, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{test_data.DealEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		var addressID int64
-		addrErr := db.Get(&addressID, `SELECT id FROM public.addresses`)
-		Expect(addrErr).NotTo(HaveOccurred())
+
 		expectedModel := test_data.DealModel()
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.DealEventLog, expectedModel, db)
+		test_data.AssignMessageSenderID(test_data.DealEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
@@ -54,7 +53,7 @@ var _ = Describe("Flip Deal Transformer", func() {
 		invalidLog := test_data.DealEventLog
 		invalidLog.Log.Topics = []common.Hash{}
 
-		_, err := transformer.ToModels(constants.FlipABI(), []core.EventLog{invalidLog}, db)
+		_, err := transformer.ToModels(constants.FlipV100ABI(), []core.EventLog{invalidLog}, db)
 
 		Expect(err).To(HaveOccurred())
 		Expect(err).To(MatchError(shared.ErrLogMissingTopics(3, 0)))

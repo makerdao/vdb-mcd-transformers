@@ -35,7 +35,7 @@ import (
 var _ = Describe("Managed CDP trigger-populated table", func() {
 	var (
 		headerRepo             datastore.HeaderRepository
-		repo                   cdp_manager.CdpManagerStorageRepository
+		repo                   cdp_manager.StorageRepository
 		fakeCdpi               = rand.Int()
 		headerOne              core.Header
 		blockOne, timestampOne int
@@ -45,7 +45,7 @@ var _ = Describe("Managed CDP trigger-populated table", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		headerRepo = repositories.NewHeaderRepository(db)
-		repo = cdp_manager.CdpManagerStorageRepository{}
+		repo = cdp_manager.StorageRepository{}
 		repo.SetDB(db)
 
 		blockOne = rand.Int()

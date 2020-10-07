@@ -22,12 +22,20 @@ import (
 )
 
 var _ = Describe("Signature constants", func() {
+	It("generates auction file signature", func() {
+		Expect(AuctionFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates bite signature", func() {
 		Expect(BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})
 
-	It("generates cat file chop lump signature", func() {
-		Expect(CatFileChopLumpSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
+	It("generates cat file box signature", func() {
+		Expect(CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates cat file chop lump dunk signature", func() {
+		Expect(CatFileChopLumpDunkSignature()).To(Equal("0x1a0b287e00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates cat file flip signature", func() {
@@ -36,6 +44,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates cat file vow signature", func() {
 		Expect(CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates cat claw signature", func() {
+		Expect(CatClawSignature()).To(Equal("0xe66d279b00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates deal signature", func() {
@@ -52,6 +64,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates flap kick signature", func() {
 		Expect(FlapKickSignature()).To(Equal("0xe6dde59cbc017becba89714a037778d234a84ce7f0a137487142a007e580d609"))
+	})
+
+	It("generates flip file cat signature", func() {
+		Expect(FlipFileCatSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates flip kick signature", func() {
@@ -118,58 +134,6 @@ var _ = Describe("Signature constants", func() {
 		Expect(NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
-	It("generates oasis log bump signature", func() {
-		Expect(LogBumpSignature()).To(Equal("0x70a14c213064359ede031fd2a1645a11ce2ec825ffe6ab5cfb5b160c3ef4d0a2"))
-	})
-
-	It("generates oasis log buy enabled signature", func() {
-		Expect(LogBuyEnabledSignature()).To(Equal("0x7089e4f0bcc948f9f723a361590c32d9c2284da7ab1981b1249ad2edb9f953c1"))
-	})
-
-	It("generates oasis log delete signature", func() {
-		Expect(LogDeleteSignature()).To(Equal("0xcb9d6176c6aac6478ebb9a2754cdce22a944de29ed1f2642f8613884eba4b40c"))
-	})
-
-	It("generates oasis log insert signature", func() {
-		Expect(LogInsertSignature()).To(Equal("0x6d5c16212bdea16850dce4d9fa2314c446bd30ce84700d9c36c7677c6d283940"))
-	})
-
-	It("generates oasis log item update signature", func() {
-		Expect(LogItemUpdateSignature()).To(Equal("0xa2c251311b1a7a475913900a2a73dc9789a21b04bc737e050bbc506dd4eb3488"))
-	})
-
-	It("generates oasis log kill signature", func() {
-		Expect(LogKillSignature()).To(Equal("0x9577941d28fff863bfbee4694a6a4a56fb09e169619189d2eaa750b5b4819995"))
-	})
-
-	It("generates oasis log make signature", func() {
-		Expect(LogMakeSignature()).To(Equal("0x773ff502687307abfa024ac9f62f9752a0d210dac2ffd9a29e38e12e2ea82c82"))
-	})
-
-	It("generates oasis log matching enabled signature", func() {
-		Expect(LogMatchingEnabledSignature()).To(Equal("0xea11e00ec1642be9b494019b756440e2c57dbe9e59242c4f9c64ce33fb4f41d9"))
-	})
-
-	It("generates oasis log minsell signature", func() {
-		Expect(LogMinSellSignature()).To(Equal("0xc28d56449b0bb31e64ee7487e061f57a2e72aea8019d810832f26dda099823d0"))
-	})
-
-	It("generates oasis log sorted offer signature", func() {
-		Expect(LogSortedOfferSignature()).To(Equal("0x20fb9bad86c18f7e22e8065258790d9416a7d2df8ff05f80f82c46d38b925acd"))
-	})
-
-	It("generates oasis log take signature", func() {
-		Expect(LogTakeSignature()).To(Equal("0x3383e3357c77fd2e3a4b30deea81179bc70a795d053d14d5b7f2f01d0fd4596f"))
-	})
-
-	It("generates oasis log trade signature", func() {
-		Expect(LogTradeSignature()).To(Equal("0x819e390338feffe95e2de57172d6faf337853dfd15c7a09a32d76f7fd2443875"))
-	})
-
-	It("generates oasis log unsorted offer signature", func() {
-		Expect(LogUnsortedOfferSignature()).To(Equal("0x8173832a493e0a3989e521458e55bfe9feac9f9b675a94e100b9d5a85f814862"))
-	})
-
 	It("generates pot cage signature", func() {
 		Expect(PotCageSignature()).To(Equal("0x6924500900000000000000000000000000000000000000000000000000000000"))
 	})
@@ -200,10 +164,6 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates rely signature", func() {
 		Expect(RelySignature()).To(Equal("0x65fae35e00000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates setMinSell signature", func() {
-		Expect(SetMinSellSignature()).To(Equal("0xbf7c734e00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates spot file mat signature", func() {
@@ -290,12 +250,20 @@ var _ = Describe("Signature constants", func() {
 		Expect(VowFessSignature()).To(Equal("0x697efb7800000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates vow file signature", func() {
-		Expect(VowFileSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	It("generates vow file auction attributes signature", func() {
+		Expect(VowFileAuctionAttributesSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vow file auction address signature", func() {
+		Expect(VowFileAuctionAddressSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vow flog signature", func() {
 		Expect(VowFlogSignature()).To(Equal("0xd7ee674b00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vow heal signature", func() {
+		Expect(VowHealSignature()).To(Equal("0xf37ac61c00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates yank signature", func() {

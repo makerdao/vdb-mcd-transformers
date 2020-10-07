@@ -42,7 +42,7 @@ var _ = Describe("Flop storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = flop.NewKeysLoader(storageRepository, test_data.FlopAddress())
+		storageKeysLoader = flop.NewKeysLoader(storageRepository, test_data.FlopV101Address())
 	})
 
 	It("returns value metadata for static keys", func() {
@@ -53,7 +53,7 @@ var _ = Describe("Flop storage keys loader", func() {
 		Expect(mappings[flop.GemKey]).To(Equal(flop.GemMetadata))
 		Expect(mappings[flop.BegKey]).To(Equal(flop.BegMetadata))
 		Expect(mappings[flop.PadKey]).To(Equal(flop.PadMetadata))
-		Expect(mappings[flop.TtlAndTauKey]).To(Equal(flop.TtlAndTauMetadata))
+		Expect(mappings[flop.TTLAndTauKey]).To(Equal(flop.TTLAndTauMetadata))
 		Expect(mappings[flop.KicksKey]).To(Equal(flop.KicksMetadata))
 		Expect(mappings[flop.LiveKey]).To(Equal(flop.LiveMetadata))
 		Expect(mappings[flop.VowKey]).To(Equal(flop.VowMetadata))
@@ -74,7 +74,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			mappings, err := storageKeysLoader.LoadMappings()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.FlopAddress()))
+			Expect(storageRepository.GetWardsKeysCalledWith).To(Equal(test_data.FlopV101Address()))
 			Expect(mappings[wardsKey]).To(Equal(expectedMetadata))
 		})
 
@@ -93,7 +93,7 @@ var _ = Describe("Flop storage keys loader", func() {
 	Describe("bid", func() {
 		Describe("when getting flop bid IDs fails", func() {
 			It("returns error", func() {
-				storageRepository.GetFlopBidIdsError = fakes.FakeError
+				storageRepository.GetFlopBidIDsError = fakes.FakeError
 
 				_, err := storageKeysLoader.LoadMappings()
 
@@ -104,19 +104,19 @@ var _ = Describe("Flop storage keys loader", func() {
 
 		Describe("when getting flop bid IDs succeeds", func() {
 			var (
-				fakeBidId string
+				fakeBidID string
 				bidBidKey common.Hash
 				mappings  map[common.Hash]types.ValueMetadata
 			)
 
 			BeforeEach(func() {
-				fakeBidId = "42"
-				fakeHexBidId, conversionErr := shared.ConvertIntStringToHex(fakeBidId)
+				fakeBidID = "42"
+				fakeHexBidID, conversionErr := shared.ConvertIntStringToHex(fakeBidID)
 
 				Expect(conversionErr).NotTo(HaveOccurred())
 
-				bidBidKey = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexBidId + flop.BidsIndex)))
-				storageRepository.FlopBidIds = []string{fakeBidId}
+				bidBidKey = common.BytesToHash(crypto.Keccak256(common.FromHex(fakeHexBidID + flop.BidsIndex)))
+				storageRepository.FlopBidIDs = []string{fakeBidID}
 				var err error
 				mappings, err = storageKeysLoader.LoadMappings()
 				Expect(err).NotTo(HaveOccurred())
@@ -125,7 +125,7 @@ var _ = Describe("Flop storage keys loader", func() {
 			It("returns value metadata for bid bid", func() {
 				expectedMetadata := types.ValueMetadata{
 					Name: mcdStorage.BidBid,
-					Keys: map[types.Key]string{constants.BidId: fakeBidId},
+					Keys: map[types.Key]string{constants.BidId: fakeBidID},
 					Type: types.Uint256,
 				}
 
@@ -136,7 +136,7 @@ var _ = Describe("Flop storage keys loader", func() {
 				bidLotKey := vdbStorage.GetIncrementedKey(bidBidKey, 1)
 				expectedMetadata := types.ValueMetadata{
 					Name: mcdStorage.BidLot,
-					Keys: map[types.Key]string{constants.BidId: fakeBidId},
+					Keys: map[types.Key]string{constants.BidId: fakeBidID},
 					Type: types.Uint256,
 				}
 
@@ -147,7 +147,7 @@ var _ = Describe("Flop storage keys loader", func() {
 				bidGuyKey := vdbStorage.GetIncrementedKey(bidBidKey, 2)
 				expectedMetadata := types.ValueMetadata{
 					Name:        mcdStorage.Packed,
-					Keys:        map[types.Key]string{constants.BidId: fakeBidId},
+					Keys:        map[types.Key]string{constants.BidId: fakeBidID},
 					Type:        types.PackedSlot,
 					PackedTypes: map[int]types.ValueType{0: types.Address, 1: types.Uint48, 2: types.Uint48},
 					PackedNames: map[int]string{0: mcdStorage.BidGuy, 1: mcdStorage.BidTic, 2: mcdStorage.BidEnd},

@@ -38,7 +38,7 @@ func CreateFakeDiffRecord(db *postgres.DB) int64 {
 }
 
 func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
-	fakeRawDiff := GetFakeStorageDiffForHeader(header, common.Hash{}, common.Hash{}, common.Hash{})
+	fakeRawDiff := GetFakeStorageDiffForHeader(header, common.Address{}, common.Hash{}, common.Hash{})
 	storageDiffRepo := storage.NewDiffRepository(db)
 	diffID, insertDiffErr := storageDiffRepo.CreateStorageDiff(fakeRawDiff)
 	Expect(insertDiffErr).NotTo(HaveOccurred())
@@ -46,8 +46,8 @@ func CreateFakeDiffRecordWithHeader(db *postgres.DB, header core.Header) int64 {
 	return diffID
 }
 
-func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, value common.Hash) types.PersistedDiff {
-	rawDiff := GetFakeStorageDiffForHeader(header, hashedAddress, key, value)
+func CreateDiffRecord(db *postgres.DB, header core.Header, address common.Address, key, value common.Hash) types.PersistedDiff {
+	rawDiff := GetFakeStorageDiffForHeader(header, address, key, value)
 
 	repo := storage.NewDiffRepository(db)
 	diffID, insertDiffErr := repo.CreateStorageDiff(rawDiff)
@@ -62,12 +62,12 @@ func CreateDiffRecord(db *postgres.DB, header core.Header, hashedAddress, key, v
 	return persistedDiff
 }
 
-func GetFakeStorageDiffForHeader(header core.Header, hashedAddress, storageKey, storageValue common.Hash) types.RawDiff {
+func GetFakeStorageDiffForHeader(header core.Header, address common.Address, storageKey, storageValue common.Hash) types.RawDiff {
 	return types.RawDiff{
-		HashedAddress: hashedAddress,
-		BlockHash:     common.HexToHash(header.Hash),
-		BlockHeight:   int(header.BlockNumber),
-		StorageKey:    storageKey,
-		StorageValue:  storageValue,
+		Address:      address,
+		BlockHash:    common.HexToHash(header.Hash),
+		BlockHeight:  int(header.BlockNumber),
+		StorageKey:   storageKey,
+		StorageValue: storageValue,
 	}
 }

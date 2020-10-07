@@ -25,11 +25,11 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
-	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -38,20 +38,20 @@ import (
 
 var _ = Describe("Executing the transformer", func() {
 	var (
-		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.CatAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = cat.CatStorageRepository{ContractAddress: contractAddress}
-		storageKeysLookup = storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
-		transformer       = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
-			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
-		}
-		header = fakes.FakeHeader
+		db              = test_config.NewTestDB(test_config.NewTestNode())
+		contractAddress = common.HexToAddress(test_data.Cat100Address())
+		transformer     storage.Transformer
+		header          = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
+		storageKeysLookup := storage.NewKeysLookup(v1_0_0.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		repository := cat.StorageRepository{ContractAddress: contractAddress.Hex()}
+		transformer = storage.Transformer{
+			Address:           contractAddress,
+			StorageKeysLookup: storageKeysLookup,
+			Repository:        &repository,
+		}
 		test_config.CleanTestDB(db)
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -63,43 +63,52 @@ var _ = Describe("Executing the transformer", func() {
 	It("reads in a Cat Live storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		catLiveDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		catLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catLiveDiff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var liveResult test_helpers.VariableRes
-		err = db.Get(&liveResult, `SELECT diff_id, header_id, live AS value FROM maker.cat_live`)
+		var liveResult test_helpers.VariableResWithAddress
+		err = db.Get(&liveResult, `SELECT diff_id, header_id, address_id, live AS value FROM maker.cat_live`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(liveResult, catLiveDiff.ID, header.Id, "1")
+		test_helpers.AssertVariableWithAddress(liveResult, catLiveDiff.ID, header.Id, contractAddressID, "1")
 	})
 
 	It("reads in a Cat Vat storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
-		catVatDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		catVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catVatDiff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var vatResult test_helpers.VariableRes
-		err = db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.cat_vat`)
+		var vatResult test_helpers.VariableResWithAddress
+		err = db.Get(&vatResult, `SELECT diff_id, header_id, address_id, vat AS value FROM maker.cat_vat`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vatResult, catVatDiff.ID, header.Id, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
+		test_helpers.AssertVariableWithAddress(vatResult, catVatDiff.ID, header.Id, contractAddressID, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
 	})
 
 	It("reads in a Cat Vow storage diff row and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
-		catVowDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		catVowDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catVowDiff)
 		Expect(err).NotTo(HaveOccurred())
 
-		var vowResult test_helpers.VariableRes
-		err = db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.cat_vow`)
+		var vowResult test_helpers.VariableResWithAddress
+		err = db.Get(&vowResult, `SELECT diff_id, header_id, address_id, vow AS value FROM maker.cat_vow`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(vowResult, catVowDiff.ID, header.Id, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
+		test_helpers.AssertVariableWithAddress(vowResult, catVowDiff.ID, header.Id, contractAddressID, "0x21444AC712cCD21ce82AF24eA1aEc64Cf07361D2")
 	})
 
 	Describe("wards", func() {
@@ -107,7 +116,7 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			catAddressID, catAddressErr := shared.GetOrCreateAddress(test_data.CatAddress(), db)
+			catAddressID, catAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(catAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
@@ -128,72 +137,73 @@ var _ = Describe("Executing the transformer", func() {
 
 			key := common.HexToHash("b6d2a4300cc4010859f67ce7c804312ce9cc8f1032cdeb24e96d4b5562a4d01b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(catAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, catAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
 	Describe("ilk", func() {
 		var (
-			ilk    string
-			ilkID  int64
-			ilkErr error
+			ilkID             int64
+			contractAddressID int64
 		)
 
 		BeforeEach(func() {
-			ilk = "0x4554482d41000000000000000000000000000000000000000000000000000000"
+			var ilkErr, contractAddressErr error
+			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr = shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
 		})
 
 		It("reads in a Cat Ilk Flip storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015")
 			value := common.HexToHash("000000000000000000000000b88d2655aba486a06e638707fbebd858d430ac6e")
-			catIlkFlipDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			catIlkFlipDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(catIlkFlipDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkFlipResult test_helpers.MappingRes
-			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
+			var ilkFlipResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkFlipResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, flip AS value FROM maker.cat_ilk_flip`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkFlipResult, catIlkFlipDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
+			test_helpers.AssertMappingWithAddress(ilkFlipResult, catIlkFlipDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "0xB88d2655abA486A06e638707FBEbD858D430AC6E")
 		})
 
 		It("reads in a Cat Ilk Chop storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016")
 			value := common.HexToHash("0000000000000000000000000000000000000000033b2e3c9fd0803ce8000000")
-			catIlkChopDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			catIlkChopDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(catIlkChopDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkChopResult test_helpers.MappingRes
-			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
+			var ilkChopResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, chop AS value FROM maker.cat_ilk_chop`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkChopResult, catIlkChopDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
+			test_helpers.AssertMappingWithAddress(ilkChopResult, catIlkChopDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "1000000000000000000000000000")
 		})
 
 		It("reads in a Cat Ilk Lump storage diff row and persists it", func() {
 			key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017")
 			value := common.HexToHash("000000000000000000000006d79f82328ea3da61e066ebb2f88a000000000000")
-			catIlkLumpDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			catIlkLumpDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			err := transformer.Execute(catIlkLumpDiff)
 			Expect(err).NotTo(HaveOccurred())
 
-			var ilkLumpResult test_helpers.MappingRes
-			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
+			var ilkLumpResult test_helpers.MappingResWithAddress
+			err = db.Get(&ilkLumpResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, lump AS value FROM maker.cat_ilk_lump`)
 			Expect(err).NotTo(HaveOccurred())
-			test_helpers.AssertMapping(ilkLumpResult, catIlkLumpDiff.ID, header.Id, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
+			test_helpers.AssertMappingWithAddress(ilkLumpResult, catIlkLumpDiff.ID, header.Id, contractAddressID, strconv.FormatInt(ilkID, 10), "10000000000000000000000000000000000000000000000000")
 		})
 	})
 })

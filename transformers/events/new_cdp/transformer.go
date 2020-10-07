@@ -19,61 +19,39 @@ package new_cdp
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
 type Transformer struct{}
 
-func (Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]NewCdpEntity, error) {
-	var entities []NewCdpEntity
-	for _, log := range logs {
-		var entity NewCdpEntity
-		address := log.Log.Address
-		abi, err := eth.ParseAbi(contractAbi)
-		if err != nil {
-			return nil, err
-		}
-		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-
-		err = contract.UnpackLog(&entity, "NewCdp", log.Log)
-		if err != nil {
-			return nil, err
-		}
-
-		entity.LogID = log.ID
-		entity.HeaderID = log.HeaderID
-
-		entities = append(entities, entity)
-	}
-
-	return entities, nil
-}
-
-func (t Transformer) ToModels(abi string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
-	entities, entityErr := t.toEntities(abi, logs)
-	if entityErr != nil {
-		return nil, fmt.Errorf("NewCDP transformer couldn't convert logs to entities: %v", entityErr)
-	}
+func (t Transformer) ToModels(_ string, logs []core.EventLog, _ *postgres.DB) ([]event.InsertionModel, error) {
 	var models []event.InsertionModel
-	for _, newCdpEntity := range entities {
+	for _, log := range logs {
+		verifyErr := shared.VerifyLog(log.Log, shared.FourTopicsRequired, shared.LogDataNotRequired)
+		if verifyErr != nil {
+			return nil, fmt.Errorf("invalid log for NewCDP: %w", verifyErr)
+		}
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.NewCdpTable,
 			OrderedColumns: []event.ColumnName{
-				event.HeaderFK, event.LogFK, constants.UsrColumn, constants.OwnColumn, constants.CdpColumn,
+				event.HeaderFK,
+				event.LogFK,
+				constants.UsrColumn,
+				constants.OwnColumn,
+				constants.CdpColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:      newCdpEntity.HeaderID,
-				event.LogFK:         newCdpEntity.LogID,
-				constants.UsrColumn: newCdpEntity.Usr.Hex(),
-				constants.OwnColumn: newCdpEntity.Own.Hex(),
-				constants.CdpColumn: shared.BigIntToString(newCdpEntity.Cdp),
+				event.HeaderFK:      log.HeaderID,
+				event.LogFK:         log.ID,
+				constants.UsrColumn: common.HexToAddress(log.Log.Topics[1].Hex()).Hex(),
+				constants.OwnColumn: common.HexToAddress(log.Log.Topics[2].Hex()).Hex(),
+				constants.CdpColumn: log.Log.Topics[3].Big().String(),
 			},
 		}
 		models = append(models, model)

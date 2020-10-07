@@ -44,7 +44,7 @@ var (
 )
 
 var rawBiteLog = types.Log{
-	Address: common.HexToAddress(CatAddress()),
+	Address: common.HexToAddress(Cat100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.BiteSignature()),
 		common.HexToHash("0x4554480000000000000000000000000000000000000000000000000000000000"),
@@ -73,6 +73,7 @@ var biteModel = event.InsertionModel{
 	OrderedColumns: []event.ColumnName{
 		event.HeaderFK,
 		event.LogFK,
+		event.AddressFK,
 		constants.UrnColumn,
 		constants.InkColumn,
 		constants.ArtColumn,
@@ -83,6 +84,7 @@ var biteModel = event.InsertionModel{
 	ColumnValues: event.ColumnValues{
 		event.HeaderFK: BiteEventLog.HeaderID,
 		event.LogFK:    BiteEventLog.ID,
+		// event.AddressFK
 		// constants.UrnColumn: Can't assert against this since we don't know the ID...
 		constants.InkColumn:   biteInk.String(),
 		constants.ArtColumn:   biteArt.String(),

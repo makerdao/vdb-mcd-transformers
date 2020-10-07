@@ -39,10 +39,9 @@ import (
 var _ = Describe("Executing the flap transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.FlapAddress()
-		keccakOfAddress   = types.HexToKeccak256Hash(contractAddress)
-		repository        = flap.FlapStorageRepository{ContractAddress: contractAddress}
-		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		contractAddress   = common.HexToAddress(test_data.FlapV100Address())
+		repository        = flap.StorageRepository{ContractAddress: contractAddress.Hex()}
+		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
 	)
@@ -50,7 +49,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 		transformer = storage.Transformer{
-			Address:           common.HexToAddress(contractAddress),
+			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
 			Repository:        &repository,
 		}
@@ -64,7 +63,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a vat storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("000000000000000000000000284ecb5880cdc3362d979d07d162bf1d8488975d")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -79,7 +78,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a gem storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("000000000000000000000000a90843676a7f747a3c8adda142471369346369c1")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -94,7 +93,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a beg storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("000000000000000000000000000000000000000003648a260e3486a65a000000")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -109,7 +108,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a ttl storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
 		value := common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -124,7 +123,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a tau storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
 		value := common.HexToHash("000000000000000000000000000000000000000000000002a300000000002a30")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -143,7 +142,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	It("reads in a live storage diff and persists it", func() {
 		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000007")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		diff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+		diff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 		err := transformer.Execute(diff)
 		Expect(err).NotTo(HaveOccurred())
@@ -160,7 +159,7 @@ var _ = Describe("Executing the flap transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(test_data.FlapAddress(), db)
+			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 			Expect(flapAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
@@ -181,16 +180,15 @@ var _ = Describe("Executing the flap transformer", func() {
 
 			key := common.HexToHash("614c9873ec2671d6eb30d7a22b531442a34fc10f8c24a6598ef401fe94d9cb7d")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-			wardsDiff := test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
 			transformErr := transformer.Execute(wardsDiff)
 			Expect(transformErr).NotTo(HaveOccurred())
 
-			var wardsResult test_helpers.WardsMappingRes
+			var wardsResult test_helpers.MappingResWithAddress
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(wardsResult.AddressID).To(Equal(strconv.FormatInt(flapAddressID, 10)))
-			test_helpers.AssertMapping(wardsResult.MappingRes, wardsDiff.ID, header.Id, strconv.FormatInt(userAddressID, 10), "1")
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, flapAddressID, strconv.FormatInt(userAddressID, 10), "1")
 		})
 	})
 
@@ -206,9 +204,9 @@ var _ = Describe("Executing the flap transformer", func() {
 				bidId = 1
 				key := common.HexToHash("cc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b6887931")
 				value := common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d")
-				diff = test_helpers.CreateDiffRecord(db, header, keccakOfAddress, key, value)
+				diff = test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+				addressId, addressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flap.InsertKicksQuery, diff.ID, header.Id, addressId, bidId)

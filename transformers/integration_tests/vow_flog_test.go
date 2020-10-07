@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -65,15 +66,20 @@ var _ = Describe("VowFlog EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vowFlogModel
-		err = db.Select(&dbResult, `SELECT era from maker.vow_flog`)
+		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000022e86ab483084053562ce713e94431c29d1adb8b")
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		var dbResult vowFlogModel
+		err = db.Get(&dbResult, `SELECT msg_sender, era from maker.vow_flog`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(len(dbResult)).To(Equal(1))
-		Expect(dbResult[0].Era).To(Equal("1577965150"))
+		Expect(dbResult.MsgSender).To(Equal(msgSenderID))
+		Expect(dbResult.Era).To(Equal("1577965150"))
 	})
 })
 
 type vowFlogModel struct {
-	Era string
+	MsgSender int64 `db:"msg_sender"`
+	Era       string
 }

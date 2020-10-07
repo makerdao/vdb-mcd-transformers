@@ -19,6 +19,7 @@ package spot_poke_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -40,8 +41,7 @@ var _ = Describe("SpotPoke Transformer", func() {
 		models, err := transformer.ToModels(constants.SpotABI(), []core.EventLog{test_data.SpotPokeEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		var ilkID int64
-		ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks where ilk = $1`, test_data.SpotPokeIlkHex)
+		ilkID, ilkErr := shared.GetOrCreateIlk(test_data.SpotPokeIlkHex, db)
 		Expect(ilkErr).NotTo(HaveOccurred())
 		expectedModel := test_data.SpotPokeModel()
 		expectedModel.ColumnValues[constants.IlkColumn] = ilkID

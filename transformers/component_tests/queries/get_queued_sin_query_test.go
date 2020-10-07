@@ -47,7 +47,7 @@ var _ = Describe("QueuedSin", func() {
 		logId                  int64
 		rawEra                 int
 		sinMappingMetadata     types.ValueMetadata
-		vowRepository          vow.VowStorageRepository
+		vowRepository          vow.StorageRepository
 		diffID                 int64
 	)
 
@@ -66,7 +66,7 @@ var _ = Describe("QueuedSin", func() {
 
 		diffID = storage_helper.CreateFakeDiffRecord(db)
 
-		vowRepository = vow.VowStorageRepository{}
+		vowRepository = vow.StorageRepository{}
 		vowRepository.SetDB(db)
 		sinMappingKeys := map[types.Key]string{constants.Timestamp: fakeEra}
 		sinMappingMetadata = types.GetValueMetadata(vow.SinMapping, sinMappingKeys, types.Uint256)
@@ -96,6 +96,8 @@ var _ = Describe("QueuedSin", func() {
 			vowFlogEvent.ColumnValues[constants.EraColumn] = fakeEra
 			vowFlogEvent.ColumnValues[event.HeaderFK] = headerOne.Id
 			vowFlogEvent.ColumnValues[event.LogFK] = logId
+			test_data.AssignMessageSenderID(test_data.VowFlogEventLog, vowFlogEvent, db)
+
 			vowFlogErr := event.PersistModels([]event.InsertionModel{vowFlogEvent}, db)
 			Expect(vowFlogErr).NotTo(HaveOccurred())
 

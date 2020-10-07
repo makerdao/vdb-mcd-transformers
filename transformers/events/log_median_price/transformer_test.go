@@ -3,7 +3,6 @@ package log_median_price_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_median_price"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -27,9 +26,7 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.EthLogMedianPriceModel()
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.EthLogMedianPriceEventLog.Log.Address.Hex(), db)
-		Expect(addressErr).NotTo(HaveOccurred())
-		expectedModel.ColumnValues[event.AddressFK] = addressID
+		test_data.AssignAddressID(test_data.EthLogMedianPriceEventLog, expectedModel, db)
 
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})

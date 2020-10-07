@@ -6,6 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -65,10 +66,15 @@ var _ = Describe("PotFile EventTransformers", func() {
 		})
 
 		It("fetches and transforms a Pot.file dsr event", func() {
-			var dbResult potFileDSRModel
-			getFileErr := db.Get(&dbResult, `SELECT what, data FROM maker.pot_file_dsr`)
+			var dbResult potFileModel
+			getFileErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.pot_file_dsr`)
 			Expect(getFileErr).NotTo(HaveOccurred())
 
+			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb")
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 			Expect(dbResult.What).To(Equal("dsr"))
 			Expect(dbResult.Data).To(Equal("1000000000627937192491029810"))
 		})
@@ -119,17 +125,23 @@ var _ = Describe("PotFile EventTransformers", func() {
 		})
 
 		It("fetches and transforms a Pot.file vow event", func() {
-			var dbResult potFileDSRModel
-			getFileErr := db.Get(&dbResult, `SELECT what, data FROM maker.pot_file_vow`)
+			var dbResult potFileModel
+			getFileErr := db.Get(&dbResult, `SELECT msg_sender, what, data FROM maker.pot_file_vow`)
 			Expect(getFileErr).NotTo(HaveOccurred())
 
+			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
+			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			Expect(msgSenderErr).NotTo(HaveOccurred())
+
+			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
 			Expect(dbResult.What).To(Equal("vow"))
 			Expect(dbResult.Data).To(Equal(test_data.VowAddress()))
 		})
 	})
 })
 
-type potFileDSRModel struct {
-	What string
-	Data string
+type potFileModel struct {
+	MsgSender int64 `db:"msg_sender"`
+	What      string
+	Data      string
 }

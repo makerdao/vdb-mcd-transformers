@@ -17,6 +17,8 @@
 package cdp_manager
 
 import (
+	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -36,11 +38,11 @@ const (
 	insertCountQuery    = `INSERT INTO maker.cdp_manager_count (diff_id, header_id, owner, count) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
-type CdpManagerStorageRepository struct {
+type StorageRepository struct {
 	db *postgres.DB
 }
 
-func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Vat:
 		return repository.insertVat(diffID, headerID, value.(string))
@@ -67,102 +69,129 @@ func (repository *CdpManagerStorageRepository) Create(diffID, headerID int64, me
 	}
 }
 
-func (repository *CdpManagerStorageRepository) SetDB(db *postgres.DB) {
+func (repository *StorageRepository) SetDB(db *postgres.DB) {
 	repository.db = db
 }
 
-func (repository CdpManagerStorageRepository) insertVat(diffID, headerID int64, vat string) error {
+func (repository StorageRepository) insertVat(diffID, headerID int64, vat string) error {
 	_, err := repository.db.Exec(insertVatQuery, diffID, headerID, vat)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting cdp manager vat %s from diff ID %d: %w", vat, diffID, err)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertCdpi(diffID, headerID int64, cdpi string) error {
+func (repository StorageRepository) insertCdpi(diffID, headerID int64, cdpi string) error {
 	_, err := repository.db.Exec(InsertCdpiQuery, diffID, headerID, cdpi)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting cdp manager cdpi %s from diff ID %d: %w", cdpi, diffID, err)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertUrns(diffID, headerID int64, metadata types.ValueMetadata, urns string) error {
+func (repository StorageRepository) insertUrns(diffID, headerID int64, metadata types.ValueMetadata, urn string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting cdpi for urn: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertUrnsQuery, diffID, headerID, cdpi, urns)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertUrnsQuery, diffID, headerID, cdpi, urn)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting cdpi %s urn %s from diff ID %d: %w", cdpi, urn, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertListPrev(diffID, headerID int64, metadata types.ValueMetadata, prev string) error {
+func (repository StorageRepository) insertListPrev(diffID, headerID int64, metadata types.ValueMetadata, prev string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting cdpi for list prev: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertListPrevQuery, diffID, headerID, cdpi, prev)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertListPrevQuery, diffID, headerID, cdpi, prev)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting cdpi %s list prev %s from diff ID %d", cdpi, prev, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertListNext(diffID, headerID int64, metadata types.ValueMetadata, next string) error {
+func (repository StorageRepository) insertListNext(diffID, headerID int64, metadata types.ValueMetadata, next string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting cdpi for list next: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertListNextQuery, diffID, headerID, cdpi, next)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertListNextQuery, diffID, headerID, cdpi, next)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting cdpi %s list next %s from diff ID %d", cdpi, next, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertOwns(diffID, headerID int64, metadata types.ValueMetadata, owner string) error {
+func (repository StorageRepository) insertOwns(diffID, headerID int64, metadata types.ValueMetadata, owner string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting cdpi for owns: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(InsertOwnsQuery, diffID, headerID, cdpi, owner)
-	return writeErr
+	_, insertErr := repository.db.Exec(InsertOwnsQuery, diffID, headerID, cdpi, owner)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting cdpi %s owns %s from diff ID %d: %w", cdpi, owner, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertIlks(diffID, headerID int64, metadata types.ValueMetadata, ilks string) error {
+func (repository StorageRepository) insertIlks(diffID, headerID int64, metadata types.ValueMetadata, ilk string) error {
 	cdpi, keyErr := getCdpi(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting cdpi for ilk: %w", keyErr)
 	}
-
-	ilkId, ilkErr := shared.GetOrCreateIlk(ilks, repository.db)
+	ilkId, ilkErr := shared.GetOrCreateIlk(ilk, repository.db)
 	if ilkErr != nil {
-		return ilkErr
+		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
 	}
-	_, writeErr := repository.db.Exec(insertIlksQuery, diffID, headerID, cdpi, ilkId)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertIlksQuery, diffID, headerID, cdpi, ilkId)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting cdpi %s ilk %s from diff ID %d: %w", cdpi, ilk, diffID, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertFirst(diffID, headerID int64, metadata types.ValueMetadata, first string) error {
+func (repository StorageRepository) insertFirst(diffID, headerID int64, metadata types.ValueMetadata, first string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting owner for first: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertFirstQuery, diffID, headerID, owner, first)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertFirstQuery, diffID, headerID, owner, first)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting owner %s first %s from diff ID %d", owner, first, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertLast(diffID, headerID int64, metadata types.ValueMetadata, last string) error {
+func (repository StorageRepository) insertLast(diffID, headerID int64, metadata types.ValueMetadata, last string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting owner for last: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertLastQuery, diffID, headerID, owner, last)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertLastQuery, diffID, headerID, owner, last)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting owner %s last %s from diff ID %d", owner, last, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
-func (repository CdpManagerStorageRepository) insertCount(diffID, headerID int64, metadata types.ValueMetadata, count string) error {
+func (repository StorageRepository) insertCount(diffID, headerID int64, metadata types.ValueMetadata, count string) error {
 	owner, keyErr := getOwner(metadata.Keys)
 	if keyErr != nil {
-		return keyErr
+		return fmt.Errorf("error getting owner for count: %w", keyErr)
 	}
-
-	_, writeErr := repository.db.Exec(insertCountQuery, diffID, headerID, owner, count)
-	return writeErr
+	_, insertErr := repository.db.Exec(insertCountQuery, diffID, headerID, owner, count)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting owner %s count %s from diff ID %d", owner, count, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
 }
 
 func getCdpi(keys map[types.Key]string) (string, error) {

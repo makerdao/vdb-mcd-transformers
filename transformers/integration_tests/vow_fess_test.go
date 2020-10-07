@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -66,14 +67,19 @@ var _ = Describe("VowFess EventTransformer", func() {
 		err = tr.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
 
-		var dbResult []vowFessModel
-		err = db.Select(&dbResult, `SELECT tab from maker.vow_fess`)
+		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+		Expect(msgSenderErr).NotTo(HaveOccurred())
+
+		var dbResult vowFessModel
+		err = db.Get(&dbResult, `SELECT tab, msg_sender from maker.vow_fess`)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(dbResult[0].Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
+		Expect(dbResult.Tab).To(Equal("4466031366353941646208178591268931635087392443453"))
+		Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
 	})
 })
 
 type vowFessModel struct {
-	Tab string
+	Tab         string `db:"tab"`
+	MsgSenderID int64  `db:"msg_sender"`
 }
