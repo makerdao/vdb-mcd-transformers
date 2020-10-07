@@ -14,7 +14,11 @@ CREATE TYPE api.time_bid_total AS
 CREATE FUNCTION api.time_flip_bid_totals(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
-WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start),
+WITH buckets AS (
+    SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+    extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+    extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+),
 bid_results AS (
     SELECT bid_id,
         MIN(block_timestamp) AS block_timestamp,
@@ -37,8 +41,8 @@ SELECT buckets.bucket_start AS bucket_start,
        COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
 FROM buckets
     LEFT JOIN bid_results ON (
-        block_timestamp >= extract(epoch FROM buckets.bucket_start) AND
-        block_timestamp < extract(epoch FROM buckets.bucket_start + bucket_interval)
+        block_timestamp >= bucket_start_epoch AND
+        block_timestamp < bucket_end_epoch
     )
 GROUP BY bucket_start, bucket_end, bucket_interval
 ORDER BY bucket_start
@@ -50,7 +54,11 @@ $$
 CREATE FUNCTION api.time_flap_bid_totals(range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
-WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start),
+WITH buckets AS (
+    SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+    extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+    extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+),
 flap_address AS (
     SELECT address
     FROM maker.flap_kick
@@ -79,8 +87,8 @@ SELECT buckets.bucket_start AS bucket_start,
        COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
 FROM buckets
     LEFT JOIN bid_results ON (
-        block_timestamp >= extract(epoch FROM buckets.bucket_start) AND
-        block_timestamp < extract(epoch FROM buckets.bucket_start + bucket_interval)
+        block_timestamp >= bucket_start_epoch AND
+        block_timestamp < bucket_end_epoch
     )
 GROUP BY bucket_start, bucket_end, bucket_interval
 ORDER BY bucket_start
@@ -92,7 +100,11 @@ $$
 CREATE FUNCTION api.time_flop_bid_totals(range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
-WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start),
+WITH buckets AS (
+    SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+    extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+    extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+),
 flop_address AS (
     SELECT address
     FROM maker.flop_kick
@@ -121,8 +133,8 @@ SELECT buckets.bucket_start AS bucket_start,
        COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
 FROM buckets
     LEFT JOIN bid_results ON (
-        block_timestamp >= extract(epoch FROM buckets.bucket_start) AND
-        block_timestamp < extract(epoch FROM buckets.bucket_start + bucket_interval)
+        block_timestamp >= bucket_start_epoch AND
+        block_timestamp < bucket_end_epoch
     )
 GROUP BY bucket_start, bucket_end, bucket_interval
 ORDER BY bucket_start
@@ -145,7 +157,11 @@ CREATE TYPE api.time_bite_total AS
 CREATE FUNCTION api.time_bite_totals(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bite_total AS
 $$
-WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start),
+WITH buckets AS (
+    SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+    extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+    extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+),
 bite_results AS (
     SELECT *
     FROM maker.bite
@@ -163,8 +179,8 @@ SELECT buckets.bucket_start AS bucket_start,
        COALESCE(SUM(tab), 0) AS tab
 FROM buckets
     LEFT JOIN bite_results ON (
-        block_timestamp >= extract(epoch FROM buckets.bucket_start) AND
-        block_timestamp < extract(epoch FROM buckets.bucket_start + bucket_interval)
+        block_timestamp >= bucket_start_epoch AND
+        block_timestamp < bucket_end_epoch
     )
 GROUP BY bucket_start, bucket_end, bucket_interval
 ORDER BY bucket_start
