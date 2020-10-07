@@ -6,7 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.21
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200929194143-7adef1042ead
+	github.com/makerdao/vulcanizedb v0.1.0
 	github.com/onsi/ginkgo v1.14.0
 	github.com/onsi/gomega v1.10.1
 	github.com/sirupsen/logrus v1.2.0

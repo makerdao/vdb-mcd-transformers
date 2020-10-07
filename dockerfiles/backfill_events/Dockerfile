@@ -3,7 +3,7 @@ FROM golang:1.15.2-buster as builder
 RUN apt-get update && \
 apt-get install -y make git g++ linux-headers-amd64
 
-ARG VDB_VERSION=staging
+ARG VDB_VERSION=prod
 
 ENV GO111MODULE on
 
