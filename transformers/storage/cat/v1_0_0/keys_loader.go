@@ -63,12 +63,12 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]types.ValueMetadat
 	for _, ilk := range ilks {
 		mappings[cat.GetIlkFlipKey(ilk)] = cat.GetIlkFlipMetadata(ilk)
 		mappings[cat.GetIlkChopKey(ilk)] = cat.GetIlkChopMetadata(ilk)
-		mappings[getIlkLumpKey(ilk)] = getIlkLumpMetadata(ilk)
+		mappings[GetIlkLumpKey(ilk)] = getIlkLumpMetadata(ilk)
 	}
 	return mappings, nil
 }
 
-func getIlkLumpKey(ilk string) common.Hash {
+func GetIlkLumpKey(ilk string) common.Hash {
 	return vdbStorage.GetIncrementedKey(cat.GetIlkFlipKey(ilk), 2)
 }
 

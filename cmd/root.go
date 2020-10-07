@@ -53,3 +53,15 @@ func logLevel() error {
 	logrus.Info("Log level set to ", lvl.String())
 	return nil
 }
+
+func setViperConfigs(cmd *cobra.Command, args []string) {
+	ipc = viper.GetString("client.ipcpath")
+	databaseConfig = config.Database{
+		Name:     viper.GetString("database.name"),
+		Hostname: viper.GetString("database.hostname"),
+		Port:     viper.GetInt("database.port"),
+		User:     viper.GetString("database.user"),
+		Password: viper.GetString("database.password"),
+	}
+	viper.Set("database.config", databaseConfig)
+}
