@@ -45,7 +45,7 @@ var _ = Describe("Cat file vow transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -56,12 +56,12 @@ var _ = Describe("Cat file vow transformer", func() {
 			},
 		}
 
-		_, err := transformer.ToModels(constants.CatABI(), []core.EventLog{badLog}, nil)
+		_, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.CatFileVowEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.CatFileVowEventLog}, db)
 
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.CatFileVowModel()

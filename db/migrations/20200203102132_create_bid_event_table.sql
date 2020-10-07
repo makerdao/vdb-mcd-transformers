@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE maker.bid_event
 (
-    log_id           BIGINT PRIMARY KEY REFERENCES event_logs (id) ON DELETE CASCADE,
+    log_id           BIGINT PRIMARY KEY REFERENCES event_logs (id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     bid_id           NUMERIC     NOT NULL,
     contract_address TEXT        NOT NULL,
     act              api.bid_act NOT NULL,

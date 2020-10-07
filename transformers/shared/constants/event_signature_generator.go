@@ -24,7 +24,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/crypto"
-
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 

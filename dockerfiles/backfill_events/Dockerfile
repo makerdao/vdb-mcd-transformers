@@ -1,14 +1,10 @@
-FROM golang:alpine as builder
+FROM golang:1.15.2-buster as builder
 
-RUN apk --update --no-cache add make git g++ linux-headers
-
-# Build migration tool
-WORKDIR /go
-RUN GO111MODULE=auto go get -u -d github.com/pressly/goose/cmd/goose
-WORKDIR /go/src/github.com/pressly/goose/cmd/goose
-RUN GO111MODULE=auto go build -a -ldflags '-s' -tags='no_mysql no_sqlite' -o goose
+RUN apt-get update && \
+apt-get install -y make git g++ linux-headers-amd64
 
 ARG VDB_VERSION=staging
+
 ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
@@ -28,7 +24,7 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
-FROM golang:alpine
+FROM golang:1.15.2-buster
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 # add certificates for node requests via https
@@ -38,10 +34,8 @@ RUN apk update \
         && apk add --no-cache \
         ca-certificates \
         bash \
+        postgresql-client \
         && update-ca-certificates 2>/dev/null || true
-
-# add go so we can build the plugin
-RUN apk add --update --no-cache git g++ linux-headers
 
 ARG CONFIG_FILE=environments/backfillEvents.toml
 
@@ -52,8 +46,6 @@ RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
 COPY --from=builder /go/src/github.com/makerdao/vulcanizedb .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/$CONFIG_FILE config.toml
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/backfill_events/startup_script.sh .
-COPY --from=builder /go/src/github.com/pressly/goose/cmd/goose/goose goose
-COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/db/migrations/* db/migrations/
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so plugins/transformerExporter.so
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
 

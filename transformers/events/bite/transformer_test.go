@@ -33,7 +33,7 @@ var _ = Describe("Bite Transformer", func() {
 	var transformer = bite.Transformer{}
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.CatABI(), []core.EventLog{test_data.BiteEventLog}, db)
+		models, err := transformer.ToModels(constants.Cat100ABI(), []core.EventLog{test_data.BiteEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		var urnID int64

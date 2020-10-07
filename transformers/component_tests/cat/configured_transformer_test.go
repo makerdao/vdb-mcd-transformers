@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -38,13 +39,13 @@ import (
 var _ = Describe("Executing the transformer", func() {
 	var (
 		db              = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress = common.HexToAddress(test_data.CatAddress())
+		contractAddress = common.HexToAddress(test_data.Cat100Address())
 		transformer     storage.Transformer
 		header          = fakes.FakeHeader
 	)
 
 	BeforeEach(func() {
-		storageKeysLookup := storage.NewKeysLookup(cat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
+		storageKeysLookup := storage.NewKeysLookup(v1_0_0.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		repository := cat.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer = storage.Transformer{
 			Address:           contractAddress,
