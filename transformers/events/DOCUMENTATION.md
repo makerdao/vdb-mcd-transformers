@@ -84,7 +84,7 @@ you do not, yet, as this is most likely.
            RunSpecs(t, "<PackageName>  Suite")
        }
        ```
-   1. Implement the `ToModels` function in `transformer.go` with the appropriate testing in `transformer_test.go` of course. This means converting the raw log into a go struct. For clarity you're implementing this [interface](https://github.com/makerdao/vulcanizedb/blob/staging/libraries/shared/factories/event/converter.go).
+   1. Implement the `ToModels` function in `transformer.go` with the appropriate testing in `transformer_test.go` of course. This means converting the raw log into a go struct. For clarity you're implementing this [interface](https://github.com/makerdao/vulcanizedb/blob/prod/libraries/shared/factories/event/converter.go).
       1. For custom events:
          1. You can convert each EventLog entry into an entity using the function `contract.UnpackLog(&entity, "<EventLogName>", log.Log)`. The entity is usually defined (by you) in a file called `entity.go` in the same package as the transformer. You can use the [abigen](https://geth.ethereum.org/docs/install-and-build/installing-geth) tool that comes with `Geth` as well, if you're struggling with getting the fields right, but it's usually simpler to just do it yourself. See the transformer in `transformers/events/log_make` for an example of this method.
          1. After converting the log entry to an entity, look up all of it's foreign keys from it's data and assign them to the entity.
@@ -162,8 +162,8 @@ In the event there are not logs for an event you're looking to transform in ethe
 
 1. Fetch the logs from the chain based on the example event's topic zero:
    * The topic zero is based on the keccak-256 hash of the log event's method signature. These are located in [`pkg/transformers/shared/constants/signature.go`](../shared/constants/signature.go). 
-   * Fetching is done in batch from the [`watcher`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/watcher/event_watcher.go). 
-   * The logs are then chunked up by the [`chunker`](https://github.com/vulcanize/maker-vulcanizedb/blob/staging/libraries/shared/chunker/log_chunker.go) before being delegated to each transformer.
+   * Fetching is done in batch from the [`watcher`](https://github.com/vulcanize/maker-vulcanizedb/blob/prod/libraries/shared/watcher/event_watcher.go). 
+   * The logs are then chunked up by the [`chunker`](https://github.com/vulcanize/maker-vulcanizedb/blob/prod/libraries/shared/chunker/log_chunker.go) before being delegated to each transformer.
 
 ## Useful Documents
 

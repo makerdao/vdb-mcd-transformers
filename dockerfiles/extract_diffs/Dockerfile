@@ -3,7 +3,7 @@ FROM golang:alpine as builder
 RUN apk --update --no-cache add g++ git linux-headers
 
 # Build migration tool
-ARG VDB_VERSION=staging
+ARG VDB_VERSION=prod
 ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
