@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Runs the migrations and executes transformers
 
 MISSING_VAR_MESSAGE=" is required and no value was given"
