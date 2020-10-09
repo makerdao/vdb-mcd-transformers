@@ -23,9 +23,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -131,13 +131,13 @@ func getLogCount(db *postgres.DB) int {
 
 func AssignMessageSenderID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
 	Expect(len(log.Log.Topics)).Should(BeNumerically(">=", 2))
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(log.Log.Topics[1].Hex(), db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, log.Log.Topics[1].Hex())
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[constants.MsgSenderColumn] = msgSenderID
 }
 
 func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
-	addressID, addressIDErr := shared.GetOrCreateAddress(log.Log.Address.Hex(), db)
+	addressID, addressIDErr := repository.GetOrCreateAddress(db, log.Log.Address.Hex())
 	Expect(addressIDErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[event.AddressFK] = addressID
 }

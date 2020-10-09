@@ -21,7 +21,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
@@ -29,6 +28,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -40,7 +40,7 @@ var _ = Describe("Executing the flap transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = common.HexToAddress(test_data.FlapV100Address())
-		repository        = flap.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = flap.StorageRepository{ContractAddress: contractAddress.Hex()}
 		storageKeysLookup = storage.NewKeysLookup(flap.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -51,7 +51,7 @@ var _ = Describe("Executing the flap transformer", func() {
 		transformer = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -159,15 +159,15 @@ var _ = Describe("Executing the flap transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flapAddressID, flapAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			flapAddressID, flapAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(flapAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
@@ -206,7 +206,7 @@ var _ = Describe("Executing the flap transformer", func() {
 				value := common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d")
 				diff = test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+				addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flap.InsertKicksQuery, diff.ID, header.Id, addressId, bidId)

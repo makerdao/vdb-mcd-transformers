@@ -40,6 +40,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	vdbStorageFactory "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -591,7 +592,7 @@ func SetUpFlopBidContext(setupData FlopBidCreationInput) (err error) {
 }
 
 func CreateDeal(input DealCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dealLog := test_data.CreateTestLog(input.DealHeaderId, input.DB)
 	dealModel := test_data.DealModel()
@@ -605,7 +606,7 @@ func CreateDeal(input DealCreationInput) (err error) {
 }
 
 func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, usr string, db *postgres.DB) error {
-	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	flipKickModel := test_data.FlipKickModel()
 	flipKickModel.ColumnValues[event.HeaderFK] = headerId
@@ -618,7 +619,7 @@ func CreateFlipKick(contractAddress string, bidId int, headerId, logId int64, us
 
 func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db *postgres.DB) error {
 	flapKickModel := test_data.FlapKickModel()
-	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	flapKickModel.ColumnValues[event.HeaderFK] = headerId
 	flapKickModel.ColumnValues[event.LogFK] = logId
@@ -628,7 +629,7 @@ func CreateFlapKick(contractAddress string, bidId int, headerId, logId int64, db
 }
 
 func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, db *postgres.DB) error {
-	addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	flopKickModel := test_data.FlopKickModel()
 	flopKickModel.ColumnValues[event.HeaderFK] = headerId
@@ -639,7 +640,7 @@ func CreateFlopKick(contractAddress string, bidId int, headerId, logId int64, db
 }
 
 func CreateTend(input TendCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	tendModel := test_data.TendModel()
 	tendLog := test_data.CreateTestLog(input.TendHeaderId, input.DB)
@@ -654,7 +655,7 @@ func CreateTend(input TendCreationInput) (err error) {
 }
 
 func CreateDent(input DentCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	dentModel := test_data.DentModel()
 	dentModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
@@ -668,7 +669,7 @@ func CreateDent(input DentCreationInput) (err error) {
 }
 
 func CreateYank(input YankCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	yankModel := test_data.YankModel()
 	yankModel.ColumnValues[event.AddressFK] = addressID
@@ -680,7 +681,7 @@ func CreateYank(input YankCreationInput) (err error) {
 }
 
 func CreateTick(input TickCreationInput) (err error) {
-	addressID, addressErr := shared.GetOrCreateAddress(input.ContractAddress, input.DB)
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 	tickLog := test_data.CreateTestLog(input.TickHeaderId, input.DB)
 	tickModel := test_data.TickModel()

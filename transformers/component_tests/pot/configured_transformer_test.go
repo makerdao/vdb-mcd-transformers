@@ -5,7 +5,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot"
@@ -13,6 +12,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -24,11 +24,11 @@ var _ = Describe("Executing the transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(pot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, test_data.PotAddress()))
 		contractAddress   = common.HexToAddress(test_data.PotAddress())
-		repository        = pot.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = pot.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		header = fakes.FakeHeader
 	)
@@ -46,7 +46,7 @@ var _ = Describe("Executing the transformer", func() {
 		potJoinLog := test_data.CreateTestLog(header.Id, db)
 		potJoin := test_data.PotJoinModel()
 		userAddress := "0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7"
-		addressID, addressErr := shared.GetOrCreateAddress(userAddress, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, userAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		potJoin.ColumnValues[event.HeaderFK] = header.Id
@@ -118,7 +118,7 @@ var _ = Describe("Executing the transformer", func() {
 		executeErr := transformer.Execute(potVatDiff)
 		Expect(executeErr).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress("0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7", db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, "0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7")
 		Expect(addressErr).NotTo(HaveOccurred())
 		var vatResult test_helpers.VariableRes
 		getErr := db.Get(&vatResult, `SELECT diff_id, header_id, vat AS value FROM maker.pot_vat`)
@@ -134,7 +134,7 @@ var _ = Describe("Executing the transformer", func() {
 		executeErr := transformer.Execute(potVowDiff)
 		Expect(executeErr).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress("0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7", db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, "0x57aA8B02F5D3E28371FEdCf672C8668869f9AAC7")
 		Expect(addressErr).NotTo(HaveOccurred())
 		var vowResult test_helpers.VariableRes
 		getErr := db.Get(&vowResult, `SELECT diff_id, header_id, vow AS value FROM maker.pot_vow`)
@@ -161,15 +161,15 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			potAddressID, potAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			potAddressID, potAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(potAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id

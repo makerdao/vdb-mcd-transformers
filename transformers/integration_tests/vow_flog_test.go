@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -67,7 +68,7 @@ var _ = Describe("VowFlog EventTransformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000022e86ab483084053562ce713e94431c29d1adb8b")
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		var dbResult vowFlogModel

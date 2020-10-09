@@ -8,6 +8,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -36,59 +37,59 @@ type StorageRepository struct {
 	db              *postgres.DB
 }
 
-func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Vat:
-		return repository.insertVat(diffID, headerID, value.(string))
+		return repo.insertVat(diffID, headerID, value.(string))
 	case storage.Ilk:
-		return repository.insertIlk(diffID, headerID, value.(string))
+		return repo.insertIlk(diffID, headerID, value.(string))
 	case storage.Beg:
-		return repository.insertBeg(diffID, headerID, value.(string))
+		return repo.insertBeg(diffID, headerID, value.(string))
 	case storage.Kicks:
-		return repository.insertKicks(diffID, headerID, value.(string))
+		return repo.insertKicks(diffID, headerID, value.(string))
 	case storage.Cat:
-		return repository.insertCat(diffID, headerID, value.(string))
+		return repo.insertCat(diffID, headerID, value.(string))
 	case wards.Wards:
-		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	case storage.BidBid:
-		return repository.insertBidBid(diffID, headerID, metadata, value.(string))
+		return repo.insertBidBid(diffID, headerID, metadata, value.(string))
 	case storage.BidLot:
-		return repository.insertBidLot(diffID, headerID, metadata, value.(string))
+		return repo.insertBidLot(diffID, headerID, metadata, value.(string))
 	case storage.BidUsr:
-		return repository.insertBidUsr(diffID, headerID, metadata, value.(string))
+		return repo.insertBidUsr(diffID, headerID, metadata, value.(string))
 	case storage.BidGal:
-		return repository.insertBidGal(diffID, headerID, metadata, value.(string))
+		return repo.insertBidGal(diffID, headerID, metadata, value.(string))
 	case storage.BidTab:
-		return repository.insertBidTab(diffID, headerID, metadata, value.(string))
+		return repo.insertBidTab(diffID, headerID, metadata, value.(string))
 	case storage.Packed:
-		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
+		return repo.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	default:
 		panic(fmt.Sprintf("unrecognized flip contract storage name: %s", metadata.Name))
 	}
 }
 
-func (repository *StorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *StorageRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
 
-func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+func (repo *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
 	err := shared.InsertRecordWithAddress(
 		diffID,
 		headerID,
 		insertFlipVatQuery,
 		vat,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if err != nil {
 		msgToFormat := "error inserting flip %s vat %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, vat, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, vat, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertIlk(diffID, headerID int64, ilk string) error {
-	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, repository.db)
+func (repo *StorageRepository) insertIlk(diffID, headerID int64, ilk string) error {
+	ilkID, ilkErr := shared.GetOrCreateIlk(ilk, repo.db)
 	if ilkErr != nil {
 		return fmt.Errorf("error getting or creating ilk for flip ilk: %w", ilkErr)
 	}
@@ -97,82 +98,82 @@ func (repository *StorageRepository) insertIlk(diffID, headerID int64, ilk strin
 		headerID,
 		insertFlipIlkQuery,
 		strconv.FormatInt(ilkID, 10),
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s ilk %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, ilk, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, ilk, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBeg(diffID, headerID int64, beg string) error {
+func (repo *StorageRepository) insertBeg(diffID, headerID int64, beg string) error {
 	err := shared.InsertRecordWithAddress(
 		diffID,
 		headerID,
 		insertFlipBegQuery,
 		beg,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if err != nil {
 		msgToFormat := "error inserting flip %s beg %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, beg, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, beg, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertTTL(diffID, headerID int64, ttl string) error {
+func (repo *StorageRepository) insertTTL(diffID, headerID int64, ttl string) error {
 	err := shared.InsertRecordWithAddress(
 		diffID,
 		headerID,
 		insertFlipTTLQuery,
 		ttl,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if err != nil {
 		msgToFormat := "error inserting flip %s ttl %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, ttl, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, ttl, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertTau(diffID, headerID int64, tau string) error {
+func (repo *StorageRepository) insertTau(diffID, headerID int64, tau string) error {
 	err := shared.InsertRecordWithAddress(
 		diffID,
 		headerID,
 		insertFlipTauQuery,
 		tau,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if err != nil {
 		msgToFormat := "error inserting flip %s tau %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, tau, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, tau, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
+func (repo *StorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
 	err := shared.InsertRecordWithAddress(
 		diffID,
 		headerID,
 		InsertFlipKicksQuery,
 		kicks,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if err != nil {
 		msgToFormat := "error inserting flip %s kicks %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, kicks, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, kicks, diffID)
 		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertCat(diffID, headerID int64, cat string) error {
-	catAddressID, addressErr := shared.GetOrCreateAddress(cat, repository.db)
+func (repo *StorageRepository) insertCat(diffID, headerID int64, cat string) error {
+	catAddressID, addressErr := repository.GetOrCreateAddress(repo.db, cat)
 	if addressErr != nil {
 		return fmt.Errorf("error inserting flip cat: %w", addressErr)
 	}
@@ -181,16 +182,16 @@ func (repository *StorageRepository) insertCat(diffID, headerID int64, cat strin
 		headerID,
 		insertFlipCatQuery,
 		strconv.FormatInt(catAddressID, 10),
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s cat %s from diff ID %d: %w"
-		return fmt.Errorf(msgToFormat, repository.ContractAddress, cat, diffID, insertErr)
+		return fmt.Errorf(msgToFormat, repo.ContractAddress, cat, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
+func (repo *StorageRepository) insertBidBid(diffID, headerID int64, metadata types.ValueMetadata, bid string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid bid: %w", err)
@@ -201,17 +202,17 @@ func (repository *StorageRepository) insertBidBid(diffID, headerID int64, metada
 		InsertFlipBidBidQuery,
 		bidID,
 		bid,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s bid %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, bid, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, bid, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
+func (repo *StorageRepository) insertBidLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid lot: %w", err)
@@ -222,17 +223,17 @@ func (repository *StorageRepository) insertBidLot(diffID, headerID int64, metada
 		InsertFlipBidLotQuery,
 		bidID,
 		lot,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s lot %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, lot, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, lot, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
+func (repo *StorageRepository) insertBidGuy(diffID, headerID int64, metadata types.ValueMetadata, guy string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid guy: %w", err)
@@ -243,17 +244,17 @@ func (repository *StorageRepository) insertBidGuy(diffID, headerID int64, metada
 		InsertFlipBidGuyQuery,
 		bidID,
 		guy,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s guy %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, guy, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, guy, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
+func (repo *StorageRepository) insertBidTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid tic: %w", err)
@@ -264,17 +265,17 @@ func (repository *StorageRepository) insertBidTic(diffID, headerID int64, metada
 		InsertFlipBidTicQuery,
 		bidID,
 		tic,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s tic %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, tic, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, tic, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
+func (repo *StorageRepository) insertBidEnd(diffID, headerID int64, metadata types.ValueMetadata, end string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid end: %w", err)
@@ -285,17 +286,17 @@ func (repository *StorageRepository) insertBidEnd(diffID, headerID int64, metada
 		InsertFlipBidEndQuery,
 		bidID,
 		end,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s end %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, end, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, end, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidUsr(diffID, headerID int64, metadata types.ValueMetadata, usr string) error {
+func (repo *StorageRepository) insertBidUsr(diffID, headerID int64, metadata types.ValueMetadata, usr string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid usr: %w", err)
@@ -306,17 +307,17 @@ func (repository *StorageRepository) insertBidUsr(diffID, headerID int64, metada
 		InsertFlipBidUsrQuery,
 		bidID,
 		usr,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s usr %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, usr, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, usr, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidGal(diffID, headerID int64, metadata types.ValueMetadata, gal string) error {
+func (repo *StorageRepository) insertBidGal(diffID, headerID int64, metadata types.ValueMetadata, gal string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid gal: %w", err)
@@ -327,17 +328,17 @@ func (repository *StorageRepository) insertBidGal(diffID, headerID int64, metada
 		InsertFlipBidGalQuery,
 		bidID,
 		gal,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s gal %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, gal, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, gal, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBidTab(diffID, headerID int64, metadata types.ValueMetadata, tab string) error {
+func (repo *StorageRepository) insertBidTab(diffID, headerID int64, metadata types.ValueMetadata, tab string) error {
 	bidID, err := getBidID(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting bid ID for flip bid tab: %w", err)
@@ -348,30 +349,30 @@ func (repository *StorageRepository) insertBidTab(diffID, headerID int64, metada
 		InsertFlipBidTabQuery,
 		bidID,
 		tab,
-		repository.ContractAddress,
-		repository.db)
+		repo.ContractAddress,
+		repo.db)
 	if insertErr != nil {
 		msgToFormat := "error inserting flip %s bid %s tab %s from diff ID %d"
-		msg := fmt.Sprintf(msgToFormat, repository.ContractAddress, bidID, tab, diffID)
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, bidID, tab, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+func (repo *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case storage.Ttl:
-			insertErr = repository.insertTTL(diffID, headerID, value)
+			insertErr = repo.insertTTL(diffID, headerID, value)
 		case storage.Tau:
-			insertErr = repository.insertTau(diffID, headerID, value)
+			insertErr = repo.insertTau(diffID, headerID, value)
 		case storage.BidGuy:
-			insertErr = repository.insertBidGuy(diffID, headerID, metadata, value)
+			insertErr = repo.insertBidGuy(diffID, headerID, metadata, value)
 		case storage.BidTic:
-			insertErr = repository.insertBidTic(diffID, headerID, metadata, value)
+			insertErr = repo.insertBidTic(diffID, headerID, metadata, value)
 		case storage.BidEnd:
-			insertErr = repository.insertBidEnd(diffID, headerID, metadata, value)
+			insertErr = repo.insertBidEnd(diffID, headerID, metadata, value)
 		default:
 			panic(fmt.Sprintf("unrecognized flip contract storage name in packed values: %s", metadata.Name))
 		}

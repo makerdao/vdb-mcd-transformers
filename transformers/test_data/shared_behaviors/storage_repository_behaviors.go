@@ -13,6 +13,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -66,7 +67,7 @@ func SharedStorageRepositoryBehaviors(inputs *StorageBehaviorInputs) {
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, diffID, headerID, inputs.Key, inputs.Value)
 			} else if len(inputs.ContractAddress) > 0 {
-				contractAddressID, contractAddressErr := shared.GetOrCreateAddress(inputs.ContractAddress, database)
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(database, inputs.ContractAddress)
 				Expect(contractAddressErr).NotTo(HaveOccurred())
 
 				var result VariableResWithAddress

@@ -7,11 +7,11 @@ import (
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
@@ -66,7 +66,7 @@ func SharedBidCreationTriggerTests(tableName, contractAddress string, kickModel 
 		})
 
 		It("does not update records from a different contract", func() {
-			randomAddressID, addressErr := shared.GetOrCreateAddress(test_data.RandomString(40), db)
+			randomAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.RandomString(40))
 			Expect(addressErr).NotTo(HaveOccurred())
 			_, setupErr := db.Exec(insertEmptyRowQuery, headerTwo.BlockNumber,
 				kickModel.ColumnValues[constants.BidIDColumn], randomAddressID, FormatTimestamp(rawTimestampTwo))
@@ -117,7 +117,7 @@ func SharedBidCreationTriggerTests(tableName, contractAddress string, kickModel 
 }
 
 func updateKickKeys(kickModel event.InsertionModel, headerID, logID int64, contractAddress, bidID string, db *postgres.DB) event.ColumnValues {
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	addressID, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 
 	kickModel.ColumnValues[event.HeaderFK] = headerID

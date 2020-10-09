@@ -20,11 +20,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/deal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -82,9 +82,9 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
+		flipAddressID, flipAddressErr := repository.GetOrCreateAddress(db, test_data.FlipEthV100Address())
 		Expect(flipAddressErr).NotTo(HaveOccurred())
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x00aBe7471ec9b6953A3BD0ed3C06c46F29Aa4280", db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0x00aBe7471ec9b6953A3BD0ed3C06c46F29Aa4280")
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.BidID).To(Equal("115"))
@@ -113,9 +113,9 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flopAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
+		flopAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.FlopV101Address())
 		Expect(addressErr).NotTo(HaveOccurred())
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0x06C36BEA54A74dB813Af0fc136c2E8d0B08e2FB1", db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0x06C36BEA54A74dB813Af0fc136c2E8d0B08e2FB1")
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.BidID).To(Equal("102"))
@@ -144,9 +144,9 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal ORDER BY log_id`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
+		flapAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.FlapV100Address())
 		Expect(addressErr).NotTo(HaveOccurred())
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xFDc7768e92B479F27dD11635c9207d542177ae72", db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xFDc7768e92B479F27dD11635c9207d542177ae72")
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.BidID).To(Equal("48"))

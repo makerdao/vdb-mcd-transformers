@@ -4,11 +4,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/log_median_price"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -108,7 +108,7 @@ func logMedianPriceIntegrationTest(blockNumber int64, contractAddressHex, val, a
 		var dbResults []logMedianPriceModel
 		queryErr := db.Select(&dbResults, `SELECT address_id, val, age from maker.log_median_price`)
 		Expect(queryErr).NotTo(HaveOccurred())
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddressHex, db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddressHex)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		Expect(len(dbResults)).To(Equal(1))

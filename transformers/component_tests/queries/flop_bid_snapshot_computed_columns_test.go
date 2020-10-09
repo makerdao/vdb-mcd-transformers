@@ -6,10 +6,10 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -43,7 +43,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			flopKickEvent := test_data.FlopKickModel()
@@ -75,7 +75,7 @@ var _ = Describe("Flop computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			flopKickEvent := test_data.FlopKickModel()
@@ -131,7 +131,7 @@ var _ = Describe("Flop computed columns", func() {
 				flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 				test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+				addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				flopKickEvent = test_data.FlopKickModel()

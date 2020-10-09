@@ -7,6 +7,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -22,7 +23,7 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 		}
 
 		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
-		msgSenderAddressID, msgSenderErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		msgSenderAddressID, msgSenderErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 		if msgSenderErr != nil {
 			msg := "error getting or creating address %s for vow heal msg sender: %w"
 			return nil, fmt.Errorf(msg, msgSenderAddress, msgSenderErr)

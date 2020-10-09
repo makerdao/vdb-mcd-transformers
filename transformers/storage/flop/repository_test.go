@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
+
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -242,9 +244,9 @@ var _ = Describe("Flop storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, fakeUserAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})

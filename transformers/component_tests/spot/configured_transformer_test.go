@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -40,11 +41,11 @@ var _ = Describe("Executing the transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = common.HexToAddress(test_data.SpotAddress())
 		storageKeysLookup = storage.NewKeysLookup(spot.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
-		repository        = spot.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = spot.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		header = fakes.FakeHeader
 	)
@@ -105,15 +106,15 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			spotAddressID, spotAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			spotAddressID, spotAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(spotAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x2be4b34a34c3cda056dc9e514a30040b6358bf89"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id

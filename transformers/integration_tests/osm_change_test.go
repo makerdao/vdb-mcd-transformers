@@ -6,11 +6,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/osm_change"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -58,15 +58,15 @@ var _ = XDescribe("OsmChange EventTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress("0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466", db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, "0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466")
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
 
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466", db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, "0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466")
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderAddressID, 10)))
 
-		srcAddressID, srcAddressErr := shared.GetOrCreateAddress("0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466", db)
+		srcAddressID, srcAddressErr := repository.GetOrCreateAddress(db, "0x000000000000000000000000a950524441892a31ebddf91d3ceefa04bf454466")
 		Expect(srcAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.Src).To(Equal(strconv.FormatInt(srcAddressID, 10)))
 	})

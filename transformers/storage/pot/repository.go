@@ -6,6 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -26,109 +27,109 @@ type StorageRepository struct {
 	ContractAddress string
 }
 
-func (repository StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repo StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case UserPie:
-		return repository.insertUserPie(diffID, headerID, metadata, value.(string))
+		return repo.insertUserPie(diffID, headerID, metadata, value.(string))
 	case wards.Wards:
-		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	case Pie:
-		return repository.insertPie(diffID, headerID, value.(string))
+		return repo.insertPie(diffID, headerID, value.(string))
 	case Dsr:
-		return repository.insertDsr(diffID, headerID, value.(string))
+		return repo.insertDsr(diffID, headerID, value.(string))
 	case Chi:
-		return repository.insertChi(diffID, headerID, value.(string))
+		return repo.insertChi(diffID, headerID, value.(string))
 	case Vat:
-		return repository.insertVat(diffID, headerID, value.(string))
+		return repo.insertVat(diffID, headerID, value.(string))
 	case Vow:
-		return repository.insertVow(diffID, headerID, value.(string))
+		return repo.insertVow(diffID, headerID, value.(string))
 	case Rho:
-		return repository.insertRho(diffID, headerID, value.(string))
+		return repo.insertRho(diffID, headerID, value.(string))
 	case Live:
-		return repository.insertLive(diffID, headerID, value.(string))
+		return repo.insertLive(diffID, headerID, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized pot contract storage name: %s", metadata.Name))
 	}
 }
 
-func (repository *StorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *StorageRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
 
-func (repository StorageRepository) insertUserPie(diffID, headerID int64, metadata types.ValueMetadata, pie string) error {
+func (repo StorageRepository) insertUserPie(diffID, headerID int64, metadata types.ValueMetadata, pie string) error {
 	user, err := getUser(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting user for pot user pie: %w", err)
 	}
-	insertErr := shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repository.db)
+	insertErr := shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting pot user %s pie %s from diff ID %d: %w", user, pie, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertPie(diffID, headerID int64, pie string) error {
-	_, err := repository.db.Exec(insertPotPieQuery, diffID, headerID, pie)
+func (repo StorageRepository) insertPie(diffID, headerID int64, pie string) error {
+	_, err := repo.db.Exec(insertPotPieQuery, diffID, headerID, pie)
 	if err != nil {
 		return fmt.Errorf("error inserting pot pie %s from diff ID %d: %w", pie, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertDsr(diffID, headerID int64, dsr string) error {
-	_, err := repository.db.Exec(insertPotDsrQuery, diffID, headerID, dsr)
+func (repo StorageRepository) insertDsr(diffID, headerID int64, dsr string) error {
+	_, err := repo.db.Exec(insertPotDsrQuery, diffID, headerID, dsr)
 	if err != nil {
 		return fmt.Errorf("error inserting pot dsr %s from diff ID %d: %w", dsr, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertChi(diffID, headerID int64, chi string) error {
-	_, err := repository.db.Exec(insertPotChiQuery, diffID, headerID, chi)
+func (repo StorageRepository) insertChi(diffID, headerID int64, chi string) error {
+	_, err := repo.db.Exec(insertPotChiQuery, diffID, headerID, chi)
 	if err != nil {
 		return fmt.Errorf("error inserting pot chi %s from diff ID %d: %w", chi, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	err := repository.insertAddressID(diffID, headerID, insertPotVatQuery, vat)
+func (repo StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	err := repo.insertAddressID(diffID, headerID, insertPotVatQuery, vat)
 	if err != nil {
 		return fmt.Errorf("error inserting pot vat %s from diff ID %d: %w", vat, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	err := repository.insertAddressID(diffID, headerID, insertPotVowQuery, vow)
+func (repo StorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	err := repo.insertAddressID(diffID, headerID, insertPotVowQuery, vow)
 	if err != nil {
 		return fmt.Errorf("error inserting pot vow %s from diff ID %d: %w", vow, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertRho(diffID, headerID int64, rho string) error {
-	_, err := repository.db.Exec(insertPotRhoQuery, diffID, headerID, rho)
+func (repo StorageRepository) insertRho(diffID, headerID int64, rho string) error {
+	_, err := repo.db.Exec(insertPotRhoQuery, diffID, headerID, rho)
 	if err != nil {
 		return fmt.Errorf("error inserting pot rho %s from diff ID %d: %w", rho, diffID, err)
 	}
 	return nil
 }
 
-func (repository StorageRepository) insertLive(diffID, headerID int64, live string) error {
-	_, err := repository.db.Exec(insertPotLiveQuery, diffID, headerID, live)
+func (repo StorageRepository) insertLive(diffID, headerID int64, live string) error {
+	_, err := repo.db.Exec(insertPotLiveQuery, diffID, headerID, live)
 	if err != nil {
 		return fmt.Errorf("error inserting pot live %s from diff ID %d: %w", live, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertAddressID(diffID, headerID int64, query, address string) error {
-	tx, txErr := repository.db.Beginx()
+func (repo *StorageRepository) insertAddressID(diffID, headerID int64, query, address string) error {
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return fmt.Errorf("error beginning transaction: %w", txErr)
 	}
-	addressID, addressErr := shared.GetOrCreateAddressInTransaction(address, tx)
+	addressID, addressErr := repository.GetOrCreateAddressInTransaction(tx, address)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

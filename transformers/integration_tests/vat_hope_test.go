@@ -4,11 +4,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -54,7 +54,7 @@ var _ = Describe("Vat Hope transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		usrAddress := "0x9759A6Ac90977b93B58547b4A71c78317f391A28"
-		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
+		usrAddressID, usrAddressErr := repository.GetOrCreateAddress(db, usrAddress)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
 
 		Expect(usr).To(Equal(usrAddressID))

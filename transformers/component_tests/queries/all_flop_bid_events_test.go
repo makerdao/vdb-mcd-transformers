@@ -6,11 +6,11 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -41,7 +41,7 @@ var _ = Describe("Flop bid events query", func() {
 
 		flopKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
-		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+		addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		flopKickEvent = test_data.FlopKickModel()
@@ -104,7 +104,7 @@ var _ = Describe("Flop bid events query", func() {
 
 			flopKickEventTwoLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			flopKickEventTwo := test_data.FlopKickModel()
@@ -155,7 +155,7 @@ var _ = Describe("Flop bid events query", func() {
 		It("ignores bid events from flaps", func() {
 			flapKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			flapKickEvent := test_data.FlapKickModel()
 			flapKickEvent.ColumnValues[event.AddressFK] = addressId
@@ -412,7 +412,7 @@ var _ = Describe("Flop bid events query", func() {
 			updatedBidAmount = bidAmount + 100
 
 			logID := test_data.CreateTestLog(headerOne.Id, db).ID
-			addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+			addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			flopKickBlockOne = test_data.FlopKickModel()

@@ -21,7 +21,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
-	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -74,13 +73,4 @@ func GetOrCreateUrnInTransaction(guy string, hexIlk string, tx *sqlx.Tx) (urnID 
 
 	err = tx.Get(&urnID, getOrCreateUrnQuery, guy, ilkID)
 	return urnID, err
-}
-
-func GetOrCreateAddress(address string, db *postgres.DB) (int64, error) {
-	return repository.GetOrCreateAddress(db, address)
-}
-
-func GetOrCreateAddressInTransaction(address string, tx *sqlx.Tx) (int64, error) {
-	addressId, addressErr := repository.GetOrCreateAddressInTransaction(tx, address)
-	return addressId, addressErr
 }

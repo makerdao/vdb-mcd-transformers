@@ -11,6 +11,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -71,7 +72,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(getFileErr).NotTo(HaveOccurred())
 
 			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb")
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
@@ -130,7 +131,7 @@ var _ = Describe("PotFile EventTransformers", func() {
 			Expect(getFileErr).NotTo(HaveOccurred())
 
 			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.MsgSender).To(Equal(msgSenderID))

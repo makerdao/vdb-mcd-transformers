@@ -13,6 +13,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -62,7 +63,7 @@ var _ = Describe("Pot storage repository", func() {
 			var result MappingRes
 			dbErr := db.Get(&result, `SELECT diff_id, header_id, "user" AS key, pie AS value FROM maker.pot_user_pie`)
 			Expect(dbErr).NotTo(HaveOccurred())
-			addressID, addressErr := shared.GetOrCreateAddress(fakeAddress, db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, fakeAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(addressID, 10), fakeUint256)
 		})
@@ -134,7 +135,7 @@ var _ = Describe("Pot storage repository", func() {
 			err := repo.Create(diffID, fakeHeaderID, pot.VatMetadata, fakeAddress)
 			Expect(err).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress(fakeAddress, db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, fakeAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			var result VariableRes
 			err = db.Get(&result, `SELECT diff_id, header_id, vat AS value FROM maker.pot_vat`)
@@ -162,7 +163,7 @@ var _ = Describe("Pot storage repository", func() {
 			err := repo.Create(diffID, fakeHeaderID, pot.VowMetadata, fakeAddress)
 			Expect(err).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress(fakeAddress, db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, fakeAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			var result VariableRes
 			err = db.Get(&result, `SELECT diff_id, header_id, vow AS value FROM maker.pot_vow`)
@@ -222,9 +223,9 @@ var _ = Describe("Pot storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			err := db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, fakeUserAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})

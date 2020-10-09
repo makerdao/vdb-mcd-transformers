@@ -11,13 +11,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
@@ -76,7 +76,7 @@ func UpdateBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			bidID, parseErr = strconv.Atoi(input.Metadata.Keys[constants.BidId])
 			Expect(parseErr).NotTo(HaveOccurred())
 			var addressErr error
-			addressID, addressErr = shared.GetOrCreateAddress(input.ContractAddress, db)
+			addressID, addressErr = repository.GetOrCreateAddress(db, input.ContractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 		})
 
@@ -134,7 +134,7 @@ func UpdateBidSnapshotTriggerTests(input BidTriggerTestInput) {
 
 			It("ignores rows from different address", func() {
 				_, initialColumnVal := randomBidStorageValue(input.Metadata.Type, input.PackedValueType)
-				differentAddressID, addressErr := shared.GetOrCreateAddress(test_data.RandomString(40), db)
+				differentAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.RandomString(40))
 				Expect(addressErr).NotTo(HaveOccurred())
 				_, setupErr := db.Exec(insertFieldQuery, differentAddressID, headerTwo.BlockNumber, bidID, initialColumnVal, timestampTwo)
 				Expect(setupErr).NotTo(HaveOccurred())
@@ -274,7 +274,7 @@ func InsertFlipBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			bidID, parseErr = strconv.Atoi(input.Metadata.Keys[constants.BidId])
 			Expect(parseErr).NotTo(HaveOccurred())
 			var addressErr error
-			addressID, addressErr = shared.GetOrCreateAddress(input.ContractAddress, db)
+			addressID, addressErr = repository.GetOrCreateAddress(db, input.ContractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 		})
 
@@ -353,7 +353,7 @@ func InsertBidSnapshotTriggerTests(input BidTriggerTestInput) {
 			bidID, parseErr = strconv.Atoi(input.Metadata.Keys[constants.BidId])
 			Expect(parseErr).NotTo(HaveOccurred())
 			var addressErr error
-			addressID, addressErr = shared.GetOrCreateAddress(input.ContractAddress, db)
+			addressID, addressErr = repository.GetOrCreateAddress(db, input.ContractAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 		})
 

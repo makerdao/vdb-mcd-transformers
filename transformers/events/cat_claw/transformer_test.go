@@ -5,10 +5,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_claw"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,11 +28,11 @@ var _ = Describe("Cat Claw Transformer", func() {
 		models, err := transformer.ToModels(constants.Cat110ABI(), []core.EventLog{test_data.CatClawEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, test_data.Cat110Address())
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		msgSender := "0xF32836B9E1f47a0515c6Ec431592D5EbC276407f"
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		expectedModel := test_data.CatClawModel()

@@ -30,6 +30,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -65,7 +66,7 @@ var _ = Describe("Executing the transformer", func() {
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 		catLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catLiveDiff)
@@ -82,7 +83,7 @@ var _ = Describe("Executing the transformer", func() {
 		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
 		catVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catVatDiff)
@@ -99,7 +100,7 @@ var _ = Describe("Executing the transformer", func() {
 		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
 		catVowDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 
 		err := transformer.Execute(catVowDiff)
@@ -116,15 +117,15 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			catAddressID, catAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			catAddressID, catAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(catAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
@@ -160,7 +161,7 @@ var _ = Describe("Executing the transformer", func() {
 			ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
 			ilkID, ilkErr = shared.GetOrCreateIlk(ilk, db)
 			Expect(ilkErr).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr = shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			contractAddressID, contractAddressErr = repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 		})
 

@@ -19,17 +19,16 @@ package bite
 import (
 	"fmt"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
 type Transformer struct{}
@@ -75,7 +74,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 			return nil, shared.ErrCouldNotCreateFK(urnErr)
 		}
 
-		addressId, addressErr := shared.GetOrCreateAddress(biteEntity.ContractAddress.Hex(), db)
+		addressId, addressErr := repository.GetOrCreateAddress(db, biteEntity.ContractAddress.Hex())
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}

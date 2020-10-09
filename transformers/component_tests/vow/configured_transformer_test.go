@@ -21,7 +21,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
@@ -29,6 +28,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -40,11 +40,11 @@ var _ = Describe("Executing the transformer", func() {
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = common.HexToAddress(test_data.VowAddress())
 		storageKeysLookup = storage.NewKeysLookup(vow.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
-		repository        = vow.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = vow.StorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer       = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		header = fakes.FakeHeader
 	)
@@ -63,15 +63,15 @@ var _ = Describe("Executing the transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			vowAddressID, vowAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			vowAddressID, vowAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(vowAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id

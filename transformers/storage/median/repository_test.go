@@ -14,6 +14,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -66,9 +67,9 @@ var _ = Describe("Median Storage Repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(fakeUserAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, fakeUserAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
 		})
@@ -179,9 +180,9 @@ var _ = Describe("Median Storage Repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, a AS key, bud AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianBudTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			budAddressID, budAddressErr := shared.GetOrCreateAddress(fakeBudAddress, db)
+			budAddressID, budAddressErr := repository.GetOrCreateAddress(db, fakeBudAddress)
 			Expect(budAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(budAddressID, 10), fakeUint256)
 		})
@@ -224,9 +225,9 @@ var _ = Describe("Median Storage Repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, a AS key, orcl AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianOrclTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			orclAddressID, orclAddressErr := shared.GetOrCreateAddress(fakeOrclAddress, db)
+			orclAddressID, orclAddressErr := repository.GetOrCreateAddress(db, fakeOrclAddress)
 			Expect(orclAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(orclAddressID, 10), fakeUint256)
 		})
@@ -268,9 +269,9 @@ var _ = Describe("Median Storage Repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, slot_id AS key, slot AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.MedianSlotTable))
 			readErr := db.Get(&result, query)
 			Expect(readErr).NotTo(HaveOccurred())
-			contractAddressID, contractAddressErr := shared.GetOrCreateAddress(repo.ContractAddress, db)
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 			Expect(contractAddressErr).NotTo(HaveOccurred())
-			slotAddressID, slotAddressErr := shared.GetOrCreateAddress(fakeSlotAddress, db)
+			slotAddressID, slotAddressErr := repository.GetOrCreateAddress(db, fakeSlotAddress)
 			Expect(slotAddressErr).NotTo(HaveOccurred())
 			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeUint8, strconv.FormatInt(slotAddressID, 10))
 		})

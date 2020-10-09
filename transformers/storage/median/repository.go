@@ -7,6 +7,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -26,35 +27,35 @@ type MedianStorageRepository struct {
 	ContractAddressID int64
 }
 
-func (repository *MedianStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repo *MedianStorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case storage.Packed:
-		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
+		return repo.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case wards.Wards:
-		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	case Bar:
-		return repository.insertMedianBar(diffID, headerID, value.(string))
+		return repo.insertMedianBar(diffID, headerID, value.(string))
 	case Bud:
-		return repository.insertBud(diffID, headerID, metadata, value.(string))
+		return repo.insertBud(diffID, headerID, metadata, value.(string))
 	case Orcl:
-		return repository.insertOrcl(diffID, headerID, metadata, value.(string))
+		return repo.insertOrcl(diffID, headerID, metadata, value.(string))
 	case Slot:
-		return repository.insertSlot(diffID, headerID, metadata, value.(string))
+		return repo.insertSlot(diffID, headerID, metadata, value.(string))
 	default:
 		return fmt.Errorf("unrecognized median contract storage name: %s", metadata.Name)
 	}
 }
-func (repository *MedianStorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *MedianStorageRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
 
-func (repository MedianStorageRepository) insertMedianVal(diffID, headerID int64, val string) error {
-	tx, txErr := repository.db.Beginx()
+func (repo MedianStorageRepository) insertMedianVal(diffID, headerID int64, val string) error {
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -68,19 +69,19 @@ func (repository MedianStorageRepository) insertMedianVal(diffID, headerID int64
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("val record with address", insertErr)
 		}
-		return fmt.Errorf("error inserting median val for address %s: %w", repository.ContractAddress, insertErr)
+		return fmt.Errorf("error inserting median val for address %s: %w", repo.ContractAddress, insertErr)
 
 	}
 	return tx.Commit()
 }
 
-func (repository MedianStorageRepository) insertMedianAge(diffID, headerID int64, age string) error {
-	tx, txErr := repository.db.Beginx()
+func (repo MedianStorageRepository) insertMedianAge(diffID, headerID int64, age string) error {
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -94,19 +95,19 @@ func (repository MedianStorageRepository) insertMedianAge(diffID, headerID int64
 		if rollbackErr != nil {
 			return shared.FormatRollbackError("age record with address", insertErr)
 		}
-		return fmt.Errorf("error inserting median age for address %s: %w", repository.ContractAddress, insertErr)
+		return fmt.Errorf("error inserting median age for address %s: %w", repo.ContractAddress, insertErr)
 
 	}
 	return tx.Commit()
 }
 
-func (repository *MedianStorageRepository) insertMedianBar(diffID, headerID int64, bar string) error {
-	tx, txErr := repository.db.Beginx()
+func (repo *MedianStorageRepository) insertMedianBar(diffID, headerID int64, bar string) error {
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -126,14 +127,14 @@ func (repository *MedianStorageRepository) insertMedianBar(diffID, headerID int6
 	return tx.Commit()
 }
 
-func (repository *MedianStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+func (repo *MedianStorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case Val:
-			insertErr = repository.insertMedianVal(diffID, headerID, value)
+			insertErr = repo.insertMedianVal(diffID, headerID, value)
 		case Age:
-			insertErr = repository.insertMedianAge(diffID, headerID, value)
+			insertErr = repo.insertMedianAge(diffID, headerID, value)
 		default:
 			return fmt.Errorf("unrecognized median contract storage name: in packed values: %s", metadata.PackedNames[order])
 		}
@@ -144,18 +145,18 @@ func (repository *MedianStorageRepository) insertPackedValueRecord(diffID, heade
 	return nil
 }
 
-func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, metadata types.ValueMetadata, orcl string) error {
+func (repo *MedianStorageRepository) insertOrcl(diffID, headerID int64, metadata types.ValueMetadata, orcl string) error {
 	orclAddress, orclErr := getOrclAddress(metadata.Keys)
 	if orclErr != nil {
 		return orclErr
 	}
 
-	tx, txErr := repository.db.Beginx()
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -164,7 +165,7 @@ func (repository *MedianStorageRepository) insertOrcl(diffID, headerID int64, me
 		return addressErr
 	}
 
-	orclAddressID, orclAddressErr := shared.GetOrCreateAddress(orclAddress, repository.db)
+	orclAddressID, orclAddressErr := repository.GetOrCreateAddress(repo.db, orclAddress)
 	if orclAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -193,18 +194,18 @@ func getOrclAddress(keys map[types.Key]string) (string, error) {
 	return user, nil
 }
 
-func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, metadata types.ValueMetadata, bud string) error {
+func (repo *MedianStorageRepository) insertBud(diffID, headerID int64, metadata types.ValueMetadata, bud string) error {
 	budAddress, budErr := getBudAddress(metadata.Keys)
 	if budErr != nil {
 		return budErr
 	}
 
-	tx, txErr := repository.db.Beginx()
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -213,7 +214,7 @@ func (repository *MedianStorageRepository) insertBud(diffID, headerID int64, met
 		return addressErr
 	}
 
-	budAddressID, budAddressErr := shared.GetOrCreateAddress(budAddress, repository.db)
+	budAddressID, budAddressErr := repository.GetOrCreateAddress(repo.db, budAddress)
 	if budAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -241,18 +242,18 @@ func getBudAddress(keys map[types.Key]string) (string, error) {
 	return user, nil
 }
 
-func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, metadata types.ValueMetadata, slot string) error {
+func (repo *MedianStorageRepository) insertSlot(diffID, headerID int64, metadata types.ValueMetadata, slot string) error {
 	slotID, slotErr := getSlotID(metadata.Keys)
 	if slotErr != nil {
 		return slotErr
 	}
 
-	tx, txErr := repository.db.Beginx()
+	tx, txErr := repo.db.Beginx()
 	if txErr != nil {
 		return txErr
 	}
 
-	addressID, addressErr := repository.getMemoizedAddressId()
+	addressID, addressErr := repo.getMemoizedAddressId()
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -261,7 +262,7 @@ func (repository *MedianStorageRepository) insertSlot(diffID, headerID int64, me
 		return addressErr
 	}
 
-	slotAddressID, slotAddressErr := shared.GetOrCreateAddress(slot, repository.db)
+	slotAddressID, slotAddressErr := repository.GetOrCreateAddress(repo.db, slot)
 	if slotAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -289,12 +290,12 @@ func getSlotID(keys map[types.Key]string) (string, error) {
 	return slotIDstr, nil
 }
 
-func (repository *MedianStorageRepository) getMemoizedAddressId() (int64, error) {
-	if repository.ContractAddressID == 0 {
+func (repo *MedianStorageRepository) getMemoizedAddressId() (int64, error) {
+	if repo.ContractAddressID == 0 {
 		var addressID int64
-		addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
-		repository.ContractAddressID = addressID
+		addressID, addressErr := repository.GetOrCreateAddress(repo.db, repo.ContractAddress)
+		repo.ContractAddressID = addressID
 		return addressID, addressErr
 	}
-	return repository.ContractAddressID, nil
+	return repo.ContractAddressID, nil
 }

@@ -131,8 +131,6 @@ github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDe
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/makerdao/go-ethereum v1.9.21-rc1 h1:izuLZxMHei6UX89Q2Ld1v5PYcuYEhw34/Ncf/e/WPW8=
 github.com/makerdao/go-ethereum v1.9.21-rc1/go.mod h1:RXAVzbGrSGmDkDnHymruTAIEjUR3E4TX0EOpaj702sI=
-github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200929194143-7adef1042ead h1:azwmqedVoxpfybMB38d4wQnr3rfot91wxm0EYPqf+ds=
-github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200929194143-7adef1042ead/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=
 github.com/makerdao/vulcanizedb v0.1.0 h1:CPNLVGaw6R3+tHnUlBiDULr3lsKziFa0UM8Nc/JsYnw=
 github.com/makerdao/vulcanizedb v0.1.0/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=
 github.com/mattn/go-colorable v0.1.0 h1:v2XXALHHh6zHfYTJ+cSkwtyffnaOyR1MXaA91mTrb8o=

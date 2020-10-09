@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -40,7 +41,7 @@ var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = common.HexToAddress(test_data.FlipEthV100Address())
-		repository        = flip.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = flip.StorageRepository{ContractAddress: contractAddress.Hex()}
 		storageKeysLookup = storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -51,7 +52,7 @@ var _ = Describe("Executing the flip transformer", func() {
 		transformer = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -147,15 +148,15 @@ var _ = Describe("Executing the flip transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			flipAddressID, flipAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(flipAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
@@ -193,7 +194,7 @@ var _ = Describe("Executing the flip transformer", func() {
 				value := common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d")
 				diff = test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+				addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flip.InsertFlipKicksQuery, diff.ID, header.Id, addressId, bidId)

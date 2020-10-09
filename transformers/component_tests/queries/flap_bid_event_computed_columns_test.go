@@ -7,10 +7,10 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -39,7 +39,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		flapKickLog = test_data.CreateTestLog(headerOne.Id, db)
 
-		addressId, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+		addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		flapKickEvent = test_data.FlapKickModel()

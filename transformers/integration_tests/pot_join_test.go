@@ -22,11 +22,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -69,7 +69,7 @@ var _ = Describe("PotJoin Transformer", func() {
 		queryErr := db.Get(&dbResult, `SELECT msg_sender, wad from maker.pot_join`)
 		Expect(queryErr).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress("0x06AF07097C9Eeb7fD685c692751D5C66dB49c215", db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, "0x06AF07097C9Eeb7fD685c692751D5C66dB49c215")
 		Expect(addressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(addressID, 10)))
 		Expect(dbResult.Wad).To(Equal("1065452848025509462649"))

@@ -6,7 +6,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median"
@@ -14,6 +13,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -31,11 +31,11 @@ var _ = Describe("Executing the median transformer", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		var repository = median.MedianStorageRepository{ContractAddress: contractAddress.Hex()}
+		repo := median.MedianStorageRepository{ContractAddress: contractAddress.Hex()}
 		transformer = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -49,15 +49,15 @@ var _ = Describe("Executing the median transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			medianAddressID, medianAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
@@ -87,15 +87,15 @@ var _ = Describe("Executing the median transformer", func() {
 			kissLog := test_data.CreateTestLog(header.Id, db)
 			kissModel := test_data.MedianKissSingleModel()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			medianAddressID, medianAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
-			aAddressID, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			aAddressID, aAddressErr := repository.GetOrCreateAddress(db, aAddress)
 			Expect(aAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			kissModel.ColumnValues[event.HeaderFK] = header.Id
@@ -125,15 +125,15 @@ var _ = Describe("Executing the median transformer", func() {
 			liftLog := test_data.CreateTestLog(header.Id, db)
 			liftModel := test_data.MedianLiftModelWithOneAccount()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			medianAddressID, medianAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
-			aAddressID, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			aAddressID, aAddressErr := repository.GetOrCreateAddress(db, aAddress)
 			Expect(aAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			liftModel.ColumnValues[event.HeaderFK] = header.Id
@@ -163,15 +163,15 @@ var _ = Describe("Executing the median transformer", func() {
 			liftLog := test_data.CreateTestLog(header.Id, db)
 			liftModel := test_data.MedianLiftModelWithOneAccount()
 
-			medianAddressID, medianAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			medianAddressID, medianAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(medianAddressErr).NotTo(HaveOccurred())
 
 			aAddress := "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3"
-			_, aAddressErr := shared.GetOrCreateAddress(aAddress, db)
+			_, aAddressErr := repository.GetOrCreateAddress(db, aAddress)
 			Expect(aAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			liftModel.ColumnValues[event.HeaderFK] = header.Id
@@ -193,7 +193,7 @@ var _ = Describe("Executing the median transformer", func() {
 			var slotResult test_helpers.MappingResWithAddress
 			err := db.Get(&slotResult, `SELECT diff_id, header_id, address_id, slot_id AS key, slot AS value from maker.median_slot`)
 			Expect(err).NotTo(HaveOccurred())
-			slotValueAddressID, slotErr := shared.GetOrCreateAddress(value.String(), db)
+			slotValueAddressID, slotErr := repository.GetOrCreateAddress(db, value.String())
 			Expect(slotErr).NotTo(HaveOccurred())
 			solidityKey := "172"
 			test_helpers.AssertMappingWithAddress(slotResult, liftDiff.ID, header.Id, medianAddressID, solidityKey, strconv.FormatInt(slotValueAddressID, 10))

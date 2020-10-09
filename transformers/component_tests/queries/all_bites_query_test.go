@@ -10,6 +10,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -334,7 +335,7 @@ var _ = Describe("Bites query", func() {
 func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event.InsertionModel {
 	urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(urnErr).NotTo(HaveOccurred())
-	addressID, addressErr := shared.GetOrCreateAddress(test_data.Cat100Address(), db)
+	addressID, addressErr := repository.GetOrCreateAddress(db, test_data.Cat100Address())
 	Expect(addressErr).NotTo(HaveOccurred())
 	biteEvent := test_data.BiteModel()
 	test_data.AssignAddressID(test_data.BiteEventLog, biteEvent, db)
