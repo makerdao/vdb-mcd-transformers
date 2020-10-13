@@ -7,10 +7,10 @@ import (
 	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -58,11 +58,11 @@ var _ = Describe("MedianDissBatch EventTransformer", func() {
 		Expect(len(dbResults)).To(Equal(1))
 		dbResult := dbResults[0]
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, test_data.MedianEthAddress())
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
 
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0xe87F55Af91068a1DA44095138F3d37C45894Eb21", db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, "0xe87F55Af91068a1DA44095138F3d37C45894Eb21")
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderAddressID, 10)))
 

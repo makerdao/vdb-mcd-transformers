@@ -6,6 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -20,14 +21,14 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 			return nil, fmt.Errorf("auction file log missing topics: %w", err)
 		}
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, log.Log.Address.String())
 		if contractAddressErr != nil {
 			errorMsgToFmt := "could not get or creat auction contract address id: %w"
 			return nil, fmt.Errorf(errorMsgToFmt, shared.ErrCouldNotCreateFK(contractAddressErr))
 		}
 
 		msgSender := log.Log.Topics[1].Hex()
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSender)
 		if msgSenderAddressErr != nil {
 			errorMsgToFmt := "could not get or create msg sender address id: %w"
 			return nil, fmt.Errorf(errorMsgToFmt, shared.ErrCouldNotCreateFK(msgSenderAddressErr))

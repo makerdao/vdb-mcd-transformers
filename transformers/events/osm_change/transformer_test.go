@@ -3,9 +3,9 @@ package osm_change_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/osm_change"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,7 +34,7 @@ var _ = Describe("OsmChange transformer", func() {
 		expectedModel := test_data.OsmChangeModel()
 		test_data.AssignAddressID(test_data.OsmChangeEventLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.OsmChangeEventLog, expectedModel, db)
-		srcAddressID, srcAddressErr := shared.GetOrCreateAddress(test_data.OsmChangeEventLog.Log.Topics[2].Hex(), db)
+		srcAddressID, srcAddressErr := repository.GetOrCreateAddress(db, test_data.OsmChangeEventLog.Log.Topics[2].Hex())
 		Expect(srcAddressErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[constants.SrcColumn] = srcAddressID
 

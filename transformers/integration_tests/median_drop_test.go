@@ -6,11 +6,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_drop"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -58,15 +58,15 @@ var _ = XDescribe("MedianDrop EventTransformer", func() {
 		Expect(len(dbResults)).To(Equal(2))
 		dbResult := dbResults[1]
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress("0x18B4633D6E39870f398597f3c1bA8c4A41294966", db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, "0x18B4633D6E39870f398597f3c1bA8c4A41294966")
 		Expect(contractAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.AddressID).To(Equal(strconv.FormatInt(contractAddressID, 10)))
 
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress("0x000000000000000000000000ddb108893104de4e1c6d0e47c42237db4e617acc", db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, "0x000000000000000000000000ddb108893104de4e1c6d0e47c42237db4e617acc")
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.MsgSender).To(Equal(strconv.FormatInt(msgSenderAddressID, 10)))
 
-		aAddressID, aAddressErr := shared.GetOrCreateAddress("0x000000000000000000000000b4eb54af9cc7882df0121d26c5b97e802915abe6", db)
+		aAddressID, aAddressErr := repository.GetOrCreateAddress(db, "0x000000000000000000000000b4eb54af9cc7882df0121d26c5b97e802915abe6")
 		Expect(aAddressErr).NotTo(HaveOccurred())
 		Expect(dbResult.A).To(Equal(strconv.FormatInt(aAddressID, 10)))
 	})

@@ -36,6 +36,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -70,7 +71,7 @@ var _ = Describe("Maker storage repository", func() {
 		addressID           int64
 		addressErr          error
 		db                  = test_config.NewTestDB(test_config.NewTestNode())
-		repository          storage.IMakerStorageRepository
+		repo                storage.IMakerStorageRepository
 		ilk1                = common.HexToHash("0x494c4b31").Hex()
 		ilk2                = common.HexToHash("0x494c4b32").Hex()
 		guy1                = "0x47555931"
@@ -88,9 +89,9 @@ var _ = Describe("Maker storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repository = &storage.MakerStorageRepository{}
-		repository.SetDB(db)
-		addressID, addressErr = shared.GetOrCreateAddress(address, db)
+		repo = &storage.MakerStorageRepository{}
+		repo.SetDB(db)
+		addressID, addressErr = repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 	})
 
@@ -111,7 +112,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlapKick(1, bidID1, addressID, db)
 			insertFlapKick(2, bidID1, addressID, db)
 
-			bidIDs, err := repository.GetFlapBidIDs(address)
+			bidIDs, err := repo.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(1))
 			Expect(bidIDs[0]).To(Equal(bidID1))
@@ -126,7 +127,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, duplicateBidID, addressID, db)
 
-			bidIDs, err := repository.GetFlapBidIDs(address)
+			bidIDs, err := repo.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(5))
 			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
@@ -134,7 +135,7 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			anotherAddressID, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			anotherAddressID, addressErr := repository.GetOrCreateAddress(db, anotherAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertFlapKick(1, bidID1, addressID, db)
 			insertFlapKick(2, bidID2, addressID, db)
@@ -143,14 +144,14 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, bidID6, anotherAddressID, db)
 
-			bidIDs, err := repository.GetFlapBidIDs(address)
+			bidIDs, err := repo.GetFlapBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(5))
 			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIDs, err := repository.GetFlapBidIDs(fakes.FakeAddress.Hex())
+			bidIDs, err := repo.GetFlapBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(BeZero())
@@ -161,7 +162,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from both src and dst field on vat_move", func() {
 			insertVatMove(guy1, guy2, 1, db)
 
-			keys, err := repository.GetDaiKeys()
+			keys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(keys)).To(Equal(2))
@@ -171,7 +172,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from w field on vat_frob", func() {
 			insertVatFrob(ilk1, guy1, guy1, guy2, 1, db)
 
-			keys, err := repository.GetDaiKeys()
+			keys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(keys)).To(Equal(1))
@@ -181,7 +182,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from vat_heal transaction", func() {
 			insertVatHeal(1, transactionFromGuy1, db)
 
-			keys, err := repository.GetDaiKeys()
+			keys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(keys)).To(Equal(1))
@@ -191,7 +192,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from v field on vat_suck", func() {
 			insertVatSuck(guy1, guy2, 0, 1, db)
 
-			daiKeys, repoErr := repository.GetDaiKeys()
+			daiKeys, repoErr := repo.GetDaiKeys()
 
 			Expect(repoErr).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(Equal(1))
@@ -201,7 +202,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from u field on vat_fold", func() {
 			insertVatFold(guy1, 1, db)
 
-			daiKeys, repoErr := repository.GetDaiKeys()
+			daiKeys, repoErr := repo.GetDaiKeys()
 
 			Expect(repoErr).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(Equal(1))
@@ -226,7 +227,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatFold(guy4, 9, db)
 			insertVatSuck(guy1, guy1, 0, 10, db)
 
-			keys, err := repository.GetDaiKeys()
+			keys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(keys)).To(Equal(6))
@@ -238,7 +239,7 @@ var _ = Describe("Maker storage repository", func() {
 			unrelatedTransaction := core.TransactionModel{From: "unrelated guy", TxIndex: 15, Value: "0"}
 			insertTransaction(1, unrelatedTransaction, db)
 
-			sinKeys, err := repository.GetDaiKeys()
+			sinKeys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -246,7 +247,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			daiKeys, err := repository.GetDaiKeys()
+			daiKeys, err := repo.GetDaiKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(daiKeys)).To(BeZero())
@@ -257,7 +258,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from both src and dst field on vat_flux", func() {
 			insertVatFlux(ilk1, guy1, guy2, 1, db)
 
-			gems, err := repository.GetGemKeys()
+			gems, err := repo.GetGemKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(2))
@@ -274,7 +275,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatFrob(ilk1, guy1, guy2, guy1, 1, db)
 			insertVatGrab(ilk1, guy1, guy3, guy1, 2, db)
 
-			gems, err := repository.GetGemKeys()
+			gems, err := repo.GetGemKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(2))
@@ -298,7 +299,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatFrob(ilk2, guy1, guy1, guy1, 8, db)
 			insertVatGrab(ilk1, guy1, guy1, guy1, 9, db)
 
-			gems, err := repository.GetGemKeys()
+			gems, err := repo.GetGemKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gems)).To(Equal(6))
@@ -324,7 +325,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			gemKeys, err := repository.GetGemKeys()
+			gemKeys, err := repo.GetGemKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(gemKeys)).To(BeZero())
@@ -337,7 +338,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatInit(ilk2, 2, db)
 			insertVatInit(ilk2, 3, db)
 
-			ilks, err := repository.GetIlks()
+			ilks, err := repo.GetIlks()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(ilks)).To(Equal(2))
@@ -345,7 +346,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			ilks, err := repository.GetIlks()
+			ilks, err := repo.GetIlks()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(ilks)).To(BeZero())
@@ -356,7 +357,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from w field of vat grab", func() {
 			insertVatGrab(guy1, guy1, guy1, guy2, 1, db)
 
-			sinKeys, err := repository.GetVatSinKeys()
+			sinKeys, err := repo.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -366,7 +367,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches guy from vat heal transaction", func() {
 			insertVatHeal(1, transactionFromGuy1, db)
 
-			sinKeys, err := repository.GetVatSinKeys()
+			sinKeys, err := repo.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -375,7 +376,7 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches guy from u field of vat suck", func() {
 			insertVatSuck(guy1, guy2, 0, 1, db)
-			sinKeys, repoErr := repository.GetVatSinKeys()
+			sinKeys, repoErr := repo.GetVatSinKeys()
 
 			Expect(repoErr).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -387,7 +388,7 @@ var _ = Describe("Maker storage repository", func() {
 			unrelatedTransaction := core.TransactionModel{From: "unrelated guy", TxIndex: 15, Value: "0"}
 			insertTransaction(1, unrelatedTransaction, db)
 
-			sinKeys, err := repository.GetVatSinKeys()
+			sinKeys, err := repo.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -404,7 +405,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatHeal(5, transactionFromGuy2, db)
 			insertVatSuck(guy1, guy2, 0, 6, db)
 
-			sinKeys, err := repository.GetVatSinKeys()
+			sinKeys, err := repo.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(3))
@@ -412,7 +413,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			sinKeys, err := repository.GetVatSinKeys()
+			sinKeys, err := repo.GetVatSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(BeZero())
@@ -423,7 +424,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches timestamp from era field of vow flog", func() {
 			insertVowFlog(era, 1, db)
 
-			sinKeys, err := repository.GetVowSinKeys()
+			sinKeys, err := repo.GetVowSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -433,7 +434,7 @@ var _ = Describe("Maker storage repository", func() {
 		It("fetches timestamp from header of vow fess event", func() {
 			insertVowFess(tab, timestamp, 1, db)
 
-			sinKeys, err := repository.GetVowSinKeys()
+			sinKeys, err := repo.GetVowSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(1))
@@ -447,7 +448,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVowFlog(era, 3, db)
 			insertVowFess(tab, timestamp, 4, db)
 
-			sinKeys, err := repository.GetVowSinKeys()
+			sinKeys, err := repo.GetVowSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(Equal(2))
@@ -455,7 +456,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			sinKeys, err := repository.GetVowSinKeys()
+			sinKeys, err := repo.GetVowSinKeys()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(sinKeys)).To(BeZero())
@@ -472,7 +473,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatGrab(ilk1, guy3, guy1, guy1, 6, db)
 			insertVatFork(ilk2, guy2, guy3, 7, db)
 
-			urns, err := repository.GetUrns()
+			urns, err := repo.GetUrns()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(urns)).To(Equal(6))
@@ -498,7 +499,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("does not return error if no matching rows", func() {
-			urns, err := repository.GetUrns()
+			urns, err := repo.GetUrns()
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(urns)).To(BeZero())
@@ -525,7 +526,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlipKick(1, bidID1, addressID, db)
 			insertFlipKick(2, bidID1, addressID, db)
 
-			bidIDs, err := repository.GetFlipBidIDs(address)
+			bidIDs, err := repo.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(1))
 			Expect(bidIDs[0]).To(Equal(bidID1))
@@ -542,7 +543,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(7, bidID7, addressID, db)
 			insertYank(8, duplicateBidID, addressID, db)
 
-			bidIDs, err := repository.GetFlipBidIDs(address)
+			bidIDs, err := repo.GetFlipBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(7))
 			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5, bidID6, bidID7))
@@ -568,7 +569,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertFlopKick(1, bidID1, addressID, db)
 			insertFlopKick(2, bidID1, addressID, db)
 
-			bidIDs, err := repository.GetFlopBidIDs(address)
+			bidIDs, err := repo.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(1))
 			Expect(bidIDs[0]).To(Equal(bidID1))
@@ -583,7 +584,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, duplicateBidID, addressID, db)
 
-			bidIDs, err := repository.GetFlopBidIDs(address)
+			bidIDs, err := repo.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(5))
 			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
@@ -591,7 +592,7 @@ var _ = Describe("Maker storage repository", func() {
 
 		It("fetches bid ids only for the given contract address", func() {
 			anotherAddress := address + "1"
-			anotherAddressID, addressErr := shared.GetOrCreateAddress(anotherAddress, db)
+			anotherAddressID, addressErr := repository.GetOrCreateAddress(db, anotherAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertFlopKick(1, bidID1, addressID, db)
 			insertFlopKick(2, bidID2, addressID, db)
@@ -600,14 +601,14 @@ var _ = Describe("Maker storage repository", func() {
 			insertYank(5, bidID5, addressID, db)
 			insertYank(6, bidID6, anotherAddressID, db)
 
-			bidIDs, err := repository.GetFlopBidIDs(address)
+			bidIDs, err := repo.GetFlopBidIDs(address)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(Equal(5))
 			Expect(bidIDs).To(ConsistOf(bidID1, bidID2, bidID3, bidID4, bidID5))
 		})
 
 		It("does not return error if no matching rows", func() {
-			bidIDs, err := repository.GetFlopBidIDs(fakes.FakeAddress.Hex())
+			bidIDs, err := repo.GetFlopBidIDs(fakes.FakeAddress.Hex())
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(bidIDs)).To(BeZero())
@@ -621,7 +622,7 @@ var _ = Describe("Maker storage repository", func() {
 			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
-			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.MedianEthAddress())
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertMedianKissSingle(a1, medianAddressID, db)
 			insertMedianDissSingle(a2, medianAddressID, db)
@@ -629,7 +630,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertMedianDissBatch([]string{a2, a4}, medianAddressID, db)
 			insertMedianKissSingle(a5, addressID, db)
 
-			aAddresses, err := repository.GetMedianBudAddresses(test_data.MedianEthAddress())
+			aAddresses, err := repo.GetMedianBudAddresses(test_data.MedianEthAddress())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4))
@@ -643,12 +644,12 @@ var _ = Describe("Maker storage repository", func() {
 			a3 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a4 := common.HexToAddress(test_data.RandomString(40)).Hex()
 			a5 := common.HexToAddress(test_data.RandomString(40)).Hex()
-			medianAddressID, addressErr := shared.GetOrCreateAddress(test_data.MedianEthAddress(), db)
+			medianAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.MedianEthAddress())
 			Expect(addressErr).NotTo(HaveOccurred())
 			insertMedianLiftAddresses([]string{a1, a2, a3}, medianAddressID, db)
 			insertMedianDropAddresses([]string{a4, a5}, medianAddressID, db)
 
-			aAddresses, err := repository.GetMedianOrclAddresses(test_data.MedianEthAddress())
+			aAddresses, err := repo.GetMedianOrclAddresses(test_data.MedianEthAddress())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(aAddresses).To(ConsistOf(a1, a2, a3, a4, a5))
@@ -663,7 +664,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertPotPieUser(2, userAddressTwo, "maker.pot_exit", db)
 			insertPotPieUser(3, userAddressTwo, "maker.pot_join", db)
 
-			userAddresses, err := repository.GetPotPieUsers()
+			userAddresses, err := repo.GetPotPieUsers()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(userAddresses)).To(Equal(2))
 			Expect(userAddresses).To(ConsistOf(userAddressOne, userAddressTwo))
@@ -678,7 +679,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertVatAuthEvent(2, userAddressTwo, "maker.vat_rely", db)
 			insertVatAuthEvent(3, userAddressTwo, "maker.vat_deny", db)
 
-			allUsers, userErr := repository.GetVatWardsAddresses()
+			allUsers, userErr := repo.GetVatWardsAddresses()
 			Expect(userErr).NotTo(HaveOccurred())
 			Expect(allUsers).To(ConsistOf(userAddressOne, userAddressTwo))
 		})
@@ -694,11 +695,11 @@ var _ = Describe("Maker storage repository", func() {
 			insertAuthEvent(2, test_data.VowAddress(), msgSenderAddressOne, userAddressTwo, "maker.rely", db)
 			insertAuthEvent(3, test_data.VowAddress(), msgSenderAddressTwo, userAddressTwo, "maker.deny", db)
 
-			catUserAddresses, catUserErr := repository.GetWardsAddresses(test_data.Cat100Address())
+			catUserAddresses, catUserErr := repo.GetWardsAddresses(test_data.Cat100Address())
 			Expect(catUserErr).NotTo(HaveOccurred())
 			Expect(catUserAddresses).To(ConsistOf(msgSenderAddressOne, userAddressOne))
 
-			vowUserAddresses, vowUserErr := repository.GetWardsAddresses(test_data.VowAddress())
+			vowUserAddresses, vowUserErr := repo.GetWardsAddresses(test_data.VowAddress())
 			Expect(vowUserErr).NotTo(HaveOccurred())
 			Expect(vowUserAddresses).To(ConsistOf(msgSenderAddressOne, msgSenderAddressTwo, userAddressTwo))
 		})
@@ -710,7 +711,7 @@ var _ = Describe("Maker storage repository", func() {
 			insertCdpManagerCdpi(int64(rand.Int()), 5, db)
 			insertCdpManagerCdpi(int64(rand.Int()), 3, db)
 
-			cdpis, err := repository.GetCdpis()
+			cdpis, err := repo.GetCdpis()
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(cdpis)).To(Equal(5))
@@ -718,7 +719,7 @@ var _ = Describe("Maker storage repository", func() {
 		})
 
 		It("returns empty slice if table is empty", func() {
-			cdpis, err := repository.GetCdpis()
+			cdpis, err := repo.GetCdpis()
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(cdpis).To(BeEmpty())
@@ -753,7 +754,7 @@ func insertTick(blockNumber int64, bidID string, contractAddressID int64, db *po
 	flapTickLog := test_data.CreateTestLog(headerID, db)
 
 	msgSender := shared.GetChecksumAddressString(test_data.FlipTickEventLog.Log.Topics[1].Hex())
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 
 	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id, msg_sender)
@@ -817,7 +818,7 @@ func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *po
 	dentLog := test_data.CreateTestLog(headerID, db)
 
 	msgSender := shared.GetChecksumAddressString(test_data.DentEventLog.Log.Topics[1].Hex())
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 
 	_, err := db.Exec(`INSERT into maker.dent (header_id, bid_id, lot, bid, msg_sender, address_id, log_id)
@@ -830,7 +831,7 @@ func insertDent(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	dealLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.DealEventLog.Log.Topics[1].Hex(), db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, test_data.DealEventLog.Log.Topics[1].Hex())
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.deal (header_id, bid_id, address_id, log_id, msg_sender)
 		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
@@ -842,7 +843,7 @@ func insertDeal(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertYank(blockNumber int64, bidID string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	yankLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.YankEventLog.Log.Topics[1].Hex(), db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, test_data.YankEventLog.Log.Topics[1].Hex())
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.yank (header_id, bid_id, address_id, log_id, msg_sender)
 		VALUES($1, $2::NUMERIC, $3, $4, $5)`,
@@ -854,7 +855,7 @@ func insertYank(blockNumber int64, bidID string, contractAddressID int64, db *po
 func insertMedianKissSingle(a string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	kissLog := test_data.CreateTestLog(headerID, db)
-	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	addressID, addressErr := repository.GetOrCreateAddress(db, a)
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.median_kiss_single (header_id, address_id, log_id, msg_sender, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
@@ -865,7 +866,7 @@ func insertMedianKissSingle(a string, contractAddressID int64, db *postgres.DB) 
 func insertMedianDissSingle(a string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	dissLog := test_data.CreateTestLog(headerID, db)
-	addressID, addressErr := shared.GetOrCreateAddress(a, db)
+	addressID, addressErr := repository.GetOrCreateAddress(db, a)
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.median_diss_single (header_id, address_id, log_id, msg_sender, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $4)`,
@@ -876,7 +877,7 @@ func insertMedianDissSingle(a string, contractAddressID int64, db *postgres.DB) 
 func insertMedianKissBatch(a []string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	kissLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	msgSenderID, addressErr := repository.GetOrCreateAddress(db, a[0])
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.median_kiss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
@@ -887,7 +888,7 @@ func insertMedianKissBatch(a []string, contractAddressID int64, db *postgres.DB)
 func insertMedianDissBatch(a []string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	dissLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	msgSenderID, addressErr := repository.GetOrCreateAddress(db, a[0])
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT into maker.median_diss_batch (header_id, address_id, log_id, msg_sender, a_length, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
@@ -898,7 +899,7 @@ func insertMedianDissBatch(a []string, contractAddressID int64, db *postgres.DB)
 func insertMedianLiftAddresses(a []string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	liftLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	msgSenderID, addressErr := repository.GetOrCreateAddress(db, a[0])
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT INTO maker.median_lift (header_id, address_id, log_id, msg_sender, a_length, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
@@ -909,7 +910,7 @@ func insertMedianLiftAddresses(a []string, contractAddressID int64, db *postgres
 func insertMedianDropAddresses(a []string, contractAddressID int64, db *postgres.DB) {
 	headerID := insertHeader(db, rand.Int63n(1000))
 	dropLog := test_data.CreateTestLog(headerID, db)
-	msgSenderID, addressErr := shared.GetOrCreateAddress(a[0], db)
+	msgSenderID, addressErr := repository.GetOrCreateAddress(db, a[0])
 	Expect(addressErr).NotTo(HaveOccurred())
 	_, err := db.Exec(`INSERT INTO maker.median_drop (header_id, address_id, log_id, msg_sender, a_length, a)
 		VALUES($1, $2::NUMERIC, $3, $4, $5, $6)`,
@@ -943,7 +944,7 @@ func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 func insertVowFlog(era string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFlogEventLog.Log.Topics[1].Hex(), db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, test_data.VowFlogEventLog.Log.Topics[1].Hex())
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 
 	vowFlogLog := test_data.CreateTestLog(headerID, db)
@@ -962,7 +963,7 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 	vowFessLog := test_data.CreateTestLog(headerID, db)
 	Expect(err).NotTo(HaveOccurred())
 
-	msgSenderID, msgSenderErr := shared.GetOrCreateAddress(test_data.VowFessEventLog.Log.Topics[1].Hex(), db)
+	msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, test_data.VowFessEventLog.Log.Topics[1].Hex())
 	Expect(msgSenderErr).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -1098,7 +1099,7 @@ func insertVatAuthEvent(blockNumber int64, userAddress, tableName string, db *po
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
 
-	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+	userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 	Expect(userAddressErr).NotTo(HaveOccurred())
 
 	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, usr) VALUES ($1, $2, $3)`, tableName)
@@ -1109,12 +1110,12 @@ func insertVatAuthEvent(blockNumber int64, userAddress, tableName string, db *po
 func insertAuthEvent(blockNumber int64, contractAddress, msgSenderAddress, userAddress, tableName string, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
-	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddress, db)
+	contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress)
 	Expect(contractAddressErr).NotTo(HaveOccurred())
 
-	msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+	msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 	Expect(msgSenderAddressErr).NotTo(HaveOccurred())
-	userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+	userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 	Expect(userAddressErr).NotTo(HaveOccurred())
 
 	insertAuthEventQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, address_id, msg_sender, usr) VALUES ($1, $2, $3, $4, $5)`, tableName)
@@ -1125,7 +1126,7 @@ func insertAuthEvent(blockNumber int64, contractAddress, msgSenderAddress, userA
 func insertPotPieUser(blockNumber int64, userAddress, tableName string, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	log := test_data.CreateTestLog(headerID, db)
-	userAddressID, addressErr := shared.GetOrCreateAddress(userAddress, db)
+	userAddressID, addressErr := repository.GetOrCreateAddress(db, userAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
 
 	insertMsgSenderQuery := fmt.Sprintf(`INSERT INTO %s (header_id, log_id, msg_sender, wad) VALUES ($1, $2, $3, $4)`, tableName)

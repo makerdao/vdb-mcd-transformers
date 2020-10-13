@@ -19,16 +19,14 @@ package flop_kick
 import (
 	"fmt"
 
-	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vulcanizedb/pkg/core"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/makerdao/vulcanizedb/pkg/eth"
-
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
+	"github.com/makerdao/vulcanizedb/pkg/core"
+	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/eth"
 )
 
 type Transformer struct{}
@@ -63,7 +61,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		return nil, fmt.Errorf("FlopKick transformer couldn't convert logs to entities: %v", entityErr)
 	}
 	for _, flopKickEntity := range entities {
-		addressId, addressErr := shared.GetOrCreateAddress(flopKickEntity.ContractAddress.Hex(), db)
+		addressId, addressErr := repository.GetOrCreateAddress(db, flopKickEntity.ContractAddress.Hex())
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -18,19 +19,19 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, err
 		}
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, log.Log.Address.String())
 		if contractAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(contractAddressErr)
 		}
 
 		msgSender := log.Log.Topics[1].Hex()
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSender)
 		if msgSenderAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderAddressErr)
 		}
 
 		a := log.Log.Topics[2].Hex()
-		aAddressID, aAddressErr := shared.GetOrCreateAddress(a, db)
+		aAddressID, aAddressErr := repository.GetOrCreateAddress(db, a)
 		if aAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(aAddressErr)
 		}

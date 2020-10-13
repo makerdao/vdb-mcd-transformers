@@ -5,11 +5,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -73,7 +73,7 @@ var _ = XDescribe("PotCage EventTransformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			msgSender := common.HexToAddress("0xe06ac4777f04ac7638f736a0b95f7bfeadcee556").Hex()
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.ID).To(Equal(1))

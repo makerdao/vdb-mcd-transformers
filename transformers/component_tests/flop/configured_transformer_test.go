@@ -21,7 +21,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
@@ -29,6 +28,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -40,7 +40,7 @@ var _ = Describe("Executing the flop transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		contractAddress   = common.HexToAddress(test_data.FlopV101Address())
-		repository        = flop.StorageRepository{ContractAddress: contractAddress.Hex()}
+		repo              = flop.StorageRepository{ContractAddress: contractAddress.Hex()}
 		storageKeysLookup = storage.NewKeysLookup(flop.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader
 		transformer       storage.Transformer
@@ -51,7 +51,7 @@ var _ = Describe("Executing the flop transformer", func() {
 		transformer = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		transformer.NewTransformer(db)
 		headerRepository := repositories.NewHeaderRepository(db)
@@ -182,15 +182,15 @@ var _ = Describe("Executing the flop transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flopAddressID, flopAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+			flopAddressID, flopAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 			Expect(flopAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
-			userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 			Expect(userAddressErr).NotTo(HaveOccurred())
 
 			msgSenderAddress := "0x" + fakes.RandomString(40)
-			msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 			denyModel.ColumnValues[event.HeaderFK] = header.Id
@@ -229,7 +229,7 @@ var _ = Describe("Executing the flop transformer", func() {
 				value := common.HexToHash("00000002a300000000002a30284ecb5880cdc3362d979d07d162bf1d8488975d")
 				diff = test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
-				addressId, addressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+				addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 				Expect(addressErr).NotTo(HaveOccurred())
 
 				_, writeErr := db.Exec(flop.InsertFlopKicksQuery, diff.ID, header.Id, addressId, bidId)

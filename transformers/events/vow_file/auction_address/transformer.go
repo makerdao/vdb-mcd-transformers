@@ -5,6 +5,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -20,14 +21,14 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		msgSenderAddress := common.HexToAddress(log.Log.Topics[1].Hex()).Hex()
-		msgSenderAddressId, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		msgSenderAddressId, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 		if msgSenderAddressErr != nil {
 			return nil, msgSenderAddressErr
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[2].Hex())
 		dataAddress := common.HexToAddress(log.Log.Topics[3].Hex()).Hex()
-		dataAddressId, dataAddressErr := shared.GetOrCreateAddress(dataAddress, db)
+		dataAddressId, dataAddressErr := repository.GetOrCreateAddress(db, dataAddress)
 		if dataAddressErr != nil {
 			return nil, dataAddressErr
 		}

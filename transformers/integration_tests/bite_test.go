@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -100,7 +101,7 @@ func biteIntegrationTest(blockNumber int64, contractAddressHex, contractABI, ilk
 		Expect(urnErr).NotTo(HaveOccurred())
 		expectedResult.Urn = urnID
 
-		addressID, addressErr := shared.GetOrCreateAddress(contractAddressHex, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, contractAddressHex)
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedResult.AddressID = addressID
 

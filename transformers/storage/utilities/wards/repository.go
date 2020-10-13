@@ -3,6 +3,7 @@ package wards
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -20,7 +21,7 @@ func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractA
 		return txErr
 	}
 
-	addressID, addressErr := shared.GetOrCreateAddress(contractAddress, db)
+	addressID, addressErr := repository.GetOrCreateAddress(db, contractAddress)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -29,7 +30,7 @@ func InsertWards(diffID, headerID int64, metadata types.ValueMetadata, contractA
 		return addressErr
 	}
 
-	userAddressID, userAddressErr := shared.GetOrCreateAddress(user, db)
+	userAddressID, userAddressErr := repository.GetOrCreateAddress(db, user)
 	if userAddressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

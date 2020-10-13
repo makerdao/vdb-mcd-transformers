@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -93,7 +94,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbe8e3e3618f7474f8cb1d074a26affef007e98fb", db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xbe8e3e3618f7474f8cb1d074a26affef007e98fb")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
@@ -161,7 +162,7 @@ var _ = Describe("SpotFile EventTransformers", func() {
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2fa2baacb2cb550ba051525a480d3f4", db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 			Expect(dbResult.Ilk).To(Equal(strconv.FormatInt(ilkID, 10)))
 			Expect(dbResult.Pip).To(Equal("0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763"))

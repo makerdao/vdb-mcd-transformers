@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -79,11 +80,11 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = db.Get(&flipTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
+		flipAddressID, addrErr := repository.GetOrCreateAddress(db, test_data.FlipEthV100Address())
 		Expect(addrErr).NotTo(HaveOccurred())
 
 		msgSender := shared.GetChecksumAddressString("0x00000000000000000000000000abe7471ec9b6953a3bd0ed3c06c46f29aa4280")
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		expectedFlipTend := tendModel{
@@ -117,11 +118,11 @@ var _ = Describe("Tend EventTransformer", func() {
 		err = db.Get(&flapTend, `SELECT address_id, msg_sender, bid, bid_id, lot FROM maker.tend`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addrErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
+		flapAddressID, addrErr := repository.GetOrCreateAddress(db, test_data.FlapV100Address())
 		Expect(addrErr).NotTo(HaveOccurred())
 
 		msgSender := shared.GetChecksumAddressString("0x000000000000000000000000d9d1e81bb35db066986fa441113a27708663d70b")
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		expectedFlapTend := tendModel{

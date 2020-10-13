@@ -20,11 +20,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -70,7 +70,7 @@ var _ = Describe("FlapKick Transformer", func() {
 		err = db.Get(&dbResult, `SELECT address_id, bid, bid_id, lot FROM maker.flap_kick`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flapAddressID, addressErr := shared.GetOrCreateAddress(test_data.FlapV100Address(), db)
+		flapAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.FlapV100Address())
 		Expect(addressErr).NotTo(HaveOccurred())
 		expectedModel := FlapKickModel{
 			AddressID: flapAddressID,

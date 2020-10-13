@@ -3,9 +3,9 @@ package single_test
 import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,7 +34,7 @@ var _ = Describe("Median diss (single) transformer", func() {
 		expectedModel := test_data.MedianDissSingleModel()
 		test_data.AssignAddressID(test_data.MedianDissSingleLog, expectedModel, db)
 		test_data.AssignMessageSenderID(test_data.MedianDissSingleLog, expectedModel, db)
-		aAddressID, aAddressErr := shared.GetOrCreateAddress(test_data.MedianDissSingleLog.Log.Topics[2].Hex(), db)
+		aAddressID, aAddressErr := repository.GetOrCreateAddress(db, test_data.MedianDissSingleLog.Log.Topics[2].Hex())
 		Expect(aAddressErr).NotTo(HaveOccurred())
 		expectedModel.ColumnValues[constants.AColumn] = aAddressID
 

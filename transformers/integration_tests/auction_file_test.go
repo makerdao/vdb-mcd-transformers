@@ -6,11 +6,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -108,9 +108,9 @@ func auctionFileIntegrationTest(blockNumber int64, contractAddressHex, msgSender
 		err := db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.auction_file`)
 		Expect(err).NotTo(HaveOccurred())
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(contractAddressHex, db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddressHex)
 		Expect(contractAddressErr).NotTo(HaveOccurred())
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddressHex, db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddressHex)
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		var matchFound bool

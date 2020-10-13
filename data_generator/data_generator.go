@@ -11,12 +11,12 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -398,7 +398,7 @@ func (state *GeneratorState) insertInitialIlkData(ilkId int64) error {
 		cat.InsertCatIlkLumpQuery,
 	}
 
-	contractAddressID, contractAddressErr := shared.GetOrCreateAddress(getRandomAddress(), state.db)
+	contractAddressID, contractAddressErr := repository.GetOrCreateAddress(state.db, getRandomAddress())
 	if contractAddressErr != nil {
 		return fmt.Errorf("error inserting random contract address: %w", contractAddressErr)
 	}

@@ -30,6 +30,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -77,9 +78,9 @@ var _ = Describe("Cat File transformer", func() {
 			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump_dunk`)
 			Expect(getErr).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, "0x78F2c2AF65126834c51822F56Be0d7469D7A523E")
 			Expect(addressErr).NotTo(HaveOccurred())
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
@@ -120,9 +121,9 @@ var _ = Describe("Cat File transformer", func() {
 			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, ilk_id, what, data FROM maker.cat_file_chop_lump_dunk`)
 			Expect(getErr).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, "0x78F2c2AF65126834c51822F56Be0d7469D7A523E")
 			Expect(addressErr).NotTo(HaveOccurred())
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
@@ -164,14 +165,14 @@ var _ = Describe("Cat File transformer", func() {
 			err = db.Get(&dbResult, `SELECT ilk_id, msg_sender, address_id, what, flip FROM maker.cat_file_flip`)
 			Expect(err).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, "0x78F2c2AF65126834c51822F56Be0d7469D7A523E")
 			Expect(addressErr).NotTo(HaveOccurred())
 
 			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(err).NotTo(HaveOccurred())
 
 			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
@@ -211,10 +212,10 @@ var _ = Describe("Cat File transformer", func() {
 			getErr := db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_vow`)
 			Expect(getErr).NotTo(HaveOccurred())
 
-			addressID, addressErr := shared.GetOrCreateAddress("0x78F2c2AF65126834c51822F56Be0d7469D7A523E", db)
+			addressID, addressErr := repository.GetOrCreateAddress(db, "0x78F2c2AF65126834c51822F56Be0d7469D7A523E")
 			Expect(addressErr).NotTo(HaveOccurred())
 
-			msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4", db)
+			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
 
 			Expect(dbResult.AddressID).To(Equal(addressID))
@@ -260,9 +261,9 @@ var _ = Describe("Cat File transformer", func() {
 			err = db.Get(&dbResult, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_box`)
 			Expect(err).NotTo(HaveOccurred())
 
-			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			addressID, err := repository.GetOrCreateAddress(db, test_data.Cat110Address())
 			Expect(err).NotTo(HaveOccurred())
-			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			msgSenderID, err := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(dbResult.AddressID).To(Equal(addressID))
 			Expect(dbResult.MsgSenderID).To(Equal(msgSenderID))
@@ -297,11 +298,11 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			var dbResults []catFileChopLumpDunkModel
-			msgSenderID, err := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+			msgSenderID, err := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(err).NotTo(HaveOccurred())
 			err = db.Select(&dbResults, `SELECT address_id, msg_sender, what, data FROM maker.cat_file_chop_lump_dunk`)
 			Expect(err).NotTo(HaveOccurred())
-			addressID, err := shared.GetOrCreateAddress(test_data.Cat110Address(), db)
+			addressID, err := repository.GetOrCreateAddress(db, test_data.Cat110Address())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(dbResults)).To(Equal(18))

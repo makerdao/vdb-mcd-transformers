@@ -29,6 +29,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
@@ -39,12 +40,12 @@ var _ = Describe("Executing the transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
 		storageKeysLookup = storage.NewKeysLookup(vat.NewKeysLoader(&mcdStorage.MakerStorageRepository{}))
-		repository        = vat.StorageRepository{}
+		repo              = vat.StorageRepository{}
 		contractAddress   = common.HexToAddress(test_data.VatAddress())
 		transformer       = storage.Transformer{
 			Address:           contractAddress,
 			StorageKeysLookup: storageKeysLookup,
-			Repository:        &repository,
+			Repository:        &repo,
 		}
 		header = fakes.FakeHeader
 	)
@@ -62,15 +63,15 @@ var _ = Describe("Executing the transformer", func() {
 		vatDenyLog := test_data.CreateTestLog(header.Id, db)
 		vatDenyModel := test_data.VatDenyModel()
 
-		vatAddressID, vatAddressErr := shared.GetOrCreateAddress(contractAddress.Hex(), db)
+		vatAddressID, vatAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
 		Expect(vatAddressErr).NotTo(HaveOccurred())
 
 		userAddress := "0x13141b8a5e4a82ebc6b636849dd6a515185d6236"
-		userAddressID, userAddressErr := shared.GetOrCreateAddress(userAddress, db)
+		userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
 		Expect(userAddressErr).NotTo(HaveOccurred())
 
 		msgSenderAddress := "0x" + fakes.RandomString(40)
-		msgSenderAddressID, msgSenderAddressErr := shared.GetOrCreateAddress(msgSenderAddress, db)
+		msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
 		Expect(msgSenderAddressErr).NotTo(HaveOccurred())
 
 		vatDenyModel.ColumnValues[event.HeaderFK] = header.Id

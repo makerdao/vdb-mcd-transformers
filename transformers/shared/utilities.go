@@ -25,6 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -156,7 +157,7 @@ func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddre
 		return txErr
 	}
 
-	addressId, addressErr := GetOrCreateAddressInTransaction(contractAddress, tx)
+	addressId, addressErr := repository.GetOrCreateAddressInTransaction(tx, contractAddress)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -181,7 +182,7 @@ func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value
 	if txErr != nil {
 		return txErr
 	}
-	addressId, addressErr := GetOrCreateAddressInTransaction(contractAddress, tx)
+	addressId, addressErr := repository.GetOrCreateAddressInTransaction(tx, contractAddress)
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {

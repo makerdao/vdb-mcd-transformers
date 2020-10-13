@@ -22,6 +22,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -37,7 +38,7 @@ func (t Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) (
 			return nil, err
 		}
 
-		contractAddressID, contractAddressErr := shared.GetOrCreateAddress(log.Log.Address.String(), db)
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, log.Log.Address.String())
 		if contractAddressErr != nil {
 			return nil, err
 		}

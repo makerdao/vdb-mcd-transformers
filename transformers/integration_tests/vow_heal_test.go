@@ -4,11 +4,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -51,7 +51,7 @@ var _ = Describe("VowHeal Transformer", func() {
 		err = db.Get(&dbResult, `SELECT msg_sender, rad from maker.vow_heal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSender, msgSenderErr := shared.GetOrCreateAddress("0x233a1b1A5381D7EAa3e9b373C392aB48A47bA596", db)
+		msgSender, msgSenderErr := repository.GetOrCreateAddress(db, "0x233a1b1A5381D7EAa3e9b373C392aB48A47bA596")
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 		expectedModel := vowHealModel{
 			MsgSender: msgSender,

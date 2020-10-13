@@ -4,11 +4,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -55,9 +55,9 @@ var _ = Describe("Vat Rely transformer", func() {
 
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		usrAddress2 := "0x65c79fcb50ca1594b025960e539ed7a9a6d434a3"
-		usrAddressID, usrAddressErr := shared.GetOrCreateAddress(usrAddress, db)
+		usrAddressID, usrAddressErr := repository.GetOrCreateAddress(db, usrAddress)
 		Expect(usrAddressErr).NotTo(HaveOccurred())
-		usrAddressID2, usrAddressErr2 := shared.GetOrCreateAddress(usrAddress2, db)
+		usrAddressID2, usrAddressErr2 := repository.GetOrCreateAddress(db, usrAddress2)
 		Expect(usrAddressErr2).NotTo(HaveOccurred())
 
 		Expect(len(users)).To(Equal(2))

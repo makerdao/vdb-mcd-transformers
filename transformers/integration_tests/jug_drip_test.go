@@ -25,6 +25,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -72,7 +73,7 @@ var _ = Describe("JugDrip Transformer", func() {
 		err = db.Get(&result, `SELECT msg_sender, ilk_id from maker.jug_drip`)
 		Expect(err).NotTo(HaveOccurred())
 
-		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB", db)
+		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 		ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(ilkErr).NotTo(HaveOccurred())

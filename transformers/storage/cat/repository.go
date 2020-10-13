@@ -6,6 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -40,140 +41,140 @@ type StorageRepository struct {
 	contractAddressID int64
 }
 
-func (repository *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
+func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
 	case Live:
-		return repository.insertLive(diffID, headerID, value.(string))
+		return repo.insertLive(diffID, headerID, value.(string))
 	case Vat:
-		return repository.insertVat(diffID, headerID, value.(string))
+		return repo.insertVat(diffID, headerID, value.(string))
 	case Vow:
-		return repository.insertVow(diffID, headerID, value.(string))
+		return repo.insertVow(diffID, headerID, value.(string))
 	case Box:
-		return repository.insertBox(diffID, headerID, value.(string))
+		return repo.insertBox(diffID, headerID, value.(string))
 	case Litter:
-		return repository.insertLitter(diffID, headerID, value.(string))
+		return repo.insertLitter(diffID, headerID, value.(string))
 	case wards.Wards:
-		return wards.InsertWards(diffID, headerID, metadata, repository.ContractAddress, value.(string), repository.db)
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	case IlkChop:
-		return repository.insertIlkChop(diffID, headerID, metadata, value.(string))
+		return repo.insertIlkChop(diffID, headerID, metadata, value.(string))
 	case IlkFlip:
-		return repository.insertIlkFlip(diffID, headerID, metadata, value.(string))
+		return repo.insertIlkFlip(diffID, headerID, metadata, value.(string))
 	case IlkLump:
-		return repository.insertIlkLump(diffID, headerID, metadata, value.(string))
+		return repo.insertIlkLump(diffID, headerID, metadata, value.(string))
 	case IlkDunk:
-		return repository.insertIlkDunk(diffID, headerID, metadata, value.(string))
+		return repo.insertIlkDunk(diffID, headerID, metadata, value.(string))
 	default:
 		panic(fmt.Sprintf("unrecognized cat contract storage name: %s", metadata.Name))
 	}
 }
 
-func (repository *StorageRepository) SetDB(db *postgres.DB) {
-	repository.db = db
+func (repo *StorageRepository) SetDB(db *postgres.DB) {
+	repo.db = db
 }
 
-func (repository *StorageRepository) insertLive(diffID, headerID int64, live string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertLive(diffID, headerID int64, live string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
-	_, err := repository.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
+	_, err := repo.db.Exec(insertCatLiveQuery, diffID, headerID, addressID, live)
 	if err != nil {
 		return fmt.Errorf("error inserting cat live %s from diff ID %d: %w", live, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
-	_, err := repository.db.Exec(insertCatVatQuery, diffID, headerID, addressID, vat)
+	_, err := repo.db.Exec(insertCatVatQuery, diffID, headerID, addressID, vat)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vat %s from diff ID %d: %w", vat, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
-	_, err := repository.db.Exec(insertCatVowQuery, diffID, headerID, addressID, vow)
+	_, err := repo.db.Exec(insertCatVowQuery, diffID, headerID, addressID, vow)
 	if err != nil {
 		return fmt.Errorf("error inserting cat vow %s from diff ID %d: %w", vow, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertBox(diffID, headerID int64, box string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertBox(diffID, headerID int64, box string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
-	_, err := repository.db.Exec(insertCatBoxQuery, diffID, headerID, addressID, box)
+	_, err := repo.db.Exec(insertCatBoxQuery, diffID, headerID, addressID, box)
 	if err != nil {
 		return fmt.Errorf("error inserting cat box %s from diff ID %d: %w", box, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertLitter(diffID, headerID int64, litter string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertLitter(diffID, headerID int64, litter string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
-	_, err := repository.db.Exec(insertCatLitterQuery, diffID, headerID, addressID, litter)
+	_, err := repo.db.Exec(insertCatLitterQuery, diffID, headerID, addressID, litter)
 	if err != nil {
 		return fmt.Errorf("error inserting cat litter %s from diff ID %d: %w", litter, diffID, err)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertIlkFlip(diffID, headerID int64, metadata types.ValueMetadata, flip string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertIlkFlip(diffID, headerID int64, metadata types.ValueMetadata, flip string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk flip: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkFlip, InsertCatIlkFlipQuery, flip, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s flip %s from diff ID %d: %w", insertErr, flip, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertIlkChop(diffID, headerID int64, metadata types.ValueMetadata, chop string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertIlkChop(diffID, headerID int64, metadata types.ValueMetadata, chop string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk chop: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkChop, InsertCatIlkChopQuery, chop, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkChop, InsertCatIlkChopQuery, chop, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s chop %s from diff Id %d: %w", ilk, chop, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertIlkLump(diffID, headerID int64, metadata types.ValueMetadata, lump string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertIlkLump(diffID, headerID int64, metadata types.ValueMetadata, lump string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
 	ilk, err := getIlk(metadata.Keys)
@@ -181,37 +182,37 @@ func (repository *StorageRepository) insertIlkLump(diffID, headerID int64, metad
 		return fmt.Errorf("error getting ilk for ilk lump: %w", err)
 	}
 
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkLump, InsertCatIlkLumpQuery, lump, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s lump %s from diff ID %d: %w", ilk, lump, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) insertIlkDunk(diffID, headerID int64, metadata types.ValueMetadata, dunk string) error {
-	addressID, addressErr := repository.ContractAddressID()
+func (repo *StorageRepository) insertIlkDunk(diffID, headerID int64, metadata types.ValueMetadata, dunk string) error {
+	addressID, addressErr := repo.ContractAddressID()
 	if addressErr != nil {
-		return fmt.Errorf("could not retrieve address id for %s, error: %w", repository.ContractAddress, addressErr)
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
 	}
 
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk dunk: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkDunk, insertCatIlkDunkQuery, dunk, repository.db)
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkDunk, insertCatIlkDunkQuery, dunk, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s dunk %s from diff ID %d: %w", ilk, dunk, diffID, insertErr)
 	}
 	return nil
 }
 
-func (repository *StorageRepository) ContractAddressID() (int64, error) {
-	if repository.contractAddressID == 0 {
-		addressID, addressErr := shared.GetOrCreateAddress(repository.ContractAddress, repository.db)
-		repository.contractAddressID = addressID
-		return repository.contractAddressID, addressErr
+func (repo *StorageRepository) ContractAddressID() (int64, error) {
+	if repo.contractAddressID == 0 {
+		addressID, addressErr := repository.GetOrCreateAddress(repo.db, repo.ContractAddress)
+		repo.contractAddressID = addressID
+		return repo.contractAddressID, addressErr
 	}
-	return repository.contractAddressID, nil
+	return repo.contractAddressID, nil
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {

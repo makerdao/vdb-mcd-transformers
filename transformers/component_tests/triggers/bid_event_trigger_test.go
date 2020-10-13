@@ -8,13 +8,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
@@ -40,7 +40,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a flip_kick event triggers a bid_event insertion", func() {
 		flipAddress := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, flipAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 		flipKickModel := test_data.FlipKickModel()
 		flipKickModel.ColumnValues[event.HeaderFK] = headerOne.Id
@@ -59,7 +59,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a flop_kick event triggers a bid_event insertion", func() {
 		flopAddress := test_data.FlopV101Address()
-		addressID, addressErr := shared.GetOrCreateAddress(flopAddress, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, flopAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		flopKickModel := test_data.FlopKickModel()
@@ -79,7 +79,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a flap_kick event triggers a bid_event insertion", func() {
 		flapAddress := test_data.FlapV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(flapAddress, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, flapAddress)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		flapKickModel := test_data.FlapKickModel()
@@ -99,7 +99,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a tend event triggers a bid_event insertion", func() {
 		address := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(address, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		tendLog := test_data.CreateTestLogFromEventLog(headerOne.Id, test_data.TendEventLog.Log, db)
@@ -121,7 +121,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a dent event triggers a bid_event insertion", func() {
 		address := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(address, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		dentModel := test_data.DentModel()
@@ -142,7 +142,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a tick event triggers a bid_event insertion", func() {
 		address := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(address, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		tickModel := test_data.TickModel()
@@ -163,7 +163,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a deal event triggers a bid_event insertion", func() {
 		address := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(address, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		dealModel := test_data.DealModel()
@@ -184,7 +184,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 	Specify("inserting a yank event triggers a bid_event insertion", func() {
 		address := test_data.FlipEthV100Address()
-		addressID, addressErr := shared.GetOrCreateAddress(address, db)
+		addressID, addressErr := repository.GetOrCreateAddress(db, address)
 		Expect(addressErr).NotTo(HaveOccurred())
 		logID := test_data.CreateTestLog(headerOne.Id, db).ID
 		yankModel := test_data.YankModel()
@@ -212,7 +212,7 @@ var _ = Describe("Updating bid_event table", func() {
 		)
 
 		BeforeEach(func() {
-			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
+			flipAddressID, addressErr := repository.GetOrCreateAddress(db, flipAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
@@ -268,7 +268,7 @@ var _ = Describe("Updating bid_event table", func() {
 
 		BeforeEach(func() {
 			flipAddress = test_data.FlipEthV100Address()
-			flipAddressID, addressErr := shared.GetOrCreateAddress(flipAddress, db)
+			flipAddressID, addressErr := repository.GetOrCreateAddress(db, flipAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
 			flipRepo.SetDB(db)
@@ -340,7 +340,7 @@ var _ = Describe("Updating bid_event table", func() {
 			logThreeID = test_data.CreateTestLog(headerTwo.Id, db).ID
 
 			flipAddress = test_data.FlipEthV100Address()
-			ethFlipAddressID, ethFlipAddressErr := shared.GetOrCreateAddress(flipAddress, db)
+			ethFlipAddressID, ethFlipAddressErr := repository.GetOrCreateAddress(db, flipAddress)
 			Expect(ethFlipAddressErr).NotTo(HaveOccurred())
 
 			flipRepo = flip.StorageRepository{ContractAddress: flipAddress}
@@ -399,7 +399,7 @@ var _ = Describe("Updating bid_event table", func() {
 			ilkIdentifier := test_helpers.FakeIlk.Identifier
 			Expect(initialIlks).To(ConsistOf(ilkIdentifier, ilkIdentifier, ilkIdentifier))
 
-			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(flipAddress, db)
+			flipAddressID, flipAddressErr := repository.GetOrCreateAddress(db, flipAddress)
 			Expect(flipAddressErr).NotTo(HaveOccurred())
 
 			_, deleteIlkErr := db.Exec(`DELETE FROM maker.flip_ilk WHERE address_id = $1`, flipAddressID)

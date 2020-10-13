@@ -20,11 +20,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dent"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
+	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -81,10 +81,10 @@ var _ = Describe("Dent transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		msgSender := common.HexToAddress("0xe06ac4777f04ac7638f736a0b95f7bfeadcee556").Hex()
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderId, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		flopContractAddressId, addressErr := shared.GetOrCreateAddress(test_data.FlopV101Address(), db)
+		flopContractAddressId, addressErr := repository.GetOrCreateAddress(db, test_data.FlopV101Address())
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		expectedModel := dentModel{
@@ -118,11 +118,11 @@ var _ = Describe("Dent transformer", func() {
 		err = db.Get(&dbResult, `SELECT bid, bid_id, lot, msg_sender, address_id FROM maker.dent`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipContractAddressId, err := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
+		flipContractAddressId, err := repository.GetOrCreateAddress(db, test_data.FlipEthV100Address())
 		Expect(err).NotTo(HaveOccurred())
 
 		msgSender := common.HexToAddress("0xabe7471ec9b6953a3bd0ed3c06c46f29aa4280").Hex()
-		msgSenderId, msgSenderErr := shared.GetOrCreateAddress(msgSender, db)
+		msgSenderId, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
 		Expect(dbResult.Bid).To(Equal("111871106928171434728687324748784117143125320430"))
