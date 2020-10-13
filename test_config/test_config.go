@@ -48,15 +48,15 @@ func SetTestConfig() {
 	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/environments/")
 
 	viper.SetConfigName("testDatabase")
-	mergeConfigErr := viper.ReadInConfig()
-	if mergeConfigErr != nil {
-		log.Fatal(mergeConfigErr)
+	readConfigErr := viper.ReadInConfig()
+	if readConfigErr != nil {
+		log.Fatal(readConfigErr)
 	}
 
 	viper.SetConfigName("mcdTransformers")
-	readConfigErr := viper.MergeInConfig()
-	if readConfigErr != nil {
-		log.Fatal(readConfigErr)
+	mergeConfigErr := viper.MergeInConfig()
+	if mergeConfigErr != nil {
+		log.Fatal(mergeConfigErr)
 	}
 
 	ipc := viper.GetString("client.ipcPath")
