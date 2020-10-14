@@ -5,4 +5,4 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers"
 )
 
-var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MCD_FLOP_1.0.9"))
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MCD_FLOP_1_0_9"))

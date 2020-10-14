@@ -11,14 +11,14 @@ var _ = Describe("External constants", func() {
 
 	Describe("GetABIFromContractsWithMatchingABI", func() {
 		It("returns parsed ABI for contract", func() {
-			abi := constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1.0.0", "MCD_FLIP_BAT_A_1.0.0"})
+			abi := constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_BAT_A_1_0_0"})
 
 			Expect(abi).To(Equal(flipABI))
 		})
 
 		It("panics of contract ABIs do not match", func() {
 			parseConflictingABIs := func() {
-				constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1.0.0", "MCD_JUG"})
+				constants.GetABIFromContractsWithMatchingABI([]string{"MCD_FLIP_ETH_A_1_0_0", "MCD_JUG"})
 			}
 
 			Expect(parseConflictingABIs).To(Panic())
@@ -27,7 +27,7 @@ var _ = Describe("External constants", func() {
 
 	Describe("GetFirstABI", func() {
 		It("returns ABI for first passed contract", func() {
-			abi := constants.GetFirstABI([]string{"MCD_FLIP_ETH_A_1.0.0", "MCD_JUG"})
+			abi := constants.GetFirstABI([]string{"MCD_FLIP_ETH_A_1_0_0", "MCD_JUG"})
 
 			Expect(abi).To(Equal(flipABI))
 		})
