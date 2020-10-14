@@ -17,59 +17,59 @@
 package constants
 
 // TODO Figure out signatures automatically from config somehow :(
-func Cat100ABI() string     { return getContractABI("MCD_CAT_1.0.0") }
-func Cat110ABI() string     { return getContractABI("MCD_CAT_1.1.0") }
+func Cat100ABI() string     { return getContractABI("MCD_CAT_1_0_0") }
+func Cat110ABI() string     { return getContractABI("MCD_CAT_1_1_0") }
 func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
 func FlapABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLAP_1.0.0",
-		"MCD_FLAP_1.0.9",
+		"MCD_FLAP_1_0_0",
+		"MCD_FLAP_1_0_9",
 	})
 }
 func FlipV100ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLIP_BAT_A_1.0.0",
-		"MCD_FLIP_BAT_A_1.0.9",
-		"MCD_FLIP_ETH_A_1.0.0",
-		"MCD_FLIP_ETH_A_1.0.9",
-		"MCD_FLIP_KNC_A_1.0.8",
-		"MCD_FLIP_KNC_A_1.0.9",
-		"MCD_FLIP_MANA_A_1.0.9",
-		"MCD_FLIP_SAI_1.0.0",
-		"MCD_FLIP_TUSD_A_1.0.7",
-		"MCD_FLIP_TUSD_A_1.0.9",
-		"MCD_FLIP_USDC_A_1.0.4",
-		"MCD_FLIP_USDC_A_1.0.9",
-		"MCD_FLIP_USDC_B_1.0.7",
-		"MCD_FLIP_USDC_B_1.0.9",
-		"MCD_FLIP_WBTC_A_1.0.6",
-		"MCD_FLIP_WBTC_A_1.0.9",
-		"MCD_FLIP_ZRX_A_1.0.8",
-		"MCD_FLIP_ZRX_A_1.0.9",
+		"MCD_FLIP_BAT_A_1_0_0",
+		"MCD_FLIP_BAT_A_1_0_9",
+		"MCD_FLIP_ETH_A_1_0_0",
+		"MCD_FLIP_ETH_A_1_0_9",
+		"MCD_FLIP_KNC_A_1_0_8",
+		"MCD_FLIP_KNC_A_1_0_9",
+		"MCD_FLIP_MANA_A_1_0_9",
+		"MCD_FLIP_SAI_1_0_0",
+		"MCD_FLIP_TUSD_A_1_0_7",
+		"MCD_FLIP_TUSD_A_1_0_9",
+		"MCD_FLIP_USDC_A_1_0_4",
+		"MCD_FLIP_USDC_A_1_0_9",
+		"MCD_FLIP_USDC_B_1_0_7",
+		"MCD_FLIP_USDC_B_1_0_9",
+		"MCD_FLIP_WBTC_A_1_0_6",
+		"MCD_FLIP_WBTC_A_1_0_9",
+		"MCD_FLIP_ZRX_A_1_0_8",
+		"MCD_FLIP_ZRX_A_1_0_9",
 	})
 }
 func FlipV110ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLIP_BAT_A_1.1.0",
-		"MCD_FLIP_COMP_A_1.1.2",
-		"MCD_FLIP_ETH_A_1.1.0",
-		"MCD_FLIP_KNC_A_1.1.0",
-		"MCD_FLIP_LINK_A_1.1.2",
-		"MCD_FLIP_LRC_A_1.1.2",
-		"MCD_FLIP_MANA_A_1.1.0",
-		"MCD_FLIP_PAXUSD_A_1.1.1",
-		"MCD_FLIP_TUSD_A_1.1.0",
-		"MCD_FLIP_USDC_A_1.1.0",
-		"MCD_FLIP_USDC_B_1.1.0",
-		"MCD_FLIP_USDT_A_1.1.1",
-		"MCD_FLIP_WBTC_A_1.1.0",
-		"MCD_FLIP_ZRX_A_1.1.0",
+		"MCD_FLIP_BAT_A_1_1_0",
+		"MCD_FLIP_COMP_A_1_1_2",
+		"MCD_FLIP_ETH_A_1_1_0",
+		"MCD_FLIP_KNC_A_1_1_0",
+		"MCD_FLIP_LINK_A_1_1_2",
+		"MCD_FLIP_LRC_A_1_1_2",
+		"MCD_FLIP_MANA_A_1_1_0",
+		"MCD_FLIP_PAXUSD_A_1_1_1",
+		"MCD_FLIP_TUSD_A_1_1_0",
+		"MCD_FLIP_USDC_A_1_1_0",
+		"MCD_FLIP_USDC_B_1_1_0",
+		"MCD_FLIP_USDT_A_1_1_1",
+		"MCD_FLIP_WBTC_A_1_1_0",
+		"MCD_FLIP_ZRX_A_1_1_0",
 	})
 }
 func FlopABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MCD_FLOP_1.0.1",
-		"MCD_FLOP_1.0.9",
+		"MCD_FLOP_1_0_1",
+		"MCD_FLOP_1_0_9",
 	})
 }
 func JugABI() string { return getContractABI("MCD_JUG") }

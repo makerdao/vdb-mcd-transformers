@@ -21,4 +21,4 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers"
 )
 
-var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MCD_FLIP_ZRX_A_1.0.8"))
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MCD_FLIP_ZRX_A_1_0_8"))
