@@ -1,26 +1,24 @@
 package generator
 
 import (
-	"bytes"
+	"fmt"
 
 	"github.com/BurntSushi/toml"
 	"github.com/spf13/viper"
 )
 
-type ConfigParser struct {}
-
-func (cp *ConfigParser) ParseCurrentConfig(configString string) (TransformersConfig, error) {
-	//TODO: maybe just pass this in as a byte array?
-	configBytes := []byte(configString)
+func ParseCurrentConfig(configFilePath, configFileName string) (TransformersConfig, error) {
 	viperConfig := viper.New()
-	viperConfig.SetConfigType("toml")
-	readConfigErr := viperConfig.ReadConfig(bytes.NewBuffer(configBytes))
+	viperConfig.AddConfigPath(configFilePath)
+	viperConfig.SetConfigName(configFileName)
+	readConfigErr := viperConfig.ReadInConfig()
 	if readConfigErr != nil {
 		return TransformersConfig{}, readConfigErr
 	}
 
 	var tomlConfig TransformersConfig
-	_, decodeErr := toml.Decode(configString, &tomlConfig)
+	fullConfigFilePath := fmt.Sprintf("%s%s.toml", configFilePath, configFileName)
+	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
 		return TransformersConfig{}, decodeErr
 	}
