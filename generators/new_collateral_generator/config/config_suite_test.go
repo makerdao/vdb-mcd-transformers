@@ -1,4 +1,4 @@
-package generator_test
+package config_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestGenerator(t *testing.T) {
+func TestConfig(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Generator Suite")
+	RunSpecs(t, "Config Suite")
 }

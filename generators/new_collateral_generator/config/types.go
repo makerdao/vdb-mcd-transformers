@@ -1,4 +1,4 @@
-package generator
+package config
 
 type Contract struct {
 	Address  string
