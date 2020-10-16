@@ -8,7 +8,10 @@ import (
 )
 
 var _ = Describe("Config Parser", func() {
-	var configParser generator.ConfigParser
+	var (
+		testConfigFilePath = "/Users/elizabethengelman/go/src/github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator/test_data/"
+		testConfigFileName = "testConfig"
+	)
 
 	Context("ParseCurrentConfigFile", func() {
 		It("reads in the exporter metadata", func() {
@@ -20,7 +23,7 @@ var _ = Describe("Config Parser", func() {
 				TransformerNames: []string{"cat_v1_1_0", "cat_file_vow"},
 			}
 
-			config, parseErr := configParser.ParseCurrentConfig(test_data.TestConfigString)
+			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.ExporterMetadata).To(Equal(expectedExporterMetadata))
 		})
@@ -30,7 +33,7 @@ var _ = Describe("Config Parser", func() {
 				"exporter.cat_v1_1_0": test_data.Cat110Exporter,
 				"exporter.cat_file_vow": test_data.CatFileVowExporter,
 			}
-			config, parseErr := configParser.ParseCurrentConfig(test_data.TestConfigString)
+			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.TransformerExporters).To(Equal(expectedTransformerExporters))
 		})
@@ -40,7 +43,7 @@ var _ = Describe("Config Parser", func() {
 				"MCD_CAT_1_0_0": test_data.Cat100Contract,
 				"MCD_CAT_1_1_0": test_data.Cat110Contract,
 			}
-			config, parseErr := configParser.ParseCurrentConfig(test_data.TestConfigString)
+			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.Contracts).To(Equal(expectedContracts))
 		})
