@@ -7,23 +7,31 @@ import (
 	"regexp"
 )
 
-type ConfigGenerator struct {
+type IUpdate interface {
+	SetInitialConfig(initialConfig TransformersConfig)
+	AddNewCollateralToConfig() error
+	GetUpdatedConfig() TransformersConfig
+}
+
+type Updater struct {
 	Collateral    Collateral
 	Contracts     Contracts
 	InitialConfig TransformersConfig
 	UpdatedConfig TransformersConfig
 }
 
-func NewConfigGenerator(collateral Collateral, contracts Contracts, initialConfig TransformersConfig) *ConfigGenerator {
-	return &ConfigGenerator{
+func NewConfigUpdater(collateral Collateral, contracts Contracts) *Updater {
+	return &Updater{
 		Collateral: collateral,
 		Contracts: contracts,
-		InitialConfig: initialConfig,
 	}
 }
 
+func (cg *Updater) SetInitialConfig(initialConfig TransformersConfig) {
+	cg.InitialConfig = initialConfig
+}
 
-func (cg *ConfigGenerator) AddNewCollateralToConfig() error {
+func (cg *Updater) AddNewCollateralToConfig() error {
 	copyErr := cg.copyInitialConfig()
 	if copyErr != nil {
 		return copyErr
@@ -37,7 +45,7 @@ func (cg *ConfigGenerator) AddNewCollateralToConfig() error {
 	return nil
 }
 
-func (cg *ConfigGenerator) copyInitialConfig() error {
+func (cg *Updater) copyInitialConfig() error {
 	buf := new(bytes.Buffer)
 	encoder := gob.NewEncoder(buf)
 	encErr := encoder.Encode(cg.InitialConfig)
@@ -56,7 +64,7 @@ func (cg *ConfigGenerator) copyInitialConfig() error {
 	return nil
 }
 
-func (cg *ConfigGenerator) addStorageTransformerNames() {
+func (cg *Updater) addStorageTransformerNames() {
 	flipTransformerName := "flip_" + cg.Collateral.FormattedForFlipTransformerName()
 	medianTransformerName := "median_" + cg.Collateral.FormattedForMedianTransformerName()
 
@@ -68,7 +76,7 @@ func (cg *ConfigGenerator) addStorageTransformerNames() {
 	)
 }
 
-func (cg *ConfigGenerator) addStorageExporters() {
+func (cg *Updater) addStorageExporters() {
 	flipStorageExporter := TransformerExporter{
 		Path:       fmt.Sprintf("transformers/storage/flip/initializers/%s", cg.Collateral.FormattedForFlipInitializerFileName()),
 		Type:       "eth_storage",
@@ -95,7 +103,7 @@ func (cg *ConfigGenerator) addStorageExporters() {
 	}
 }
 
-func (cg *ConfigGenerator) addContractsToEventExporters() error {
+func (cg *Updater) addContractsToEventExporters() error {
 	flipErr := cg.addNewContractToFlipExporters()
 	if flipErr != nil {
 		return flipErr
@@ -124,22 +132,22 @@ func IsOsmExporter(contractName string) (bool, error) {
 	return regexp.Match("OSM", []byte(contractName))
 }
 
-func (cg *ConfigGenerator) addNewContractToFlipExporters() error {
+func (cg *Updater) addNewContractToFlipExporters() error {
 	return cg.addNewContractToExporters(IsFlipExporter, cg.Collateral.FormattedForFlipContractName)
 }
 
-func (cg *ConfigGenerator) addNewContractToMedianExporters() error {
+func (cg *Updater) addNewContractToMedianExporters() error {
 	return cg.addNewContractToExporters(IsMedianExporter, cg.Collateral.FormattedForMedianContractName)
 }
 
-func (cg *ConfigGenerator) addNewContractToOsmExporters() error {
+func (cg *Updater) addNewContractToOsmExporters() error {
 	return cg.addNewContractToExporters(IsOsmExporter, cg.Collateral.FormattedForOsmContractName)
 }
 
 type matcherFunc func(string) (bool, error)
 type collateralFormatter func() string
 
-func (cg *ConfigGenerator) addNewContractToExporters(matcherFunc matcherFunc, collateralFormatter collateralFormatter) error {
+func (cg *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateralFormatter collateralFormatter) error {
 	for name, exporter := range cg.UpdatedConfig.TransformerExporters {
 		for _, contract := range exporter.Contracts {
 			contractTypeMatched, matchErr := matcherFunc(contract)
@@ -157,8 +165,7 @@ func (cg *ConfigGenerator) addNewContractToExporters(matcherFunc matcherFunc, co
 	return nil
 }
 
-
-func (cg *ConfigGenerator) addContracts() {
+func (cg *Updater) addContracts() {
 	formattedContracts := make(map[string]Contract)
 
 	flipContractKey := cg.Collateral.FormattedForFlipContractName()
@@ -175,3 +182,11 @@ func (cg *ConfigGenerator) addContracts() {
 	}
 }
 
+func (cg *Updater) GetUpdatedConfig() TransformersConfig {
+	//configToWrite := config.TransformersConfig{
+	//	ExporterMetadata:     g.ConfigUpdater.UpdatedConfig.ExporterMetadata,
+	//	TransformerExporters: g.ConfigUpdater.UpdatedConfig.TransformerExporters,
+	//	Contracts:            g.ConfigUpdater.UpdatedConfig.Contracts,
+	//}
+	return cg.UpdatedConfig
+}

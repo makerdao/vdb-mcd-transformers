@@ -7,7 +7,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ParseCurrentConfig(configFilePath, configFileName string) (TransformersConfig, error) {
+type IParse interface{
+	ParseCurrentConfig(configFilePath, configFileName string) (TransformersConfig, error)
+}
+type Parser struct {}
+func (Parser) ParseCurrentConfig(configFilePath, configFileName string) (TransformersConfig, error) {
 	viperConfig := viper.New()
 	viperConfig.AddConfigPath(configFilePath)
 	viperConfig.SetConfigName(configFileName)
