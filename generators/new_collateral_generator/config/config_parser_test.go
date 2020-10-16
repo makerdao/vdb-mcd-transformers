@@ -1,21 +1,21 @@
-package generator_test
+package config_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Config Parser", func() {
 	var (
-		testConfigFilePath = "/Users/elizabethengelman/go/src/github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator/test_data/"
+		testConfigFilePath = "/Users/elizabethengelman/go/src/github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data/"
 		testConfigFileName = "testConfig"
 	)
 
 	Context("ParseCurrentConfigFile", func() {
 		It("reads in the exporter metadata", func() {
-			expectedExporterMetadata := generator.ExporterMetaData{
+			expectedExporterMetadata := config.ExporterMetaData{
 				Home:             "github.com/makerdao/vulcanizedb",
 				Name:             "transformerExporter",
 				Save:             false,
@@ -23,27 +23,27 @@ var _ = Describe("Config Parser", func() {
 				TransformerNames: []string{"cat_v1_1_0", "cat_file_vow"},
 			}
 
-			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
+			config, parseErr := config.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.ExporterMetadata).To(Equal(expectedExporterMetadata))
 		})
 
 		It("reads in the exporterTransformers", func() {
-			expectedTransformerExporters := generator.TransformerExporters{
+			expectedTransformerExporters := config.TransformerExporters{
 				"exporter.cat_v1_1_0": test_data.Cat110Exporter,
 				"exporter.cat_file_vow": test_data.CatFileVowExporter,
 			}
-			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
+			config, parseErr := config.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.TransformerExporters).To(Equal(expectedTransformerExporters))
 		})
 
 		It("reads in the contracts", func() {
-			expectedContracts := generator.Contracts{
+			expectedContracts := config.Contracts{
 				"MCD_CAT_1_0_0": test_data.Cat100Contract,
 				"MCD_CAT_1_1_0": test_data.Cat110Contract,
 			}
-			config, parseErr := generator.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
+			config, parseErr := config.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())
 			Expect(config.Contracts).To(Equal(expectedContracts))
 		})

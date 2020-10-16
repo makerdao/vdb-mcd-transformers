@@ -1,7 +1,7 @@
-package generator_test
+package config_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -9,9 +9,9 @@ import (
 var _ = Describe("Types", func() {
 	Describe("Collateral", func() {
 		var (
-			collateral1 = generator.NewCollateral("ETH-B", "1.2.3")
-			collateral2 = generator.NewCollateral("PAXG", "1_2_3")
-			collateral3 = generator.NewCollateral("Eth_B", "1_2_3")
+			collateral1 = config.NewCollateral("ETH-B", "1.2.3")
+			collateral2 = config.NewCollateral("PAXG", "1_2_3")
+			collateral3 = config.NewCollateral("Eth_B", "1_2_3")
 		)
 
 		Context("flip contracts", func() {

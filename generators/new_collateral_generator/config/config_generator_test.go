@@ -1,8 +1,8 @@
-package generator_test
+package config_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -10,8 +10,8 @@ import (
 var _ = Describe("NewConfigGenerator", func() {
 	Context("AddNewCollateralToConfig", func() {
 		It("adds new transformer names to the exporter metadata for the new collateral", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
-			expectedExporterMetadata := generator.ExporterMetaData{
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			expectedExporterMetadata := config.ExporterMetaData{
 				Home:             "github.com/makerdao/vulcanizedb",
 				Name:             "transformerExporter",
 				Save:             false,
@@ -30,7 +30,7 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("adds new storage exporterTransformers for new collateral", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			Expect(configGenerator.UpdatedConfig.TransformerExporters).To(
@@ -40,7 +40,7 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("adds the new collateral flip contract to event exporters", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			denyExporter := configGenerator.UpdatedConfig.TransformerExporters["exporter.deny"]
@@ -48,7 +48,7 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("adds median contract to event exporters", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			denyExporter := configGenerator.UpdatedConfig.TransformerExporters["exporter.deny"]
@@ -58,7 +58,7 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("adds osm contract to event exporters", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			denyExporter := configGenerator.UpdatedConfig.TransformerExporters["exporter.deny"]
@@ -68,7 +68,7 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("does not add flip, median or osm contracts to event exporters that don't currently have those contract types", func() {
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral, test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			catVowExporter := configGenerator.UpdatedConfig.TransformerExporters["exporter.cat_file_vow"]
@@ -78,23 +78,23 @@ var _ = Describe("NewConfigGenerator", func() {
 		})
 
 		It("adds new flip, median and osm contracts for new collateral", func() {
-			expectedContracts := generator.Contracts{
+			expectedContracts := config.Contracts{
 				"MCD_CAT_1_0_0": test_data.Cat100Contract,
 				"MCD_CAT_1_1_0": test_data.Cat110Contract,
 				"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
 				"MEDIAN_ETH_B": test_data.MedianEthBContract,
 				"OSM_ETH_B": test_data.OsmEthBContract,
 			}
-			configGenerator := generator.NewConfigGenerator(test_data.EthBCollateral,test_data.EthBContracts, test_data.InitialConfig)
+			configGenerator := config.NewConfigGenerator(test_data.EthBCollateral,test_data.EthBContracts, test_data.InitialConfig)
 			addEthBErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
 			Expect(configGenerator.UpdatedConfig.Contracts).To(Equal(expectedContracts))
 		})
 
 		It("doesn't update the initialConfig", func() {
-			testCollateral := generator.Collateral{Name: "TEST", Version: "1.0.0"}
-			testContracts := generator.Contracts{"flip": test_data.FlipEthBContract}
-			configGenerator := generator.NewConfigGenerator(testCollateral, testContracts, test_data.InitialConfig)
+			testCollateral := config.Collateral{Name: "TEST", Version: "1.0.0"}
+			testContracts := config.Contracts{"flip": test_data.FlipEthBContract}
+			configGenerator := config.NewConfigGenerator(testCollateral, testContracts, test_data.InitialConfig)
 			addErr := configGenerator.AddNewCollateralToConfig()
 			Expect(addErr).NotTo(HaveOccurred())
 			Expect(configGenerator.UpdatedConfig.ExporterMetadata).NotTo(Equal(configGenerator.InitialConfig.ExporterMetadata))
