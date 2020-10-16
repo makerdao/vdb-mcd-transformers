@@ -1,9 +1,9 @@
 package config
 
 type Contract struct {
-	Address  string
-	Abi      string
-	Deployed int
+	Address  string `toml:"address"`
+	Abi      string `toml:"abi"`
+	Deployed int `toml:"deployed"`
 }
 
 type Contracts map[string]Contract
@@ -14,21 +14,27 @@ type TransformersConfig struct {
 	Contracts            Contracts `toml:"contract"`
 }
 
+type TransformersConfigForEncoding struct {
+	ExporterMetadata     ExporterMetaData `toml:"exporter"`
+	TransformerExporters TransformerExporters `toml:"exporter"`
+	Contracts            Contracts `toml:"contract"`
+}
+
 type ExporterMetaData struct {
-	Home             string
-	Name             string
-	Save             bool
-	Schema           string
-	TransformerNames []string
+	Home             string `toml:"home"`
+	Name             string `toml:"name"`
+	Save             bool `toml:"save"`
+	Schema           string `toml:"schema"`
+	TransformerNames []string `toml:"transformerNames"`
 }
 
 type TransformerExporter struct {
-	Path       string
+	Path       string `toml:"path"`
 	Type       string `toml:"type"`
-	Repository string
-	Migrations string
-	Contracts  []string
-	Rank       string
+	Repository string `toml:"repository"`
+	Migrations string `toml:"migrations"`
+	Contracts  []string `toml:"contracts"`
+	Rank       string `toml:"rank"`
 }
 
 type TransformerExporters map[string]TransformerExporter
