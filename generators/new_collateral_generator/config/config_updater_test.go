@@ -176,4 +176,45 @@ var _ = Describe("NewConfigUpdater", func() {
 			})
 		})
 	})
+
+	Context("GetUpdatedConfig", func() {
+		var (
+			medianContractRequired = true
+			osmContractRequired    = true
+			configUpdater          = config.NewConfigUpdater(test_data.EthBCollateral, test_data.EthBContracts, medianContractRequired, osmContractRequired)
+		)
+		configUpdater.SetInitialConfig(test_data.InitialConfig)
+		It("returns the udpated config formatted for toml encoding", func() {
+			addErr := configUpdater.AddNewCollateralToConfig()
+			Expect(addErr).NotTo(HaveOccurred())
+			updatedConfig := configUpdater.GetUpdatedConfig()
+			expectedUpdatedConfig := config.TransformersConfigForTomlEncoding{
+				ExporterMetadata:     config.ExporterMetaData{
+					Home:   "github.com/makerdao/vulcanizedb",
+					Name:   "transformerExporter",
+					Save:   false,
+					Schema: "maker",
+					TransformerNames: []string{
+						"cat_v1_1_0",
+						"cat_file_vow",
+						"flip_eth_b_v1_1_3", // new storage flip transformer
+						"median_eth_b",      // new median eth transformer
+					},
+				},
+				Contracts:            config.Contracts{
+					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
+					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
+					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
+					"MEDIAN_ETH_B":         test_data.MedianEthBContract,
+					"OSM_ETH_B":            test_data.OsmEthBContract,
+				},
+			}
+			Expect(updatedConfig.ExporterMetadata).To(Equal(expectedUpdatedConfig.ExporterMetadata))
+			Expect(updatedConfig.Contracts).To(Equal(expectedUpdatedConfig.Contracts))
+			Expect(updatedConfig.TransformerExporters).To(
+				HaveKeyWithValue("flip_eth_b_v1_1_3", test_data.FlipEthBStorageExporter))
+			Expect(updatedConfig.TransformerExporters).To(
+				HaveKeyWithValue("median_eth_b", test_data.MedianEthBStorageExporter))
+		})
+	})
 })

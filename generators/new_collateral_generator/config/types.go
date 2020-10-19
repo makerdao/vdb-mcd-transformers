@@ -9,12 +9,12 @@ type Contract struct {
 type Contracts map[string]Contract
 
 type TransformersConfig struct {
-	ExporterMetadata     ExporterMetaData `toml:"exporter"`
+	ExporterMetadata     ExporterMetaData     `toml:"exporter"`
 	TransformerExporters TransformerExporters
-	Contracts            Contracts `toml:"contract"`
+	Contracts            Contracts            `toml:"contract"`
 }
 
-type TransformersConfigForEncoding struct {
+type TransformersConfigForTomlEncoding struct {
 	ExporterMetadata     ExporterMetaData     `toml:"exporter"`
 	TransformerExporters TransformerExporters `toml:"exporter"`
 	Contracts            Contracts            `toml:"contract"`

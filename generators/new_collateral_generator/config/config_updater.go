@@ -10,7 +10,7 @@ import (
 type IUpdate interface {
 	SetInitialConfig(initialConfig TransformersConfig)
 	AddNewCollateralToConfig() error
-	GetUpdatedConfig() TransformersConfig
+	GetUpdatedConfig() TransformersConfigForTomlEncoding
 }
 
 type Updater struct {
@@ -202,11 +202,10 @@ func (cg *Updater) addContracts() {
 	}
 }
 
-func (cg *Updater) GetUpdatedConfig() TransformersConfig {
-	//configToWrite := config.TransformersConfig{
-	//	ExporterMetadata:     g.ConfigUpdater.UpdatedConfig.ExporterMetadata,
-	//	TransformerExporters: g.ConfigUpdater.UpdatedConfig.TransformerExporters,
-	//	Contracts:            g.ConfigUpdater.UpdatedConfig.Contracts,
-	//}
-	return cg.UpdatedConfig
+func (cg *Updater) GetUpdatedConfig() TransformersConfigForTomlEncoding {
+	return TransformersConfigForTomlEncoding{
+		ExporterMetadata:     cg.UpdatedConfig.ExporterMetadata,
+		TransformerExporters: cg.UpdatedConfig.TransformerExporters,
+		Contracts:            cg.UpdatedConfig.Contracts,
+	}
 }

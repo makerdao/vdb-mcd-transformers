@@ -33,13 +33,7 @@ func (g NewCollateralGenerator) AddToConfig() error {
 	}
 
 	updatedConfig := g.ConfigUpdater.GetUpdatedConfig()
-	configToWrite := config.TransformersConfigForEncoding{
-		ExporterMetadata:     updatedConfig.ExporterMetadata,
-		TransformerExporters: updatedConfig.TransformerExporters,
-		Contracts:            updatedConfig.Contracts,
-	}
-
-	encodingErr := toml.NewEncoder(file).Encode(configToWrite)
+	encodingErr := toml.NewEncoder(file).Encode(updatedConfig)
 	if encodingErr != nil {
 		return encodingErr
 	}
