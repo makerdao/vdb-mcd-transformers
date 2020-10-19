@@ -39,7 +39,10 @@ func (cg *Updater) AddNewCollateralToConfig() error {
 
 	cg.addStorageTransformerNames()
 	cg.addStorageExporters()
-	cg.addContractsToEventExporters()
+	addContractsToExportersErr := cg.addContractsToEventExporters()
+	if addContractsToExportersErr != nil {
+		return addContractsToExportersErr
+	}
 	cg.addContracts()
 
 	return nil
