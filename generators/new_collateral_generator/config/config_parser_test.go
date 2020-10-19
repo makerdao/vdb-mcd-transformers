@@ -9,7 +9,7 @@ import (
 
 var _ = Describe("Config Parser", func() {
 	var (
-		testConfigFilePath = "/Users/elizabethengelman/go/src/github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data/"
+		testConfigFilePath = "./test_data/"
 		testConfigFileName = "testConfig"
 		configParser       = config.Parser{}
 	)

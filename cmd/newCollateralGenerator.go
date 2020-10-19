@@ -33,6 +33,7 @@ var addNewCollateralCmd = &cobra.Command{
 		err := addNewCollateral()
 		if err != nil {
 			logrus.Errorf("Failed to add new collateral to config: %w", err)
+			return
 		}
 		logrus.Infof("Successfully added %s config", collateralName)
 		return
