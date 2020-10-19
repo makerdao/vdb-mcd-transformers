@@ -7,15 +7,14 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 )
 
-
 type NewCollateralGenerator struct {
 	ConfigFileName string
 	ConfigFilePath string
-	ConfigParser config.IParse
-	ConfigUpdater config.IUpdate
+	ConfigParser   config.IParse
+	ConfigUpdater  config.IUpdate
 }
 
-func (g NewCollateralGenerator) AddToConfig() error{
+func (g NewCollateralGenerator) AddToConfig() error {
 	initialConfig, parseConfigErr := g.ConfigParser.ParseCurrentConfig(g.ConfigFilePath, g.ConfigFileName)
 	if parseConfigErr != nil {
 		return parseConfigErr
@@ -41,36 +40,9 @@ func (g NewCollateralGenerator) AddToConfig() error{
 	}
 
 	encodingErr := toml.NewEncoder(file).Encode(configToWrite)
-	if encodingErr !=  nil {
+	if encodingErr != nil {
 		return encodingErr
 	}
 
 	return file.Close()
-
-	////TODO: get this from args
-	//collateral := config.NewCollateral("ETH-B", "1.2.3")
-	//flipContract := config.Contract{
-	//	Address:  "0xabc123",
-	//	Abi:      "flip abi",
-	//	Deployed: 1,
-	//}
-	//
-	//medianContract := config.Contract{
-	//	Address:  "0xdef456",
-	//	Abi:      "median abi",
-	//	Deployed: 2,
-	//}
-	//
-	//osmContract := config.Contract{
-	//	Address:  "0xghi789",
-	//	Abi:      "osm abi",
-	//	Deployed: 3,
-	//}
-	//
-	//contracts := make(map[string]config.Contract)
-	//contracts["flip"] = flipContract
-	//contracts["median"] = medianContract
-	//contracts["osm"] = osmContract
-	//
 }
-

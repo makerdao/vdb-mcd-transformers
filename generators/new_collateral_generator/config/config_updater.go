@@ -23,7 +23,7 @@ type Updater struct {
 func NewConfigUpdater(collateral Collateral, contracts Contracts) *Updater {
 	return &Updater{
 		Collateral: collateral,
-		Contracts: contracts,
+		Contracts:  contracts,
 	}
 }
 
@@ -72,7 +72,7 @@ func (cg *Updater) addStorageTransformerNames() {
 
 	cg.UpdatedConfig.ExporterMetadata.TransformerNames = append(
 		cg.UpdatedConfig.ExporterMetadata.TransformerNames,
-		newTransformerNames...
+		newTransformerNames...,
 	)
 }
 

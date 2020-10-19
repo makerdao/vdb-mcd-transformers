@@ -41,12 +41,12 @@ var (
 `
 
 	InitialConfig = config.TransformersConfig{
-		ExporterMetadata:     ExporterMetadata,
+		ExporterMetadata: ExporterMetadata,
 		TransformerExporters: config.TransformerExporters{
-			"exporter.cat_v1_1_0":   Cat110Exporter,
-			"exporter.cat_file_vow": CatFileVowExporter,
-			"exporter.deny": DenyExporter,
-			"exporter.log_value": LogValueExporter,
+			"exporter.cat_v1_1_0":       Cat110Exporter,
+			"exporter.cat_file_vow":     CatFileVowExporter,
+			"exporter.deny":             DenyExporter,
+			"exporter.log_value":        LogValueExporter,
 			"exporter.log_median_price": LogMedianPriceExporter,
 		},
 		Contracts: config.Contracts{
@@ -56,7 +56,7 @@ var (
 	}
 
 	EthBCollateral = config.NewCollateral("ETH-B", "1.1.3")
-	PaxgCollateral = config.NewCollateral("PAXG","1.1.4")
+	PaxgCollateral = config.NewCollateral("PAXG", "1.1.4")
 
 	ExporterMetadata = config.ExporterMetaData{
 		Home:             "github.com/makerdao/vulcanizedb",
@@ -139,29 +139,29 @@ var (
 	}
 
 	FlipEthBContractName = "MCD_FLIP_ETH_B_1_1_3"
-	FlipEthBContract = config.Contract{
+	FlipEthBContract     = config.Contract{
 		Address:  "testFlipContractAddress",
 		Abi:      "testFlipContractAbi",
 		Deployed: 123,
 	}
 
 	MedianEthBContractName = "MEDIAN_ETH_B"
-	MedianEthBContract = config.Contract{
+	MedianEthBContract     = config.Contract{
 		Address:  "testMedianContractAddress",
 		Abi:      "testMedianContractAbi",
 		Deployed: 456,
 	}
 
 	OsmEthBContractName = "OSM_ETH_B"
-	OsmEthBContract = config.Contract{
+	OsmEthBContract     = config.Contract{
 		Address:  "testOsmContractAddress",
 		Abi:      "testOsmContractAbi",
 		Deployed: 789,
 	}
 
 	EthBContracts = config.Contracts{
-		"flip": FlipEthBContract,
+		"flip":   FlipEthBContract,
 		"median": MedianEthBContract,
-		"osm": OsmEthBContract,
+		"osm":    OsmEthBContract,
 	}
 )
