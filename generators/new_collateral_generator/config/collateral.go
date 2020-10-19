@@ -6,7 +6,7 @@ import (
 )
 
 type Collateral struct {
-	Name string
+	Name    string
 	Version string
 }
 
@@ -17,21 +17,21 @@ func NewCollateral(name, version string) Collateral {
 	}
 }
 
-func (c Collateral) FormattedForFlipTransformerName() string{
+func (c Collateral) FormattedForFlipTransformerName() string {
 	// example: eth_b_v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
 	version := fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
 	return fmt.Sprintf("%s_%s", name, version)
 }
 
-func (c Collateral) FormattedForFlipInitializerFileName() string{
+func (c Collateral) FormattedForFlipInitializerFileName() string {
 	// example: eth_b/v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
 	version := fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
 	return fmt.Sprintf("%s/%s", name, version)
 }
 
-func (c Collateral) FormattedForMedianTransformerName() string{
+func (c Collateral) FormattedForMedianTransformerName() string {
 	// example: eth_b
 	return strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
 }
@@ -54,4 +54,3 @@ func (c Collateral) FormattedForOsmContractName() string {
 	name := strings.ToUpper(strings.Replace(c.Name, "-", "_", -1))
 	return fmt.Sprintf("OSM_%s", name)
 }
-

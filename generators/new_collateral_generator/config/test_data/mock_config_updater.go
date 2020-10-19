@@ -25,5 +25,3 @@ func (cu *MockConfigUpdater) GetUpdatedConfig() config.TransformersConfig {
 	cu.GetUpdatedConfigCalled = true
 	return cu.UpdatedConfig
 }
-
-

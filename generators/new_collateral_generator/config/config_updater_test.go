@@ -14,15 +14,15 @@ var _ = Describe("NewConfigUpdater", func() {
 
 		It("adds new transformer names to the exporter metadata for the new collateral", func() {
 			expectedExporterMetadata := config.ExporterMetaData{
-				Home:             "github.com/makerdao/vulcanizedb",
-				Name:             "transformerExporter",
-				Save:             false,
-				Schema:           "maker",
+				Home:   "github.com/makerdao/vulcanizedb",
+				Name:   "transformerExporter",
+				Save:   false,
+				Schema: "maker",
 				TransformerNames: []string{
 					"cat_v1_1_0",
 					"cat_file_vow",
 					"flip_eth_b_v1_1_3", // new storage flip transformer
-					"median_eth_b",     // new median eth transformer - will there be a new transformer for eth_b medianizer vs eth_a?
+					"median_eth_b",      // new median eth transformer
 				},
 			}
 
@@ -76,11 +76,11 @@ var _ = Describe("NewConfigUpdater", func() {
 
 		It("adds new flip, median and osm contracts for new collateral", func() {
 			expectedContracts := config.Contracts{
-				"MCD_CAT_1_0_0": test_data.Cat100Contract,
-				"MCD_CAT_1_1_0": test_data.Cat110Contract,
+				"MCD_CAT_1_0_0":        test_data.Cat100Contract,
+				"MCD_CAT_1_1_0":        test_data.Cat110Contract,
 				"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
-				"MEDIAN_ETH_B": test_data.MedianEthBContract,
-				"OSM_ETH_B": test_data.OsmEthBContract,
+				"MEDIAN_ETH_B":         test_data.MedianEthBContract,
+				"OSM_ETH_B":            test_data.OsmEthBContract,
 			}
 			addEthBErr := configUpdater.AddNewCollateralToConfig()
 			Expect(addEthBErr).NotTo(HaveOccurred())
@@ -98,4 +98,3 @@ var _ = Describe("NewConfigUpdater", func() {
 		})
 	})
 })
-

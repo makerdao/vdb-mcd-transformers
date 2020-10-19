@@ -11,7 +11,7 @@ var _ = Describe("Config Parser", func() {
 	var (
 		testConfigFilePath = "/Users/elizabethengelman/go/src/github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data/"
 		testConfigFileName = "testConfig"
-		configParser = config.Parser{}
+		configParser       = config.Parser{}
 	)
 
 	Context("ParseCurrentConfigFile", func() {
@@ -31,7 +31,7 @@ var _ = Describe("Config Parser", func() {
 
 		It("reads in the exporterTransformers", func() {
 			expectedTransformerExporters := config.TransformerExporters{
-				"exporter.cat_v1_1_0": test_data.Cat110Exporter,
+				"exporter.cat_v1_1_0":   test_data.Cat110Exporter,
 				"exporter.cat_file_vow": test_data.CatFileVowExporter,
 			}
 			config, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
@@ -50,4 +50,3 @@ var _ = Describe("Config Parser", func() {
 		})
 	})
 })
-

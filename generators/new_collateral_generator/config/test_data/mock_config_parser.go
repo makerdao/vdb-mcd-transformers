@@ -14,4 +14,3 @@ func (cp *MockConfigParser) ParseCurrentConfig(configFilePath, configFileName st
 	cp.ConfigFileNamePassedIn = configFileName
 	return cp.ConfigToReturn, cp.ParseErr
 }
-
