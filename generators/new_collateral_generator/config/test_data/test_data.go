@@ -43,11 +43,11 @@ var (
 	InitialConfig = config.TransformersConfig{
 		ExporterMetadata: ExporterMetadata,
 		TransformerExporters: config.TransformerExporters{
-			"exporter.cat_v1_1_0":       Cat110Exporter,
-			"exporter.cat_file_vow":     CatFileVowExporter,
-			"exporter.deny":             DenyExporter,
-			"exporter.log_value":        LogValueExporter,
-			"exporter.log_median_price": LogMedianPriceExporter,
+			"cat_v1_1_0":       Cat110Exporter,
+			"cat_file_vow":     CatFileVowExporter,
+			"deny":             DenyExporter,
+			"log_value":        LogValueExporter,
+			"log_median_price": LogMedianPriceExporter,
 		},
 		Contracts: config.Contracts{
 			"MCD_CAT_1_0_0": Cat100Contract,

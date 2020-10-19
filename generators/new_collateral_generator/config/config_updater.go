@@ -94,7 +94,7 @@ func (cg *Updater) addStorageExporters() {
 		Rank:       "0",
 	}
 	transformerExporters := make(map[string]TransformerExporter)
-	flipKey := fmt.Sprintf("exporter.flip_%s", cg.Collateral.FormattedForFlipTransformerName())
+	flipKey := fmt.Sprintf("flip_%s", cg.Collateral.FormattedForFlipTransformerName())
 	transformerExporters[flipKey] = flipStorageExporter
 
 	if cg.MedianContractRequired {
@@ -105,7 +105,7 @@ func (cg *Updater) addStorageExporters() {
 			Migrations: "db/migrations",
 			Rank:       "0",
 		}
-		medianKey := fmt.Sprintf("exporter.median_%s", cg.Collateral.FormattedForMedianTransformerName())
+		medianKey := fmt.Sprintf("median_%s", cg.Collateral.FormattedForMedianTransformerName())
 		transformerExporters[medianKey] = medianStorageExporter
 	}
 
