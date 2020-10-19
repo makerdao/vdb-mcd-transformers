@@ -31,8 +31,8 @@ var _ = Describe("Config Parser", func() {
 
 		It("reads in the exporterTransformers", func() {
 			expectedTransformerExporters := config.TransformerExporters{
-				"exporter.cat_v1_1_0":   test_data.Cat110Exporter,
-				"exporter.cat_file_vow": test_data.CatFileVowExporter,
+				"cat_v1_1_0":   test_data.Cat110Exporter,
+				"cat_file_vow": test_data.CatFileVowExporter,
 			}
 			config, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, testConfigFileName)
 			Expect(parseErr).NotTo(HaveOccurred())

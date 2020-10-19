@@ -40,23 +40,23 @@ var _ = Describe("NewConfigUpdater", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
 				Expect(configUpdater.UpdatedConfig.TransformerExporters).To(
-					HaveKeyWithValue("exporter.flip_eth_b_v1_1_3", test_data.FlipEthBStorageExporter))
+					HaveKeyWithValue("flip_eth_b_v1_1_3", test_data.FlipEthBStorageExporter))
 				Expect(configUpdater.UpdatedConfig.TransformerExporters).To(
-					HaveKeyWithValue("exporter.median_eth_b", test_data.MedianEthBStorageExporter))
+					HaveKeyWithValue("median_eth_b", test_data.MedianEthBStorageExporter))
 			})
 
 			It("adds the new collateral flip contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
 				Expect(denyExporter.Contracts).To(ContainElement(test_data.FlipEthBContractName))
 			})
 
 			It("adds median contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
-				logMedianExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.log_median_price"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
+				logMedianExporter := configUpdater.UpdatedConfig.TransformerExporters["log_median_price"]
 				Expect(denyExporter.Contracts).To(ContainElement(test_data.MedianEthBContractName))
 				Expect(logMedianExporter.Contracts).To(ContainElement(test_data.MedianEthBContractName))
 			})
@@ -64,8 +64,8 @@ var _ = Describe("NewConfigUpdater", func() {
 			It("adds osm contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
-				logValueExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.log_value"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
+				logValueExporter := configUpdater.UpdatedConfig.TransformerExporters["log_value"]
 				Expect(denyExporter.Contracts).To(ContainElement(test_data.OsmEthBContractName))
 				Expect(logValueExporter.Contracts).To(ContainElement(test_data.OsmEthBContractName))
 			})
@@ -73,7 +73,7 @@ var _ = Describe("NewConfigUpdater", func() {
 			It("does not add flip, median or osm contracts to event exporters that don't currently have those contract types", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				catVowExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.cat_file_vow"]
+				catVowExporter := configUpdater.UpdatedConfig.TransformerExporters["cat_file_vow"]
 				Expect(catVowExporter.Contracts).NotTo(ContainElement(test_data.FlipEthBContractName))
 				Expect(catVowExporter.Contracts).NotTo(ContainElement(test_data.MedianEthBContractName))
 				Expect(catVowExporter.Contracts).NotTo(ContainElement(test_data.OsmEthBContractName))
@@ -134,23 +134,23 @@ var _ = Describe("NewConfigUpdater", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
 				Expect(configUpdater.UpdatedConfig.TransformerExporters).To(
-					HaveKeyWithValue("exporter.flip_eth_b_v1_1_3", test_data.FlipEthBStorageExporter))
+					HaveKeyWithValue("flip_eth_b_v1_1_3", test_data.FlipEthBStorageExporter))
 				Expect(configUpdater.UpdatedConfig.TransformerExporters).NotTo(
-					HaveKeyWithValue("exporter.median_eth_b", test_data.MedianEthBStorageExporter))
+					HaveKeyWithValue("median_eth_b", test_data.MedianEthBStorageExporter))
 			})
 
 			It("adds the new collateral flip contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
 				Expect(denyExporter.Contracts).To(ContainElement(test_data.FlipEthBContractName))
 			})
 
 			It("does not add median contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
-				logMedianExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.log_median_price"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
+				logMedianExporter := configUpdater.UpdatedConfig.TransformerExporters["log_median_price"]
 				Expect(denyExporter.Contracts).NotTo(ContainElement(test_data.MedianEthBContractName))
 				Expect(logMedianExporter.Contracts).NotTo(ContainElement(test_data.MedianEthBContractName))
 			})
@@ -158,8 +158,8 @@ var _ = Describe("NewConfigUpdater", func() {
 			It("does not add osm contract to event exporters", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
-				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.deny"]
-				logValueExporter := configUpdater.UpdatedConfig.TransformerExporters["exporter.log_value"]
+				denyExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
+				logValueExporter := configUpdater.UpdatedConfig.TransformerExporters["log_value"]
 				Expect(denyExporter.Contracts).NotTo(ContainElement(test_data.OsmEthBContractName))
 				Expect(logValueExporter.Contracts).NotTo(ContainElement(test_data.OsmEthBContractName))
 			})

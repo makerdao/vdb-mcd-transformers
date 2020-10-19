@@ -28,6 +28,8 @@ func (Parser) ParseCurrentConfig(configFilePath, configFileName string) (Transfo
 		return TransformersConfig{}, decodeErr
 	}
 
+	//TODO: if we update the config file format to separate the exporter metadata from the exporters, this step should
+	// no longer be necessary - toml.DecodeFile should be able to properly decode those exporters
 	exporters, exporterErr := getTransformerExporters(tomlConfig.ExporterMetadata.TransformerNames, viperConfig)
 	if exporterErr != nil {
 		return TransformersConfig{}, exporterErr
@@ -43,7 +45,7 @@ func getTransformerExporters(transformerNames []string, viperConfig *viper.Viper
 		transformer := viperConfig.GetStringMapString("exporter." + transformerName)
 		transformerContracts := viperConfig.GetStringMapStringSlice("exporter." + transformerName)
 		//TODO: handle errors in case one of the values doesn't exist
-		exporters["exporter."+transformerName] = TransformerExporter{
+		exporters[transformerName] = TransformerExporter{
 			Path:       transformer["path"],
 			Type:       transformer["type"],
 			Repository: transformer["repository"],
