@@ -14,16 +14,20 @@ type IUpdate interface {
 }
 
 type Updater struct {
-	Collateral    Collateral
-	Contracts     Contracts
-	InitialConfig TransformersConfig
-	UpdatedConfig TransformersConfig
+	Collateral             Collateral
+	Contracts              Contracts
+	MedianContractRequired bool
+	OsmContractRequired    bool
+	InitialConfig          TransformersConfig
+	UpdatedConfig          TransformersConfig
 }
 
-func NewConfigUpdater(collateral Collateral, contracts Contracts) *Updater {
+func NewConfigUpdater(collateral Collateral, contracts Contracts, medianContractRequired, osmContractRequired bool) *Updater {
 	return &Updater{
-		Collateral: collateral,
-		Contracts:  contracts,
+		Collateral:             collateral,
+		Contracts:              contracts,
+		MedianContractRequired: medianContractRequired,
+		OsmContractRequired:    osmContractRequired,
 	}
 }
 
@@ -69,9 +73,11 @@ func (cg *Updater) copyInitialConfig() error {
 
 func (cg *Updater) addStorageTransformerNames() {
 	flipTransformerName := "flip_" + cg.Collateral.FormattedForFlipTransformerName()
-	medianTransformerName := "median_" + cg.Collateral.FormattedForMedianTransformerName()
-
-	newTransformerNames := []string{flipTransformerName, medianTransformerName}
+	newTransformerNames := []string{flipTransformerName}
+	if cg.MedianContractRequired {
+		medianTransformerName := "median_" + cg.Collateral.FormattedForMedianTransformerName()
+		newTransformerNames = []string{flipTransformerName, medianTransformerName}
+	}
 
 	cg.UpdatedConfig.ExporterMetadata.TransformerNames = append(
 		cg.UpdatedConfig.ExporterMetadata.TransformerNames,
@@ -87,19 +93,21 @@ func (cg *Updater) addStorageExporters() {
 		Migrations: "db/migrations",
 		Rank:       "0",
 	}
-
-	medianStorageExporter := TransformerExporter{
-		Path:       fmt.Sprintf("transformers/storage/median/initializers/median_%s", cg.Collateral.FormattedForMedianTransformerName()),
-		Type:       "eth_storage",
-		Repository: "github.com/makerdao/vdb-mcd-transformers",
-		Migrations: "db/migrations",
-		Rank:       "0",
-	}
 	transformerExporters := make(map[string]TransformerExporter)
 	flipKey := fmt.Sprintf("exporter.flip_%s", cg.Collateral.FormattedForFlipTransformerName())
 	transformerExporters[flipKey] = flipStorageExporter
-	medianKey := fmt.Sprintf("exporter.median_%s", cg.Collateral.FormattedForMedianTransformerName())
-	transformerExporters[medianKey] = medianStorageExporter
+
+	if cg.MedianContractRequired {
+		medianStorageExporter := TransformerExporter{
+			Path:       fmt.Sprintf("transformers/storage/median/initializers/median_%s", cg.Collateral.FormattedForMedianTransformerName()),
+			Type:       "eth_storage",
+			Repository: "github.com/makerdao/vdb-mcd-transformers",
+			Migrations: "db/migrations",
+			Rank:       "0",
+		}
+		medianKey := fmt.Sprintf("exporter.median_%s", cg.Collateral.FormattedForMedianTransformerName())
+		transformerExporters[medianKey] = medianStorageExporter
+	}
 
 	for k, v := range transformerExporters {
 		cg.UpdatedConfig.TransformerExporters[k] = v
@@ -111,13 +119,18 @@ func (cg *Updater) addContractsToEventExporters() error {
 	if flipErr != nil {
 		return flipErr
 	}
-	medianErr := cg.addNewContractToMedianExporters()
-	if medianErr != nil {
-		return medianErr
+	if cg.MedianContractRequired {
+		medianErr := cg.addNewContractToMedianExporters()
+		if medianErr != nil {
+			return medianErr
+		}
 	}
-	osmErr := cg.addNewContractToOsmExporters()
-	if osmErr != nil {
-		return osmErr
+
+	if cg.OsmContractRequired {
+		osmErr := cg.addNewContractToOsmExporters()
+		if osmErr != nil {
+			return osmErr
+		}
 	}
 
 	return nil
@@ -174,11 +187,15 @@ func (cg *Updater) addContracts() {
 	flipContractKey := cg.Collateral.FormattedForFlipContractName()
 	formattedContracts[flipContractKey] = cg.Contracts["flip"]
 
-	medianContractKey := cg.Collateral.FormattedForMedianContractName()
-	formattedContracts[medianContractKey] = cg.Contracts["median"]
+	if cg.MedianContractRequired {
+		medianContractKey := cg.Collateral.FormattedForMedianContractName()
+		formattedContracts[medianContractKey] = cg.Contracts["median"]
+	}
 
-	osmContractKey := cg.Collateral.FormattedForOsmContractName()
-	formattedContracts[osmContractKey] = cg.Contracts["osm"]
+	if cg.OsmContractRequired {
+		osmContractKey := cg.Collateral.FormattedForOsmContractName()
+		formattedContracts[osmContractKey] = cg.Contracts["osm"]
+	}
 
 	for k, v := range formattedContracts {
 		cg.UpdatedConfig.Contracts[k] = v
