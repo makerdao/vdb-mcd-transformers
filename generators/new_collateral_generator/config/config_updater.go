@@ -119,18 +119,15 @@ func (cg *Updater) addContractsToEventExporters() error {
 	if flipErr != nil {
 		return flipErr
 	}
-	if cg.MedianContractRequired {
-		medianErr := cg.addNewContractToMedianExporters()
-		if medianErr != nil {
-			return medianErr
-		}
+
+	medianErr := cg.addNewContractToMedianExporters()
+	if medianErr != nil {
+		return medianErr
 	}
 
-	if cg.OsmContractRequired {
-		osmErr := cg.addNewContractToOsmExporters()
-		if osmErr != nil {
-			return osmErr
-		}
+	osmErr := cg.addNewContractToOsmExporters()
+	if osmErr != nil {
+		return osmErr
 	}
 
 	return nil
@@ -153,11 +150,17 @@ func (cg *Updater) addNewContractToFlipExporters() error {
 }
 
 func (cg *Updater) addNewContractToMedianExporters() error {
-	return cg.addNewContractToExporters(IsMedianExporter, cg.Collateral.FormattedForMedianContractName)
+	if cg.MedianContractRequired {
+		return cg.addNewContractToExporters(IsMedianExporter, cg.Collateral.FormattedForMedianContractName)
+	}
+	return nil
 }
 
 func (cg *Updater) addNewContractToOsmExporters() error {
-	return cg.addNewContractToExporters(IsOsmExporter, cg.Collateral.FormattedForOsmContractName)
+	if cg.OsmContractRequired {
+		return cg.addNewContractToExporters(IsOsmExporter, cg.Collateral.FormattedForOsmContractName)
+	}
+	return nil
 }
 
 type matcherFunc func(string) (bool, error)
@@ -172,7 +175,8 @@ func (cg *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateral
 			}
 			if contractTypeMatched {
 				exporter.Contracts = append(exporter.Contracts, collateralFormatter())
-				continue
+				// breaking out of this exporter's contract loop so that new collateral contract is not added multiple times
+				break
 			}
 		}
 		cg.UpdatedConfig.TransformerExporters[name] = exporter

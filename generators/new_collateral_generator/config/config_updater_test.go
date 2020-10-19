@@ -70,6 +70,21 @@ var _ = Describe("NewConfigUpdater", func() {
 				Expect(logValueExporter.Contracts).To(ContainElement(test_data.OsmEthBContractName))
 			})
 
+			It("doesn't duplicate contracts in event exporters", func() {
+				addEthBErr := configUpdater.AddNewCollateralToConfig()
+				Expect(addEthBErr).NotTo(HaveOccurred())
+				logValueExporter := configUpdater.UpdatedConfig.TransformerExporters["deny"]
+				Expect(logValueExporter.Contracts).To(Equal([]string{
+					test_data.FlipBatAContractName,
+					test_data.FlipEthAContractName,
+					test_data.MedianBatContractName,
+					test_data.OsmBatContractName,
+					test_data.FlipEthBContractName,
+					test_data.MedianEthBContractName,
+					test_data.OsmEthBContractName,
+				}))
+			})
+
 			It("does not add flip, median or osm contracts to event exporters that don't currently have those contract types", func() {
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
@@ -81,11 +96,11 @@ var _ = Describe("NewConfigUpdater", func() {
 
 			It("adds new flip, median and osm contracts for new collateral", func() {
 				expectedContracts := config.Contracts{
-					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
-					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
-					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
-					"MEDIAN_ETH_B":         test_data.MedianEthBContract,
-					"OSM_ETH_B":            test_data.OsmEthBContract,
+					test_data.Cat100ContractName:     test_data.Cat100Contract,
+					test_data.Cat110ContractName:     test_data.Cat110Contract,
+					test_data.FlipEthBContractName:   test_data.FlipEthBContract,
+					test_data.MedianEthBContractName: test_data.MedianEthBContract,
+					test_data.OsmEthBContractName:    test_data.OsmEthBContract,
 				}
 				addEthBErr := configUpdater.AddNewCollateralToConfig()
 				Expect(addEthBErr).NotTo(HaveOccurred())
@@ -184,12 +199,13 @@ var _ = Describe("NewConfigUpdater", func() {
 			configUpdater          = config.NewConfigUpdater(test_data.EthBCollateral, test_data.EthBContracts, medianContractRequired, osmContractRequired)
 		)
 		configUpdater.SetInitialConfig(test_data.InitialConfig)
+
 		It("returns the udpated config formatted for toml encoding", func() {
 			addErr := configUpdater.AddNewCollateralToConfig()
 			Expect(addErr).NotTo(HaveOccurred())
 			updatedConfig := configUpdater.GetUpdatedConfig()
 			expectedUpdatedConfig := config.TransformersConfigForTomlEncoding{
-				ExporterMetadata:     config.ExporterMetaData{
+				ExporterMetadata: config.ExporterMetaData{
 					Home:   "github.com/makerdao/vulcanizedb",
 					Name:   "transformerExporter",
 					Save:   false,
@@ -201,7 +217,7 @@ var _ = Describe("NewConfigUpdater", func() {
 						"median_eth_b",      // new median eth transformer
 					},
 				},
-				Contracts:            config.Contracts{
+				Contracts: config.Contracts{
 					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
 					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
 					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
