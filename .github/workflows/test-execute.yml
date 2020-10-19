@@ -7,8 +7,37 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Execute Image
     steps:
-      - uses: actions/checkout@v2
-      - run: docker build . -f dockerfiles/execute/Dockerfile -t execute:latest
-      - run: docker run execute:latest
+      -
+        name: Checkout repo
+        uses: actions/checkout@v2
+      -
+        name: Build execute image
+        uses: docker/build-push-action@v2
+        with:
+          file: ./dockerfiles/execute/Dockerfile
+          push: false
+          tags: makerdao/execute:latest
+      -
+        name: Run the docker container
+        env:
+          CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
+        run: |
+          # The latest container should be the postgres one. Kind of a hack.
+          CONTAINER_ID=$(docker ps --latest --format "{{.ID}}")
+          docker run -i --network="container:$CONTAINER_ID" -e "DATABASE_NAME=postgres" -e "DATABASE_HOSTNAME=postgres" -e "DATABASE_PORT=5432" -e "DATABASE_USER=postgres" -e "DATABASE_PASSWORD=postgres" -e "CLIENT_IPCPATH=$CLIENT_IPCPATH" makerdao/execute:latest &
+          docker ps --filter "ID=c25c2c1b9b04" --format "{{.Status}}"   | grep "Healthy" -q
+
+    services:
+      postgres:
+        image: postgres:11.6
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
   
