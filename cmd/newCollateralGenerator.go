@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
 	"github.com/sirupsen/logrus"
@@ -32,7 +34,7 @@ var addNewCollateralCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := addNewCollateral()
 		if err != nil {
-			logrus.Errorf("Failed to add new collateral to config: %w", err)
+			logrus.Error("Failed to add new collateral to config: ", err)
 			return
 		}
 		logrus.Infof("Successfully added %s config", collateralName)
@@ -60,8 +62,33 @@ func init() {
 }
 
 func addNewCollateral() error {
-	println("Adding the new collateral to mcdTransformer.toml.")
 	collateral := config.NewCollateral(collateralName, collateralVersion)
+	contracts := getContracts()
+	configUpdater := config.NewConfigUpdater(collateral, contracts, medianContractRequired, osmContractRequired)
+	configFilePath := "mcdTransformers"
+	configFileName := "../environments/"
+	newCollateralGenerator := generator.NewCollateralGenerator{
+		ConfigFileName: configFileName,
+		ConfigFilePath: configFilePath,
+		ConfigParser:   config.Parser{},
+		ConfigUpdater:  configUpdater,
+	}
+
+	fmt.Printf("Adding %s to %s config file", collateralName, configFilePath)
+	addErr := newCollateralGenerator.AddToConfig()
+	if addErr != nil {
+		return addErr
+	}
+
+	fmt.Printf("Adding %s to transformerExporter.go", collateralName)
+	updatePluginErr := newCollateralGenerator.UpdatePluginExporter()
+	if updatePluginErr != nil {
+		return updatePluginErr
+	}
+	return nil
+}
+
+func getContracts() map[string]config.Contract{
 	flipContract := config.Contract{
 		Address:  flipAddress,
 		Abi:      flipAbi,
@@ -82,17 +109,5 @@ func addNewCollateral() error {
 	contracts["median"] = medianContract
 	contracts["osm"] = osmContract
 
-	configParser := config.Parser{}
-	configUpdater := config.NewConfigUpdater(collateral, contracts, medianContractRequired, osmContractRequired)
-	newCollateralGenerator := generator.NewCollateralGenerator{
-		ConfigFileName: "mcdTransformers",
-		ConfigFilePath: "../environments/",
-		ConfigParser:   configParser,
-		ConfigUpdater:  configUpdater,
-	}
-	addErr := newCollateralGenerator.AddToConfig()
-	if addErr != nil {
-		return addErr
-	}
-	return nil
+	return contracts
 }
