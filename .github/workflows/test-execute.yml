@@ -27,11 +27,11 @@ jobs:
         env:
           CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
         run: |
+          ./.github/workflows/check_execute makerdao/execute:latest --client_ipcpath $CLIENT_IPCPATH
           # The latest container should be the postgres one. Kind of a hack.
-          CONTAINER_ID=$(docker ps --latest --format "{{.ID}}")
-          docker run -i --network="container:$CONTAINER_ID" -e "DATABASE_NAME=postgres" -e "DATABASE_HOSTNAME=postgres" -e "DATABASE_PORT=5432" -e "DATABASE_USER=postgres" -e "DATABASE_PASSWORD=postgres" -e "CLIENT_IPCPATH=$CLIENT_IPCPATH" makerdao/execute:latest &
-          docker ps --filter "ID=c25c2c1b9b04" --format "{{.Status}}"   | grep "Healthy" -q
-
+#          CONTAINER_ID=$(docker ps --latest --format "{{.ID}}")
+#          docker run -i --network="container:$CONTAINER_ID" -e "DATABASE_NAME=postgres" -e "DATABASE_HOSTNAME=postgres" -e "DATABASE_PORT=5432" -e "DATABASE_USER=postgres" -e "DATABASE_PASSWORD=postgres" -e "CLIENT_IPCPATH=$CLIENT_IPCPATH" makerdao/execute:latest &
+#          docker ps --filter "ID=c25c2c1b9b04" --format "{{.Status}}"   | grep "Healthy" -q
     services:
       postgres:
         image: postgres:11.6
@@ -42,7 +42,4 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
-
   
