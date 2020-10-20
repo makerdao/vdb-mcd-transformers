@@ -11,6 +11,11 @@ jobs:
         name: Checkout repo
         uses: actions/checkout@v2
       -
+        name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      -
         name: Build execute image
         uses: docker/build-push-action@v2
         with:
