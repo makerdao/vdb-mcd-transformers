@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
@@ -116,7 +117,7 @@ var _ = Describe("NewCollateral", func() {
 						RepositoryPath: "repo-2",
 					},
 				},
-				FilePath: "../../plugins/execute/",
+				FilePath: new_collateral_generator.GetExecutePluginsPath(),
 				FileName: testUpdatedConfig.ExporterMetadata.Name,
 				Save:     testUpdatedConfig.ExporterMetadata.Save,
 				Home:     testUpdatedConfig.ExporterMetadata.Home,

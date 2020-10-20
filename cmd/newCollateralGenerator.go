@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
 	"github.com/sirupsen/logrus"
@@ -65,8 +66,8 @@ func addNewCollateral() error {
 	collateral := config.NewCollateral(collateralName, collateralVersion)
 	contracts := getContracts()
 	configUpdater := config.NewConfigUpdater(collateral, contracts, medianContractRequired, osmContractRequired)
-	configFilePath := "mcdTransformers"
-	configFileName := "../environments/"
+	configFileName := "mcdTransformers"
+	configFilePath := new_collateral_generator.GetEnvironmentsPath()
 	newCollateralGenerator := generator.NewCollateralGenerator{
 		ConfigFileName: configFileName,
 		ConfigFilePath: configFilePath,
@@ -74,13 +75,13 @@ func addNewCollateral() error {
 		ConfigUpdater:  configUpdater,
 	}
 
-	fmt.Printf("Adding %s to %s config file", collateralName, configFilePath)
+	fmt.Println(fmt.Sprintf("Adding %s to %s", collateralName, new_collateral_generator.GetFullConfigFilePath(configFileName, configFilePath)))
 	addErr := newCollateralGenerator.AddToConfig()
 	if addErr != nil {
 		return addErr
 	}
 
-	fmt.Printf("Adding %s to transformerExporter.go", collateralName)
+	fmt.Println(fmt.Sprintf("Adding %s to %s", collateralName, new_collateral_generator.GetExecutePluginsPath()))
 	updatePluginErr := newCollateralGenerator.UpdatePluginExporter()
 	if updatePluginErr != nil {
 		return updatePluginErr
@@ -88,7 +89,7 @@ func addNewCollateral() error {
 	return nil
 }
 
-func getContracts() map[string]config.Contract{
+func getContracts() map[string]config.Contract {
 	flipContract := config.Contract{
 		Address:  flipAddress,
 		Abi:      flipAbi,

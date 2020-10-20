@@ -1,9 +1,8 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/BurntSushi/toml"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator"
 	"github.com/spf13/viper"
 )
 
@@ -22,7 +21,7 @@ func (Parser) ParseCurrentConfig(configFilePath, configFileName string) (Transfo
 	}
 
 	var tomlConfig TransformersConfig
-	fullConfigFilePath := fmt.Sprintf("%s%s.toml", configFilePath, configFileName)
+	fullConfigFilePath := new_collateral_generator.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
 		return TransformersConfig{}, decodeErr
