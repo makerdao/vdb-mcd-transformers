@@ -49,5 +49,9 @@ while time_waiting <= args.wait_time:
     print(f'after {time_waiting} seconds container is not healthy, wait 5 more: {status}')
     time_waiting = time_waiting + 5
 
-print('execute container never became healthy')
+print('execute container never became healthy, please run it locally to see if something is wrong')
+stdout, stderr = popen.communicate(timeout=5)
+print(f'stdout: {stdout}')
+print(f'stderr: {stderr}')
+popen.kill()
 sys.exit(1)
