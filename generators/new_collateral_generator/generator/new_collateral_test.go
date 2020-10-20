@@ -7,6 +7,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/generator"
+	pluginConfig "github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -92,6 +93,40 @@ var _ = Describe("NewCollateral", func() {
 		Expect(string(testConfigContent)).To(Equal(expectedTestConfigFile))
 	})
 
+	Context("UpdatePluginExporter", func() {
+		It("prepares the plugin.Config using the updated transformers config", func() {
+			configUpdater.UpdatedConfig = testUpdatedConfig
+			config, pluginErr := collateralGenerator.PreparePluginConfig()
+			Expect(pluginErr).NotTo(HaveOccurred())
+
+			expectedPluginConfig := pluginConfig.Plugin{
+				Transformers: map[string]pluginConfig.Transformer{
+					"test-1": {
+						Path:           "path-test-1",
+						Type:           pluginConfig.EthStorage,
+						MigrationPath:  "test-migrations",
+						MigrationRank:  0,
+						RepositoryPath: "repo-1",
+					},
+					"test-2": {
+						Path:           "path-test-2",
+						Type:           pluginConfig.EthEvent,
+						MigrationPath:  "test-migrations",
+						MigrationRank:  0,
+						RepositoryPath: "repo-2",
+					},
+				},
+				FilePath: "../../plugins/execute/",
+				FileName: testUpdatedConfig.ExporterMetadata.Name,
+				Save:     testUpdatedConfig.ExporterMetadata.Save,
+				Home:     testUpdatedConfig.ExporterMetadata.Home,
+				Schema:   testUpdatedConfig.ExporterMetadata.Schema,
+			}
+			Expect(config).To(Equal(expectedPluginConfig))
+		})
+
+	})
+
 	AfterSuite(func() {
 		removeErr := os.Remove(fullConfigPath)
 		Expect(removeErr).NotTo(HaveOccurred())
@@ -99,7 +134,7 @@ var _ = Describe("NewCollateral", func() {
 })
 
 var (
-	testUpdatedConfig = config.TransformersConfig{
+	testUpdatedConfig = config.TransformersConfigForTomlEncoding{
 		ExporterMetadata: config.ExporterMetaData{
 			Home:             "test-home",
 			Name:             "test-config",
