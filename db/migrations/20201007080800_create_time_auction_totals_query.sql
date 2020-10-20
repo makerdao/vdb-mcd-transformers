@@ -21,6 +21,7 @@ WITH buckets AS (
 ),
 bid_results AS (
     SELECT bid_id,
+        contract_address,
         MIN(block_timestamp) AS block_timestamp,
         MAX(lot) AS lot_start,
         MIN(lot) AS lot_end,
@@ -29,7 +30,7 @@ bid_results AS (
     FROM maker.bid_event
     LEFT JOIN public.headers ON (headers.block_number = block_height)
     WHERE ilk_identifier = time_flip_bid_totals.ilk_identifier
-    GROUP BY bid_id
+    GROUP BY contract_address, bid_id
 )
 SELECT buckets.bucket_start AS bucket_start,
        buckets.bucket_start + bucket_interval AS bucket_end,
@@ -60,13 +61,13 @@ WITH buckets AS (
     extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
 ),
 flap_address AS (
-    SELECT address
+    SELECT DISTINCT(address)
     FROM maker.flap_kick
         JOIN addresses on addresses.id = flap_kick.address_id
-    LIMIT 1
 ),
 bid_results AS (
     SELECT bid_id,
+        contract_address,
         MIN(block_timestamp) AS block_timestamp,
         MAX(lot) AS lot_start,
         MIN(lot) AS lot_end,
@@ -74,8 +75,8 @@ bid_results AS (
         MAX(bid_amount) AS bid_amount_end
     FROM maker.bid_event
     LEFT JOIN public.headers ON (headers.block_number = block_height)
-    WHERE contract_address = (SELECT * FROM flap_address)
-    GROUP BY bid_id
+    WHERE contract_address IN (SELECT * FROM flap_address)
+    GROUP BY contract_address, bid_id
 )
 SELECT buckets.bucket_start AS bucket_start,
        buckets.bucket_start + bucket_interval AS bucket_end,
@@ -106,13 +107,13 @@ WITH buckets AS (
     extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
 ),
 flop_address AS (
-    SELECT address
+    SELECT DISTINCT(address)
     FROM maker.flop_kick
         JOIN addresses on addresses.id = flop_kick.address_id
-    LIMIT 1
 ),
 bid_results AS (
     SELECT bid_id,
+        contract_address,
         MIN(block_timestamp) AS block_timestamp,
         MAX(lot) AS lot_start,
         MIN(lot) AS lot_end,
@@ -120,8 +121,8 @@ bid_results AS (
         MAX(bid_amount) AS bid_amount_end
     FROM maker.bid_event
     LEFT JOIN public.headers ON (headers.block_number = block_height)
-    WHERE contract_address = (SELECT * FROM flop_address)
-    GROUP BY bid_id
+    WHERE contract_address IN (SELECT * FROM flop_address)
+    GROUP BY contract_address, bid_id
 )
 SELECT buckets.bucket_start AS bucket_start,
        buckets.bucket_start + bucket_interval AS bucket_end,
