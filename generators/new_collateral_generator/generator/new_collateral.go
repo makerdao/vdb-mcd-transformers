@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/BurntSushi/toml"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
 	pluginConfig "github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/writer"
@@ -30,7 +31,7 @@ func (g NewCollateralGenerator) AddToConfig() error {
 		return updateErr
 	}
 
-	file, fileOpenErr := os.Create(g.ConfigFilePath + g.ConfigFileName + ".toml")
+	file, fileOpenErr := os.Create(new_collateral_generator.GetFullConfigFilePath(g.ConfigFilePath, g.ConfigFileName))
 	if fileOpenErr != nil {
 		return fileOpenErr
 	}
@@ -73,7 +74,7 @@ func (g *NewCollateralGenerator) PreparePluginConfig() (pluginConfig.Plugin, err
 
 	return pluginConfig.Plugin{
 		Transformers: transformers,
-		FilePath:     "$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/",
+		FilePath:     new_collateral_generator.GetExecutePluginsPath(),
 		FileName:     updatedConfig.ExporterMetadata.Name,
 		Save:         updatedConfig.ExporterMetadata.Save,
 		Home:         updatedConfig.ExporterMetadata.Home,
