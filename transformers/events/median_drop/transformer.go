@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/lib/pq"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -39,7 +40,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, aLengthErr
 		}
 
-		aAddresses, aAddressErr := shared.GetLogNoteAddresses(aLength, log.Log.Data)
+		aAddresses, aAddressErr := shared2.GetLogNoteAddresses(aLength, log.Log.Data)
 		if aAddressErr != nil {
 			return nil, aAddressErr
 		}

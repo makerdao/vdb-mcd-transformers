@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
@@ -38,6 +38,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	vdbStorageFactory "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -246,7 +247,7 @@ func CreateIlk(db *postgres.DB, header core.Header, valuesMap map[string]interfa
 }
 
 func CreateVatInit(db *postgres.DB, headerID int64, ilkHex string) event.InsertionModel {
-	ilkID, ilkErr := shared.GetOrCreateIlk(ilkHex, db)
+	ilkID, ilkErr := shared2.GetOrCreateIlk(ilkHex, db)
 	Expect(ilkErr).NotTo(HaveOccurred())
 
 	logID := test_data.CreateTestLog(headerID, db).ID
@@ -432,7 +433,7 @@ func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interf
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
 	cdpManagerRepo := cdp_manager.StorageRepository{}
 	cdpManagerRepo.SetDB(db)
-	_, err := shared.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
+	_, err := shared2.GetOrCreateUrn(valuesMap[cdp_manager.Urns].(string), valuesMap[cdp_manager.Ilks].(string), db)
 	if err != nil {
 		return err
 	}
@@ -532,12 +533,12 @@ type FlipBid struct {
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
-	ilkId, ilkErr := shared.GetOrCreateIlk(setupData.IlkHex, setupData.DB)
+	ilkId, ilkErr := shared2.GetOrCreateIlk(setupData.IlkHex, setupData.DB)
 	if ilkErr != nil {
 		return 0, 0, ilkErr
 	}
 
-	urnId, urnErr := shared.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.DB)
+	urnId, urnErr := shared2.GetOrCreateUrn(setupData.UrnGuy, setupData.IlkHex, setupData.DB)
 	if urnErr != nil {
 		return 0, 0, urnErr
 	}

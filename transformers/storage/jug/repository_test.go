@@ -23,13 +23,14 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -115,7 +116,7 @@ var _ = Describe("Jug storage repository", func() {
 				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, rho AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkRhoTable))
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
@@ -163,7 +164,7 @@ var _ = Describe("Jug storage repository", func() {
 				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, duty AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkDutyTable))
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 
 				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)

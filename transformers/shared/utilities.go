@@ -17,13 +17,10 @@
 package shared
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -31,36 +28,6 @@ import (
 
 var ErrInvalidIndex = func(index int) error {
 	return errors.New(fmt.Sprintf("unsupported log data index: %d", index))
-}
-
-func BigIntToString(value *big.Int) string {
-	result := value.String()
-	if result == "<nil>" {
-		return ""
-	} else {
-		return result
-	}
-}
-
-func ConvertIntStringToHex(n string) (string, error) {
-	b := big.NewInt(0)
-	b, ok := b.SetString(n, 10)
-	if !ok {
-		return "", errors.New("error converting int to hex")
-	}
-	leftPaddedBytes := common.LeftPadBytes(b.Bytes(), 32)
-	hex := common.Bytes2Hex(leftPaddedBytes)
-	return hex, nil
-}
-
-func ConvertInt256HexToBigInt(hex string) *big.Int {
-	n := ConvertUint256HexToBigInt(hex)
-	return math.S256(n)
-}
-
-func ConvertUint256HexToBigInt(hex string) *big.Int {
-	hexBytes := common.FromHex(hex)
-	return big.NewInt(0).SetBytes(hexBytes)
 }
 
 func GetLogNoteArgumentAtIndex(index int, logData []byte) ([]byte, error) {
@@ -88,18 +55,6 @@ func getDataWithIndexOffset(offset int, logData []byte) []byte {
 	return logData[dataBegin:dataEnd]
 }
 
-func DecodeHexToText(payload string) string {
-	return string(bytes.Trim(common.FromHex(payload), "\x00"))
-}
-
-func FormatRollbackError(field string, err error) error {
-	return fmt.Errorf("failed to rollback transaction after failing to insert %s: %w", field, err)
-}
-
-func GetFullTableName(schema, table string) string {
-	return schema + "." + table
-}
-
 func InsertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value string, db *postgres.DB) error {
 	tx, txErr := db.Beginx()
 	if txErr != nil {
@@ -109,7 +64,7 @@ func InsertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value 
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError("ilk", ilkErr)
+			return shared.FormatRollbackError("ilk", ilkErr)
 		}
 		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
 	}
@@ -118,7 +73,7 @@ func InsertFieldWithIlk(diffID, headerID int64, ilk, variableName, query, value 
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError(variableName, writeErr)
+			return shared.FormatRollbackError(variableName, writeErr)
 		}
 		return fmt.Errorf("error inserting field with ilk: %w", writeErr)
 	}
@@ -135,7 +90,7 @@ func InsertFieldWithIlkAndAddress(diffID, headerID, addressID int64, ilk, variab
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError("ilk", ilkErr)
+			return shared.FormatRollbackError("ilk", ilkErr)
 		}
 		return fmt.Errorf("error getting or creating ilk: %w", ilkErr)
 	}
@@ -144,7 +99,7 @@ func InsertFieldWithIlkAndAddress(diffID, headerID, addressID int64, ilk, variab
 	if writeErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError(variableName, writeErr)
+			return shared.FormatRollbackError(variableName, writeErr)
 		}
 		return fmt.Errorf("error inserting field with ilk: %w", writeErr)
 	}
@@ -161,7 +116,7 @@ func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddre
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError("address", addressErr)
+			return shared.FormatRollbackError("address", addressErr)
 		}
 		return fmt.Errorf("error getting or creating address: %w", addressErr)
 	}
@@ -169,7 +124,7 @@ func InsertRecordWithAddress(diffID, headerID int64, query, value, contractAddre
 	if insertErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError("field with address", insertErr)
+			return shared.FormatRollbackError("field with address", insertErr)
 		}
 		return fmt.Errorf("error inserting record with address: %w", insertErr)
 	}
@@ -186,7 +141,7 @@ func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value
 	if addressErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
-			return FormatRollbackError("address", addressErr)
+			return shared.FormatRollbackError("address", addressErr)
 		}
 		return addressErr
 	}
@@ -195,13 +150,9 @@ func InsertRecordWithAddressAndBidID(diffID, headerID int64, query, bidId, value
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
 			errorString := fmt.Sprintf("field with address for bid id %s", bidId)
-			return FormatRollbackError(errorString, insertErr)
+			return shared.FormatRollbackError(errorString, insertErr)
 		}
 		return insertErr
 	}
 	return tx.Commit()
-}
-
-func GetChecksumAddressString(address string) string {
-	return common.HexToAddress(address).Hex()
 }

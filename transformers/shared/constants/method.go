@@ -16,18 +16,20 @@
 
 package constants
 
+import "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+
 // TODO Figure out signatures automatically from config somehow :(
 func Cat100ABI() string     { return getContractABI("MCD_CAT_1.0.0") }
 func Cat110ABI() string     { return getContractABI("MCD_CAT_1.1.0") }
 func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
 func FlapABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLAP_1.0.0",
 		"MCD_FLAP_1.0.9",
 	})
 }
 func FlipV100ABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLIP_BAT_A_1.0.0",
 		"MCD_FLIP_BAT_A_1.0.9",
 		"MCD_FLIP_ETH_A_1.0.0",
@@ -49,7 +51,7 @@ func FlipV100ABI() string {
 	})
 }
 func FlipV110ABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLIP_BAT_A_1.1.0",
 		"MCD_FLIP_COMP_A_1.1.2",
 		"MCD_FLIP_ETH_A_1.1.0",
@@ -67,14 +69,14 @@ func FlipV110ABI() string {
 	})
 }
 func FlopABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLOP_1.0.1",
 		"MCD_FLOP_1.0.9",
 	})
 }
 func JugABI() string { return getContractABI("MCD_JUG") }
 func MedianABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
 		"MEDIAN_COMP",
 		"MEDIAN_ETH",
@@ -88,7 +90,7 @@ func MedianABI() string {
 	})
 }
 func OsmABI() string {
-	return GetABIFromContractsWithMatchingABI([]string{
+	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"OSM_BAT",
 		"OSM_COMP",
 		"OSM_ETH",

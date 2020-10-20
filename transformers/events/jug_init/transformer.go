@@ -17,8 +17,9 @@
 package jug_init
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -41,7 +42,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		ilk := log.Log.Topics[2].Hex()
-		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared2.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}

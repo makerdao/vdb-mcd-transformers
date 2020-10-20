@@ -3,9 +3,10 @@ package pot
 import (
 	"fmt"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -61,7 +62,7 @@ func (repo StorageRepository) insertUserPie(diffID, headerID int64, metadata typ
 	if err != nil {
 		return fmt.Errorf("error getting user for pot user pie: %w", err)
 	}
-	insertErr := shared.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repo.db)
+	insertErr := shared2.InsertRecordWithAddress(diffID, headerID, insertPotUserPieQuery, pie, user, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting pot user %s pie %s from diff ID %d: %w", user, pie, diffID, insertErr)
 	}

@@ -18,8 +18,9 @@ package ilk
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -43,12 +44,12 @@ func (Transformer) ToModels(contractAbi string, logs []core.EventLog, db *postgr
 		}
 
 		ilk := log.Log.Topics[2].Hex()
-		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared2.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
-		dataBytes, parseErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		dataBytes, parseErr := shared2.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}

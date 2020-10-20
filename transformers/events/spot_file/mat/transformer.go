@@ -18,8 +18,9 @@ package mat
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -42,14 +43,14 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		}
 
 		ilk := log.Log.Topics[2].Hex()
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkId, ilkErr := shared2.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 
-		dataBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		dataBytes, dataErr := shared2.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}

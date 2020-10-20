@@ -25,9 +25,10 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -82,7 +83,7 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared2.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.AddressID).To(Equal(addressID))
 			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
@@ -125,7 +126,7 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(addressErr).NotTo(HaveOccurred())
 			msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB")
 			Expect(msgSenderErr).NotTo(HaveOccurred())
-			ilkID, ilkErr := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, ilkErr := shared2.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(ilkErr).NotTo(HaveOccurred())
 			Expect(dbResult.AddressID).To(Equal(addressID))
 			Expect(dbResult.MsgSender).To(Equal(msgSenderID))
@@ -168,7 +169,7 @@ var _ = Describe("Cat File transformer", func() {
 			addressID, addressErr := repository.GetOrCreateAddress(db, "0x78F2c2AF65126834c51822F56Be0d7469D7A523E")
 			Expect(addressErr).NotTo(HaveOccurred())
 
-			ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+			ilkID, err := shared2.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 			Expect(err).NotTo(HaveOccurred())
 
 			msgSender := shared.GetChecksumAddressString("0x000000000000000000000000baa65281c2fa2baacb2cb550ba051525a480d3f4")

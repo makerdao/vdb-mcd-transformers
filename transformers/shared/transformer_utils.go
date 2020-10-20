@@ -17,13 +17,10 @@
 package shared
 
 import (
-	"errors"
 	"fmt"
 	"math"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/makerdao/vulcanizedb/libraries/shared/constants"
 )
 
 const (
@@ -36,25 +33,10 @@ const (
 )
 
 var (
-	ErrLogMissingTopics = func(expectedNumTopics, actualNumTopics int) error {
-		return fmt.Errorf("log missing topics: has %d, want %d", actualNumTopics, expectedNumTopics)
-	}
-	ErrLogMissingData   = errors.New("log missing data")
 	ErrCouldNotCreateFK = func(err error) error {
 		return fmt.Errorf("transformer could not create FK: %v", err)
 	}
 )
-
-func VerifyLog(log types.Log, expectedNumTopics int, isDataRequired bool) error {
-	actualNumTopics := len(log.Topics)
-	if actualNumTopics < expectedNumTopics {
-		return ErrLogMissingTopics(expectedNumTopics, actualNumTopics)
-	}
-	if isDataRequired && len(log.Data) < constants.DataItemLength {
-		return ErrLogMissingData
-	}
-	return nil
-}
 
 func GetLogNoteAddresses(arrayLength uint64, eventLogData []byte) ([]string, error) {
 	startingIndex := 2

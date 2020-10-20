@@ -19,12 +19,11 @@ package shared_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-
-	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	shared2 "github.com/makerdao/vdb-transformer-utilities/pkg/shared"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Shared utilities", func() {
@@ -48,7 +47,7 @@ var _ = Describe("Shared utilities", func() {
 				wadBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.VatFluxEventLog.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				wadInt := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
+				wadInt := shared2.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel().ColumnValues["wad"].(string)))
 			})
 
@@ -56,7 +55,7 @@ var _ = Describe("Shared utilities", func() {
 				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+				dinkInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dink"].(string)))
 			})
 
@@ -64,7 +63,7 @@ var _ = Describe("Shared utilities", func() {
 				dartBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
+				dartInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dart"].(string)))
 			})
 
@@ -80,7 +79,7 @@ var _ = Describe("Shared utilities", func() {
 				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+				dinkInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dink"]))
 			})
 
@@ -88,60 +87,9 @@ var _ = Describe("Shared utilities", func() {
 				dartBytes, err := shared.GetLogNoteArgumentAtIndex(5, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
+				dartInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dart"]))
 			})
-		})
-	})
-
-	Describe("converting int256 hex to big int", func() {
-		It("correctly converts positive number", func() {
-			result := shared.ConvertInt256HexToBigInt("0x00000000000000000000000000000000000000000000000007a1fe1602770000")
-
-			Expect(result.String()).To(Equal("550000000000000000"))
-		})
-
-		It("correctly converts negative number", func() {
-			result := shared.ConvertInt256HexToBigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffff4e5d43d13b0000")
-
-			Expect(result.String()).To(Equal("-50000000000000000"))
-		})
-
-		It("correctly converts another negative number", func() {
-			result := shared.ConvertInt256HexToBigInt("0xfffffffffffffffffffffffffffffffffffffffffffffffffe9cba87a2760000")
-
-			Expect(result.String()).To(Equal("-100000000000000000"))
-		})
-	})
-
-	Describe("decoding ilk name", func() {
-		It("handles hex ilk with leading 0x", func() {
-			actualIlkIdentifier := shared.DecodeHexToText(test_helpers.FakeIlk.Hex)
-
-			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-		})
-
-		It("handles hex ilk without leading 0x", func() {
-			hexIlk := test_helpers.FakeIlk.Hex[2:]
-			actualIlkIdentifier := shared.DecodeHexToText(hexIlk)
-
-			Expect(actualIlkIdentifier).To(Equal(test_helpers.FakeIlk.Identifier))
-		})
-
-		It("discards zero bytes", func() {
-			hexIlk := "0x000000"
-			actualIlkIdentifier := shared.DecodeHexToText(hexIlk)
-
-			Expect(actualIlkIdentifier).To(Equal(""))
-		})
-	})
-
-	Describe("GetFullTableName", func() {
-		It("Concatenates a schema and table name", func() {
-			schema := "schema_name"
-			table := "table_name"
-			fullTableName := shared.GetFullTableName(schema, table)
-			Expect(fullTableName).To(Equal("schema_name.table_name"))
 		})
 	})
 })

@@ -21,6 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jmoiron/sqlx"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
@@ -42,7 +43,7 @@ const (
 func GetOrCreateIlk(ilk string, db *postgres.DB) (int64, error) {
 	var ilkID int64
 	uniformIlk := common.HexToHash(ilk).Hex()
-	ilkIdentifier := DecodeHexToText(uniformIlk)
+	ilkIdentifier := shared.DecodeHexToText(uniformIlk)
 	err := db.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }
@@ -50,7 +51,7 @@ func GetOrCreateIlk(ilk string, db *postgres.DB) (int64, error) {
 func GetOrCreateIlkInTransaction(ilk string, tx *sqlx.Tx) (int64, error) {
 	var ilkID int64
 	uniformIlk := common.HexToHash(ilk).Hex()
-	ilkIdentifier := DecodeHexToText(uniformIlk)
+	ilkIdentifier := shared.DecodeHexToText(uniformIlk)
 	err := tx.Get(&ilkID, getOrCreateIlkQuery, uniformIlk, ilkIdentifier)
 	return ilkID, err
 }

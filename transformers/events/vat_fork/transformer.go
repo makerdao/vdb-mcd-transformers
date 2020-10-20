@@ -19,8 +19,9 @@ package vat_fork
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -40,18 +41,18 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
-		ilkID, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := shared2.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
-		dinkBytes, dinkErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
+		dinkBytes, dinkErr := shared2.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if dinkErr != nil {
 			return nil, dinkErr
 		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 
-		dartBytes, dartErr := shared.GetLogNoteArgumentAtIndex(4, log.Log.Data)
+		dartBytes, dartErr := shared2.GetLogNoteArgumentAtIndex(4, log.Log.Data)
 		if dartErr != nil {
 			return nil, dartErr
 		}
