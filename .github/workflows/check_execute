@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+import subprocess, sys, argparse
+
+parser = argparse.ArgumentParser(description="Check the startup of the execute container")
+parser.add_argument("image", help="name of the image you're running")
+parser.add_argument("--client_ipcpath", help="IPC Path of the geth container", required=True)
+parser.add_argument("--database_hostname", help="hostname of the postgres database", default="postgres")
+parser.add_argument("--database_name", help="name of the postgres database schema", default="postgres")
+parser.add_argument("--database_port", help="port of the postgres database", default="5432")
+parser.add_argument("--database_user", help="username of the postgres database user", default="postgres")
+parser.add_argument("--database_password", help="password of the postgres database user", default="postgres")
+args = parser.parse_args()
+
+cp = subprocess.run(['docker', 'ps', '--latest', '--format', '"{{.ID}}"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+container_id = cp.stdout.decode('utf-8').strip().replace('"', '')
+cp = subprocess.run(['docker', 'ps', '--latest'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+print(cp.stdout.decode('utf-8'))
+
+print(f'Postgres Container ID {container_id}')
+popen = subprocess.Popen(['docker', 'run', '-i',
+                          '--network', f'container:{container_id}',
+                          '-e', f'DATABASE_NAME={args.database_name}',
+                          '-e', f'DATABASE_HOSTNAME={args.database_hostname}',
+                          '-e', f'DATABASE_PORT={args.database_port}',
+                          '-e', f'DATABASE_USER={args.database_user}',
+                          '-e', f'DATABASE_PASSWORD={args.database_password}',
+                          '-e', f'CLIENT_IPCPATH={args.client_ipcpath}', args.image],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+print("the commandline is {}".format(popen.args))
+
+try:
+  stdout, stderr = popen.communicate(timeout=5)
+  print(f'docker run failed to start image\nout: {stdout}\nerr: {stderr}')
+  sys.exit(popen.returncode)
+except subprocess.TimeoutExpired:
+  print(f'starting execute image with pid {popen.pid}')
+
+print(popen.pid)
+print(popen.returncode)
+#statuses.remove('')
+
+#CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+#
+#def run_task(task, check=True):
+#  return subprocess.run(task, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=CURRENT_DIR, check=check)
+#
+#def add_to_git(line):
+#  status = line[0:2]
+##  name = line[2:].strip().strip('"')
+#  if needs_addition(status): run_task(['git', 'add', name])
+#
+#def needs_addition(status):
+#  indexStatus = status[0]
+#  return indexStatus == '?' or indexStatus == ' '
+#
+#cp = run_task(['git', 'status', '--short'])
+#
+#statuses = cp.stdout.decode('utf-8').split('\n')
+#statuses.remove('')
+#if ' M autocommit' in statuses: statuses.remove(' M autocommit')
+#
+#if statuses:
+#  for line in statuses:
+#    add_to_git(line)
+#
+#  run_task(['git', 'commit', '-m', 'automatic commit'])
+#
+#cp = run_task(['git', 'push', '-n'], check=False)
+#if 'Everything up-to-date' not in cp.stdout.decode('utf-8'):
+#  run_task(['git', 'push'], check=False)
