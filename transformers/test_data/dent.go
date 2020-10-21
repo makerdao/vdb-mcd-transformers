@@ -39,7 +39,7 @@ var (
 )
 
 var rawDentLog = types.Log{
-	Address: common.HexToAddress(FlipEthV100Address()),
+	Address: common.HexToAddress(FlipEthAV100Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.DentSignature()),
 		common.HexToHash(topic1),

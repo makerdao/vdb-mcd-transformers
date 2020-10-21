@@ -45,7 +45,7 @@ var _ = Describe("Deal transformer", func() {
 			TransformerName: constants.DealTable,
 			ContractAddresses: []string{
 				test_data.FlapV100Address(),
-				test_data.FlipEthV100Address(),
+				test_data.FlipEthAV100Address(),
 				test_data.FlopV101Address(),
 			},
 			Topic: constants.DealSignature(),
@@ -82,7 +82,7 @@ var _ = Describe("Deal transformer", func() {
 		err := db.Get(&dbResult, `SELECT bid_id, address_id, msg_sender FROM maker.deal`)
 		Expect(err).NotTo(HaveOccurred())
 
-		flipAddressID, flipAddressErr := repository.GetOrCreateAddress(db, test_data.FlipEthV100Address())
+		flipAddressID, flipAddressErr := repository.GetOrCreateAddress(db, test_data.FlipEthAV100Address())
 		Expect(flipAddressErr).NotTo(HaveOccurred())
 		msgSenderID, msgSenderErr := repository.GetOrCreateAddress(db, "0x00aBe7471ec9b6953A3BD0ed3C06c46F29Aa4280")
 		Expect(msgSenderErr).NotTo(HaveOccurred())

@@ -180,7 +180,7 @@ var _ = Describe("Cat File transformer", func() {
 			Expect(dbResult.AddressID).To(Equal(addressID))
 			Expect(dbResult.Ilk).To(Equal(ilkID))
 			Expect(dbResult.What).To(Equal("flip"))
-			Expect(dbResult.Flip).To(Equal(test_data.FlipEthV100Address()))
+			Expect(dbResult.Flip).To(Equal(test_data.FlipEthAV100Address()))
 		})
 
 		It("persists a vow event", func() {
