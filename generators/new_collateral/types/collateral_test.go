@@ -1,17 +1,23 @@
-package config_test
+package types_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Collateral", func() {
 	var (
-		collateral1 = config.NewCollateral("ETH-B", "1.2.3")
-		collateral2 = config.NewCollateral("PAXG", "1_2_3")
-		collateral3 = config.NewCollateral("Eth_B", "1_2_3")
+		collateral1 = types.NewCollateral("ETH-B", "1.2.3")
+		collateral2 = types.NewCollateral("PAXG", "1_2_3")
+		collateral3 = types.NewCollateral("Eth_B", "1_2_3")
 	)
+
+	It("formats the version", func() {
+		Expect(collateral1.FormattedVersion()).To(Equal("v1_2_3"))
+		Expect(collateral2.FormattedVersion()).To(Equal("v1_2_3"))
+		Expect(collateral3.FormattedVersion()).To(Equal("v1_2_3"))
+	})
 
 	Context("flip contracts", func() {
 		It("formats the collateral as a flip transformer name", func() {
@@ -38,6 +44,12 @@ var _ = Describe("Collateral", func() {
 			Expect(collateral1.FormattedForMedianTransformerName()).To(Equal("eth_b"))
 			Expect(collateral2.FormattedForMedianTransformerName()).To(Equal("paxg"))
 			Expect(collateral3.FormattedForMedianTransformerName()).To(Equal("eth_b"))
+		})
+
+		It("formats the collateral as a flip initializer file name", func() {
+			Expect(collateral1.FormattedForMedianInitializerFileName()).To(Equal("median_eth_b"))
+			Expect(collateral2.FormattedForMedianInitializerFileName()).To(Equal("median_paxg"))
+			Expect(collateral3.FormattedForMedianInitializerFileName()).To(Equal("median_eth_b"))
 		})
 
 		It("formats the collateral as a median contract name", func() {

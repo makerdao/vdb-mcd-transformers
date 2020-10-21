@@ -1,22 +1,23 @@
 package config_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Config Parser", func() {
 	var (
-		testConfigFilePath = "./test_data/"
+		testConfigFilePath = "../test_data/"
 		testConfigFileName = "testConfig"
 		configParser       = config.Parser{}
 	)
 
 	Context("ParseCurrentConfigFile", func() {
 		It("reads in the exporter metadata", func() {
-			expectedExporterMetadata := config.ExporterMetaData{
+			expectedExporterMetadata := types.ExporterMetaData{
 				Home:             "github.com/makerdao/vulcanizedb",
 				Name:             "transformerExporter",
 				Save:             false,
@@ -30,7 +31,7 @@ var _ = Describe("Config Parser", func() {
 		})
 
 		It("reads in the exporterTransformers", func() {
-			expectedTransformerExporters := config.TransformerExporters{
+			expectedTransformerExporters := types.TransformerExporters{
 				"cat_v1_1_0":   test_data.Cat110Exporter,
 				"cat_file_vow": test_data.CatFileVowExporter,
 			}
@@ -40,7 +41,7 @@ var _ = Describe("Config Parser", func() {
 		})
 
 		It("reads in the contracts", func() {
-			expectedContracts := config.Contracts{
+			expectedContracts := types.Contracts{
 				"MCD_CAT_1_0_0": test_data.Cat100Contract,
 				"MCD_CAT_1_1_0": test_data.Cat110Contract,
 			}

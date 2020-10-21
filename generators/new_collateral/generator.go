@@ -1,21 +1,23 @@
-package generator
+package new_collateral
 
 import (
 	"os"
 	"strconv"
 
 	"github.com/BurntSushi/toml"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/initializer"
 	pluginConfig "github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/plugin/writer"
 )
 
 type NewCollateralGenerator struct {
-	ConfigFileName string
-	ConfigFilePath string
-	ConfigParser   config.IParse
-	ConfigUpdater  config.IUpdate
+	ConfigFileName       string
+	ConfigFilePath       string
+	ConfigParser         config.IParse
+	ConfigUpdater        config.IUpdate
+	InitializerGenerator initializer.IGenerate
 }
 
 func (g NewCollateralGenerator) AddToConfig() error {
@@ -31,7 +33,7 @@ func (g NewCollateralGenerator) AddToConfig() error {
 		return updateErr
 	}
 
-	file, fileOpenErr := os.Create(new_collateral_generator.GetFullConfigFilePath(g.ConfigFilePath, g.ConfigFileName))
+	file, fileOpenErr := os.Create(helpers.GetFullConfigFilePath(g.ConfigFilePath, g.ConfigFileName))
 	if fileOpenErr != nil {
 		return fileOpenErr
 	}
@@ -74,7 +76,7 @@ func (g *NewCollateralGenerator) PreparePluginConfig() (pluginConfig.Plugin, err
 
 	return pluginConfig.Plugin{
 		Transformers: transformers,
-		FilePath:     new_collateral_generator.GetExecutePluginsPath(),
+		FilePath:     helpers.GetExecutePluginsPath(),
 		FileName:     updatedConfig.ExporterMetadata.Name,
 		Save:         updatedConfig.ExporterMetadata.Save,
 		Home:         updatedConfig.ExporterMetadata.Home,
@@ -91,4 +93,7 @@ func getTransformerType(typeString string) pluginConfig.TransformerType {
 	default:
 		return pluginConfig.UnknownTransformerType
 	}
+}
+func (g *NewCollateralGenerator) WriteInitializers() error {
+	return g.InitializerGenerator.GenerateFlipInitializer()
 }
