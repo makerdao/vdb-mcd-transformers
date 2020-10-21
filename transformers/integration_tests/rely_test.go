@@ -55,13 +55,13 @@ var _ = Describe("Rely transformer", func() {
 	Context("Flip ETH v1.0.0 rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
-		relyIntegrationTest(int64(8928180), test_data.FlipEthV100Address(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(8928180), test_data.FlipEthAV100Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip ETH v1.0.9 rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
-		relyIntegrationTest(int64(10510871), test_data.FlipEthV109Address(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(10510871), test_data.FlipEthAV109Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip ETH_B v1.1.3 rely events", func() {

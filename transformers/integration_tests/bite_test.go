@@ -39,7 +39,7 @@ var _ = Describe("Bite Transformer", func() {
 			Ink:  "50000000000000000000",
 			Art:  "4460522851157616216837",
 			Tab:  "4466031366353941646208178591268931635087392443453",
-			Flip: test_data.FlipEthV100Address(),
+			Flip: test_data.FlipEthAV100Address(),
 			Id:   "112",
 		}
 		biteIntegrationTest(blockNumber, test_data.Cat100Address(), constants.Cat100ABI(), ilk, urn, expectedResult)

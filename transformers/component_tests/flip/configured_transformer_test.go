@@ -40,7 +40,7 @@ import (
 var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = common.HexToAddress(test_data.FlipEthV100Address())
+		contractAddress   = common.HexToAddress(test_data.FlipEthAV100Address())
 		repo              = flip.StorageRepository{ContractAddress: contractAddress.Hex()}
 		storageKeysLookup = storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress.Hex()))
 		header            = fakes.FakeHeader

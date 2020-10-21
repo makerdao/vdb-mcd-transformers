@@ -249,7 +249,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.FlipEthV100Address()))
+				}).Should(Equal(test_data.FlipEthAV100Address()))
 			})
 
 			It("rechecks checked headers for event logs", func() {
@@ -413,7 +413,7 @@ var _ = Describe("Plugin test", func() {
 					var flip string
 					_ = db.Get(&flip, `SELECT flip FROM maker.cat_file_flip WHERE header_id = $1`, headerID)
 					return flip
-				}).Should(Equal(test_data.FlipEthV100Address()))
+				}).Should(Equal(test_data.FlipEthAV100Address()))
 
 				sw := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
 				sw.AddTransformers(storageInitializers)
