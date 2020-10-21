@@ -1,17 +1,19 @@
 package test_data
 
-import "github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
+import (
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
+)
 
 type MockConfigUpdater struct {
 	SetCurrentConfigCalled bool
-	InitialConfigPassedIn  config.TransformersConfig
+	InitialConfigPassedIn  types.TransformersConfig
 	AddNewCollateralCalled bool
 	AddNewCollateralErr    error
 	GetUpdatedConfigCalled bool
-	UpdatedConfig          config.TransformersConfigForTomlEncoding
+	UpdatedConfig          types.TransformersConfigForTomlEncoding
 }
 
-func (cu *MockConfigUpdater) SetInitialConfig(initialConfig config.TransformersConfig) {
+func (cu *MockConfigUpdater) SetInitialConfig(initialConfig types.TransformersConfig) {
 	cu.InitialConfigPassedIn = initialConfig
 	cu.SetCurrentConfigCalled = true
 }
@@ -21,7 +23,7 @@ func (cu *MockConfigUpdater) AddNewCollateralToConfig() error {
 	return cu.AddNewCollateralErr
 }
 
-func (cu *MockConfigUpdater) GetUpdatedConfig() config.TransformersConfigForTomlEncoding {
+func (cu *MockConfigUpdater) GetUpdatedConfig() types.TransformersConfigForTomlEncoding {
 	cu.GetUpdatedConfigCalled = true
 	return cu.UpdatedConfig
 }

@@ -5,24 +5,26 @@ import (
 	"encoding/gob"
 	"fmt"
 	"regexp"
+
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 )
 
 type IUpdate interface {
-	SetInitialConfig(initialConfig TransformersConfig)
+	SetInitialConfig(initialConfig types.TransformersConfig)
 	AddNewCollateralToConfig() error
-	GetUpdatedConfig() TransformersConfigForTomlEncoding
+	GetUpdatedConfig() types.TransformersConfigForTomlEncoding
 }
 
 type Updater struct {
-	Collateral             Collateral
-	Contracts              Contracts
+	Collateral             types.Collateral
+	Contracts              types.Contracts
 	MedianContractRequired bool
 	OsmContractRequired    bool
-	InitialConfig          TransformersConfig
-	UpdatedConfig          TransformersConfig
+	InitialConfig          types.TransformersConfig
+	UpdatedConfig          types.TransformersConfig
 }
 
-func NewConfigUpdater(collateral Collateral, contracts Contracts, medianContractRequired, osmContractRequired bool) *Updater {
+func NewConfigUpdater(collateral types.Collateral, contracts types.Contracts, medianContractRequired, osmContractRequired bool) *Updater {
 	return &Updater{
 		Collateral:             collateral,
 		Contracts:              contracts,
@@ -31,7 +33,7 @@ func NewConfigUpdater(collateral Collateral, contracts Contracts, medianContract
 	}
 }
 
-func (cg *Updater) SetInitialConfig(initialConfig TransformersConfig) {
+func (cg *Updater) SetInitialConfig(initialConfig types.TransformersConfig) {
 	cg.InitialConfig = initialConfig
 }
 
@@ -60,7 +62,7 @@ func (cg *Updater) copyInitialConfig() error {
 		return encErr
 	}
 
-	var updatedConfig TransformersConfig
+	var updatedConfig types.TransformersConfig
 	decoder := gob.NewDecoder(buf)
 	decErr := decoder.Decode(&updatedConfig)
 	if decErr != nil {
@@ -86,19 +88,19 @@ func (cg *Updater) addStorageTransformerNames() {
 }
 
 func (cg *Updater) addStorageExporters() {
-	flipStorageExporter := TransformerExporter{
+	flipStorageExporter := types.TransformerExporter{
 		Path:       fmt.Sprintf("transformers/storage/flip/initializers/%s", cg.Collateral.FormattedForFlipInitializerFileName()),
 		Type:       "eth_storage",
 		Repository: "github.com/makerdao/vdb-mcd-transformers",
 		Migrations: "db/migrations",
 		Rank:       "0",
 	}
-	transformerExporters := make(map[string]TransformerExporter)
+	transformerExporters := make(map[string]types.TransformerExporter)
 	flipKey := fmt.Sprintf("flip_%s", cg.Collateral.FormattedForFlipTransformerName())
 	transformerExporters[flipKey] = flipStorageExporter
 
 	if cg.MedianContractRequired {
-		medianStorageExporter := TransformerExporter{
+		medianStorageExporter := types.TransformerExporter{
 			Path:       fmt.Sprintf("transformers/storage/median/initializers/median_%s", cg.Collateral.FormattedForMedianTransformerName()),
 			Type:       "eth_storage",
 			Repository: "github.com/makerdao/vdb-mcd-transformers",
@@ -186,7 +188,7 @@ func (cg *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateral
 }
 
 func (cg *Updater) addContracts() {
-	formattedContracts := make(map[string]Contract)
+	formattedContracts := make(map[string]types.Contract)
 
 	flipContractKey := cg.Collateral.FormattedForFlipContractName()
 	formattedContracts[flipContractKey] = cg.Contracts["flip"]
@@ -206,8 +208,8 @@ func (cg *Updater) addContracts() {
 	}
 }
 
-func (cg *Updater) GetUpdatedConfig() TransformersConfigForTomlEncoding {
-	return TransformersConfigForTomlEncoding{
+func (cg *Updater) GetUpdatedConfig() types.TransformersConfigForTomlEncoding {
+	return types.TransformersConfigForTomlEncoding{
 		ExporterMetadata:     cg.UpdatedConfig.ExporterMetadata,
 		TransformerExporters: cg.UpdatedConfig.TransformerExporters,
 		Contracts:            cg.UpdatedConfig.Contracts,

@@ -1,4 +1,4 @@
-package config
+package types
 
 import (
 	"fmt"
@@ -17,23 +17,31 @@ func NewCollateral(name, version string) Collateral {
 	}
 }
 
+func (c Collateral) FormattedVersion() string {
+	return fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
+
+}
 func (c Collateral) FormattedForFlipTransformerName() string {
 	// example: eth_b_v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	version := fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
-	return fmt.Sprintf("%s_%s", name, version)
-}
-
-func (c Collateral) FormattedForFlipInitializerFileName() string {
-	// example: eth_b/v1_2_3
-	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	version := fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
-	return fmt.Sprintf("%s/%s", name, version)
+	return fmt.Sprintf("%s_%s", name, c.FormattedVersion())
 }
 
 func (c Collateral) FormattedForMedianTransformerName() string {
 	// example: eth_b
 	return strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
+}
+
+func (c Collateral) FormattedForFlipInitializerFileName() string {
+	// example: eth_b/v1_2_3
+	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
+	return fmt.Sprintf("%s/%s", name, c.FormattedVersion())
+}
+
+func (c Collateral) FormattedForMedianInitializerFileName() string {
+	// example: median_eth_b
+	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
+	return fmt.Sprintf("median_%s", name)
 }
 
 func (c Collateral) FormattedForFlipContractName() string {

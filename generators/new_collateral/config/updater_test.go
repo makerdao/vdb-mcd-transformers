@@ -1,8 +1,9 @@
 package config_test
 
 import (
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral_generator/config/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/config"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -18,7 +19,7 @@ var _ = Describe("NewConfigUpdater", func() {
 			configUpdater.SetInitialConfig(test_data.InitialConfig)
 
 			It("adds new transformer names to the exporter metadata for the new collateral", func() {
-				expectedExporterMetadata := config.ExporterMetaData{
+				expectedExporterMetadata := types.ExporterMetaData{
 					Home:   "github.com/makerdao/vulcanizedb",
 					Name:   "transformerExporter",
 					Save:   false,
@@ -95,7 +96,7 @@ var _ = Describe("NewConfigUpdater", func() {
 			})
 
 			It("adds new flip, median and osm contracts for new collateral", func() {
-				expectedContracts := config.Contracts{
+				expectedContracts := types.Contracts{
 					test_data.Cat100ContractName:     test_data.Cat100Contract,
 					test_data.Cat110ContractName:     test_data.Cat110Contract,
 					test_data.FlipEthBContractName:   test_data.FlipEthBContract,
@@ -108,8 +109,8 @@ var _ = Describe("NewConfigUpdater", func() {
 			})
 
 			It("doesn't update the initialConfig", func() {
-				testCollateral := config.Collateral{Name: "TEST", Version: "1.0.0"}
-				testContracts := config.Contracts{"flip": test_data.FlipEthBContract}
+				testCollateral := types.Collateral{Name: "TEST", Version: "1.0.0"}
+				testContracts := types.Contracts{"flip": test_data.FlipEthBContract}
 				configUpdater := config.NewConfigUpdater(testCollateral, testContracts, medianContractRequired, osmContractRequired)
 				configUpdater.SetInitialConfig(test_data.InitialConfig)
 				addErr := configUpdater.AddNewCollateralToConfig()
@@ -128,7 +129,7 @@ var _ = Describe("NewConfigUpdater", func() {
 			configUpdater.SetInitialConfig(test_data.InitialConfig)
 
 			It("adds new transformer names to the exporter metadata for the new collateral", func() {
-				expectedExporterMetadata := config.ExporterMetaData{
+				expectedExporterMetadata := types.ExporterMetaData{
 					Home:   "github.com/makerdao/vulcanizedb",
 					Name:   "transformerExporter",
 					Save:   false,
@@ -180,7 +181,7 @@ var _ = Describe("NewConfigUpdater", func() {
 			})
 
 			It("adds new flip for new collateral", func() {
-				expectedContracts := config.Contracts{
+				expectedContracts := types.Contracts{
 					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
 					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
 					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
@@ -204,8 +205,8 @@ var _ = Describe("NewConfigUpdater", func() {
 			addErr := configUpdater.AddNewCollateralToConfig()
 			Expect(addErr).NotTo(HaveOccurred())
 			updatedConfig := configUpdater.GetUpdatedConfig()
-			expectedUpdatedConfig := config.TransformersConfigForTomlEncoding{
-				ExporterMetadata: config.ExporterMetaData{
+			expectedUpdatedConfig := types.TransformersConfigForTomlEncoding{
+				ExporterMetadata: types.ExporterMetaData{
 					Home:   "github.com/makerdao/vulcanizedb",
 					Name:   "transformerExporter",
 					Save:   false,
@@ -217,7 +218,7 @@ var _ = Describe("NewConfigUpdater", func() {
 						"median_eth_b",      // new median eth transformer
 					},
 				},
-				Contracts: config.Contracts{
+				Contracts: types.Contracts{
 					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
 					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
 					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,

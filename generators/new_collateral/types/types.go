@@ -1,4 +1,4 @@
-package config
+package types
 
 type Contract struct {
 	Address  string `toml:"address"`
