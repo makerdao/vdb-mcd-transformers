@@ -77,13 +77,13 @@ func FlipBatV110Address() string {
 func FlipCompV112Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_COMP_A_1_1_2"))
 }
-func FlipEthV100Address() string {
+func FlipEthAV100Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A_1_0_0"))
 }
-func FlipEthV109Address() string {
+func FlipEthAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A_1_0_9"))
 }
-func FlipEthV110Address() string {
+func FlipEthAV110Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_ETH_A_1_1_0"))
 }
 func FlipEthBV113Address() string {

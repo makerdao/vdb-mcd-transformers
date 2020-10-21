@@ -39,7 +39,7 @@ import (
 var _ = Describe("Executing the flip transformer", func() {
 	var (
 		db                = test_config.NewTestDB(test_config.NewTestNode())
-		contractAddress   = test_data.FlipEthV100Address()
+		contractAddress   = test_data.FlipEthAV100Address()
 		keccakAddress     = types.HexToKeccak256Hash(contractAddress)
 		repository        = flip.StorageRepository{ContractAddress: contractAddress}
 		storageKeysLookup = storage.NewKeysLookup(flip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
@@ -148,7 +148,7 @@ var _ = Describe("Executing the flip transformer", func() {
 			denyLog := test_data.CreateTestLog(header.Id, db)
 			denyModel := test_data.DenyModel()
 
-			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthV100Address(), db)
+			flipAddressID, flipAddressErr := shared.GetOrCreateAddress(test_data.FlipEthAV100Address(), db)
 			Expect(flipAddressErr).NotTo(HaveOccurred())
 
 			userAddress := "0xffb0382ca7cfdc4fc4d5cc8913af1393d7ee1ef1"
