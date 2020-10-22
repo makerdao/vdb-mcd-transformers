@@ -17,25 +17,9 @@
 package shared
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/ethereum/go-ethereum/common"
-)
-
-const (
-	OneTopicRequired    = 1
-	TwoTopicsRequired   = 2
-	ThreeTopicsRequired = 3
-	FourTopicsRequired  = 4
-	LogDataRequired     = true
-	LogDataNotRequired  = false
-)
-
-var (
-	ErrCouldNotCreateFK = func(err error) error {
-		return fmt.Errorf("transformer could not create FK: %v", err)
-	}
 )
 
 func GetLogNoteAddresses(arrayLength uint64, eventLogData []byte) ([]string, error) {

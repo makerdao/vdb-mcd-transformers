@@ -16,8 +16,10 @@
 
 package constants
 
+import "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+
 func AuctionFileSignature() string         { return getLogNoteTopicZero(auctionFileMethod()) }
-func BiteSignature() string                { return getEventTopicZero(biteMethod()) }
+func BiteSignature() string                { return constants.GetEventTopicZero(biteMethod()) }
 func CatClawSignature() string             { return getLogNoteTopicZero(catClawMethod()) }
 func CatFileBoxSignature() string          { return getLogNoteTopicZero(catFileBoxMethod()) }
 func CatFileChopLumpDunkSignature() string { return getLogNoteTopicZero(catFileChopLumpDunkMethod()) }
@@ -26,24 +28,24 @@ func CatFileVowSignature() string          { return getLogNoteTopicZero(catFileV
 func DealSignature() string                { return getLogNoteTopicZero(dealMethod()) }
 func DentSignature() string                { return getLogNoteTopicZero(dentMethod()) }
 func DenySignature() string                { return getLogNoteTopicZero(denyMethod()) }
-func FlapKickSignature() string            { return getEventTopicZero(flapKickMethod()) }
+func FlapKickSignature() string            { return constants.GetEventTopicZero(flapKickMethod()) }
 func FlipFileCatSignature() string         { return getLogNoteTopicZero(flipFileCatMethod()) }
-func FlipKickSignature() string            { return getEventTopicZero(flipKickMethod()) }
-func FlopKickSignature() string            { return getEventTopicZero(flopKickMethod()) }
+func FlipKickSignature() string            { return constants.GetEventTopicZero(flipKickMethod()) }
+func FlopKickSignature() string            { return constants.GetEventTopicZero(flopKickMethod()) }
 func JugDripSignature() string             { return getLogNoteTopicZero(jugDripMethod()) }
 func JugFileBaseSignature() string         { return getLogNoteTopicZero(jugFileBaseMethod()) }
 func JugFileIlkSignature() string          { return getLogNoteTopicZero(jugFileIlkMethod()) }
 func JugFileVowSignature() string          { return getLogNoteTopicZero(jugFileVowMethod()) }
 func JugInitSignature() string             { return getLogNoteTopicZero(jugInitMethod()) }
-func LogMedianPriceSignature() string      { return getEventTopicZero(logMedianPriceEvent()) }
-func LogValueSignature() string            { return getEventTopicZero(logValueMethod()) }
+func LogMedianPriceSignature() string      { return constants.GetEventTopicZero(logMedianPriceEvent()) }
+func LogValueSignature() string            { return constants.GetEventTopicZero(logValueMethod()) }
 func MedianDissBatchSignature() string     { return getLogNoteTopicZero(medianDissBatchMethod()) }
 func MedianDissSingleSignature() string    { return getLogNoteTopicZero(medianDissSingleMethod()) }
 func MedianDropSignature() string          { return getLogNoteTopicZero(medianDropMethod()) }
 func MedianKissBatchSignature() string     { return getLogNoteTopicZero(medianKissBatchMethod()) }
 func MedianKissSingleSignature() string    { return getLogNoteTopicZero(medianKissSingleMethod()) }
 func MedianLiftSignature() string          { return getLogNoteTopicZero(medianLiftMethod()) }
-func NewCdpSignature() string              { return getEventTopicZero(newCdpMethod()) }
+func NewCdpSignature() string              { return constants.GetEventTopicZero(newCdpMethod()) }
 func OsmChangeSignature() string           { return getLogNoteTopicZero(osmChangeMethod()) }
 func PotCageSignature() string             { return getLogNoteTopicZero(potCageMethod()) }
 func PotDripSignature() string             { return getLogNoteTopicZero(potDripMethod()) }
@@ -55,7 +57,7 @@ func RelySignature() string                { return getLogNoteTopicZero(relyMeth
 func SpotFileMatSignature() string         { return getLogNoteTopicZero(spotFileMatMethod()) }
 func SpotFileParSignature() string         { return getLogNoteTopicZero(spotFileParMethod()) }
 func SpotFilePipSignature() string         { return getLogNoteTopicZero(spotFilePipMethod()) }
-func SpotPokeSignature() string            { return getEventTopicZero(spotPokeMethod()) }
+func SpotPokeSignature() string            { return constants.GetEventTopicZero(spotPokeMethod()) }
 func TendSignature() string                { return getLogNoteTopicZero(tendMethod()) }
 func TickSignature() string                { return getLogNoteTopicZero(tickMethod()) }
 func VatFileDebtCeilingSignature() string  { return getLogNoteTopicZero(vatFileDebtCeilingMethod()) }

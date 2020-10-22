@@ -27,6 +27,7 @@ github.com/Azure/go-autorest/tracing v0.5.0/go.mod h1:r/s2XiOKccPW3HrqB+W0TQzfbt
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/ClickHouse/clickhouse-go v1.4.3 h1:iAFMa2UrQdR5bHJ2/yaSLffZkxpcOYQMCUuKeNXGdqc=
 github.com/ClickHouse/clickhouse-go v1.4.3/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 h1:fLjPD/aNc3UIOA6tDi6QXUemppXK3P9BI7mr2hd6gx8=
@@ -219,6 +220,8 @@ github.com/makerdao/go-ethereum v1.9.21-rc1 h1:izuLZxMHei6UX89Q2Ld1v5PYcuYEhw34/
 github.com/makerdao/go-ethereum v1.9.21-rc1/go.mod h1:RXAVzbGrSGmDkDnHymruTAIEjUR3E4TX0EOpaj702sI=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20201015220351-4d84cb49b1ad h1:T/LaC4XXVTYawy24fZnZXwTsdTnKHrXvPu6pCNVim3w=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20201015220351-4d84cb49b1ad/go.mod h1:agx+X5G6Tn5P83IeP3rgPLPIk6PVYB1hPZ6U7pn8+Wc=
+github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b h1:6T5wwMdq2UatMe5qqfMCOz+JiOK2swO309bBFRdDBLQ=
+github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b/go.mod h1:agx+X5G6Tn5P83IeP3rgPLPIk6PVYB1hPZ6U7pn8+Wc=
 github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200923220430-893edc1b439b/go.mod h1:1vWEtupceW2bhXe0/NpRmhEpoUWzdmk+44xLxBsDx80=
 github.com/makerdao/vulcanizedb v0.1.0 h1:CPNLVGaw6R3+tHnUlBiDULr3lsKziFa0UM8Nc/JsYnw=
 github.com/makerdao/vulcanizedb v0.1.0/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=

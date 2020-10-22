@@ -19,9 +19,9 @@ package constants
 import "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 
 // TODO Figure out signatures automatically from config somehow :(
-func Cat100ABI() string     { return getContractABI("MCD_CAT_1.0.0") }
-func Cat110ABI() string     { return getContractABI("MCD_CAT_1.1.0") }
-func CdpManagerABI() string { return getContractABI("CDP_MANAGER") }
+func Cat100ABI() string     { return constants.GetContractABI("MCD_CAT_1.0.0") }
+func Cat110ABI() string     { return constants.GetContractABI("MCD_CAT_1.1.0") }
+func CdpManagerABI() string { return constants.GetContractABI("CDP_MANAGER") }
 func FlapABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLAP_1.0.0",
@@ -74,7 +74,7 @@ func FlopABI() string {
 		"MCD_FLOP_1.0.9",
 	})
 }
-func JugABI() string { return getContractABI("MCD_JUG") }
+func JugABI() string { return constants.GetContractABI("MCD_JUG") }
 func MedianABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
@@ -103,118 +103,120 @@ func OsmABI() string {
 		"OSM_ZRX",
 	})
 }
-func PotABI() string  { return getContractABI("MCD_POT") }
-func SpotABI() string { return getContractABI("MCD_SPOT") }
-func VatABI() string  { return getContractABI("MCD_VAT") }
-func VowABI() string  { return getContractABI("MCD_VOW") }
+func PotABI() string  { return constants.GetContractABI("MCD_POT") }
+func SpotABI() string { return constants.GetContractABI("MCD_SPOT") }
+func VatABI() string  { return constants.GetContractABI("MCD_VAT") }
+func VowABI() string  { return constants.GetContractABI("MCD_VOW") }
 
-func auctionFileMethod() string { return getSolidityFunctionSignature(FlipV100ABI(), "file") }
-func biteMethod() string        { return getSolidityFunctionSignature(Cat100ABI(), "Bite") }
-func catClawMethod() string     { return getSolidityFunctionSignature(Cat110ABI(), "claw") }
+func auctionFileMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "file") }
+func biteMethod() string        { return constants.GetSolidityFunctionSignature(Cat100ABI(), "Bite") }
+func catClawMethod() string     { return constants.GetSolidityFunctionSignature(Cat110ABI(), "claw") }
 func catFileBoxMethod() string {
-	return GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "uint256"})
 }
 func catFileChopLumpDunkMethod() string {
-	return GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func catFileFlipMethod() string {
-	return GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
 func catFileVowMethod() string {
-	return GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "address"})
 }
-func dealMethod() string     { return getSolidityFunctionSignature(FlipV100ABI(), "deal") }
-func dentMethod() string     { return getSolidityFunctionSignature(FlipV100ABI(), "dent") }
-func denyMethod() string     { return getSolidityFunctionSignature(Cat100ABI(), "deny") }
-func flapKickMethod() string { return getSolidityFunctionSignature(FlapABI(), "Kick") }
-func flipKickMethod() string { return getSolidityFunctionSignature(FlipV100ABI(), "Kick") }
+func dealMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "deal") }
+func dentMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "dent") }
+func denyMethod() string     { return constants.GetSolidityFunctionSignature(Cat100ABI(), "deny") }
+func flapKickMethod() string { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
+func flipKickMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
-	return GetOverloadedFunctionSignature(FlipV110ABI(), "file", []string{"bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(FlipV110ABI(), "file", []string{"bytes32", "address"})
 }
-func flopKickMethod() string { return getSolidityFunctionSignature(FlopABI(), "Kick") }
-func jugDripMethod() string  { return getSolidityFunctionSignature(JugABI(), "drip") }
+func flopKickMethod() string { return constants.GetSolidityFunctionSignature(FlopABI(), "Kick") }
+func jugDripMethod() string  { return constants.GetSolidityFunctionSignature(JugABI(), "drip") }
 func jugFileBaseMethod() string {
-	return GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "uint256"})
 }
 func jugFileIlkMethod() string {
-	return GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func jugFileVowMethod() string {
-	return GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
-func jugInitMethod() string       { return getSolidityFunctionSignature(JugABI(), "init") }
-func logMedianPriceEvent() string { return getSolidityFunctionSignature(MedianABI(), "LogMedianPrice") }
-func logValueMethod() string      { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
+func jugInitMethod() string { return constants.GetSolidityFunctionSignature(JugABI(), "init") }
+func logMedianPriceEvent() string {
+	return constants.GetSolidityFunctionSignature(MedianABI(), "LogMedianPrice")
+}
+func logValueMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "LogValue") }
 
 func medianDissBatchMethod() string {
-	return GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
+	return constants.GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
 }
 func medianDissSingleMethod() string {
-	return GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+	return constants.GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
 }
 func medianDropMethod() string {
-	return getSolidityFunctionSignature(MedianABI(), "drop")
+	return constants.GetSolidityFunctionSignature(MedianABI(), "drop")
 }
 func medianLiftMethod() string {
-	return getSolidityFunctionSignature(MedianABI(), "lift")
+	return constants.GetSolidityFunctionSignature(MedianABI(), "lift")
 }
 func medianKissBatchMethod() string {
-	return GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
+	return constants.GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
 }
 func medianKissSingleMethod() string {
-	return GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
+	return constants.GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
 }
-func newCdpMethod() string    { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
-func osmChangeMethod() string { return getSolidityFunctionSignature(OsmABI(), "change") }
-func potCageMethod() string   { return getSolidityFunctionSignature(PotABI(), "cage") }
-func potDripMethod() string   { return getSolidityFunctionSignature(PotABI(), "drip") }
-func potExitMethod() string   { return getSolidityFunctionSignature(PotABI(), "exit") }
+func newCdpMethod() string    { return constants.GetSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
+func osmChangeMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "change") }
+func potCageMethod() string   { return constants.GetSolidityFunctionSignature(PotABI(), "cage") }
+func potDripMethod() string   { return constants.GetSolidityFunctionSignature(PotABI(), "drip") }
+func potExitMethod() string   { return constants.GetSolidityFunctionSignature(PotABI(), "exit") }
 func potFileDSRMethod() string {
-	return GetOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "uint256"})
 }
 func potFileVowMethod() string {
-	return GetOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(PotABI(), "file", []string{"bytes32", "address"})
 }
-func potJoinMethod() string { return getSolidityFunctionSignature(PotABI(), "join") }
-func relyMethod() string    { return getSolidityFunctionSignature(Cat110ABI(), "rely") }
+func potJoinMethod() string { return constants.GetSolidityFunctionSignature(PotABI(), "join") }
+func relyMethod() string    { return constants.GetSolidityFunctionSignature(Cat110ABI(), "rely") }
 
 func spotFileMatMethod() string {
-	return GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func spotFileParMethod() string {
-	return GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "uint256"})
 }
 func spotFilePipMethod() string {
-	return GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(SpotABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
-func spotPokeMethod() string { return getSolidityFunctionSignature(SpotABI(), "Poke") }
-func tendMethod() string     { return getSolidityFunctionSignature(FlipV100ABI(), "tend") }
-func tickMethod() string     { return getSolidityFunctionSignature(FlipV100ABI(), "tick") }
+func spotPokeMethod() string { return constants.GetSolidityFunctionSignature(SpotABI(), "Poke") }
+func tendMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "tend") }
+func tickMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "tick") }
 func vatFileDebtCeilingMethod() string {
-	return GetOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "uint256"})
 }
 func vatFileIlkMethod() string {
-	return GetOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(VatABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
-func vatFluxMethod() string { return getSolidityFunctionSignature(VatABI(), "flux") }
-func vatFoldMethod() string { return getSolidityFunctionSignature(VatABI(), "fold") }
-func vatForkMethod() string { return getSolidityFunctionSignature(VatABI(), "fork") }
-func vatFrobMethod() string { return getSolidityFunctionSignature(VatABI(), "frob") }
-func vatGrabMethod() string { return getSolidityFunctionSignature(VatABI(), "grab") }
-func vatHealMethod() string { return getSolidityFunctionSignature(VatABI(), "heal") }
-func vatHopeMethod() string { return getSolidityFunctionSignature(VatABI(), "hope") }
-func vatInitMethod() string { return getSolidityFunctionSignature(VatABI(), "init") }
-func vatMoveMethod() string { return getSolidityFunctionSignature(VatABI(), "move") }
-func vatNopeMethod() string { return getSolidityFunctionSignature(VatABI(), "nope") }
-func vatSlipMethod() string { return getSolidityFunctionSignature(VatABI(), "slip") }
-func vatSuckMethod() string { return getSolidityFunctionSignature(VatABI(), "suck") }
-func vowFessMethod() string { return getSolidityFunctionSignature(VowABI(), "fess") }
+func vatFluxMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "flux") }
+func vatFoldMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "fold") }
+func vatForkMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "fork") }
+func vatFrobMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "frob") }
+func vatGrabMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "grab") }
+func vatHealMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "heal") }
+func vatHopeMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "hope") }
+func vatInitMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "init") }
+func vatMoveMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "move") }
+func vatNopeMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "nope") }
+func vatSlipMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "slip") }
+func vatSuckMethod() string { return constants.GetSolidityFunctionSignature(VatABI(), "suck") }
+func vowFessMethod() string { return constants.GetSolidityFunctionSignature(VowABI(), "fess") }
 func vowFileAuctionAttributesMethod() string {
-	return GetOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "uint256"})
+	return constants.GetOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "uint256"})
 }
 func vowFileAuctionAddressMethod() string {
-	return GetOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "address"})
+	return constants.GetOverloadedFunctionSignature(VowABI(), "file", []string{"bytes32", "address"})
 }
-func vowFlogMethod() string { return getSolidityFunctionSignature(VowABI(), "flog") }
-func vowHealMethod() string { return getSolidityFunctionSignature(VowABI(), "heal") }
-func yankMethod() string    { return getSolidityFunctionSignature(FlipV100ABI(), "yank") }
+func vowFlogMethod() string { return constants.GetSolidityFunctionSignature(VowABI(), "flog") }
+func vowHealMethod() string { return constants.GetSolidityFunctionSignature(VowABI(), "heal") }
+func yankMethod() string    { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "yank") }

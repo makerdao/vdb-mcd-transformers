@@ -6,7 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.22
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vdb-transformer-utilities v0.0.0-20201015220351-4d84cb49b1ad
+	github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b
 	github.com/makerdao/vulcanizedb v0.1.0
 	github.com/onsi/ginkgo v1.14.1
 	github.com/onsi/gomega v1.10.2
