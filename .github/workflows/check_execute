@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import subprocess, sys, argparse, time
 
-parser = argparse.ArgumentParser(description="Check the startup of the execute container")
-parser.add_argument("image", help="name of the image you're running")
+parser = argparse.ArgumentParser(description="Check the startup of a container from a docker image")
+parser.add_argument("image", help="name of the image")
 parser.add_argument("--client_ipcpath", help="IPC Path of the geth container", required=True)
 parser.add_argument("--database_hostname", help="hostname of the postgres instance", default="postgres")
 parser.add_argument("--database_name", help="name of the postgres database", default="postgres")
@@ -32,7 +32,7 @@ try:
   print(f'docker run failed to start image\nout: {stdout}')
   sys.exit(popen.returncode)
 except subprocess.TimeoutExpired:
-  print(f'starting execute image with pid {popen.pid}')
+  print(f'started container from image {args.image} with pid {popen.pid}')
 
 time_waiting = 0
 while time_waiting <= args.wait_time:
@@ -43,14 +43,14 @@ while time_waiting <= args.wait_time:
                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   status = cp.stdout.decode('utf-8').strip().replace('"', '')
   if '(healthy)' in status:
-    print('execute container is healthy')
+    print('container is healthy')
     popen.kill()
     sys.exit(0)
   else:
     print(f'after {time_waiting} seconds container is not healthy, wait 5 more: {status}')
     time_waiting = time_waiting + 5
 
-print('execute container never became healthy, please run it locally to see if something is wrong')
+print('container never became healthy, please run it locally to see if something is wrong')
 stdout, stderr = popen.communicate(timeout=5)
 print(f'stdout: {stdout}')
 print(f'stderr: {stderr}')
