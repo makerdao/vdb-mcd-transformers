@@ -4,7 +4,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
-	"github.com/spf13/viper"
+	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 )
 
 type IParse interface {
@@ -13,46 +14,71 @@ type IParse interface {
 type Parser struct{}
 
 func (Parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
-	viperConfig := viper.New()
-	viperConfig.AddConfigPath(configFilePath)
-	viperConfig.SetConfigName(configFileName)
-	readConfigErr := viperConfig.ReadInConfig()
-	if readConfigErr != nil {
-		return types.TransformersConfig{}, readConfigErr
-	}
-
-	var tomlConfig types.TransformersConfig
+	var tomlConfig types.TransformersConfigForToml
 	fullConfigFilePath := helpers.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
 		return types.TransformersConfig{}, decodeErr
 	}
 
-	//TODO: if we update the config file format to separate the exporter metadata from the exporters, this step should
-	// no longer be necessary - toml.DecodeFile should be able to properly decode those exporters
-	exporters, exporterErr := getTransformerExporters(tomlConfig.ExporterMetadata.TransformerNames, viperConfig)
-	if exporterErr != nil {
-		return types.TransformersConfig{}, exporterErr
+	metadata, metadataErr := parseExporterMetaData(tomlConfig)
+	if metadataErr != nil {
+		return types.TransformersConfig{}, metadataErr
 	}
 
-	tomlConfig.TransformerExporters = exporters
-	return tomlConfig, nil
+	transformerExporters, transformerExportersErr := parseTransformerExporters(tomlConfig)
+	if transformerExportersErr != nil {
+		return types.TransformersConfig{}, transformerExportersErr
+	}
+
+	return types.TransformersConfig{
+		ExporterMetadata:     metadata,
+		TransformerExporters: transformerExporters,
+		Contracts:            tomlConfig.Contracts,
+	}, nil
 }
 
-func getTransformerExporters(transformerNames []string, viperConfig *viper.Viper) (types.TransformerExporters, error) {
-	exporters := make(types.TransformerExporters)
-	for _, transformerName := range transformerNames {
-		transformer := viperConfig.GetStringMapString("exporter." + transformerName)
-		transformerContracts := viperConfig.GetStringMapStringSlice("exporter." + transformerName)
-		//TODO: handle errors in case one of the values doesn't exist
-		exporters[transformerName] = types.TransformerExporter{
-			Path:       transformer["path"],
-			Type:       transformer["type"],
-			Repository: transformer["repository"],
-			Migrations: transformer["migrations"],
-			Contracts:  transformerContracts["contracts"],
-			Rank:       transformer["rank"],
-		}
+func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.ExporterMetaData, error) {
+	home, homeOk := tomlConfig.Exporter["home"].(string)
+	name, nameOk := tomlConfig.Exporter["name"].(string)
+	save, saveOk := tomlConfig.Exporter["save"].(bool)
+	schema, schemaOk := tomlConfig.Exporter["schema"].(string)
+	if !homeOk || !nameOk || !saveOk || !schemaOk {
+		return types.ExporterMetaData{}, errors.New("error asserting exporter meta data types")
 	}
+
+	var transformerNames []string
+	decodeErr := mapstructure.Decode(tomlConfig.Exporter["transformerNames"], &transformerNames)
+	if decodeErr != nil {
+		return types.ExporterMetaData{}, decodeErr
+	}
+
+	return types.ExporterMetaData{
+		Home:             home,
+		Name:             name,
+		Save:             save,
+		Schema:           schema,
+		TransformerNames: transformerNames,
+	}, nil
+}
+
+func parseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
+	delete(tomlConfig.Exporter, "home")
+	delete(tomlConfig.Exporter, "name")
+	delete(tomlConfig.Exporter, "save")
+	delete(tomlConfig.Exporter, "schema")
+	delete(tomlConfig.Exporter, "transformerNames")
+
+	var exporters = make(map[string]types.TransformerExporter)
+	for exporterKey, exporterValue := range tomlConfig.Exporter {
+		var result types.TransformerExporter
+		decodeErr := mapstructure.Decode(exporterValue, &result)
+		if decodeErr != nil {
+			return types.TransformerExporters{}, decodeErr
+		}
+
+		exporters[exporterKey] = result
+	}
+
 	return exporters, nil
 }

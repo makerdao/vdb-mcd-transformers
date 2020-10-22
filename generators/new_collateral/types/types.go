@@ -8,6 +8,13 @@ type Contract struct {
 
 type Contracts map[string]Contract
 
+// TransformersConfigForToml is used as the struct to decode and encode the toml config file
+type TransformersConfigForToml struct {
+	Exporter  map[string]interface{}
+	Contracts Contracts `toml:"contract"`
+}
+
+// TransformersConfig is used as a domain object while updating different pieces in the config in the updater
 type TransformersConfig struct {
 	ExporterMetadata     ExporterMetaData `toml:"exporter"`
 	TransformerExporters TransformerExporters
