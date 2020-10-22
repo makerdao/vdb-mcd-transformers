@@ -28,7 +28,7 @@ var _ = Describe("Flip file cat transformer", func() {
 		models, err := transformer.ToModels(constants.FlipV110ABI(), []core.EventLog{test_data.FlipFileCatEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
-		addressID, addressErr := shared.GetOrCreateAddress(test_data.FlipEthV110Address(), db)
+		addressID, addressErr := shared.GetOrCreateAddress(test_data.FlipEthAV110Address(), db)
 		Expect(addressErr).NotTo(HaveOccurred())
 
 		msgSenderID, msgSenderErr := shared.GetOrCreateAddress("0xbe8e3e3618f7474f8cb1d074a26affef007e98fb", db)

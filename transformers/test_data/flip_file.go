@@ -13,7 +13,7 @@ import (
 )
 
 var rawFlipFileCatLog = types.Log{
-	Address: common.HexToAddress(FlipEthV110Address()),
+	Address: common.HexToAddress(FlipEthAV110Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.FlipFileCatSignature()),
 		common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"),

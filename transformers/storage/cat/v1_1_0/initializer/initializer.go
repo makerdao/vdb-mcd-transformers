@@ -9,7 +9,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 )
 
-var catAddress = constants.GetContractAddress("MCD_CAT_1.1.0")
+var catAddress = constants.GetContractAddress("MCD_CAT_1_1_0")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(catAddress),
 	StorageKeysLookup: storage.NewKeysLookup(v1_1_0.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, catAddress)),
