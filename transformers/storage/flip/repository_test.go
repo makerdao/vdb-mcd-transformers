@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
@@ -162,7 +162,7 @@ var _ = Describe("Flip storage repository", func() {
 				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.FlipIlkTable))
 				getErr := db.Get(&result, query)
 				Expect(getErr).NotTo(HaveOccurred())
-				ilkID, ilkErr := shared2.GetOrCreateIlk(FakeIlk, db)
+				ilkID, ilkErr := mcdShared.GetOrCreateIlk(FakeIlk, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 				AssertVariable(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10))
 			})

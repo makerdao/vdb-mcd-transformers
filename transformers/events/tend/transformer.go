@@ -18,7 +18,7 @@ package tend
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -49,7 +49,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		bidId := log.Log.Topics[2].Big()
 		lot := log.Log.Topics[3].Big().String()
-		rawBid, bidErr := shared2.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		rawBid, bidErr := mcdShared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if bidErr != nil {
 			return nil, bidErr
 		}

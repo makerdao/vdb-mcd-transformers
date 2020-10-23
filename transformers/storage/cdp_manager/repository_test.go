@@ -26,7 +26,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
@@ -295,7 +295,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				readErr := db.Get(&result, query)
 				Expect(readErr).NotTo(HaveOccurred())
 
-				ilkId, ilkErr := shared2.GetOrCreateIlk(fakeIlksValue, db)
+				ilkId, ilkErr := mcdShared.GetOrCreateIlk(fakeIlksValue, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 
 				AssertMapping(result, diffID, fakeHeaderID, fakeCdpi, strconv.FormatInt(ilkId, 10))

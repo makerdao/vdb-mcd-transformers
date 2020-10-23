@@ -22,7 +22,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
@@ -79,7 +79,7 @@ var _ = Describe("Jug File Ilk EventTransformer", func() {
 		msgSenderId, msgSenderErr := repository.GetOrCreateAddress(db, msgSender)
 		Expect(msgSenderErr).NotTo(HaveOccurred())
 
-		ilkID, err := shared2.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		ilkID, err := mcdShared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(dbResult.MsgSender).To(Equal(msgSenderId))

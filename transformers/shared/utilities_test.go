@@ -19,9 +19,9 @@ package shared_test
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	shared2 "github.com/makerdao/vdb-transformer-utilities/pkg/shared"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -30,45 +30,45 @@ var _ = Describe("Shared utilities", func() {
 	Describe("getting log note data bytes at index", func() {
 		Describe("extracting Vat Note data", func() {
 			It("returns error if index less than two (arguments 0 and 1 are always in topics)", func() {
-				_, err := shared.GetLogNoteArgumentAtIndex(1, []byte{})
+				_, err := mcdShared.GetLogNoteArgumentAtIndex(1, []byte{})
 
 				Expect(err).To(HaveOccurred())
-				Expect(err).To(MatchError(shared.ErrInvalidIndex(1)))
+				Expect(err).To(MatchError(mcdShared.ErrInvalidIndex(1)))
 			})
 
 			It("returns error if index greater than five (no functions with > 6 arguments)", func() {
-				_, err := shared.GetLogNoteArgumentAtIndex(6, []byte{})
+				_, err := mcdShared.GetLogNoteArgumentAtIndex(6, []byte{})
 
 				Expect(err).To(HaveOccurred())
-				Expect(err).To(MatchError(shared.ErrInvalidIndex(6)))
+				Expect(err).To(MatchError(mcdShared.ErrInvalidIndex(6)))
 			})
 
 			It("extracts fourth argument of four arguments", func() {
-				wadBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.VatFluxEventLog.Log.Data)
+				wadBytes, err := mcdShared.GetLogNoteArgumentAtIndex(3, test_data.VatFluxEventLog.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				wadInt := shared2.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
+				wadInt := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 				Expect(wadInt.String()).To(Equal(test_data.VatFluxModel().ColumnValues["wad"].(string)))
 			})
 
 			It("extracts fourth of five arguments", func() {
-				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
+				dinkBytes, err := mcdShared.GetLogNoteArgumentAtIndex(3, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dinkInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 				Expect(dinkInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dink"].(string)))
 			})
 
 			It("extracts fifth of five arguments", func() {
-				dartBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
+				dartBytes, err := mcdShared.GetLogNoteArgumentAtIndex(4, test_data.VatForkEventLogWithNegativeDinkDart.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dartInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
+				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 				Expect(dartInt.String()).To(Equal(test_data.VatForkModelWithNegativeDinkDart().ColumnValues["dart"].(string)))
 			})
 
 			It("extracts the fourth of six arguments", func() {
-				wBytes, err := shared.GetLogNoteArgumentAtIndex(3, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
+				wBytes, err := mcdShared.GetLogNoteArgumentAtIndex(3, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
 				wAddress := common.BytesToAddress(wBytes)
@@ -76,18 +76,18 @@ var _ = Describe("Shared utilities", func() {
 			})
 
 			It("extracts the fifth of six arguments", func() {
-				dinkBytes, err := shared.GetLogNoteArgumentAtIndex(4, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
+				dinkBytes, err := mcdShared.GetLogNoteArgumentAtIndex(4, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dinkInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
+				dinkInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 				Expect(dinkInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dink"]))
 			})
 
 			It("extracts the sixth of six arguments", func() {
-				dartBytes, err := shared.GetLogNoteArgumentAtIndex(5, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
+				dartBytes, err := mcdShared.GetLogNoteArgumentAtIndex(5, test_data.VatGrabEventLogWithPositiveDink.Log.Data)
 
 				Expect(err).NotTo(HaveOccurred())
-				dartInt := shared2.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
+				dartInt := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 				Expect(dartInt.String()).To(Equal(test_data.VatGrabModelWithPositiveDink().ColumnValues["dart"]))
 			})
 		})

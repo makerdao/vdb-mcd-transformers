@@ -18,7 +18,7 @@ package chop_lump_dunk
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -44,12 +44,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		if msgSenderErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
-		ilkID, ilkErr := shared2.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
+		ilkID, ilkErr := mcdShared.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
-		dataBytes, parseErr := shared2.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		dataBytes, parseErr := mcdShared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}

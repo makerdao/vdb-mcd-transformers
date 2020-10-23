@@ -22,7 +22,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -66,7 +66,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 	var models []event.InsertionModel
 	for _, spotPokeEntity := range entities {
 		ilk := hexutil.Encode(spotPokeEntity.Ilk[:])
-		ilkID, ilkErr := shared2.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := mcdShared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}

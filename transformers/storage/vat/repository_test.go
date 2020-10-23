@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
@@ -157,7 +157,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key_one, guy AS key_two, gem AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatGemTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})
@@ -208,7 +208,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, art AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkArtTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
@@ -259,7 +259,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, dust AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkDustTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
@@ -310,7 +310,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, line AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkLineTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
@@ -361,7 +361,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, rate AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkRateTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
@@ -412,7 +412,7 @@ var _ = Describe("Vat storage repository", func() {
 			query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS key, spot AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatIlkSpotTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 		})
@@ -507,7 +507,7 @@ var _ = Describe("Vat storage repository", func() {
 				shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})
@@ -786,7 +786,7 @@ var _ = Describe("Vat storage repository", func() {
 				INNER JOIN maker.ilks on maker.urns.ilk_id = maker.ilks.id`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
-			ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 			Expect(err).NotTo(HaveOccurred())
 			AssertDoubleMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeGuy, fakeUint256)
 		})

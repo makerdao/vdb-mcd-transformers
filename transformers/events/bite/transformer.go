@@ -22,7 +22,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -70,7 +70,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		hexIlk := hexutil.Encode(biteEntity.Ilk[:])
 		urn := common.BytesToAddress(biteEntity.Urn[:]).Hex()
 
-		urnID, urnErr := shared2.GetOrCreateUrn(urn, hexIlk, db)
+		urnID, urnErr := mcdShared.GetOrCreateUrn(urn, hexIlk, db)
 		if urnErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(urnErr)
 		}

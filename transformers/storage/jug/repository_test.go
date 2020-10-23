@@ -23,7 +23,7 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
@@ -116,7 +116,7 @@ var _ = Describe("Jug storage repository", func() {
 				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, rho AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkRhoTable))
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)
 			})
@@ -164,7 +164,7 @@ var _ = Describe("Jug storage repository", func() {
 				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS KEY, duty AS VALUE FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.JugIlkDutyTable))
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
-				ilkID, err := shared2.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
 				Expect(err).NotTo(HaveOccurred())
 
 				AssertMapping(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10), fakeUint256)

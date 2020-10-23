@@ -19,7 +19,7 @@ package vat_frob
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -41,25 +41,25 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		urn := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		v := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
 
-		wBytes, wErr := shared2.GetLogNoteArgumentAtIndex(3, log.Log.Data)
+		wBytes, wErr := mcdShared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if wErr != nil {
 			return nil, wErr
 		}
 		w := common.BytesToAddress(wBytes).String()
 
-		dinkBytes, dinkErr := shared2.GetLogNoteArgumentAtIndex(4, log.Log.Data)
+		dinkBytes, dinkErr := mcdShared.GetLogNoteArgumentAtIndex(4, log.Log.Data)
 		if dinkErr != nil {
 			return nil, dinkErr
 		}
 		dink := shared.ConvertInt256HexToBigInt(hexutil.Encode(dinkBytes))
 
-		dartBytes, dartErr := shared2.GetLogNoteArgumentAtIndex(5, log.Log.Data)
+		dartBytes, dartErr := mcdShared.GetLogNoteArgumentAtIndex(5, log.Log.Data)
 		if dartErr != nil {
 			return nil, dartErr
 		}
 		dart := shared.ConvertInt256HexToBigInt(hexutil.Encode(dartBytes))
 
-		urnID, urnErr := shared2.GetOrCreateUrn(urn, ilk, db)
+		urnID, urnErr := mcdShared.GetOrCreateUrn(urn, ilk, db)
 		if urnErr != nil {
 			return nil, urnErr
 		}

@@ -27,7 +27,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	query_helper "github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
@@ -931,7 +931,7 @@ func insertCdpManagerCdpi(blockNumber int64, cdpi int, db *postgres.DB) {
 func insertVatFold(urn string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFoldLog := test_data.CreateTestLog(headerID, db)
-	ilkID, ilkErr := shared2.GetOrCreateIlk(query_helper.FakeIlk.Hex, db)
+	ilkID, ilkErr := mcdShared.GetOrCreateIlk(query_helper.FakeIlk.Hex, db)
 	Expect(ilkErr).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -978,7 +978,7 @@ func insertVowFess(tab string, timestamp, blockNumber int64, db *postgres.DB) {
 func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatInitLog := test_data.CreateTestLog(headerID, db)
-	ilkID, err := shared2.GetOrCreateIlk(ilk, db)
+	ilkID, err := mcdShared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_init (header_id, ilk_id, log_id)
@@ -991,7 +991,7 @@ func insertVatInit(ilk string, blockNumber int64, db *postgres.DB) {
 func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFluxLog := test_data.CreateTestLog(headerID, db)
-	ilkID, err := shared2.GetOrCreateIlk(ilk, db)
+	ilkID, err := mcdShared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -1005,7 +1005,7 @@ func insertVatFlux(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 func insertVatFork(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatForkLog := test_data.CreateTestLog(headerID, db)
-	ilkID, err := shared2.GetOrCreateIlk(ilk, db)
+	ilkID, err := mcdShared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -1019,7 +1019,7 @@ func insertVatFork(ilk, src, dst string, blockNumber int64, db *postgres.DB) {
 func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatFrobLog := test_data.CreateTestLog(headerID, db)
-	urnID, err := shared2.GetOrCreateUrn(urn, ilk, db)
+	urnID, err := mcdShared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -1033,7 +1033,7 @@ func insertVatFrob(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 func insertVatGrab(ilk, urn, v, w string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatGrabLog := test_data.CreateTestLog(headerID, db)
-	urnID, err := shared2.GetOrCreateUrn(urn, ilk, db)
+	urnID, err := mcdShared.GetOrCreateUrn(urn, ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 
 	_, execErr := db.Exec(
@@ -1086,7 +1086,7 @@ func insertVatMove(src, dst string, blockNumber int64, db *postgres.DB) {
 func insertVatSlip(ilk, usr string, blockNumber int64, db *postgres.DB) {
 	headerID := insertHeader(db, blockNumber)
 	vatSlipLog := test_data.CreateTestLog(headerID, db)
-	ilkID, err := shared2.GetOrCreateIlk(ilk, db)
+	ilkID, err := mcdShared.GetOrCreateIlk(ilk, db)
 	Expect(err).NotTo(HaveOccurred())
 	_, execErr := db.Exec(
 		`INSERT INTO maker.vat_slip (header_id, ilk_id, usr, log_id)

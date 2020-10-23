@@ -18,7 +18,7 @@ package flip
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	shared2 "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -46,12 +46,12 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 		ilk := log.Log.Topics[2].Hex()
-		ilkID, ilkErr := shared2.GetOrCreateIlk(ilk, db)
+		ilkID, ilkErr := mcdShared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
-		flipBytes, parseErr := shared2.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		flipBytes, parseErr := mcdShared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if parseErr != nil {
 			return nil, parseErr
 		}
