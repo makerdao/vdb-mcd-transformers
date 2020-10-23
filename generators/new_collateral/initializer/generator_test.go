@@ -13,8 +13,11 @@ import (
 
 var _ = Describe("GeneratorFlipInitializer", func() {
 	var (
-		collateral             = types.NewCollateral("TEST-COLLATERAL", "0.1.2")
-		generator              = initializer.Generator{Collateral: collateral}
+		collateral = types.NewCollateral("TEST-COLLATERAL", "0.1.2")
+		generator  = initializer.Generator{
+			Collateral:                collateral,
+			MedianInitializerRequired: true,
+		}
 		testFlipCollateralPath = filepath.Join(
 			helpers.GetFlipStorageInitializersPath(), "test_collateral",
 		)
@@ -50,5 +53,17 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 
 		removeTestFile := os.RemoveAll(testMedianCollateralPath)
 		Expect(removeTestFile).NotTo(HaveOccurred())
+	})
+
+	It("doesn't create a median initializer if it is not configured to do so", func() {
+		generator = initializer.Generator{
+			Collateral:                collateral,
+			MedianInitializerRequired: false,
+		}
+		initializerErr := generator.GenerateMedianInitializer()
+		Expect(initializerErr).NotTo(HaveOccurred())
+
+		_, fileErr := os.Stat(testMedianCollateralFullPath)
+		Expect(os.IsNotExist(fileErr)).To(BeTrue())
 	})
 })

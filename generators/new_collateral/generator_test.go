@@ -21,20 +21,23 @@ var _ = Describe("NewCollateral", func() {
 		fullConfigPath      = filePath + fileName + ".toml"
 		configParser        test_data.MockConfigParser
 		configUpdater       test_data.MockConfigUpdater
+		initializerGenerator test_data.MockInitializerGenerator
 		collateralGenerator new_collateral.NewCollateralGenerator
 	)
 
 	BeforeEach(func() {
 		configParser = test_data.MockConfigParser{}
 		configUpdater = test_data.MockConfigUpdater{}
+		initializerGenerator = test_data.MockInitializerGenerator{}
 		collateralGenerator = new_collateral.NewCollateralGenerator{
 			ConfigFileName: fileName,
 			ConfigFilePath: filePath,
 			ConfigParser:   &configParser,
 			ConfigUpdater:  &configUpdater,
+			InitializerGenerator: &initializerGenerator,
 		}
-
 	})
+
 	Context("AddToConfig", func() {
 		It("parses the current config", func() {
 			err := collateralGenerator.AddToConfig()
@@ -136,6 +139,34 @@ var _ = Describe("NewCollateral", func() {
 				Schema:   test_data.UpdatedConfig.ExporterMetadata.Schema,
 			}
 			Expect(config).To(Equal(expectedPluginConfig))
+		})
+	})
+
+	Context("WriteInitializers", func() {
+		It("writes the flip initializer file", func() {
+			initializerErr := collateralGenerator.WriteInitializers()
+			Expect(initializerErr).NotTo(HaveOccurred())
+			Expect(initializerGenerator.GenerateFlipInitializerCalled).To(BeTrue())
+		})
+
+		It("returns an error if writing the flip initializer fails", func() {
+			initializerGenerator.FlipInitializerErr = fakes.FakeError
+			initializerErr := collateralGenerator.WriteInitializers()
+			Expect(initializerErr).To(HaveOccurred())
+			Expect(initializerErr).To(MatchError(fakes.FakeError))
+		})
+
+		It("writes the median initializer file", func() {
+			initializerErr := collateralGenerator.WriteInitializers()
+			Expect(initializerErr).NotTo(HaveOccurred())
+			Expect(initializerGenerator.GenerateMedianInitializerCalled).To(BeTrue())
+		})
+
+		It("returns an error if writing the median initializer fails", func() {
+			initializerGenerator.MedianInitializerErr = fakes.FakeError
+			initializerErr := collateralGenerator.WriteInitializers()
+			Expect(initializerErr).To(HaveOccurred())
+			Expect(initializerErr).To(MatchError(fakes.FakeError))
 		})
 	})
 })
