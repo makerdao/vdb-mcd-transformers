@@ -1,13 +1,5 @@
 package types
 
-type Contract struct {
-	Address  string `toml:"address"`
-	Abi      string `toml:"abi"`
-	Deployed int    `toml:"deployed"`
-}
-
-type Contracts map[string]Contract
-
 // TransformersConfigForToml is used as the struct to decode and encode the toml config file
 type TransformersConfigForToml struct {
 	Exporter  map[string]interface{}
@@ -19,12 +11,6 @@ type TransformersConfig struct {
 	ExporterMetadata     ExporterMetaData `toml:"exporter"`
 	TransformerExporters TransformerExporters
 	Contracts            Contracts `toml:"contract"`
-}
-
-type TransformersConfigForTomlEncoding struct {
-	ExporterMetadata     ExporterMetaData     `toml:"exporter"`
-	TransformerExporters TransformerExporters `toml:"exporter"`
-	Contracts            Contracts            `toml:"contract"`
 }
 
 type ExporterMetaData struct {
@@ -45,3 +31,12 @@ type TransformerExporter struct {
 }
 
 type TransformerExporters map[string]TransformerExporter
+
+type Contract struct {
+	Address  string `toml:"address"`
+	Abi      string `toml:"abi"`
+	Deployed int    `toml:"deployed"`
+}
+
+type Contracts map[string]Contract
+

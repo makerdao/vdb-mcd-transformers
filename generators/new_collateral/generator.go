@@ -38,7 +38,11 @@ func (g NewCollateralGenerator) AddToConfig() error {
 		return fileOpenErr
 	}
 
-	updatedConfig := g.ConfigUpdater.GetUpdatedConfig()
+	updatedConfig, updatedConfigErr := g.ConfigUpdater.GetUpdatedConfigForToml()
+	if updatedConfigErr != nil {
+		return updatedConfigErr
+	}
+
 	encodingErr := toml.NewEncoder(file).Encode(updatedConfig)
 	if encodingErr != nil {
 		return encodingErr

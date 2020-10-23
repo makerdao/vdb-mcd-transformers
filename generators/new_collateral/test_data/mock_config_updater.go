@@ -5,12 +5,15 @@ import (
 )
 
 type MockConfigUpdater struct {
-	SetCurrentConfigCalled bool
-	InitialConfigPassedIn  types.TransformersConfig
-	AddNewCollateralCalled bool
-	AddNewCollateralErr    error
-	GetUpdatedConfigCalled bool
-	UpdatedConfig          types.TransformersConfig
+	SetCurrentConfigCalled           bool
+	InitialConfigPassedIn            types.TransformersConfig
+	AddNewCollateralCalled           bool
+	AddNewCollateralErr              error
+	GetUpdatedConfigCalled           bool
+	UpdatedConfig                    types.TransformersConfig
+	GetUpdatedConfigForTomlCalled    bool
+	UpdatedConfigForToml             types.TransformersConfigForToml
+	GetUpdatedConfigForTomlCalledErr error
 }
 
 func (cu *MockConfigUpdater) SetInitialConfig(initialConfig types.TransformersConfig) {
@@ -26,4 +29,9 @@ func (cu *MockConfigUpdater) AddNewCollateralToConfig() error {
 func (cu *MockConfigUpdater) GetUpdatedConfig() types.TransformersConfig {
 	cu.GetUpdatedConfigCalled = true
 	return cu.UpdatedConfig
+}
+
+func (cu *MockConfigUpdater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
+	cu.GetUpdatedConfigForTomlCalled = true
+	return cu.UpdatedConfigForToml, cu.GetUpdatedConfigForTomlCalledErr
 }
