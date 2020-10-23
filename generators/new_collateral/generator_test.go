@@ -134,7 +134,7 @@ var _ = Describe("NewCollateral", func() {
 })
 
 var (
-	testUpdatedConfig = types.TransformersConfigForTomlEncoding{
+	testUpdatedConfig = types.TransformersConfig{
 		ExporterMetadata: types.ExporterMetaData{
 			Home:             "test-home",
 			Name:             "test-config",
@@ -183,14 +183,14 @@ var (
   schema = "test-schema"
   transformerNames = ["transformer1", "transformer2"]
 
-[exporter]
-  [exporter.test-1]
+[TransformerExporters]
+  [TransformerExporters.test-1]
     path = "path-test-1"
     type = "eth_storage"
     repository = "repo-1"
     migrations = "test-migrations"
     rank = "0"
-  [exporter.test-2]
+  [TransformerExporters.test-2]
     path = "path-test-2"
     type = "eth_event"
     repository = "repo-2"

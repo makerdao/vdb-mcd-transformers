@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -12,7 +13,7 @@ import (
 type IUpdate interface {
 	SetInitialConfig(initialConfig types.TransformersConfig)
 	AddNewCollateralToConfig() error
-	GetUpdatedConfig() types.TransformersConfigForTomlEncoding
+	GetUpdatedConfig() types.TransformersConfig
 }
 
 type Updater struct {
@@ -208,10 +209,31 @@ func (cg *Updater) addContracts() {
 	}
 }
 
-func (cg *Updater) GetUpdatedConfig() types.TransformersConfigForTomlEncoding {
-	return types.TransformersConfigForTomlEncoding{
-		ExporterMetadata:     cg.UpdatedConfig.ExporterMetadata,
-		TransformerExporters: cg.UpdatedConfig.TransformerExporters,
-		Contracts:            cg.UpdatedConfig.Contracts,
+func (cg *Updater) GetUpdatedConfig() types.TransformersConfig {
+	return cg.UpdatedConfig
+}
+
+func (cg *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
+	var metaDataMap map[string]interface{}
+	metadata, _ := json.Marshal(cg.UpdatedConfig.ExporterMetadata)
+	metadataUnmarshalErr := json.Unmarshal(metadata, &metaDataMap)
+	if metadataUnmarshalErr != nil {
+		return types.TransformersConfigForToml{}, metadataUnmarshalErr
 	}
+
+	var exporterMap map[string]interface{}
+	exporters, _ := json.Marshal(cg.UpdatedConfig.TransformerExporters)
+	exportersUnmarshalErr := json.Unmarshal(exporters, &exporterMap)
+	if exportersUnmarshalErr != nil {
+		return types.TransformersConfigForToml{}, metadataUnmarshalErr
+	}
+
+	for field, val := range exporterMap {
+		metaDataMap[field] = val
+	}
+
+	return types.TransformersConfigForToml{
+		Exporter:  metaDataMap,
+		Contracts: cg.UpdatedConfig.Contracts,
+	}, nil
 }

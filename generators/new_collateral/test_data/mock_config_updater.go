@@ -10,7 +10,7 @@ type MockConfigUpdater struct {
 	AddNewCollateralCalled bool
 	AddNewCollateralErr    error
 	GetUpdatedConfigCalled bool
-	UpdatedConfig          types.TransformersConfigForTomlEncoding
+	UpdatedConfig          types.TransformersConfig
 }
 
 func (cu *MockConfigUpdater) SetInitialConfig(initialConfig types.TransformersConfig) {
@@ -23,7 +23,7 @@ func (cu *MockConfigUpdater) AddNewCollateralToConfig() error {
 	return cu.AddNewCollateralErr
 }
 
-func (cu *MockConfigUpdater) GetUpdatedConfig() types.TransformersConfigForTomlEncoding {
+func (cu *MockConfigUpdater) GetUpdatedConfig() types.TransformersConfig {
 	cu.GetUpdatedConfigCalled = true
 	return cu.UpdatedConfig
 }
