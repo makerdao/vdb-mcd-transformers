@@ -22,11 +22,3 @@ func GetFullConfigFilePath(filePath, fileName string) string {
 	fileNameWithExtension := fileName + ".toml"
 	return filepath.Join(filePath, fileNameWithExtension)
 }
-
-func GetFlipStorageInitializersPath() string {
-	return filepath.Join(GetProjectPath(), "transformers", "storage", "flip", "initializers")
-}
-
-func GetMedianStorageInitializersPath() string {
-	return filepath.Join(GetProjectPath(), "transformers", "storage", "median", "initializers")
-}

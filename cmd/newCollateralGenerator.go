@@ -80,7 +80,7 @@ func addNewCollateral() error {
 	}
 
 	fmt.Println(fmt.Sprintf("Adding %s to %s", collateralName, helpers.GetFullConfigFilePath(configFileName, configFilePath)))
-	addErr := newCollateralGenerator.AddToConfig()
+	addErr := newCollateralGenerator.UpdateConfig()
 	if addErr != nil {
 		return addErr
 	}

@@ -20,7 +20,7 @@ type NewCollateralGenerator struct {
 	InitializerGenerator initializer.IGenerate
 }
 
-func (g NewCollateralGenerator) AddToConfig() error {
+func (g NewCollateralGenerator) UpdateConfig() error {
 	initialConfig, parseConfigErr := g.ConfigParser.ParseCurrentConfig(g.ConfigFilePath, g.ConfigFileName)
 	if parseConfigErr != nil {
 		return parseConfigErr

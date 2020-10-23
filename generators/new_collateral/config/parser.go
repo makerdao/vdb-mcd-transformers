@@ -1,11 +1,12 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/BurntSushi/toml"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	"github.com/mitchellh/mapstructure"
-	"github.com/pkg/errors"
 )
 
 type IParse interface {
