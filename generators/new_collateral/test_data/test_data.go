@@ -37,6 +37,15 @@ var (
 		Rank:       "0",
 	}
 
+	Cat110ExporterMap = map[string]interface{}{
+		"Path":       Cat110Exporter.Path,
+		"Type":       Cat110Exporter.Type,
+		"Repository": Cat110Exporter.Repository,
+		"Migrations": Cat110Exporter.Migrations,
+		"Rank":       Cat110Exporter.Rank,
+		"Contracts":  nil,
+	}
+
 	DenyExporter = types.TransformerExporter{
 		Path:       "transformers/events/auth/deny_initializer",
 		Type:       "eth_event",
@@ -44,6 +53,23 @@ var (
 		Migrations: "db/migrations",
 		Contracts:  []string{FlipBatAContractName, FlipEthAContractName, MedianBatContractName, OsmBatContractName},
 		Rank:       "0",
+	}
+
+	UpdatedDenyExporterMap = map[string]interface{}{
+		"Path":       DenyExporter.Path,
+		"Type":       DenyExporter.Type,
+		"Repository": DenyExporter.Repository,
+		"Migrations": DenyExporter.Migrations,
+		"Contracts": []interface{}{
+			FlipBatAContractName,
+			FlipEthAContractName,
+			MedianBatContractName,
+			OsmBatContractName,
+			FlipEthBContractName,
+			MedianEthBContractName,
+			OsmEthBContractName,
+		},
+		"Rank": "0",
 	}
 
 	LogMedianPriceExporter = types.TransformerExporter{
@@ -55,6 +81,15 @@ var (
 		Rank:       "0",
 	}
 
+	UpdatedLogMedianPriceExporterMap = map[string]interface{}{
+		"Path":       LogMedianPriceExporter.Path,
+		"Type":       LogMedianPriceExporter.Type,
+		"Repository": LogMedianPriceExporter.Repository,
+		"Migrations": LogMedianPriceExporter.Migrations,
+		"Contracts":  []interface{}{MedianBatContractName, MedianEthBContractName},
+		"Rank":       "0",
+	}
+
 	LogValueExporter = types.TransformerExporter{
 		Path:       "transformers/events/log_value/initializer",
 		Type:       "eth_event",
@@ -62,6 +97,15 @@ var (
 		Migrations: "db/migrations",
 		Contracts:  []string{OsmBatContractName},
 		Rank:       "0",
+	}
+
+	UpdatedLogValueExporterMap = map[string]interface{}{
+		"Path":       LogValueExporter.Path,
+		"Type":       LogValueExporter.Type,
+		"Repository": LogValueExporter.Repository,
+		"Migrations": LogValueExporter.Migrations,
+		"Contracts":  []interface{}{OsmBatContractName, OsmEthBContractName},
+		"Rank":       LogValueExporter.Rank,
 	}
 
 	CatFileVowExporter = types.TransformerExporter{
@@ -73,6 +117,17 @@ var (
 		Rank:       "0",
 	}
 
+	CatFileVowExporterMap = map[string]interface{}{
+		"Path":       CatFileVowExporter.Path,
+		"Type":       CatFileVowExporter.Type,
+		"Repository": CatFileVowExporter.Repository,
+		"Migrations": CatFileVowExporter.Migrations,
+		"Rank":       CatFileVowExporter.Rank,
+		"Contracts": []interface{}{
+			"MCD_CAT_1.0.0", "MCD_CAT_1.1.0",
+		},
+	}
+
 	FlipEthBStorageExporter = types.TransformerExporter{
 		Path:       "transformers/storage/flip/initializers/eth_b/v1_1_3",
 		Type:       "eth_storage",
@@ -81,12 +136,30 @@ var (
 		Rank:       "0",
 	}
 
+	FlipEthBStorageExporterMap = map[string]interface{}{
+		"Path":       FlipEthBStorageExporter.Path,
+		"Type":       FlipEthBStorageExporter.Type,
+		"Repository": FlipEthBStorageExporter.Repository,
+		"Migrations": FlipEthBStorageExporter.Migrations,
+		"Rank":       FlipEthBStorageExporter.Rank,
+		"Contracts":  nil,
+	}
+
 	MedianEthBStorageExporter = types.TransformerExporter{
 		Path:       "transformers/storage/median/initializers/median_eth_b",
 		Type:       "eth_storage",
 		Repository: "github.com/makerdao/vdb-mcd-transformers",
 		Migrations: "db/migrations",
 		Rank:       "0",
+	}
+
+	MedianEthBStorageExporterMap = map[string]interface{}{
+		"Path":       MedianEthBStorageExporter.Path,
+		"Type":       MedianEthBStorageExporter.Type,
+		"Repository": MedianEthBStorageExporter.Repository,
+		"Migrations": MedianEthBStorageExporter.Migrations,
+		"Rank":       MedianEthBStorageExporter.Rank,
+		"Contracts":  nil,
 	}
 
 	FlipBatAContractName  = "MCD_FLIP_BAT_A_1_0_0"
