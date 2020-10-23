@@ -14,6 +14,7 @@ type IUpdate interface {
 	SetInitialConfig(initialConfig types.TransformersConfig)
 	AddNewCollateralToConfig() error
 	GetUpdatedConfig() types.TransformersConfig
+	GetUpdatedConfigForToml() (types.TransformersConfigForToml, error)
 }
 
 type Updater struct {

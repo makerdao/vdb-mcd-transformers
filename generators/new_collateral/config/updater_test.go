@@ -248,37 +248,8 @@ var _ = Describe("NewConfigUpdater", func() {
 			Expect(addErr).NotTo(HaveOccurred())
 			configForToml, getConfigErr := configUpdater.GetUpdatedConfigForToml()
 			Expect(getConfigErr).NotTo(HaveOccurred())
-			expectedUpdatedConfig := types.TransformersConfigForToml{
-				Exporter: map[string]interface{}{
-					"Home":   "github.com/makerdao/vulcanizedb",
-					"Name":   "transformerExporter",
-					"Save":   false,
-					"Schema": "maker",
-					"TransformerNames": []interface{}{
-						"cat_v1_1_0",
-						"cat_file_vow",
-						"flip_eth_b_v1_1_3", // new storage flip transformer
-						"median_eth_b",      // new median eth transformer
-					},
-					"median_eth_b": test_data.MedianEthBStorageExporterMap,
-					"flip_eth_b_v1_1_3": test_data.FlipEthBStorageExporterMap,
-					"cat_file_vow": test_data.CatFileVowExporterMap,
-					"cat_v1_1_0": test_data.Cat110ExporterMap,
-					"log_median_price": test_data.UpdatedLogMedianPriceExporterMap,
-					"log_value": test_data.UpdatedLogValueExporterMap,
-					"deny": test_data.UpdatedDenyExporterMap,
-				},
-				Contracts: types.Contracts{
-					"MCD_CAT_1_0_0":        test_data.Cat100Contract,
-					"MCD_CAT_1_1_0":        test_data.Cat110Contract,
-					"MCD_FLIP_ETH_B_1_1_3": test_data.FlipEthBContract,
-					"MEDIAN_ETH_B":         test_data.MedianEthBContract,
-					"OSM_ETH_B":            test_data.OsmEthBContract,
-				},
-			}
-
-			Expect(configForToml.Contracts).To(Equal(expectedUpdatedConfig.Contracts))
-			Expect(configForToml.Exporter).To(Equal(expectedUpdatedConfig.Exporter))
+			Expect(configForToml.Contracts).To(Equal(test_data.UpdatedConfigForToml.Contracts))
+			Expect(configForToml.Exporter).To(Equal(test_data.UpdatedConfigForToml.Exporter))
 		})
 	})
 })
