@@ -99,5 +99,9 @@ func getTransformerType(typeString string) pluginConfig.TransformerType {
 	}
 }
 func (g *NewCollateralGenerator) WriteInitializers() error {
-	return g.InitializerGenerator.GenerateFlipInitializer()
+	flipInitializersErr := g.InitializerGenerator.GenerateFlipInitializer()
+	if flipInitializersErr != nil {
+		return flipInitializersErr
+	}
+	return g.InitializerGenerator.GenerateMedianInitializer()
 }
