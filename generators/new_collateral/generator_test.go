@@ -16,13 +16,13 @@ import (
 
 var _ = Describe("NewCollateral", func() {
 	var (
-		filePath            = "./"
-		fileName            = "test"
-		fullConfigPath      = filePath + fileName + ".toml"
-		configParser        test_data.MockConfigParser
-		configUpdater       test_data.MockConfigUpdater
+		filePath             = "./"
+		fileName             = "test"
+		fullConfigPath       = filePath + fileName + ".toml"
+		configParser         test_data.MockConfigParser
+		configUpdater        test_data.MockConfigUpdater
 		initializerGenerator test_data.MockInitializerGenerator
-		collateralGenerator new_collateral.NewCollateralGenerator
+		collateralGenerator  new_collateral.NewCollateralGenerator
 	)
 
 	BeforeEach(func() {
@@ -30,17 +30,17 @@ var _ = Describe("NewCollateral", func() {
 		configUpdater = test_data.MockConfigUpdater{}
 		initializerGenerator = test_data.MockInitializerGenerator{}
 		collateralGenerator = new_collateral.NewCollateralGenerator{
-			ConfigFileName: fileName,
-			ConfigFilePath: filePath,
-			ConfigParser:   &configParser,
-			ConfigUpdater:  &configUpdater,
+			ConfigFileName:       fileName,
+			ConfigFilePath:       filePath,
+			ConfigParser:         &configParser,
+			ConfigUpdater:        &configUpdater,
 			InitializerGenerator: &initializerGenerator,
 		}
 	})
 
 	Context("AddToConfig", func() {
 		It("parses the current config", func() {
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(configParser.ConfigFilePathPassedIn).To(Equal(filePath))
 			Expect(configParser.ConfigFileNamePassedIn).To(Equal(fileName))
@@ -48,7 +48,7 @@ var _ = Describe("NewCollateral", func() {
 
 		It("returns an error if parsing the config fails", func() {
 			configParser.ParseErr = fakes.FakeError
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
@@ -60,34 +60,34 @@ var _ = Describe("NewCollateral", func() {
 				},
 			}
 			configParser.ConfigToReturn = testConfig
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(configUpdater.SetCurrentConfigCalled).To(BeTrue())
 			Expect(configUpdater.InitialConfigPassedIn).To(Equal(testConfig))
 		})
 
 		It("adds new the collateral to the current config", func() {
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(configUpdater.AddNewCollateralCalled).To(BeTrue())
 		})
 
 		It("returns an error if adding to the current config fails", func() {
 			configUpdater.AddNewCollateralErr = fakes.FakeError
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
 
 		It("gets updated config from the updater to write to the config file", func() {
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(configUpdater.GetUpdatedConfigForTomlCalled).To(BeTrue())
 		})
 
 		It("returns an error if getting the updated config fails", func() {
 			configUpdater.GetUpdatedConfigForTomlCalledErr = fakes.FakeError
-			err := collateralGenerator.AddToConfig()
+			err := collateralGenerator.UpdateConfig()
 			Expect(err).To(HaveOccurred())
 			Expect(err).To(MatchError(fakes.FakeError))
 		})
@@ -97,7 +97,7 @@ var _ = Describe("NewCollateral", func() {
 			Expect(createErr).NotTo(HaveOccurred())
 
 			configUpdater.UpdatedConfigForToml = test_data.UpdatedConfigForToml
-			addErr := collateralGenerator.AddToConfig()
+			addErr := collateralGenerator.UpdateConfig()
 			Expect(addErr).NotTo(HaveOccurred())
 
 			testConfigContent, readErr := ioutil.ReadFile(fullConfigPath)

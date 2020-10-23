@@ -39,4 +39,3 @@ type Contract struct {
 }
 
 type Contracts map[string]Contract
-

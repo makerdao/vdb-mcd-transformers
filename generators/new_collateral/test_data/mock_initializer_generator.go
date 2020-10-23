@@ -1,10 +1,10 @@
 package test_data
 
 type MockInitializerGenerator struct {
-	GenerateFlipInitializerCalled bool
-	FlipInitializerErr error
+	GenerateFlipInitializerCalled   bool
+	FlipInitializerErr              error
 	GenerateMedianInitializerCalled bool
-	MedianInitializerErr error
+	MedianInitializerErr            error
 }
 
 func (i *MockInitializerGenerator) GenerateFlipInitializer() error {

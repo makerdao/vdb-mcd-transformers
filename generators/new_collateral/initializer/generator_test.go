@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/initializer"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	. "github.com/onsi/ginkgo"
@@ -18,15 +17,11 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 			Collateral:                collateral,
 			MedianInitializerRequired: true,
 		}
-		testFlipCollateralPath = filepath.Join(
-			helpers.GetFlipStorageInitializersPath(), "test_collateral",
-		)
+		testFlipCollateralPath     = collateral.GetAbsoluteFlipStorageInitializersDirectoryPath()
 		testFlipCollateralFullPath = filepath.Join(
-			testFlipCollateralPath, "v0_1_2", "initializer.go",
+			testFlipCollateralPath, "initializer.go",
 		)
-		testMedianCollateralPath = filepath.Join(
-			helpers.GetMedianStorageInitializersPath(), "median_test_collateral",
-		)
+		testMedianCollateralPath     = collateral.GetAbsoluteMedianStorageInitializersDirectoryPath()
 		testMedianCollateralFullPath = filepath.Join(
 			testMedianCollateralPath, "initializer.go",
 		)

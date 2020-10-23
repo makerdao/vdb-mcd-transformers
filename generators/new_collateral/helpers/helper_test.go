@@ -29,14 +29,4 @@ var _ = Describe("helpers", func() {
 		Expect(helpers.GetFullConfigFilePath("path", "file")).To(
 			Equal("path/file.toml"))
 	})
-
-	It("returns the path for flip storage initializers", func() {
-		Expect(helpers.GetFlipStorageInitializersPath()).To(
-			Equal(goPath + "/src/github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers"))
-	})
-
-	It("returns the path for median storage initializers", func() {
-		Expect(helpers.GetMedianStorageInitializersPath()).To(
-			Equal(goPath + "/src/github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"))
-	})
 })
