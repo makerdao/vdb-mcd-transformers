@@ -4,6 +4,12 @@
 # Verify required args present
 MISSING_VAR_MESSAGE=" is required and no value was given"
 
+if test -z "$STORAGEDIFFS_SOURCE"
+then
+    echo STORADEDIFFS_SOURCE $MISSING_VAR_MESSAGE
+    exit 1
+fi
+
 function testDatabaseVariables() {
   for a in DATABASE_NAME DATABASE_HOSTNAME DATABASE_PORT DATABASE_USER DATABASE_PASSWORD
   do
@@ -40,4 +46,4 @@ fi
 
 # Run extractDiffs
 echo "Running extractDiffs..."
-./vulcanizedb extractDiffs --config config.toml
+./vulcanizedb extractDiffs --config config.toml -s STORAGEDIFFS_SOURCE
