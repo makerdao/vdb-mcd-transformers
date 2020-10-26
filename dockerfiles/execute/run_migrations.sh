@@ -27,7 +27,6 @@ if test -z "$VDB_PG_CONNECT"; then
 fi
 
 # Run the DB migrations
-echo "Connecting with: $VDB_PG_CONNECT"
 ./goose -dir db/migrations postgres "$VDB_PG_CONNECT" up
 psql $VDB_PG_CONNECT -c 'CREATE SCHEMA IF NOT EXISTS maker;'
 ./goose -table maker.goose_db_version -dir db/vdb-mcd-transformers/migrations postgres "$VDB_PG_CONNECT" up

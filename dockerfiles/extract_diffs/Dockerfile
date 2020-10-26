@@ -1,36 +1,19 @@
-FROM golang:alpine as builder
+FROM makerdao/vdb-builder:latest as builder
 
-RUN apk --update --no-cache add g++ git linux-headers
-
-# Build migration tool
 ARG VDB_VERSION=prod
-ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 COPY . .
 
-# Get and build VulcanizeDB
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
-# Build migration tool
-RUN go get -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose@v2.7.0-rc5
 
 # App container
-FROM golang:alpine
+FROM makerdao/vdb-runner:latest
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
-
-# Add certificates for node requests via https
-# bash for wait-for-it.sh
-RUN apk update \
-        && apk upgrade \
-        && apk add --no-cache \
-        ca-certificates \
-        bash \
-        postgresql-client \
-        && update-ca-certificates 2>/dev/null || true
 
 # Direct logs to stdout for docker log driver
 RUN ln -sf /dev/stdout /go/src/github.com/makerdao/vulcanizedb/vulcanizedb.log
