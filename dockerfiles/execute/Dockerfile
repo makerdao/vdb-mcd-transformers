@@ -1,21 +1,15 @@
-FROM golang:1.15.2-buster as builder
-
-RUN apt-get update && \
-apt-get install -y make git g++ linux-headers-amd64
+FROM makerdao/vdb-builder:latest as builder
 
 ARG VDB_VERSION=prod
 
-ENV GO111MODULE on
-
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
-ADD . .
+COPY . .
 
 WORKDIR /go/src/github.com/makerdao
 RUN git clone https://github.com/makerdao/vulcanizedb.git
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 RUN git checkout $VDB_VERSION
 RUN go build
-RUN go get -tags='no_mysql no_sqlite3 no_mssql no_redshift' github.com/pressly/goose/cmd/goose@v2.7.0-rc5
 
 # build mcd with local vdb
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
@@ -24,21 +18,9 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
     TARGET_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/execute/transformerExporter.go \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
-
 # app container
-FROM golang:1.15.2-buster
+FROM makerdao/vdb-runner:latest as runner
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
-
-# add certificates for node requests via https
-# bash for wait-for-it
-RUN apt-get update \
-        && apt-get upgrade -y \
-        && apt-get install -y \
-        ca-certificates \
-        bash \
-        busybox \
-        postgresql-client \
-        && update-ca-certificates 2>/dev/null || true
 
 ARG CONFIG_FILE=environments/mcdTransformers.toml
 
