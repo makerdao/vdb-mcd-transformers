@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package constants
+package constants_test
 
 import (
 	"errors"
 
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("event signature generator", func() {
-	Describe("findSignatureInAbi", func() {
+	Describe("FindSignatureInAbi", func() {
 		It("returns the signature if it exists in the ABI", func() {
-			signature, _ := findSignatureInAbi(Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
+			signature, _ := constants.FindSignatureInAbi(constants.Cat100ABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 
 			Expect(signature).To(Equal("file(bytes32,bytes32,uint256)"))
 		})
@@ -34,15 +35,17 @@ var _ = Describe("event signature generator", func() {
 		It("returns error if signature not found in ABI", func() {
 			expectedError := errors.New("method file(bytes32,bytes32) does not exist in ABI")
 
-			_, err := findSignatureInAbi(Cat100ABI(), "file", []string{"bytes32", "bytes32"})
+			_, err := constants.FindSignatureInAbi(constants.Cat100ABI(), "file", []string{"bytes32", "bytes32"})
 
 			Expect(err).To(MatchError(expectedError))
 		})
 	})
 
-	Describe("getOverloadedFunctionSignature", func() {
+	Describe("GetOverloadedFunctionSignature", func() {
 		It("panics if it encounters an error", func() {
-			Expect(func() { getOverloadedFunctionSignature(Cat100ABI(), "file", []string{"bytes32", "bytes32"}) }).To(Panic())
+			Expect(func() {
+				constants.GetOverloadedFunctionSignature(constants.Cat100ABI(), "file", []string{"bytes32", "bytes32"})
+			}).To(Panic())
 		})
 	})
 })

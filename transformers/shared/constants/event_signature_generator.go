@@ -68,15 +68,15 @@ type MethodInput struct {
 	Type string
 }
 
-func getOverloadedFunctionSignature(rawAbi, name string, paramTypes []string) string {
-	result, err := findSignatureInAbi(rawAbi, name, paramTypes)
+func GetOverloadedFunctionSignature(rawAbi, name string, paramTypes []string) string {
+	result, err := FindSignatureInAbi(rawAbi, name, paramTypes)
 	if err != nil {
 		panic(err)
 	}
 	return result
 }
 
-func findSignatureInAbi(rawAbi, name string, paramTypes []string) (string, error) {
+func FindSignatureInAbi(rawAbi, name string, paramTypes []string) (string, error) {
 	contractMethods := make([]ContractMethod, 0)
 	err := json.Unmarshal([]byte(rawAbi), &contractMethods)
 	if err != nil {
