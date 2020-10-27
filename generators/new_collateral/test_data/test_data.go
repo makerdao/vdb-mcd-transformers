@@ -38,12 +38,12 @@ var (
 	}
 
 	Cat110ExporterMap = map[string]interface{}{
-		"Path":       Cat110Exporter.Path,
-		"Type":       Cat110Exporter.Type,
-		"Repository": Cat110Exporter.Repository,
-		"Migrations": Cat110Exporter.Migrations,
-		"Rank":       Cat110Exporter.Rank,
-		"Contracts":  nil,
+		"path":       Cat110Exporter.Path,
+		"type":       Cat110Exporter.Type,
+		"repository": Cat110Exporter.Repository,
+		"migrations": Cat110Exporter.Migrations,
+		"rank":       Cat110Exporter.Rank,
+		"contracts":  nil,
 	}
 
 	DenyExporter = types.TransformerExporter{
@@ -56,11 +56,11 @@ var (
 	}
 
 	UpdatedDenyExporterMap = map[string]interface{}{
-		"Path":       DenyExporter.Path,
-		"Type":       DenyExporter.Type,
-		"Repository": DenyExporter.Repository,
-		"Migrations": DenyExporter.Migrations,
-		"Contracts": []interface{}{
+		"path":       DenyExporter.Path,
+		"type":       DenyExporter.Type,
+		"repository": DenyExporter.Repository,
+		"migrations": DenyExporter.Migrations,
+		"contracts": []interface{}{
 			FlipBatAContractName,
 			FlipEthAContractName,
 			MedianBatContractName,
@@ -69,7 +69,7 @@ var (
 			MedianEthBContractName,
 			OsmEthBContractName,
 		},
-		"Rank": "0",
+		"rank": "0",
 	}
 
 	LogMedianPriceExporter = types.TransformerExporter{
@@ -82,12 +82,12 @@ var (
 	}
 
 	UpdatedLogMedianPriceExporterMap = map[string]interface{}{
-		"Path":       LogMedianPriceExporter.Path,
-		"Type":       LogMedianPriceExporter.Type,
-		"Repository": LogMedianPriceExporter.Repository,
-		"Migrations": LogMedianPriceExporter.Migrations,
-		"Contracts":  []interface{}{MedianBatContractName, MedianEthBContractName},
-		"Rank":       "0",
+		"path":       LogMedianPriceExporter.Path,
+		"type":       LogMedianPriceExporter.Type,
+		"repository": LogMedianPriceExporter.Repository,
+		"migrations": LogMedianPriceExporter.Migrations,
+		"contracts":  []interface{}{MedianBatContractName, MedianEthBContractName},
+		"rank":       "0",
 	}
 
 	LogValueExporter = types.TransformerExporter{
@@ -100,12 +100,12 @@ var (
 	}
 
 	UpdatedLogValueExporterMap = map[string]interface{}{
-		"Path":       LogValueExporter.Path,
-		"Type":       LogValueExporter.Type,
-		"Repository": LogValueExporter.Repository,
-		"Migrations": LogValueExporter.Migrations,
-		"Contracts":  []interface{}{OsmBatContractName, OsmEthBContractName},
-		"Rank":       LogValueExporter.Rank,
+		"path":       LogValueExporter.Path,
+		"type":       LogValueExporter.Type,
+		"repository": LogValueExporter.Repository,
+		"migrations": LogValueExporter.Migrations,
+		"contracts":  []interface{}{OsmBatContractName, OsmEthBContractName},
+		"rank":       LogValueExporter.Rank,
 	}
 
 	CatFileVowExporter = types.TransformerExporter{
@@ -118,12 +118,12 @@ var (
 	}
 
 	CatFileVowExporterMap = map[string]interface{}{
-		"Path":       CatFileVowExporter.Path,
-		"Type":       CatFileVowExporter.Type,
-		"Repository": CatFileVowExporter.Repository,
-		"Migrations": CatFileVowExporter.Migrations,
-		"Rank":       CatFileVowExporter.Rank,
-		"Contracts": []interface{}{
+		"path":       CatFileVowExporter.Path,
+		"type":       CatFileVowExporter.Type,
+		"repository": CatFileVowExporter.Repository,
+		"migrations": CatFileVowExporter.Migrations,
+		"rank":       CatFileVowExporter.Rank,
+		"contracts": []interface{}{
 			"MCD_CAT_1.0.0", "MCD_CAT_1.1.0",
 		},
 	}
@@ -137,12 +137,12 @@ var (
 	}
 
 	FlipEthBStorageExporterMap = map[string]interface{}{
-		"Path":       FlipEthBStorageExporter.Path,
-		"Type":       FlipEthBStorageExporter.Type,
-		"Repository": FlipEthBStorageExporter.Repository,
-		"Migrations": FlipEthBStorageExporter.Migrations,
-		"Rank":       FlipEthBStorageExporter.Rank,
-		"Contracts":  nil,
+		"path":       FlipEthBStorageExporter.Path,
+		"type":       FlipEthBStorageExporter.Type,
+		"repository": FlipEthBStorageExporter.Repository,
+		"migrations": FlipEthBStorageExporter.Migrations,
+		"rank":       FlipEthBStorageExporter.Rank,
+		"contracts":  nil,
 	}
 
 	MedianEthBStorageExporter = types.TransformerExporter{
@@ -154,12 +154,12 @@ var (
 	}
 
 	MedianEthBStorageExporterMap = map[string]interface{}{
-		"Path":       MedianEthBStorageExporter.Path,
-		"Type":       MedianEthBStorageExporter.Type,
-		"Repository": MedianEthBStorageExporter.Repository,
-		"Migrations": MedianEthBStorageExporter.Migrations,
-		"Rank":       MedianEthBStorageExporter.Rank,
-		"Contracts":  nil,
+		"path":       MedianEthBStorageExporter.Path,
+		"type":       MedianEthBStorageExporter.Type,
+		"repository": MedianEthBStorageExporter.Repository,
+		"migrations": MedianEthBStorageExporter.Migrations,
+		"rank":       MedianEthBStorageExporter.Rank,
+		"contracts":  nil,
 	}
 
 	FlipBatAContractName  = "MCD_FLIP_BAT_A_1_0_0"
@@ -252,11 +252,11 @@ var (
 	}
 	UpdatedConfigForToml = types.TransformersConfigForToml{
 		Exporter: map[string]interface{}{
-			"Home":   "github.com/makerdao/vulcanizedb",
-			"Name":   "transformerExporter",
-			"Save":   false,
-			"Schema": "maker",
-			"TransformerNames": []interface{}{
+			"home":   "github.com/makerdao/vulcanizedb",
+			"name":   "transformerExporter",
+			"save":   false,
+			"schema": "maker",
+			"transformerNames": []interface{}{
 				"cat_v1_1_0",
 				"cat_file_vow",
 				"flip_eth_b_v1_1_3", // new storage flip transformer
@@ -279,58 +279,58 @@ var (
 		},
 	}
 
-	TestConfigFileContent = `[Exporter]
-  Home = "github.com/makerdao/vulcanizedb"
-  Name = "transformerExporter"
-  Save = false
-  Schema = "maker"
-  TransformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_b"]
-  [Exporter.cat_file_vow]
-    Contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0"]
-    Migrations = "db/migrations"
-    Path = "transformers/events/cat_file/vow/initializer"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_event"
-  [Exporter.cat_v1_1_0]
-    Migrations = "db/migrations"
-    Path = "transformers/storage/cat/v1_1_0/initializer"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_storage"
-  [Exporter.deny]
-    Contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_B", "OSM_ETH_B"]
-    Migrations = "db/migrations"
-    Path = "transformers/events/auth/deny/initializer"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_event"
-  [Exporter.flip_eth_b_v1_1_3]
-    Migrations = "db/migrations"
-    Path = "transformers/storage/flip/initializers/eth_b/v1_1_3"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_storage"
-  [Exporter.log_median_price]
-    Contracts = ["MEDIAN_BAT", "MEDIAN_ETH_B"]
-    Migrations = "db/migrations"
-    Path = "transformers/events/log_median_price/initializer"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_event"
-  [Exporter.log_value]
-    Contracts = ["OSM_BAT", "OSM_ETH_B"]
-    Migrations = "db/migrations"
-    Path = "transformers/events/log_value/initializer"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_event"
-  [Exporter.median_eth_b]
-    Migrations = "db/migrations"
-    Path = "transformers/storage/median/initializers/median_eth_b"
-    Rank = "0"
-    Repository = "github.com/makerdao/vdb-mcd-transformers"
-    Type = "eth_storage"
+	TestConfigFileContent = `[exporter]
+  home = "github.com/makerdao/vulcanizedb"
+  name = "transformerExporter"
+  save = false
+  schema = "maker"
+  transformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_b"]
+  [exporter.cat_file_vow]
+    contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0"]
+    migrations = "db/migrations"
+    path = "transformers/events/cat_file/vow/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
+  [exporter.cat_v1_1_0]
+    migrations = "db/migrations"
+    path = "transformers/storage/cat/v1_1_0/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_storage"
+  [exporter.deny]
+    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_B", "OSM_ETH_B"]
+    migrations = "db/migrations"
+    path = "transformers/events/auth/deny/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
+  [exporter.flip_eth_b_v1_1_3]
+    migrations = "db/migrations"
+    path = "transformers/storage/flip/initializers/eth_b/v1_1_3"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_storage"
+  [exporter.log_median_price]
+    contracts = ["MEDIAN_BAT", "MEDIAN_ETH_B"]
+    migrations = "db/migrations"
+    path = "transformers/events/log_median_price/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
+  [exporter.log_value]
+    contracts = ["OSM_BAT", "OSM_ETH_B"]
+    migrations = "db/migrations"
+    path = "transformers/events/log_value/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
+  [exporter.median_eth_b]
+    migrations = "db/migrations"
+    path = "transformers/storage/median/initializers/median_eth_b"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_storage"
 
 [contract]
   [contract.MCD_CAT_1_0_0]

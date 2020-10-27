@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 )
@@ -214,27 +216,63 @@ func (cg *Updater) GetUpdatedConfig() types.TransformersConfig {
 	return cg.UpdatedConfig
 }
 
+// GetUpdatedConfigForToml converts TransformersConfig.ExporterMetadata and TransformerExporter structs into a
+// map[string]interface{} to allow for proper toml encoding when writing to the config file^
 func (cg *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
-	var metaDataMap map[string]interface{}
-	metadata, _ := json.Marshal(cg.UpdatedConfig.ExporterMetadata)
-	metadataUnmarshalErr := json.Unmarshal(metadata, &metaDataMap)
-	if metadataUnmarshalErr != nil {
-		return types.TransformersConfigForToml{}, metadataUnmarshalErr
+	metadataMap, metadataMapErr := convertToLowerCaseStringToInterfaceMap(cg.UpdatedConfig.ExporterMetadata)
+	if metadataMapErr != nil {
+		return types.TransformersConfigForToml{}, metadataMapErr
 	}
 
-	var exporterMap map[string]interface{}
-	exporters, _ := json.Marshal(cg.UpdatedConfig.TransformerExporters)
-	exportersUnmarshalErr := json.Unmarshal(exporters, &exporterMap)
-	if exportersUnmarshalErr != nil {
-		return types.TransformersConfigForToml{}, metadataUnmarshalErr
+	transformerExporterMap, transformerExporterMapErr := convertToLowerCaseStringToInterfaceMap(cg.UpdatedConfig.TransformerExporters)
+	if transformerExporterMapErr != nil {
+		return types.TransformersConfigForToml{}, transformerExporterMapErr
 	}
 
-	for field, val := range exporterMap {
-		metaDataMap[field] = val
-	}
+	exporterMap := mergeMaps(metadataMap, transformerExporterMap)
 
 	return types.TransformersConfigForToml{
-		Exporter:  metaDataMap,
+		Exporter:  exporterMap,
 		Contracts: cg.UpdatedConfig.Contracts,
 	}, nil
+}
+
+func convertToLowerCaseStringToInterfaceMap(input interface{}) (map[string]interface{}, error) {
+	var stringToInterfaceMap map[string]interface{}
+	jsonBytes, _ := json.Marshal(input)
+	unmarshalErr := json.Unmarshal(jsonBytes, &stringToInterfaceMap)
+	if unmarshalErr != nil {
+		return stringToInterfaceMap, unmarshalErr
+	}
+	return makeKeysLowercase(stringToInterfaceMap), nil
+}
+
+func makeKeysLowercase(inputMap map[string]interface{}) map[string]interface{} {
+	resultMap := make(map[string]interface{})
+	for key, value := range inputMap {
+		lowerCaseKey := downCaseFirstCharacter(key)
+		valueMap, valueIsMap := value.(map[string]interface{})
+		if valueIsMap {
+			valueMap = makeKeysLowercase(valueMap)
+			resultMap[lowerCaseKey] = valueMap
+		} else {
+			resultMap[lowerCaseKey] = value
+		}
+	}
+	return resultMap
+}
+
+func mergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
+	for key, value := range map1 {
+		map2[key] = value
+	}
+	return map2
+}
+
+func downCaseFirstCharacter(s string) string {
+	if s == "" {
+		return ""
+	}
+	r, n := utf8.DecodeRuneInString(s)
+	return string(unicode.ToLower(r)) + s[n:]
 }
