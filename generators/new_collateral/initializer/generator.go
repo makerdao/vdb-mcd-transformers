@@ -1,6 +1,7 @@
 package initializer
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/dave/jennifer/jen"
@@ -20,17 +21,7 @@ type Generator struct {
 var initializerFileName = "initializer.go"
 
 func (g *Generator) GenerateFlipInitializer() error {
-	initializer := jen.NewFile(g.Collateral.FormattedVersion())
-	initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
-
-	collateralContractName := g.Collateral.GetFlipContractName()
-	initializer.Var().Id("contractAddress").Op("=").Qual(
-		"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants",
-		"GetContractAddress").Params(jen.Lit(collateralContractName))
-	initializer.Var().Id("StorageTransformerInitializer").Op("=").Qual(
-		"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers",
-		"GenerateStorageTransformerInitializer").Params(jen.Id("contractAddress"))
-
+	initializer := g.createInitializer(g.Collateral.GetFlipContractName(), "flip")
 	//create the path to the initializer file
 	path := g.Collateral.GetAbsoluteFlipStorageInitializersDirectoryPath()
 	mkDirErr := os.MkdirAll(path, os.ModePerm)
@@ -48,16 +39,7 @@ func (g *Generator) GenerateFlipInitializer() error {
 
 func (g *Generator) GenerateMedianInitializer() error {
 	if g.MedianInitializerRequired {
-		initializer := jen.NewFile(g.Collateral.FormattedVersion())
-		initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
-
-		collateralContractName := g.Collateral.GetFlipContractName()
-		initializer.Var().Id("contractAddress").Op("=").Qual(
-			"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants",
-			"GetContractAddress").Params(jen.Lit(collateralContractName))
-		initializer.Var().Id("StorageTransformerInitializer").Op("=").Qual(
-			"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers",
-			"GenerateStorageTransformerInitializer").Params(jen.Id("contractAddress"))
+		initializer := g.createInitializer(g.Collateral.GetMedianContractName(), "median")
 
 		path := g.Collateral.GetAbsoluteMedianStorageInitializersDirectoryPath()
 		mkDirErr := os.MkdirAll(path, os.ModePerm)
@@ -71,4 +53,18 @@ func (g *Generator) GenerateMedianInitializer() error {
 		}
 	}
 	return nil
+}
+
+func (g *Generator) createInitializer(contractName, initializerType string) *jen.File {
+	initializer := jen.NewFile(g.Collateral.FormattedVersion())
+	initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
+
+	initializer.Var().Id("contractAddress").Op("=").Qual(
+		"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants",
+		"GetContractAddress").Params(jen.Lit(contractName))
+	initializer.Var().Id("StorageTransformerInitializer").Op("=").Qual(
+		fmt.Sprintf("github.com/makerdao/vdb-mcd-transformers/transformers/storage/%s/initializers", initializerType),
+		"GenerateStorageTransformerInitializer").Params(jen.Id("contractAddress"))
+
+	return initializer
 }
