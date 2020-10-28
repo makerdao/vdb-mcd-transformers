@@ -19,8 +19,9 @@ package vat_flux
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -39,13 +40,13 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 		ilk := log.Log.Topics[1].Hex()
 		src := common.BytesToAddress(log.Log.Topics[2].Bytes()).String()
 		dst := common.BytesToAddress(log.Log.Topics[3].Bytes()).String()
-		wadBytes, wadErr := shared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
+		wadBytes, wadErr := mcdShared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if wadErr != nil {
 			return nil, wadErr
 		}
 		wad := shared.ConvertUint256HexToBigInt(hexutil.Encode(wadBytes))
 
-		ilkId, ilkErr := shared.GetOrCreateIlk(ilk, db)
+		ilkId, ilkErr := mcdShared.GetOrCreateIlk(ilk, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}

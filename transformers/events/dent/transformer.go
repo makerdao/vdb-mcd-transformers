@@ -19,8 +19,9 @@ package dent
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -50,7 +51,7 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 
 		bidId := log.Log.Topics[2].Big()
 		lot := log.Log.Topics[3].Big()
-		bidBytes, dataErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		bidBytes, dataErr := mcdShared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if dataErr != nil {
 			return nil, dataErr
 		}

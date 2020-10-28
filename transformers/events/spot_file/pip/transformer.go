@@ -18,8 +18,9 @@ package pip
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -41,14 +42,14 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(msgSenderErr)
 		}
 
-		ilkID, ilkErr := shared.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
+		ilkID, ilkErr := mcdShared.GetOrCreateIlk(log.Log.Topics[2].Hex(), db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
 		what := shared.DecodeHexToText(log.Log.Topics[3].Hex())
 
-		pipBytes, getErr := shared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
+		pipBytes, getErr := mcdShared.GetLogNoteArgumentAtIndex(2, log.Log.Data)
 		if getErr != nil {
 			return nil, getErr
 		}

@@ -7,8 +7,9 @@ import (
 	"github.com/lib/pq"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_lift"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -18,10 +19,10 @@ import (
 
 var _ = Describe("MedianLift EventTransformer", func() {
 	medianLiftConfig := event.TransformerConfig{
-		TransformerName:   constants.MedianLiftTable,
+		TransformerName:   mcdConstants.MedianLiftTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
-		Topic:             constants.MedianLiftSignature(),
+		ContractAbi:       mcdConstants.MedianABI(),
+		Topic:             mcdConstants.MedianLiftSignature(),
 	}
 
 	It("transforms Median Lift log events from Median ETH", func() {

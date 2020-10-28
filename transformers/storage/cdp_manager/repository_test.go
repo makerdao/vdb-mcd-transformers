@@ -26,11 +26,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
@@ -294,7 +295,7 @@ var _ = Describe("CDP Manager storage repository", func() {
 				readErr := db.Get(&result, query)
 				Expect(readErr).NotTo(HaveOccurred())
 
-				ilkId, ilkErr := shared.GetOrCreateIlk(fakeIlksValue, db)
+				ilkId, ilkErr := mcdShared.GetOrCreateIlk(fakeIlksValue, db)
 				Expect(ilkErr).NotTo(HaveOccurred())
 
 				AssertMapping(result, diffID, fakeHeaderID, fakeCdpi, strconv.FormatInt(ilkId, 10))

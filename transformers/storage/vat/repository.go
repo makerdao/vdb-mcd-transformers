@@ -19,9 +19,11 @@ package vat
 import (
 	"fmt"
 
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
@@ -114,7 +116,7 @@ func (repository *StorageRepository) insertGem(diffID, headerID int64, metadata 
 	if txErr != nil {
 		return fmt.Errorf("error beginning transaction for vat gem: %w", txErr)
 	}
-	ilkID, ilkErr := shared.GetOrCreateIlkInTransaction(ilk, tx)
+	ilkID, ilkErr := mcdShared.GetOrCreateIlkInTransaction(ilk, tx)
 	if ilkErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -138,7 +140,7 @@ func (repository *StorageRepository) insertIlkArt(diffID, headerID int64, metada
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk art: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkArt, InsertIlkArtQuery, art, repository.db)
+	insertErr := mcdShared.InsertFieldWithIlk(diffID, headerID, ilk, IlkArt, InsertIlkArtQuery, art, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s art %s from diff ID %d: %w", ilk, art, diffID, insertErr)
 	}
@@ -150,7 +152,7 @@ func (repository *StorageRepository) insertIlkDust(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk dust: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDust, InsertIlkDustQuery, dust, repository.db)
+	insertErr := mcdShared.InsertFieldWithIlk(diffID, headerID, ilk, IlkDust, InsertIlkDustQuery, dust, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s dust %s from diff ID %d: %w", ilk, dust, diffID, insertErr)
 	}
@@ -162,7 +164,7 @@ func (repository *StorageRepository) insertIlkLine(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk line: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkLine, InsertIlkLineQuery, line, repository.db)
+	insertErr := mcdShared.InsertFieldWithIlk(diffID, headerID, ilk, IlkLine, InsertIlkLineQuery, line, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s line %s from diff ID %d: %w", ilk, line, diffID, insertErr)
 	}
@@ -174,7 +176,7 @@ func (repository *StorageRepository) insertIlkRate(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk rate: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRate, InsertIlkRateQuery, rate, repository.db)
+	insertErr := mcdShared.InsertFieldWithIlk(diffID, headerID, ilk, IlkRate, InsertIlkRateQuery, rate, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s rate %s from diff ID %d: %w", ilk, rate, diffID, insertErr)
 	}
@@ -186,7 +188,7 @@ func (repository *StorageRepository) insertIlkSpot(diffID, headerID int64, metad
 	if err != nil {
 		return fmt.Errorf("error getting ilk for ilk spot: %w", err)
 	}
-	insertErr := shared.InsertFieldWithIlk(diffID, headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot, repository.db)
+	insertErr := mcdShared.InsertFieldWithIlk(diffID, headerID, ilk, IlkSpot, InsertIlkSpotQuery, spot, repository.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s spot %s from diff ID %d: %w", ilk, spot, diffID, insertErr)
 	}
@@ -277,7 +279,7 @@ func (repository *StorageRepository) insertFieldWithIlkAndUrn(diffID, headerID i
 		return fmt.Errorf("error beginning transaction: %w", txErr)
 	}
 
-	urnID, urnErr := shared.GetOrCreateUrnInTransaction(urn, ilk, tx)
+	urnID, urnErr := mcdShared.GetOrCreateUrnInTransaction(urn, ilk, tx)
 	if urnErr != nil {
 		rollbackErr := tx.Rollback()
 		if rollbackErr != nil {
@@ -297,17 +299,17 @@ func (repository *StorageRepository) insertFieldWithIlkAndUrn(diffID, headerID i
 }
 
 func getGuy(keys map[types.Key]string) (string, error) {
-	guy, ok := keys[constants.Guy]
+	guy, ok := keys[mcdConstants.Guy]
 	if !ok {
-		return "", types.ErrMetadataMalformed{MissingData: constants.Guy}
+		return "", types.ErrMetadataMalformed{MissingData: mcdConstants.Guy}
 	}
 	return guy, nil
 }
 
 func getIlk(keys map[types.Key]string) (string, error) {
-	ilk, ok := keys[constants.Ilk]
+	ilk, ok := keys[mcdConstants.Ilk]
 	if !ok {
-		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
+		return "", types.ErrMetadataMalformed{MissingData: mcdConstants.Ilk}
 	}
 	return ilk, nil
 }
