@@ -19,9 +19,23 @@ var (
 
 var addNewCollateralCmd = &cobra.Command{
 	Use:     "addNewCollateral",
-	Short:   "",
-	Long:    ``,
-	Example: ``,
+	Short:   "Adds configuration to track a new collateral's contracts.",
+	Long:    `This command generates many of the essential changes that are needed for tracking a new collateral:
+- adds flip contract details to mcdTransformers.toml
+- tracks flip events for the new collateral
+- creates a new storage transformer for the new collateral's flip contract
+- if median and/or osm contracts exist for the new collateral:
+	- adds contract details to mcdTransformers.toml
+	- tracks events for the new collateral contracts
+	- creates a new storage transformer for the new collateral's median contract
+- updates the transformerExporter.go
+
+There are a few changes that still need to be made manually. Those include:
+- creating integration tests for the new collateral contracts
+- adding the new contracts to helper methods in transformers/shared/constants/method.go
+and transformers/test_data/config_values.go
+`,
+	Example: `Run ./vdb-mcd-transformers addNewCollateral and then follow the prompts.`,
 	PreRun:  setViperConfigs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := addNewCollateral()
