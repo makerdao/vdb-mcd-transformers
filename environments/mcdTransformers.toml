@@ -3,9 +3,167 @@
   name = "transformerExporter"
   save = false
   schema = "maker"
-  transformerNames = ["cat_v1_0_0", "cat_v1_1_0", "cdp_manager", "flap_v1_0_0", "flap_v1_0_9", "flip_bat_a_v1_0_0", "flip_bat_a_v1_0_9", "flip_bat_a_v1_1_0", "flip_comp_a_v1_1_2", "flip_eth_a_v1_0_0", "flip_eth_a_v1_0_9", "flip_eth_a_v1_1_0", "flip_knc_a_v1_0_8", "flip_knc_a_v1_0_9", "flip_knc_a_v1_1_0", "flip_link_a_v1_1_2", "flip_lrc_a_v1_1_2", "flip_mana_a_v1_0_9", "flip_mana_a_v1_1_0", "flip_paxusd_a_v1_1_1", "flip_sai_v1_0_0", "flip_tusd_a_v1_0_7", "flip_tusd_a_v1_0_9", "flip_tusd_a_v1_1_0", "flip_usdc_a_v1_0_4", "flip_usdc_a_v1_0_9", "flip_usdc_a_v1_1_0", "flip_usdc_b_v1_0_7", "flip_usdc_b_v1_0_9", "flip_usdc_b_v1_1_0", "flip_usdt_a_v1_1_1", "flip_wbtc_a_v1_0_6", "flip_wbtc_a_v1_0_9", "flip_wbtc_a_v1_1_0", "flip_zrx_a_v1_0_8", "flip_zrx_a_v1_0_9", "flip_zrx_a_v1_1_0", "flop_v1_0_1", "flop_v1_0_9", "jug", "median_bat", "median_comp", "median_eth", "median_knc", "median_link", "median_lrc", "median_mana", "median_usdt", "median_wbtc", "median_zrx", "pot", "spot", "vat", "vow", "auction_file", "bite", "cat_claw", "cat_file_box", "cat_file_chop_lump_dunk", "cat_file_flip", "cat_file_vow", "deal", "dent", "deny", "flap_kick", "flip_file_cat", "flip_kick", "flop_kick", "jug_drip", "jug_file_base", "jug_file_ilk", "jug_file_vow", "jug_init", "log_median_price", "log_value", "median_diss_batch", "median_diss_single", "median_drop", "median_kiss_batch", "median_kiss_single", "median_lift", "new_cdp", "osm_change", "pot_cage", "pot_drip", "pot_exit", "pot_file_dsr", "pot_file_vow", "pot_join", "rely", "spot_file_mat", "spot_file_par", "spot_file_pip", "spot_poke", "tend", "tick", "vat_deny", "vat_file_debt_ceiling", "vat_file_ilk", "vat_flux", "vat_fold", "vat_fork", "vat_frob", "vat_grab", "vat_heal", "vat_hope", "vat_init", "vat_move", "vat_nope", "vat_rely", "vat_slip", "vat_suck", "vow_fess", "vow_file_auction_attributes", "vow_file_auction_address", "vow_flog", "vow_heal", "yank", "flip_eth_b_v1_1_3"]
+  transformerNames = [
+    "cat_v1_0_0",
+    "cat_v1_1_0",
+    "cdp_manager",
+    "flap_v1_0_0",
+    "flap_v1_0_9",
+    "flip_bat_a_v1_0_0",
+    "flip_bat_a_v1_0_9",
+    "flip_bat_a_v1_1_0",
+    "flip_comp_a_v1_1_2",
+    "flip_eth_a_v1_0_0",
+    "flip_eth_a_v1_0_9",
+    "flip_eth_a_v1_1_0",
+    "flip_eth_b_v1_1_3",
+    "flip_knc_a_v1_0_8",
+    "flip_knc_a_v1_0_9",
+    "flip_knc_a_v1_1_0",
+    "flip_link_a_v1_1_2",
+    "flip_lrc_a_v1_1_2",
+    "flip_mana_a_v1_0_9",
+    "flip_mana_a_v1_1_0",
+    "flip_paxusd_a_v1_1_1",
+    "flip_sai_v1_0_0",
+    "flip_tusd_a_v1_0_7",
+    "flip_tusd_a_v1_0_9",
+    "flip_tusd_a_v1_1_0",
+    "flip_usdc_a_v1_0_4",
+    "flip_usdc_a_v1_0_9",
+    "flip_usdc_a_v1_1_0",
+    "flip_usdc_b_v1_0_7",
+    "flip_usdc_b_v1_0_9",
+    "flip_usdc_b_v1_1_0",
+    "flip_usdt_a_v1_1_1",
+    "flip_wbtc_a_v1_0_6",
+    "flip_wbtc_a_v1_0_9",
+    "flip_wbtc_a_v1_1_0",
+    "flip_zrx_a_v1_0_8",
+    "flip_zrx_a_v1_0_9",
+    "flip_zrx_a_v1_1_0",
+    "flop_v1_0_1",
+    "flop_v1_0_9",
+    "jug",
+    "median_bat",
+    "median_comp",
+    "median_eth",
+    "median_knc",
+    "median_link",
+    "median_lrc",
+    "median_mana",
+    "median_usdt",
+    "median_wbtc",
+    "median_zrx",
+    "pot",
+    "spot",
+    "vat",
+    "vow",
+    "auction_file",
+    "bite",
+    "cat_claw",
+    "cat_file_box",
+    "cat_file_chop_lump_dunk",
+    "cat_file_flip",
+    "cat_file_vow",
+    "deal",
+    "dent",
+    "deny",
+    "flap_kick",
+    "flip_file_cat",
+    "flip_kick",
+    "flop_kick",
+    "jug_drip",
+    "jug_file_base",
+    "jug_file_ilk",
+    "jug_file_vow",
+    "jug_init",
+    "log_median_price",
+    "log_value",
+    "median_diss_batch",
+    "median_diss_single",
+    "median_drop",
+    "median_kiss_batch",
+    "median_kiss_single",
+    "median_lift",
+    "new_cdp",
+    "osm_change",
+    "pot_cage",
+    "pot_drip",
+    "pot_exit",
+    "pot_file_dsr",
+    "pot_file_vow",
+    "pot_join",
+    "rely",
+    "spot_file_mat",
+    "spot_file_par",
+    "spot_file_pip",
+    "spot_poke",
+    "tend",
+    "tick",
+    "vat_deny",
+    "vat_file_debt_ceiling",
+    "vat_file_ilk",
+    "vat_flux",
+    "vat_fold",
+    "vat_fork",
+    "vat_frob",
+    "vat_grab",
+    "vat_heal",
+    "vat_hope",
+    "vat_init",
+    "vat_move",
+    "vat_nope",
+    "vat_rely",
+    "vat_slip",
+    "vat_suck",
+    "vow_fess",
+    "vow_file_auction_attributes",
+    "vow_file_auction_address",
+    "vow_flog",
+    "vow_heal",
+    "yank",
+  ]
   [exporter.auction_file]
-    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/auction_file/initializer"
     rank = "0"
@@ -72,21 +230,159 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.deal]
-    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+     ]
     migrations = "db/migrations"
     path = "transformers/events/deal/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.dent]
-    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/dent/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.deny]
-    contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0", "MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_CAT_1_0_0",
+        "MCD_CAT_1_1_0",
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+        "MCD_JUG",
+        "MCD_POT",
+        "MCD_SPOT",
+        "MCD_VOW",
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX",
+        "OSM_BAT",
+        "OSM_COMP",
+        "OSM_ETH",
+        "OSM_KNC",
+        "OSM_LINK",
+        "OSM_LRC",
+        "OSM_MANA",
+        "OSM_USDT",
+        "OSM_WBTC",
+        "OSM_ZRX",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/auth/deny_initializer"
     rank = "0"
@@ -160,14 +456,64 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.flip_file_cat]
-    contracts = ["MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_1_0",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/flip_file/cat/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.flip_kick]
-    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/flip_kick/initializer"
     rank = "0"
@@ -384,14 +730,36 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.log_median_price]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/log_median_price/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.log_value]
-    contracts = ["OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX"]
+    contracts = [
+        "OSM_BAT",
+        "OSM_COMP",
+        "OSM_ETH",
+        "OSM_KNC",
+        "OSM_LINK",
+        "OSM_LRC",
+        "OSM_MANA",
+        "OSM_USDT",
+        "OSM_WBTC",
+        "OSM_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/log_value/initializer"
     rank = "0"
@@ -410,21 +778,54 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_diss_batch]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_diss/batch/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_diss_single]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_diss/single/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_drop]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_drop/initializer"
     rank = "0"
@@ -437,14 +838,36 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_kiss_batch]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_kiss/batch/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_kiss_single]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_kiss/single/initializer"
     rank = "0"
@@ -457,7 +880,18 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_lift]
-    contracts = ["MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX"]
+    contracts = [
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/median_lift/initializer"
     rank = "0"
@@ -507,7 +941,18 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.osm_change]
-    contracts = ["OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX"]
+    contracts = [
+        "OSM_BAT",
+        "OSM_COMP",
+        "OSM_ETH",
+        "OSM_KNC",
+        "OSM_LINK",
+        "OSM_LRC",
+        "OSM_MANA",
+        "OSM_USDT",
+        "OSM_WBTC",
+        "OSM_ZRX"
+    ]
     migrations = "db/migrations"
     path = "transformers/events/osm_change/initializer"
     rank = "0"
@@ -562,7 +1007,71 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.rely]
-    contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0", "MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_JUG", "MCD_POT", "MCD_SPOT", "MCD_VOW", "MEDIAN_BAT", "MEDIAN_COMP", "MEDIAN_ETH", "MEDIAN_KNC", "MEDIAN_LINK", "MEDIAN_LRC", "MEDIAN_MANA", "MEDIAN_USDT", "MEDIAN_WBTC", "MEDIAN_ZRX", "OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_CAT_1_0_0",
+        "MCD_CAT_1_1_0",
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+        "MCD_JUG",
+        "MCD_POT",
+        "MCD_SPOT",
+        "MCD_VOW",
+        "MEDIAN_BAT",
+        "MEDIAN_COMP",
+        "MEDIAN_ETH",
+        "MEDIAN_KNC",
+        "MEDIAN_LINK",
+        "MEDIAN_LRC",
+        "MEDIAN_MANA",
+        "MEDIAN_USDT",
+        "MEDIAN_WBTC",
+        "MEDIAN_ZRX",
+        "OSM_BAT",
+        "OSM_COMP",
+        "OSM_ETH",
+        "OSM_KNC",
+        "OSM_LINK",
+        "OSM_LRC",
+        "OSM_MANA",
+        "OSM_USDT",
+        "OSM_WBTC",
+        "OSM_ZRX",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/auth/rely_initializer"
     rank = "0"
@@ -603,14 +1112,88 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.tend]
-    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/tend/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.tick]
-    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/tick/initializer"
     rank = "0"
@@ -776,7 +1359,45 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.yank]
-    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_ETH_B_1_1_3"]
+    contracts = [
+        "MCD_FLAP_1_0_0",
+        "MCD_FLAP_1_0_9",
+        "MCD_FLIP_BAT_A_1_0_0",
+        "MCD_FLIP_BAT_A_1_0_9",
+        "MCD_FLIP_BAT_A_1_1_0",
+        "MCD_FLIP_COMP_A_1_1_2",
+        "MCD_FLIP_ETH_A_1_0_0",
+        "MCD_FLIP_ETH_A_1_0_9",
+        "MCD_FLIP_ETH_A_1_1_0",
+        "MCD_FLIP_ETH_B_1_1_3",
+        "MCD_FLIP_KNC_A_1_0_8",
+        "MCD_FLIP_KNC_A_1_0_9",
+        "MCD_FLIP_KNC_A_1_1_0",
+        "MCD_FLIP_LINK_A_1_1_2",
+        "MCD_FLIP_LRC_A_1_1_2",
+        "MCD_FLIP_MANA_A_1_0_9",
+        "MCD_FLIP_MANA_A_1_1_0",
+        "MCD_FLIP_PAXUSD_A_1_1_1",
+        "MCD_FLIP_SAI_1_0_0",
+        "MCD_FLIP_TUSD_A_1_0_7",
+        "MCD_FLIP_TUSD_A_1_0_9",
+        "MCD_FLIP_TUSD_A_1_1_0",
+        "MCD_FLIP_USDC_A_1_0_4",
+        "MCD_FLIP_USDC_A_1_0_9",
+        "MCD_FLIP_USDC_A_1_1_0",
+        "MCD_FLIP_USDC_B_1_0_7",
+        "MCD_FLIP_USDC_B_1_0_9",
+        "MCD_FLIP_USDC_B_1_1_0",
+        "MCD_FLIP_USDT_A_1_1_1",
+        "MCD_FLIP_WBTC_A_1_0_6",
+        "MCD_FLIP_WBTC_A_1_0_9",
+        "MCD_FLIP_WBTC_A_1_1_0",
+        "MCD_FLIP_ZRX_A_1_0_8",
+        "MCD_FLIP_ZRX_A_1_0_9",
+        "MCD_FLIP_ZRX_A_1_1_0",
+        "MCD_FLOP_1_0_1",
+        "MCD_FLOP_1_0_9",
+    ]
     migrations = "db/migrations"
     path = "transformers/events/yank/initializer"
     rank = "0"
