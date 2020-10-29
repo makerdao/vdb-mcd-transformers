@@ -28,12 +28,12 @@ func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.T
 		return types.TransformersConfig{}, decodeErr
 	}
 
-	metadata, metadataErr := parseExporterMetaData(tomlConfig)
+	metadata, metadataErr := ParseExporterMetaData(tomlConfig)
 	if metadataErr != nil {
 		return types.TransformersConfig{}, metadataErr
 	}
 
-	transformerExporters, transformerExportersErr := parseTransformerExporters(tomlConfig)
+	transformerExporters, transformerExportersErr := ParseTransformerExporters(tomlConfig)
 	if transformerExportersErr != nil {
 		return types.TransformersConfig{}, transformerExportersErr
 	}
@@ -45,7 +45,8 @@ func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.T
 	}, nil
 }
 
-func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.ExporterMetaData, error) {
+// ParseExporterMetaData is exported for testing
+func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.ExporterMetaData, error) {
 	home, homeOk := tomlConfig.Exporter["home"].(string)
 	name, nameOk := tomlConfig.Exporter["name"].(string)
 	save, saveOk := tomlConfig.Exporter["save"].(bool)
@@ -72,7 +73,8 @@ func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 	}, nil
 }
 
-func parseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
+// ParseTransformerExporters is exported for testing
+func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
 	delete(tomlConfig.Exporter, "home")
 	delete(tomlConfig.Exporter, "name")
 	delete(tomlConfig.Exporter, "save")
