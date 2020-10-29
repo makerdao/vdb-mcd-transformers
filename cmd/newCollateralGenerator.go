@@ -18,9 +18,9 @@ var (
 )
 
 var addNewCollateralCmd = &cobra.Command{
-	Use:     "addNewCollateral",
-	Short:   "Adds configuration to track a new collateral's contracts.",
-	Long:    `This command generates many of the essential changes that are needed for tracking a new collateral:
+	Use:   "addNewCollateral",
+	Short: "Adds configuration to track a new collateral's contracts.",
+	Long: `This command generates many of the essential changes that are needed for tracking a new collateral:
 - adds flip contract details to mcdTransformers.toml
 - tracks flip events for the new collateral
 - creates a new storage transformer for the new collateral's flip contract

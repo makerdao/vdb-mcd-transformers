@@ -60,7 +60,7 @@ func (g *Generator) createInitializer(contractName, initializerType string) *jen
 	initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
 
 	initializer.Var().Id("contractAddress").Op("=").Qual(
-		"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants",
+		"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants",
 		"GetContractAddress").Params(jen.Lit(contractName))
 	initializer.Var().Id("StorageTransformerInitializer").Op("=").Qual(
 		fmt.Sprintf("github.com/makerdao/vdb-mcd-transformers/transformers/storage/%s/initializers", initializerType),
