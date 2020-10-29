@@ -75,7 +75,7 @@ var _ = Describe("FlipKick Event Transformer", func() {
 			Usr:   "0x0A051CD913dFD1820dbf87a9bf62B04A129F88A5",
 			Gal:   "0xA950524441892A31ebddF91d3cEEFa04Bf454466",
 		}
-		flipKickIntegrationTest(8997383, test_data.FlipEthV100Address(), constants.FlipV100ABI(), expected)
+		flipKickIntegrationTest(8997383, test_data.FlipEthAV100Address(), constants.FlipV100ABI(), expected)
 	})
 
 	Context("MCD_FLIP_ETH_A_1.0.9", func() {
@@ -87,7 +87,7 @@ var _ = Describe("FlipKick Event Transformer", func() {
 			Usr:   "0xA0be0B36Cfd52C3D8c6ABF08f61306fa52c9Ec20",
 			Gal:   "0xA950524441892A31ebddF91d3cEEFa04Bf454466",
 		}
-		flipKickIntegrationTest(10767181, test_data.FlipEthV109Address(), constants.FlipV100ABI(), expected)
+		flipKickIntegrationTest(10767181, test_data.FlipEthAV109Address(), constants.FlipV100ABI(), expected)
 	})
 
 	Context("MCD_FLIP_ETH_A_1.1.0", func() {
