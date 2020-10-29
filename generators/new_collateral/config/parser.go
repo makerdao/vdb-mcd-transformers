@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/BurntSushi/toml"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
@@ -9,12 +10,17 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type IParse interface {
+type Parser interface {
 	ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error)
 }
-type Parser struct{}
 
-func (Parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
+type parser struct{}
+
+func NewParser() parser {
+	return parser{}
+}
+
+func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
 	var tomlConfig types.TransformersConfigForToml
 	fullConfigFilePath := helpers.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
@@ -45,7 +51,10 @@ func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 	save, saveOk := tomlConfig.Exporter["save"].(bool)
 	schema, schemaOk := tomlConfig.Exporter["schema"].(string)
 	if !homeOk || !nameOk || !saveOk || !schemaOk {
-		return types.ExporterMetaData{}, errors.New("error asserting exporter meta data types")
+		return types.ExporterMetaData{}, errors.New(fmt.Sprintf(
+			"error asserting exporterMetadata types - homeOk: %t, nameOk: %t, saveOk: %t, schemaOk: %t",
+			homeOk, nameOk, saveOk, schemaOk,
+		))
 	}
 
 	var transformerNames []string

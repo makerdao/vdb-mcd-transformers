@@ -12,7 +12,7 @@ var _ = Describe("Config Parser", func() {
 	var (
 		testConfigFilePath = "../test_data/"
 		testConfigFileName = "testConfig"
-		configParser       = config.Parser{}
+		configParser       = config.NewParser()
 	)
 
 	Context("ParseCurrentConfigFile", func() {

@@ -15,7 +15,7 @@ import (
 type NewCollateralGenerator struct {
 	ConfigFileName       string
 	ConfigFilePath       string
-	ConfigParser         config.IParse
+	ConfigParser         config.Parser
 	ConfigUpdater        config.IUpdate
 	InitializerGenerator initializer.IGenerate
 }

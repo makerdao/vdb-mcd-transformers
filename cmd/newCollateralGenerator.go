@@ -14,7 +14,12 @@ import (
 )
 
 var (
-	collateral types.Collateral
+	collateral     types.Collateral
+	configFileName string
+)
+
+const (
+	defaultConfigFileName = "mcdTransformers"
 )
 
 var addNewCollateralCmd = &cobra.Command{
@@ -49,6 +54,8 @@ and transformers/test_data/config_values.go
 }
 
 func init() {
+	addNewCollateralCmd.Flags().StringVarP(&configFileName, "config-file-name", "c",
+		defaultConfigFileName, fmt.Sprintf("config file name, defaults to %s", defaultConfigFileName))
 	rootCmd.AddCommand(addNewCollateralCmd)
 }
 
@@ -65,7 +72,6 @@ func addNewCollateral() error {
 	}
 
 	configUpdater := config.NewConfigUpdater(collateral, contracts, prompter.MedianRequired, prompter.OsmRequired)
-	configFileName := "mcdTransformers"
 	configFilePath := helpers.GetEnvironmentsPath()
 	initializerWriter := initializer.Generator{
 		Collateral:                collateral,
@@ -74,7 +80,7 @@ func addNewCollateral() error {
 	newCollateralGenerator := new_collateral.NewCollateralGenerator{
 		ConfigFileName:       configFileName,
 		ConfigFilePath:       configFilePath,
-		ConfigParser:         config.Parser{},
+		ConfigParser:         config.NewParser(),
 		ConfigUpdater:        configUpdater,
 		InitializerGenerator: &initializerWriter,
 	}
