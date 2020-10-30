@@ -1,6 +1,7 @@
 package initializer_test
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -26,6 +27,7 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 			testMedianCollateralPath, "initializer.go",
 		)
 	)
+
 	It("creates a flip initializer for new collateral", func() {
 		initializerErr := generator.GenerateFlipInitializer()
 		Expect(initializerErr).NotTo(HaveOccurred())
@@ -33,6 +35,10 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 		fileInfo, fileErr := os.Stat(testFlipCollateralFullPath)
 		Expect(os.IsNotExist(fileErr)).To(BeFalse())
 		Expect(fileInfo.IsDir()).To(BeFalse())
+
+		fileContents, readFileErr := ioutil.ReadFile(testFlipCollateralFullPath)
+		Expect(readFileErr).NotTo(HaveOccurred())
+		Expect(string(fileContents)).To(Equal(expectedFlipInitializerFileContents))
 
 		removeTestFile := os.RemoveAll(testFlipCollateralPath)
 		Expect(removeTestFile).NotTo(HaveOccurred())
@@ -45,6 +51,10 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 		fileInfo, fileErr := os.Stat(testMedianCollateralFullPath)
 		Expect(os.IsNotExist(fileErr)).To(BeFalse())
 		Expect(fileInfo.IsDir()).To(BeFalse())
+
+		fileContents, readFileErr := ioutil.ReadFile(testMedianCollateralFullPath)
+		Expect(readFileErr).NotTo(HaveOccurred())
+		Expect(string(fileContents)).To(Equal(expectedMedianInitializerFileContents))
 
 		removeTestFile := os.RemoveAll(testMedianCollateralPath)
 		Expect(removeTestFile).NotTo(HaveOccurred())
@@ -62,3 +72,29 @@ var _ = Describe("GeneratorFlipInitializer", func() {
 		Expect(os.IsNotExist(fileErr)).To(BeTrue())
 	})
 })
+
+var expectedFlipInitializerFileContents = `// This is a plugin generated to export the configured transformer initializers
+
+package v0_1_2
+
+import (
+	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers"
+	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+)
+
+var contractAddress = constants.GetContractAddress("MCD_FLIP_TEST_COLLATERAL_0_1_2")
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(contractAddress)
+`
+
+var expectedMedianInitializerFileContents = `// This is a plugin generated to export the configured transformer initializers
+
+package median_test_collateral
+
+import (
+	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"
+	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+)
+
+var contractAddress = constants.GetContractAddress("MEDIAN_TEST_COLLATERAL")
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(contractAddress)
+`

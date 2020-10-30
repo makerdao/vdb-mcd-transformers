@@ -19,7 +19,7 @@ type Generator struct {
 }
 
 func (g *Generator) GenerateFlipInitializer() error {
-	initializer := g.createInitializer(g.Collateral.GetFlipContractName(), "flip")
+	initializer := g.createInitializer(g.Collateral.FormattedVersion(), g.Collateral.GetFlipContractName(), "flip")
 	//create the path to the initializer file
 	path := g.Collateral.GetAbsoluteFlipStorageInitializersDirectoryPath()
 	mkDirErr := os.MkdirAll(path, os.ModePerm)
@@ -37,7 +37,7 @@ func (g *Generator) GenerateFlipInitializer() error {
 
 func (g Generator) GenerateMedianInitializer() error {
 	if g.MedianInitializerRequired {
-		initializer := g.createInitializer(g.Collateral.GetMedianContractName(), "median")
+		initializer := g.createInitializer(g.Collateral.GetMedianInitializerDirectory(), g.Collateral.GetMedianContractName(), "median")
 
 		path := g.Collateral.GetAbsoluteMedianStorageInitializersDirectoryPath()
 		mkDirErr := os.MkdirAll(path, os.ModePerm)
@@ -53,8 +53,8 @@ func (g Generator) GenerateMedianInitializer() error {
 	return nil
 }
 
-func (g Generator) createInitializer(contractName, initializerType string) *jen.File {
-	initializer := jen.NewFile(g.Collateral.FormattedVersion())
+func (g Generator) createInitializer(packageName, contractName, initializerType string) *jen.File {
+	initializer := jen.NewFile(packageName)
 	initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
 
 	initializer.Var().Id("contractAddress").Op("=").Qual(
