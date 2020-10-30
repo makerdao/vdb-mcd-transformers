@@ -16,6 +16,7 @@ import (
 
 var (
 	collateral     types.Collateral
+	collateralErr  error
 	configFileName string
 )
 
@@ -46,7 +47,7 @@ and transformers/test_data/config_values.go
 	Run: func(cmd *cobra.Command, args []string) {
 		err := addNewCollateral()
 		if err != nil {
-			logrus.Error("Failed to add new collateral to config: ", err)
+			logrus.Errorf("Failed to add %s: %s", collateral.Name, err)
 			return
 		}
 		logrus.Infof("Successfully added %s config", collateral.Name)
@@ -62,14 +63,14 @@ func init() {
 
 func addNewCollateral() error {
 	prompter := prompts.NewPrompter()
-	collateral, collateralErr := prompter.GetCollateralDetails()
+	collateral, collateralErr = prompter.GetCollateralDetails()
 	if collateralErr != nil {
-		return collateralErr
+		return fmt.Errorf("failed to get collateral from command line prompts: %w", collateralErr)
 	}
 
 	contracts, contractsErr := prompter.GetContractDetails()
 	if contractsErr != nil {
-		return contractsErr
+		return fmt.Errorf("failed to get contract details from command line prompts: %w", contractsErr)
 	}
 
 	configUpdater := config.NewConfigUpdater(collateral, contracts, prompter.MedianRequired, prompter.OsmRequired)

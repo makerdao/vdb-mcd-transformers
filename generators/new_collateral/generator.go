@@ -1,6 +1,7 @@
 package new_collateral
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -24,19 +25,19 @@ func (g NewCollateralGenerator) Execute() error {
 	logrus.Infof("Adding new collateral to %s", helpers.GetFullConfigFilePath(g.ConfigFileName, g.ConfigFilePath))
 	addErr := g.updateConfig()
 	if addErr != nil {
-		return addErr
+		return fmt.Errorf("error updating config: %w", addErr)
 	}
 
 	logrus.Infof("Adding new collateral to %s", helpers.GetExecutePluginsPath())
 	updatePluginErr := g.updatePluginExporter()
 	if updatePluginErr != nil {
-		return updatePluginErr
+		return fmt.Errorf("error updating tranformerExporter.go: %w", updatePluginErr)
 	}
 
 	logrus.Info("Writing initializers for new collateral")
 	writeInitializerErr := g.writeInitializers()
 	if writeInitializerErr != nil {
-		return writeInitializerErr
+		return fmt.Errorf("error creating initializer files: %w", writeInitializerErr)
 	}
 	return nil
 }
@@ -44,29 +45,29 @@ func (g NewCollateralGenerator) Execute() error {
 func (g NewCollateralGenerator) updateConfig() error {
 	initialConfig, parseConfigErr := g.ConfigParser.ParseCurrentConfig(g.ConfigFilePath, g.ConfigFileName)
 	if parseConfigErr != nil {
-		return parseConfigErr
+		return fmt.Errorf("error parsing current config: %w", parseConfigErr)
 	}
 
 	g.ConfigUpdater.SetInitialConfig(initialConfig)
 
 	updateErr := g.ConfigUpdater.AddNewCollateralToConfig()
 	if updateErr != nil {
-		return updateErr
+		return fmt.Errorf("error adding new collateral to config: %w", updateErr)
 	}
 
 	file, fileOpenErr := os.Create(helpers.GetFullConfigFilePath(g.ConfigFilePath, g.ConfigFileName))
 	if fileOpenErr != nil {
-		return fileOpenErr
+		return fmt.Errorf("opening config file: %w", fileOpenErr)
 	}
 
 	updatedConfig, updatedConfigErr := g.ConfigUpdater.GetUpdatedConfigForToml()
 	if updatedConfigErr != nil {
-		return updatedConfigErr
+		return fmt.Errorf("formatting config for toml: %w", updatedConfigErr)
 	}
 
 	encodingErr := toml.NewEncoder(file).Encode(updatedConfig)
 	if encodingErr != nil {
-		return encodingErr
+		return fmt.Errorf("error encoding config for toml: %w", encodingErr)
 	}
 
 	return file.Close()
@@ -76,7 +77,7 @@ func (g *NewCollateralGenerator) updatePluginExporter() error {
 	updatedConfig := g.ConfigUpdater.GetUpdatedConfig()
 	pluginConfig, pluginErr := g.TransformerExporterUpdater.PreparePluginConfig(updatedConfig)
 	if pluginErr != nil {
-		return pluginErr
+		return fmt.Errorf("error preparing plugin config: %w", pluginErr)
 	}
 
 	return g.TransformerExporterUpdater.WritePlugin(pluginConfig)
@@ -85,7 +86,7 @@ func (g *NewCollateralGenerator) updatePluginExporter() error {
 func (g *NewCollateralGenerator) writeInitializers() error {
 	flipInitializersErr := g.InitializerGenerator.GenerateFlipInitializer()
 	if flipInitializersErr != nil {
-		return flipInitializersErr
+		return fmt.Errorf("error generating flip initializer: %w", flipInitializersErr)
 	}
 	return g.InitializerGenerator.GenerateMedianInitializer()
 }
