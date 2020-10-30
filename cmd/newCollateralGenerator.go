@@ -78,10 +78,7 @@ func addNewCollateral() error {
 	}
 
 	configUpdater := config.NewConfigUpdater(collateral, contracts, prompter.MedianRequired, prompter.OsmRequired)
-	initializerWriter := initializer.Generator{
-		Collateral:                collateral,
-		MedianInitializerRequired: prompter.MedianRequired,
-	}
+	initializerWriter := initializer.NewInitializerGenerator(helpers.GetProjectPath(), collateral, prompter.MedianRequired)
 	newCollateralGenerator := new_collateral.NewCollateralGenerator{
 		ConfigFileName:             configFileName,
 		ConfigFilePath:             configFilePath,

@@ -1,9 +1,6 @@
 package types_test
 
 import (
-	"path/filepath"
-
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -67,38 +64,6 @@ var _ = Describe("Collateral", func() {
 			Expect(collateral1.GetMedianInitializerDirectory()).To(Equal("median_eth_b"))
 			Expect(collateral2.GetMedianInitializerDirectory()).To(Equal("median_paxg"))
 			Expect(collateral3.GetMedianInitializerDirectory()).To(Equal("median_eth_b"))
-		})
-	})
-
-	Context("get absolute initializer directory path", func() {
-		It("formats the collateral as a flip initializer path", func() {
-			flipInitializersPath := filepath.Join(helpers.GetProjectPath(), "transformers", "storage", "flip", "initializers")
-			Expect(collateral1.GetAbsoluteFlipStorageInitializersDirectoryPath()).To(Equal(filepath.Join(flipInitializersPath, "eth_b/v1_2_3")))
-			Expect(collateral2.GetAbsoluteFlipStorageInitializersDirectoryPath()).To(Equal(filepath.Join(flipInitializersPath, "paxg/v1_2_3")))
-			Expect(collateral3.GetAbsoluteFlipStorageInitializersDirectoryPath()).To(Equal(filepath.Join(flipInitializersPath, "eth_b/v1_2_3")))
-		})
-
-		It("formats the collateral as a median initializer path", func() {
-			medianInitializersPath := filepath.Join(helpers.GetProjectPath(), "transformers", "storage", "median", "initializers")
-			Expect(collateral1.GetAbsoluteMedianStorageInitializersDirectoryPath()).To(Equal(filepath.Join(medianInitializersPath, "median_eth_b")))
-			Expect(collateral2.GetAbsoluteMedianStorageInitializersDirectoryPath()).To(Equal(filepath.Join(medianInitializersPath, "median_paxg")))
-			Expect(collateral3.GetAbsoluteMedianStorageInitializersDirectoryPath()).To(Equal(filepath.Join(medianInitializersPath, "median_eth_b")))
-		})
-	})
-
-	Context("get absolute initializer file path", func() {
-		It("formats the collateral as a flip initializer file path", func() {
-			flipInitializersPath := filepath.Join(helpers.GetProjectPath(), "transformers", "storage", "flip", "initializers")
-			Expect(collateral1.GetAbsoluteFlipStorageInitializerFilePath()).To(Equal(filepath.Join(flipInitializersPath, "eth_b/v1_2_3", "initializer.go")))
-			Expect(collateral2.GetAbsoluteFlipStorageInitializerFilePath()).To(Equal(filepath.Join(flipInitializersPath, "paxg/v1_2_3", "initializer.go")))
-			Expect(collateral3.GetAbsoluteFlipStorageInitializerFilePath()).To(Equal(filepath.Join(flipInitializersPath, "eth_b/v1_2_3", "initializer.go")))
-		})
-
-		It("formats the collateral as a median initializer file path", func() {
-			medianInitializersPath := filepath.Join(helpers.GetProjectPath(), "transformers", "storage", "median", "initializers")
-			Expect(collateral1.GetAbsoluteMedianStorageInitializerFilePath()).To(Equal(filepath.Join(medianInitializersPath, "median_eth_b", "initializer.go")))
-			Expect(collateral2.GetAbsoluteMedianStorageInitializerFilePath()).To(Equal(filepath.Join(medianInitializersPath, "median_paxg", "initializer.go")))
-			Expect(collateral3.GetAbsoluteMedianStorageInitializerFilePath()).To(Equal(filepath.Join(medianInitializersPath, "median_eth_b", "initializer.go")))
 		})
 	})
 })

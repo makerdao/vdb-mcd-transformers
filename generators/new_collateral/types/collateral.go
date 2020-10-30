@@ -2,10 +2,7 @@ package types
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
-
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 )
 
 type Collateral struct {
@@ -47,30 +44,6 @@ func (c Collateral) GetMedianInitializerDirectory() string {
 	// example: median_eth_b
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
 	return fmt.Sprintf("median_%s", name)
-}
-
-func (c Collateral) GetAbsoluteFlipStorageInitializersDirectoryPath() string {
-	// example: $GOPATH/transformer/storage/flip/initializers/eth_b/v1_1_3
-	return filepath.Join(
-		helpers.GetProjectPath(), "transformers", "storage", "flip", "initializers", c.GetFlipInitializerDirectory())
-}
-
-func (c Collateral) GetAbsoluteMedianStorageInitializersDirectoryPath() string {
-	// example: $GOPATH/transformer/storage/median/initializers/median_eth_b
-	return filepath.Join(
-		helpers.GetProjectPath(), "transformers", "storage", "median", "initializers", c.GetMedianInitializerDirectory())
-}
-
-func (c Collateral) GetAbsoluteFlipStorageInitializerFilePath() string {
-	// example: $GOPATH/transformer/storage/flip/initializers/eth_b/v1_1_3/initializer.go
-	return filepath.Join(
-		helpers.GetProjectPath(), "transformers", "storage", "flip", "initializers", c.GetFlipInitializerDirectory(), "initializer.go")
-}
-
-func (c Collateral) GetAbsoluteMedianStorageInitializerFilePath() string {
-	// example: $GOPATH/transformer/storage/median/initializers/median_eth_b/initializer.go
-	return filepath.Join(
-		helpers.GetProjectPath(), "transformers", "storage", "median", "initializers", c.GetMedianInitializerDirectory(), "initializer.go")
 }
 
 func (c Collateral) GetFlipContractName() string {
