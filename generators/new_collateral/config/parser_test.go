@@ -12,7 +12,7 @@ var _ = Describe("Config Parser", func() {
 	var (
 		testConfigFilePath   = "../test_data/"
 		testConfigFileName   = "testConfig"
-		badTestConfigFile = "non-existent-file"
+		badTestConfigFile    = "non-existent-file"
 		configParser         = config.NewParser()
 		expectedParsedConfig = types.TransformersConfig{
 			ExporterMetadata: types.ExporterMetaData{
@@ -50,8 +50,8 @@ var _ = Describe("Config Parser", func() {
 	Context("ParseExporterMetadata", func() {
 		It("parses metadata", func() {
 			tomlConfig := types.TransformersConfigForToml{
-				Exporter:  map[string]interface{}{
-					"home":"home", "name":"name", "save":true, "schema":"schema",
+				Exporter: map[string]interface{}{
+					"home": "home", "name": "name", "save": true, "schema": "schema",
 					"transformerNames": []string{"test-transformer"},
 				},
 			}
@@ -67,7 +67,7 @@ var _ = Describe("Config Parser", func() {
 		})
 
 		It("returns an error if it fails to parse the exporter metadata", func() {
-			tomlConfig := types.TransformersConfigForToml{Exporter:  nil}
+			tomlConfig := types.TransformersConfigForToml{Exporter: nil}
 			_, parseErr := config.ParseExporterMetaData(tomlConfig)
 			Expect(parseErr).To(HaveOccurred())
 			Expect(parseErr).To(MatchError(
@@ -77,8 +77,8 @@ var _ = Describe("Config Parser", func() {
 
 		It("can handle an empty transformerNames slice", func() {
 			tomlConfig := types.TransformersConfigForToml{
-				Exporter:  map[string]interface{}{
-					"home":"home", "name":"name", "save":true, "schema":"schema",
+				Exporter: map[string]interface{}{
+					"home": "home", "name": "name", "save": true, "schema": "schema",
 				},
 			}
 			exporterMetadata, parseErr := config.ParseExporterMetaData(tomlConfig)
@@ -96,15 +96,15 @@ var _ = Describe("Config Parser", func() {
 	Context("ParseTransformerExporters", func() {
 		It("parses transformerExporters", func() {
 			transformerExporterMap := map[string]interface{}{
-				"path":"path",
-				"type":"type",
-				"repository":"repository",
-				"migrations":"migrations",
-				"contracts":[]string{"testContract"},
-				"rank":"0",
+				"path":       "path",
+				"type":       "type",
+				"repository": "repository",
+				"migrations": "migrations",
+				"contracts":  []string{"testContract"},
+				"rank":       "0",
 			}
 			tomlConfig := types.TransformersConfigForToml{
-				Exporter:  map[string]interface{}{
+				Exporter: map[string]interface{}{
 					"test-exporter": transformerExporterMap,
 				},
 			}
@@ -128,7 +128,7 @@ var _ = Describe("Config Parser", func() {
 				"Path": 1,
 			}
 			tomlConfig := types.TransformersConfigForToml{
-				Exporter:  map[string]interface{}{
+				Exporter: map[string]interface{}{
 					"test-exporter": notATransformerExporterMap,
 				},
 			}

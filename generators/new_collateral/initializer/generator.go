@@ -37,7 +37,7 @@ func (g *Generator) GenerateFlipInitializer() error {
 	return nil
 }
 
-func (g *Generator) GenerateMedianInitializer() error {
+func (g Generator) GenerateMedianInitializer() error {
 	if g.MedianInitializerRequired {
 		initializer := g.createInitializer(g.Collateral.GetMedianContractName(), "median")
 
@@ -55,7 +55,7 @@ func (g *Generator) GenerateMedianInitializer() error {
 	return nil
 }
 
-func (g *Generator) createInitializer(contractName, initializerType string) *jen.File {
+func (g Generator) createInitializer(contractName, initializerType string) *jen.File {
 	initializer := jen.NewFile(g.Collateral.FormattedVersion())
 	initializer.HeaderComment("This is a plugin generated to export the configured transformer initializers")
 
