@@ -8,6 +8,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/initializer"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/prompts"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/transformer_exporter"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -78,30 +79,13 @@ func addNewCollateral() error {
 		MedianInitializerRequired: prompter.MedianRequired,
 	}
 	newCollateralGenerator := new_collateral.NewCollateralGenerator{
-		ConfigFileName:       configFileName,
-		ConfigFilePath:       configFilePath,
-		ConfigParser:         config.NewParser(),
-		ConfigUpdater:        configUpdater,
-		InitializerGenerator: &initializerWriter,
+		ConfigFileName:             configFileName,
+		ConfigFilePath:             configFilePath,
+		ConfigParser:               config.NewParser(),
+		ConfigUpdater:              configUpdater,
+		TransformerExporterUpdater: transformer_exporter.NewTransformerExporterUpdater(),
+		InitializerGenerator:       &initializerWriter,
 	}
 
-	fmt.Println(fmt.Sprintf("Adding %s to %s", collateral.Name, helpers.GetFullConfigFilePath(configFileName, configFilePath)))
-	addErr := newCollateralGenerator.UpdateConfig()
-	if addErr != nil {
-		return addErr
-	}
-
-	fmt.Println(fmt.Sprintf("Adding %s to %s", collateral.Name, helpers.GetExecutePluginsPath()))
-	updatePluginErr := newCollateralGenerator.UpdatePluginExporter()
-	if updatePluginErr != nil {
-		return updatePluginErr
-	}
-
-	fmt.Println(fmt.Sprintf("Writing initializers for %s", collateral.Name))
-	writeInitializerErr := newCollateralGenerator.WriteInitializers()
-	if writeInitializerErr != nil {
-		return writeInitializerErr
-	}
-
-	return nil
+	return newCollateralGenerator.Execute()
 }

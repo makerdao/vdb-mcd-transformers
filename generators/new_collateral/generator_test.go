@@ -5,10 +5,9 @@ import (
 	"os"
 
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral"
-	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
-	pluginConfig "github.com/makerdao/vulcanizedb/pkg/config"
+	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,157 +15,150 @@ import (
 
 var _ = Describe("NewCollateral", func() {
 	var (
-		filePath             = "./"
-		fileName             = "test"
-		fullConfigPath       = filePath + fileName + ".toml"
-		configParser         test_data.MockConfigParser
-		configUpdater        test_data.MockConfigUpdater
-		initializerGenerator test_data.MockInitializerGenerator
-		collateralGenerator  new_collateral.NewCollateralGenerator
+		filePath                   = "./"
+		fileName                   = "test"
+		fullConfigPath             = filePath + fileName + ".toml"
+		configParser               test_data.MockConfigParser
+		configUpdater              test_data.MockConfigUpdater
+		transformerExporterUpdater test_data.MockTransformerExporterUpdater
+		initializerGenerator       test_data.MockInitializerGenerator
+		collateralGenerator        new_collateral.NewCollateralGenerator
 	)
 
 	BeforeEach(func() {
 		configParser = test_data.MockConfigParser{}
 		configUpdater = test_data.MockConfigUpdater{}
+		transformerExporterUpdater = test_data.MockTransformerExporterUpdater{}
 		initializerGenerator = test_data.MockInitializerGenerator{}
 		collateralGenerator = new_collateral.NewCollateralGenerator{
-			ConfigFileName:       fileName,
-			ConfigFilePath:       filePath,
-			ConfigParser:         &configParser,
-			ConfigUpdater:        &configUpdater,
-			InitializerGenerator: &initializerGenerator,
+			ConfigFileName:             fileName,
+			ConfigFilePath:             filePath,
+			ConfigParser:               &configParser,
+			ConfigUpdater:              &configUpdater,
+			TransformerExporterUpdater: &transformerExporterUpdater,
+			InitializerGenerator:       &initializerGenerator,
 		}
 	})
 
-	Context("AddToConfig", func() {
-		It("parses the current config", func() {
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(configParser.ConfigFilePathPassedIn).To(Equal(filePath))
-			Expect(configParser.ConfigFileNamePassedIn).To(Equal(fileName))
-		})
+	Describe("Execute", func() {
+		Context("update config", func() {
+			It("parses the current config", func() {
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(configParser.ConfigFilePathPassedIn).To(Equal(filePath))
+				Expect(configParser.ConfigFileNamePassedIn).To(Equal(fileName))
+			})
 
-		It("returns an error if parsing the config fails", func() {
-			configParser.ParseErr = fakes.FakeError
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
-		})
+			It("returns an error if parsing the config fails", func() {
+				configParser.ParseErr = fakes.FakeError
+				err := collateralGenerator.Execute()
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
 
-		It("sets the current config on the config updater", func() {
-			testConfig := types.TransformersConfig{
-				ExporterMetadata: types.ExporterMetaData{
-					Home: "test",
-				},
-			}
-			configParser.ConfigToReturn = testConfig
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(configUpdater.SetCurrentConfigCalled).To(BeTrue())
-			Expect(configUpdater.InitialConfigPassedIn).To(Equal(testConfig))
-		})
-
-		It("adds new the collateral to the current config", func() {
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(configUpdater.AddNewCollateralCalled).To(BeTrue())
-		})
-
-		It("returns an error if adding to the current config fails", func() {
-			configUpdater.AddNewCollateralErr = fakes.FakeError
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
-		})
-
-		It("gets updated config from the updater to write to the config file", func() {
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(configUpdater.GetUpdatedConfigForTomlCalled).To(BeTrue())
-		})
-
-		It("returns an error if getting the updated config fails", func() {
-			configUpdater.GetUpdatedConfigForTomlCalledErr = fakes.FakeError
-			err := collateralGenerator.UpdateConfig()
-			Expect(err).To(HaveOccurred())
-			Expect(err).To(MatchError(fakes.FakeError))
-		})
-
-		It("writes the updated collateral to the config file", func() {
-			_, createErr := os.Create(fullConfigPath)
-			Expect(createErr).NotTo(HaveOccurred())
-
-			configUpdater.UpdatedConfigForToml = test_data.UpdatedConfigForToml
-			addErr := collateralGenerator.UpdateConfig()
-			Expect(addErr).NotTo(HaveOccurred())
-
-			testConfigContent, readErr := ioutil.ReadFile(fullConfigPath)
-			Expect(readErr).NotTo(HaveOccurred())
-			Expect(string(testConfigContent)).To(Equal(test_data.TestConfigFileContent))
-
-			removeErr := os.Remove(fullConfigPath)
-			Expect(removeErr).NotTo(HaveOccurred())
-		})
-	})
-
-	Context("UpdatePluginExporter", func() {
-		It("prepares the plugin.Config using the updated transformers config", func() {
-			configUpdater.UpdatedConfig = test_data.UpdatedConfig
-			config, pluginErr := collateralGenerator.PreparePluginConfig()
-			Expect(pluginErr).NotTo(HaveOccurred())
-
-			expectedPluginConfig := pluginConfig.Plugin{
-				Transformers: map[string]pluginConfig.Transformer{
-					"test-1": {
-						Path:           "path-test-1",
-						Type:           pluginConfig.EthStorage,
-						MigrationPath:  "test-migrations",
-						MigrationRank:  0,
-						RepositoryPath: "repo-1",
+			It("sets the current config on the config updater", func() {
+				testConfig := types.TransformersConfig{
+					ExporterMetadata: types.ExporterMetaData{
+						Home: "test",
 					},
-					"test-2": {
-						Path:           "path-test-2",
-						Type:           pluginConfig.EthEvent,
-						MigrationPath:  "test-migrations",
-						MigrationRank:  0,
-						RepositoryPath: "repo-2",
-					},
-				},
-				FilePath: helpers.GetExecutePluginsPath(),
-				FileName: test_data.UpdatedConfig.ExporterMetadata.Name,
-				Save:     test_data.UpdatedConfig.ExporterMetadata.Save,
-				Home:     test_data.UpdatedConfig.ExporterMetadata.Home,
-				Schema:   test_data.UpdatedConfig.ExporterMetadata.Schema,
-			}
-			Expect(config).To(Equal(expectedPluginConfig))
-		})
-	})
+				}
+				configParser.ConfigToReturn = testConfig
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(configUpdater.SetCurrentConfigCalled).To(BeTrue())
+				Expect(configUpdater.InitialConfigPassedIn).To(Equal(testConfig))
+			})
 
-	Context("WriteInitializers", func() {
-		It("writes the flip initializer file", func() {
-			initializerErr := collateralGenerator.WriteInitializers()
-			Expect(initializerErr).NotTo(HaveOccurred())
-			Expect(initializerGenerator.GenerateFlipInitializerCalled).To(BeTrue())
+			It("adds new the collateral to the current config", func() {
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(configUpdater.AddNewCollateralCalled).To(BeTrue())
+			})
+
+			It("returns an error if adding to the current config fails", func() {
+				configUpdater.AddNewCollateralErr = fakes.FakeError
+				err := collateralGenerator.Execute()
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
+
+			It("gets updated config from the updater to write to the config file", func() {
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(configUpdater.GetUpdatedConfigForTomlCalled).To(BeTrue())
+			})
+
+			It("returns an error if getting the updated config fails", func() {
+				configUpdater.GetUpdatedConfigForTomlCalledErr = fakes.FakeError
+				err := collateralGenerator.Execute()
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
+
+			It("writes the updated collateral to the config file", func() {
+				configUpdater.UpdatedConfigForToml = test_data.UpdatedConfigForToml
+				addErr := collateralGenerator.Execute()
+				Expect(addErr).NotTo(HaveOccurred())
+
+				testConfigContent, readErr := ioutil.ReadFile(fullConfigPath)
+				Expect(readErr).NotTo(HaveOccurred())
+				Expect(string(testConfigContent)).To(Equal(test_data.TestConfigFileContent))
+
+				removeErr := os.Remove(fullConfigPath)
+				Expect(removeErr).NotTo(HaveOccurred())
+			})
 		})
 
-		It("returns an error if writing the flip initializer fails", func() {
-			initializerGenerator.FlipInitializerErr = fakes.FakeError
-			initializerErr := collateralGenerator.WriteInitializers()
-			Expect(initializerErr).To(HaveOccurred())
-			Expect(initializerErr).To(MatchError(fakes.FakeError))
+		Context("writes the transformer exporter file", func() {
+			It("prepares the plugin config", func() {
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(transformerExporterUpdater.PreparePluginConfigCalled).To(BeTrue())
+				Expect(configUpdater.GetUpdatedConfigCalled).To(BeTrue())
+			})
+
+			It("writes the transformer exporter file with the VDB plugin writer", func() {
+				pluginConfigToWrite := config.Plugin{
+					FilePath: "filePath",
+					FileName: "fileName",
+					Save:     true,
+					Home:     "home",
+					Schema:   "schema",
+				}
+				transformerExporterUpdater.PluginConfigToReturn = pluginConfigToWrite
+				err := collateralGenerator.Execute()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(transformerExporterUpdater.WritePluginCalled).To(BeTrue())
+				Expect(transformerExporterUpdater.PluginConfigPassedIn).To(Equal(pluginConfigToWrite))
+			})
 		})
 
-		It("writes the median initializer file", func() {
-			initializerErr := collateralGenerator.WriteInitializers()
-			Expect(initializerErr).NotTo(HaveOccurred())
-			Expect(initializerGenerator.GenerateMedianInitializerCalled).To(BeTrue())
-		})
+		Context("write initializer files", func() {
+			It("writes the flip initializer file", func() {
+				initializerErr := collateralGenerator.Execute()
+				Expect(initializerErr).NotTo(HaveOccurred())
+				Expect(initializerGenerator.GenerateFlipInitializerCalled).To(BeTrue())
+			})
 
-		It("returns an error if writing the median initializer fails", func() {
-			initializerGenerator.MedianInitializerErr = fakes.FakeError
-			initializerErr := collateralGenerator.WriteInitializers()
-			Expect(initializerErr).To(HaveOccurred())
-			Expect(initializerErr).To(MatchError(fakes.FakeError))
+			It("returns an error if writing the flip initializer fails", func() {
+				initializerGenerator.FlipInitializerErr = fakes.FakeError
+				initializerErr := collateralGenerator.Execute()
+				Expect(initializerErr).To(HaveOccurred())
+				Expect(initializerErr).To(MatchError(fakes.FakeError))
+			})
+
+			It("writes the median initializer file", func() {
+				initializerErr := collateralGenerator.Execute()
+				Expect(initializerErr).NotTo(HaveOccurred())
+				Expect(initializerGenerator.GenerateMedianInitializerCalled).To(BeTrue())
+			})
+
+			It("returns an error if writing the median initializer fails", func() {
+				initializerGenerator.MedianInitializerErr = fakes.FakeError
+				initializerErr := collateralGenerator.Execute()
+				Expect(initializerErr).To(HaveOccurred())
+				Expect(initializerErr).To(MatchError(fakes.FakeError))
+			})
 		})
 	})
 })

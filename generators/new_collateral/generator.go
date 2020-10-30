@@ -2,25 +2,46 @@ package new_collateral
 
 import (
 	"os"
-	"strconv"
 
 	"github.com/BurntSushi/toml"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/config"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/initializer"
-	pluginConfig "github.com/makerdao/vulcanizedb/pkg/config"
-	"github.com/makerdao/vulcanizedb/pkg/plugin/writer"
+	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/transformer_exporter"
+	"github.com/sirupsen/logrus"
 )
 
 type NewCollateralGenerator struct {
-	ConfigFileName       string
-	ConfigFilePath       string
-	ConfigParser         config.Parser
-	ConfigUpdater        config.IUpdate
-	InitializerGenerator initializer.IGenerate
+	ConfigFileName             string
+	ConfigFilePath             string
+	ConfigParser               config.Parser
+	ConfigUpdater              config.IUpdate
+	TransformerExporterUpdater transformer_exporter.TransformerExporterUpdater
+	InitializerGenerator       initializer.IGenerate
 }
 
-func (g NewCollateralGenerator) UpdateConfig() error {
+func (g NewCollateralGenerator) Execute() error {
+	logrus.Infof("Adding new collateral to %s", helpers.GetFullConfigFilePath(g.ConfigFileName, g.ConfigFilePath))
+	addErr := g.updateConfig()
+	if addErr != nil {
+		return addErr
+	}
+
+	logrus.Infof("Adding new collateral to %s", helpers.GetExecutePluginsPath())
+	updatePluginErr := g.updatePluginExporter()
+	if updatePluginErr != nil {
+		return updatePluginErr
+	}
+
+	logrus.Info("Writing initializers for new collateral")
+	writeInitializerErr := g.writeInitializers()
+	if writeInitializerErr != nil {
+		return writeInitializerErr
+	}
+	return nil
+}
+
+func (g NewCollateralGenerator) updateConfig() error {
 	initialConfig, parseConfigErr := g.ConfigParser.ParseCurrentConfig(g.ConfigFilePath, g.ConfigFileName)
 	if parseConfigErr != nil {
 		return parseConfigErr
@@ -51,54 +72,17 @@ func (g NewCollateralGenerator) UpdateConfig() error {
 	return file.Close()
 }
 
-func (g *NewCollateralGenerator) UpdatePluginExporter() error {
-	pluginConfig, pluginErr := g.PreparePluginConfig()
+func (g *NewCollateralGenerator) updatePluginExporter() error {
+	updatedConfig := g.ConfigUpdater.GetUpdatedConfig()
+	pluginConfig, pluginErr := g.TransformerExporterUpdater.PreparePluginConfig(updatedConfig)
 	if pluginErr != nil {
 		return pluginErr
 	}
 
-	pluginWriter := writer.NewPluginWriter(pluginConfig)
-	return pluginWriter.WritePlugin()
+	return g.TransformerExporterUpdater.WritePlugin(pluginConfig)
 }
 
-func (g *NewCollateralGenerator) PreparePluginConfig() (pluginConfig.Plugin, error) {
-	updatedConfig := g.ConfigUpdater.GetUpdatedConfig()
-	transformers := make(map[string]pluginConfig.Transformer)
-	for k, v := range updatedConfig.TransformerExporters {
-		rank, rankErr := strconv.Atoi(v.Rank)
-		if rankErr != nil {
-			return pluginConfig.Plugin{}, rankErr
-		}
-		transformers[k] = pluginConfig.Transformer{
-			Path:           v.Path,
-			Type:           getTransformerType(v.Type),
-			MigrationPath:  v.Migrations,
-			MigrationRank:  uint64(rank),
-			RepositoryPath: v.Repository,
-		}
-	}
-
-	return pluginConfig.Plugin{
-		Transformers: transformers,
-		FilePath:     helpers.GetExecutePluginsPath(),
-		FileName:     updatedConfig.ExporterMetadata.Name,
-		Save:         updatedConfig.ExporterMetadata.Save,
-		Home:         updatedConfig.ExporterMetadata.Home,
-		Schema:       updatedConfig.ExporterMetadata.Schema,
-	}, nil
-}
-
-func getTransformerType(typeString string) pluginConfig.TransformerType {
-	switch typeString {
-	case "eth_event":
-		return pluginConfig.EthEvent
-	case "eth_storage":
-		return pluginConfig.EthStorage
-	default:
-		return pluginConfig.UnknownTransformerType
-	}
-}
-func (g *NewCollateralGenerator) WriteInitializers() error {
+func (g *NewCollateralGenerator) writeInitializers() error {
 	flipInitializersErr := g.InitializerGenerator.GenerateFlipInitializer()
 	if flipInitializersErr != nil {
 		return flipInitializersErr
