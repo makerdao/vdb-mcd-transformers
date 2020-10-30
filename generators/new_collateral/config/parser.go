@@ -75,22 +75,24 @@ func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 
 // ParseTransformerExporters is exported for testing
 func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
-	delete(tomlConfig.Exporter, "home")
-	delete(tomlConfig.Exporter, "name")
-	delete(tomlConfig.Exporter, "save")
-	delete(tomlConfig.Exporter, "schema")
-	delete(tomlConfig.Exporter, "transformerNames")
-
 	var exporters = make(map[string]types.TransformerExporter)
 	for exporterKey, exporterValue := range tomlConfig.Exporter {
-		var result types.TransformerExporter
-		decodeErr := mapstructure.Decode(exporterValue, &result)
-		if decodeErr != nil {
-			return types.TransformerExporters{}, decodeErr
-		}
+		if keyIsForMetadata(exporterKey){
+			continue
+		} else {
+			var result types.TransformerExporter
+			decodeErr := mapstructure.Decode(exporterValue, &result)
+			if decodeErr != nil {
+				return types.TransformerExporters{}, decodeErr
+			}
 
-		exporters[exporterKey] = result
+			exporters[exporterKey] = result
+		}
 	}
 
 	return exporters, nil
+}
+
+func keyIsForMetadata(key string) bool {
+	return key == "home" || key == "name" || key == "save" || key == "schema" || key == "transformerNames"
 }

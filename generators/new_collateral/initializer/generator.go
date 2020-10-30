@@ -18,8 +18,6 @@ type Generator struct {
 	MedianInitializerRequired bool
 }
 
-var initializerFileName = "initializer.go"
-
 func (g *Generator) GenerateFlipInitializer() error {
 	initializer := g.createInitializer(g.Collateral.GetFlipContractName(), "flip")
 	//create the path to the initializer file
