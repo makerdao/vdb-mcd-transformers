@@ -77,7 +77,7 @@ func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
 	var exporters = make(map[string]types.TransformerExporter)
 	for exporterKey, exporterValue := range tomlConfig.Exporter {
-		if keyIsForMetadata(exporterKey){
+		if keyIsForMetadata(exporterKey) {
 			continue
 		} else {
 			var result types.TransformerExporter

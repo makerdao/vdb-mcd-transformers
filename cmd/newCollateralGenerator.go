@@ -15,9 +15,11 @@ import (
 )
 
 var (
-	collateral     types.Collateral
-	collateralErr  error
-	configFileName string
+	collateral            types.Collateral
+	collateralErr         error
+	configFileName        string
+	configFilePath        string
+	defaultConfigFilePath = helpers.GetEnvironmentsPath()
 )
 
 const (
@@ -56,8 +58,10 @@ and transformers/test_data/config_values.go
 }
 
 func init() {
-	addNewCollateralCmd.Flags().StringVarP(&configFileName, "config-file-name", "c",
+	addNewCollateralCmd.Flags().StringVarP(&configFileName, "config-file-name", "n",
 		defaultConfigFileName, fmt.Sprintf("config file name, defaults to %s", defaultConfigFileName))
+	addNewCollateralCmd.Flags().StringVarP(&configFilePath, "config-file-path", "p",
+		defaultConfigFilePath, fmt.Sprintf("config path where the config file is expected to be, defaults to %s", defaultConfigFileName))
 	rootCmd.AddCommand(addNewCollateralCmd)
 }
 
@@ -74,7 +78,6 @@ func addNewCollateral() error {
 	}
 
 	configUpdater := config.NewConfigUpdater(collateral, contracts, prompter.MedianRequired, prompter.OsmRequired)
-	configFilePath := helpers.GetEnvironmentsPath()
 	initializerWriter := initializer.Generator{
 		Collateral:                collateral,
 		MedianInitializerRequired: prompter.MedianRequired,
