@@ -1,7 +1,9 @@
 package prompts
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/types"
@@ -135,9 +137,18 @@ func createContractQuestions(contractType string) []*survey.Question {
 		{
 			Name:     "block",
 			Prompt:   &survey.Input{Message: fmt.Sprintf("%s Contract Deployment Block:", contractType)},
-			Validate: survey.Required,
+			Validate: survey.ComposeValidators(survey.Required, intValidator),
 		},
 	}
+}
+
+func intValidator(val interface{}) error {
+	valString, valOk := val.(string)
+	if !valOk {
+		return errors.New("error validating input")
+	}
+	_, err := strconv.Atoi(valString)
+	return err
 }
 
 func createContractRequiredQuestions(contractType string) []*survey.Question {
