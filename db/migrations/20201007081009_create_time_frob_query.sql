@@ -30,9 +30,9 @@ BEGIN
                 (SELECT id FROM public.headers WHERE block_timestamp <= (extract(epoch FROM bucket_start + bucket_interval))::INTEGER ORDER BY block_timestamp DESC LIMIT 1) AS header_id_end
             FROM buckets
         )
-        SELECT buckets_headers.bucket_start AS bucket_start,
+        SELECT buckets_headers.bucket_start,
             buckets_headers.bucket_start + bucket_interval AS bucket_end,
-            bucket_interval AS bucket_interval,
+            bucket_interval,
             COUNT(dink) AS count,
             COALESCE(SUM(dink), 0) AS dink,
             COALESCE(SUM(dart), 0) AS dart,
