@@ -1,4 +1,6 @@
 -- +goose Up
+CREATE INDEX ON api.ilk_snapshot (updated);
+
 CREATE TYPE api.time_ilk_snapshot AS
 (
     bucket_start TIMESTAMP,
@@ -56,9 +58,11 @@ BEGIN
             (
                 ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND
                 block_number = (
-                    SELECT MAX(block_number)
+                    SELECT block_number
                     FROM api.ilk_snapshot
-                    WHERE ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND updated < buckets.bucket_start + bucket_interval
+                    WHERE ilk_snapshot.ilk_identifier = 'ETH-A' AND updated < buckets.bucket_start + '1 day'::INTERVAL
+                    ORDER BY updated DESC
+                    LIMIT 1
                 )
             )
         ORDER BY bucket_start
@@ -75,3 +79,4 @@ $$
 -- +goose Down
 DROP FUNCTION api.time_ilk_snapshots(TEXT, TIMESTAMP, TIMESTAMP, INTERVAL);
 DROP TYPE api.time_ilk_snapshot CASCADE;
+DROP INDEX api.ilk_snapshot_updated_idx;
