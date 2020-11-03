@@ -1,0 +1,26 @@
+[exporter]
+    [exporter.cat_v1_1_0]
+        path = "transformers/storage/cat/v1_1_0/initializer"
+        type = "eth_storage"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        rank = "0"
+    [exporter.cat_file_vow]
+        path = "transformers/events/cat_file/vow/initializer"
+        type = "eth_event"
+        repository = "github.com/makerdao/vdb-mcd-transformers"
+        migrations = "db/migrations"
+        contracts = [
+            "MCD_CAT_1_0_0",
+            "MCD_CAT_1_1_0"
+        ]
+        rank = "0"
+[contract]
+    [contract.MCD_CAT_1_0_0]
+        address  = "0x78f2c2af65126834c51822f56be0d7469d7a523e"
+        abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"}]}]'
+        deployed = 8928165
+    [contract.MCD_CAT_1_1_0]
+        address  = "0xa5679C04fc3d9d8b0AaB1F0ab83555b301cA70Ea"
+        abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"}]}]'
+        deployed = 10742907
