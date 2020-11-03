@@ -11,6 +11,7 @@ CREATE TYPE api.time_bid_total AS
     bid_amount_end NUMERIC
 );
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_flip_bid_totals(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
@@ -62,7 +63,9 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_flap_bid_totals(range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
@@ -119,7 +122,9 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_flop_bid_totals(range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bid_total AS
 $$
@@ -176,6 +181,7 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
 CREATE TYPE api.time_bite_total AS
 (
@@ -188,6 +194,7 @@ CREATE TYPE api.time_bite_total AS
     tab NUMERIC
 );
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_bite_totals(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_bite_total AS
 $$
@@ -233,6 +240,7 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
 -- +goose Down
 DROP FUNCTION api.time_flip_bid_totals(TEXT, TIMESTAMP, TIMESTAMP, INTERVAL);
