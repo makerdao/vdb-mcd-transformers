@@ -13,6 +13,7 @@ CREATE TYPE api.time_frob_total AS
     wipe NUMERIC
 );
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_frob_totals(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_frob_total AS
 $$
@@ -56,6 +57,7 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
 -- +goose Down
 DROP FUNCTION api.time_frob_totals(TEXT, TIMESTAMP, TIMESTAMP, INTERVAL);
