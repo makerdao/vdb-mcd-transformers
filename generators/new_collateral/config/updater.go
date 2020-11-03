@@ -44,14 +44,14 @@ func (cu *Updater) SetInitialConfig(initialConfig types.TransformersConfig) {
 func (cu *Updater) AddNewCollateralToConfig() error {
 	copyErr := cu.copyInitialConfig()
 	if copyErr != nil {
-		return copyErr
+		return fmt.Errorf("error copying initialConfig to a new struct: %w", copyErr)
 	}
 
 	cu.addStorageTransformerNames()
 	cu.addStorageExporters()
 	addContractsToExportersErr := cu.addContractsToEventExporters()
 	if addContractsToExportersErr != nil {
-		return addContractsToExportersErr
+		return fmt.Errorf("error adding contracts to event exporters: %w", addContractsToExportersErr)
 	}
 	cu.addContracts()
 
@@ -63,14 +63,14 @@ func (cu *Updater) copyInitialConfig() error {
 	encoder := gob.NewEncoder(buf)
 	encErr := encoder.Encode(cu.InitialConfig)
 	if encErr != nil {
-		return encErr
+		return fmt.Errorf("error encoding initial config: %w", encErr)
 	}
 
 	var updatedConfig types.TransformersConfig
 	decoder := gob.NewDecoder(buf)
 	decErr := decoder.Decode(&updatedConfig)
 	if decErr != nil {
-		return decErr
+		return fmt.Errorf("error decoding updated config: %w", decErr)
 	}
 
 	cu.UpdatedConfig = updatedConfig
@@ -123,17 +123,17 @@ func (cu *Updater) addStorageExporters() {
 func (cu *Updater) addContractsToEventExporters() error {
 	flipErr := cu.addNewContractToFlipExporters()
 	if flipErr != nil {
-		return flipErr
+		return fmt.Errorf("error adding new contract to flip exporters: %w", flipErr)
 	}
 
 	medianErr := cu.addNewContractToMedianExporters()
 	if medianErr != nil {
-		return medianErr
+		return fmt.Errorf("error adding new contract to median exporters: %w", medianErr)
 	}
 
 	osmErr := cu.addNewContractToOsmExporters()
 	if osmErr != nil {
-		return osmErr
+		return fmt.Errorf("error adding new contract to osm exporters: %w", osmErr)
 	}
 
 	return nil
@@ -177,7 +177,7 @@ func (cu *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateral
 		for _, contract := range exporter.Contracts {
 			contractTypeMatched, matchErr := matcherFunc(contract)
 			if matchErr != nil {
-				return matchErr
+				return fmt.Errorf("error matching contract type: %w", matchErr)
 			}
 			if contractTypeMatched {
 				exporter.Contracts = append(exporter.Contracts, collateralFormatter())
@@ -221,12 +221,12 @@ func (cu *Updater) GetUpdatedConfig() types.TransformersConfig {
 func (cu *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
 	metadataMap, metadataMapErr := convertToLowerCaseStringToInterfaceMap(cu.UpdatedConfig.ExporterMetadata)
 	if metadataMapErr != nil {
-		return types.TransformersConfigForToml{}, metadataMapErr
+		return types.TransformersConfigForToml{}, fmt.Errorf("error converting metadata map: %w", metadataMapErr)
 	}
 
 	transformerExporterMap, transformerExporterMapErr := convertToLowerCaseStringToInterfaceMap(cu.UpdatedConfig.TransformerExporters)
 	if transformerExporterMapErr != nil {
-		return types.TransformersConfigForToml{}, transformerExporterMapErr
+		return types.TransformersConfigForToml{}, fmt.Errorf("error converting transformer exporter map: %w", transformerExporterMapErr)
 	}
 
 	exporterMap := mergeMaps(metadataMap, transformerExporterMap)
@@ -242,7 +242,7 @@ func convertToLowerCaseStringToInterfaceMap(input interface{}) (map[string]inter
 	jsonBytes, _ := json.Marshal(input)
 	unmarshalErr := json.Unmarshal(jsonBytes, &stringToInterfaceMap)
 	if unmarshalErr != nil {
-		return stringToInterfaceMap, unmarshalErr
+		return stringToInterfaceMap, fmt.Errorf("error unmarshaling interface map: %w", unmarshalErr)
 	}
 	return makeKeysLowercase(stringToInterfaceMap), nil
 }

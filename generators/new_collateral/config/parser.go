@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/BurntSushi/toml"
@@ -25,17 +24,17 @@ func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.T
 	fullConfigFilePath := helpers.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
-		return types.TransformersConfig{}, decodeErr
+		return types.TransformersConfig{}, fmt.Errorf("error decoding config file: %w", decodeErr)
 	}
 
 	metadata, metadataErr := ParseExporterMetaData(tomlConfig)
 	if metadataErr != nil {
-		return types.TransformersConfig{}, metadataErr
+		return types.TransformersConfig{}, fmt.Errorf("error parsing exporter metadata from config file: %w", metadataErr)
 	}
 
 	transformerExporters, transformerExportersErr := ParseTransformerExporters(tomlConfig)
 	if transformerExportersErr != nil {
-		return types.TransformersConfig{}, transformerExportersErr
+		return types.TransformersConfig{}, fmt.Errorf("error parsing transformer exporters from config file: %w", transformerExportersErr)
 	}
 
 	return types.TransformersConfig{
@@ -52,16 +51,16 @@ func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 	save, saveOk := tomlConfig.Exporter["save"].(bool)
 	schema, schemaOk := tomlConfig.Exporter["schema"].(string)
 	if !homeOk || !nameOk || !saveOk || !schemaOk {
-		return types.ExporterMetaData{}, errors.New(fmt.Sprintf(
+		return types.ExporterMetaData{}, fmt.Errorf(
 			"error asserting exporterMetadata types - homeOk: %t, nameOk: %t, saveOk: %t, schemaOk: %t",
 			homeOk, nameOk, saveOk, schemaOk,
-		))
+		)
 	}
 
 	var transformerNames []string
 	decodeErr := mapstructure.Decode(tomlConfig.Exporter["transformerNames"], &transformerNames)
 	if decodeErr != nil {
-		return types.ExporterMetaData{}, decodeErr
+		return types.ExporterMetaData{}, fmt.Errorf("error decoding transformerNames: %w", decodeErr)
 	}
 
 	return types.ExporterMetaData{
@@ -83,7 +82,7 @@ func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (type
 			var result types.TransformerExporter
 			decodeErr := mapstructure.Decode(exporterValue, &result)
 			if decodeErr != nil {
-				return types.TransformerExporters{}, decodeErr
+				return types.TransformerExporters{}, fmt.Errorf("error decoding transformerExporters: %w", decodeErr)
 			}
 
 			exporters[exporterKey] = result
