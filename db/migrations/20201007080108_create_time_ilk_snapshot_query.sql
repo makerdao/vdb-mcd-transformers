@@ -24,6 +24,7 @@ CREATE TYPE api.time_ilk_snapshot AS
     updated TIMESTAMP
 );
 
+-- +goose StatementBegin
 CREATE FUNCTION api.time_ilk_snapshots(ilk_identifier TEXT, range_start TIMESTAMP, range_end TIMESTAMP, bucket_interval INTERVAL DEFAULT '1 day'::INTERVAL)
     RETURNS SETOF api.time_ilk_snapshot AS
 $$
@@ -75,6 +76,7 @@ $$
     LANGUAGE plpgsql
     STRICT
     STABLE;
+-- +goose StatementEnd
 
 -- +goose Down
 DROP FUNCTION api.time_ilk_snapshots(TEXT, TIMESTAMP, TIMESTAMP, INTERVAL);
