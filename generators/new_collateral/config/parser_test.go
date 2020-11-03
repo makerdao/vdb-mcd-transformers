@@ -33,7 +33,7 @@ var _ = Describe("Config Parser", func() {
 
 	Context("ParseCurrentConfigFile", func() {
 		It("returns an error if it fails to decode the file", func() {
-			configFile := "non-existent-file"
+			configFile    := "non-existent-file"
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFile)
 			Expect(parseErr).To(HaveOccurred())
 			Expect(parseErr).To(MatchError("error decoding config file: open ../test_data/non-existent-file.toml: no such file or directory"))
