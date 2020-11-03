@@ -19,8 +19,8 @@
         repository = "github.com/makerdao/vdb-mcd-transformers"
         migrations = "db/migrations"
         contracts = [
-            "MCD_CAT_1.0.0",
-            "MCD_CAT_1.1.0"
+            "MCD_CAT_1_0_0",
+            "MCD_CAT_1_1_0"
         ]
         rank = "0"
 [contract]

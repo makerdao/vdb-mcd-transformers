@@ -60,7 +60,7 @@ func (c Collateral) GetMedianContractName() string {
 }
 
 func (c Collateral) GetOsmContractName() string {
-	// example: MEDIAN_ETH_B
+	// example: OSM_ETH_B
 	name := strings.ToUpper(strings.Replace(c.Name, "-", "_", -1))
 	return fmt.Sprintf("OSM_%s", name)
 }

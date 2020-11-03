@@ -113,7 +113,7 @@ var (
 		Type:       "eth_event",
 		Repository: "github.com/makerdao/vdb-mcd-transformers",
 		Migrations: "db/migrations",
-		Contracts:  []string{"MCD_CAT_1.0.0", "MCD_CAT_1.1.0"},
+		Contracts:  []string{"MCD_CAT_1_0_0", "MCD_CAT_1_1_0"},
 		Rank:       "0",
 	}
 
@@ -124,7 +124,7 @@ var (
 		"migrations": CatFileVowExporter.Migrations,
 		"rank":       CatFileVowExporter.Rank,
 		"contracts": []interface{}{
-			"MCD_CAT_1.0.0", "MCD_CAT_1.1.0",
+			"MCD_CAT_1_0_0", "MCD_CAT_1_1_0",
 		},
 	}
 
@@ -286,7 +286,7 @@ var (
   schema = "maker"
   transformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_b"]
   [exporter.cat_file_vow]
-    contracts = ["MCD_CAT_1.0.0", "MCD_CAT_1.1.0"]
+    contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0"]
     migrations = "db/migrations"
     path = "transformers/events/cat_file/vow/initializer"
     rank = "0"

@@ -37,31 +37,31 @@ func NewConfigUpdater(collateral types.Collateral, contracts types.Contracts, me
 	}
 }
 
-func (cg *Updater) SetInitialConfig(initialConfig types.TransformersConfig) {
-	cg.InitialConfig = initialConfig
+func (cu *Updater) SetInitialConfig(initialConfig types.TransformersConfig) {
+	cu.InitialConfig = initialConfig
 }
 
-func (cg *Updater) AddNewCollateralToConfig() error {
-	copyErr := cg.copyInitialConfig()
+func (cu *Updater) AddNewCollateralToConfig() error {
+	copyErr := cu.copyInitialConfig()
 	if copyErr != nil {
 		return copyErr
 	}
 
-	cg.addStorageTransformerNames()
-	cg.addStorageExporters()
-	addContractsToExportersErr := cg.addContractsToEventExporters()
+	cu.addStorageTransformerNames()
+	cu.addStorageExporters()
+	addContractsToExportersErr := cu.addContractsToEventExporters()
 	if addContractsToExportersErr != nil {
 		return addContractsToExportersErr
 	}
-	cg.addContracts()
+	cu.addContracts()
 
 	return nil
 }
 
-func (cg *Updater) copyInitialConfig() error {
+func (cu *Updater) copyInitialConfig() error {
 	buf := new(bytes.Buffer)
 	encoder := gob.NewEncoder(buf)
-	encErr := encoder.Encode(cg.InitialConfig)
+	encErr := encoder.Encode(cu.InitialConfig)
 	if encErr != nil {
 		return encErr
 	}
@@ -73,65 +73,65 @@ func (cg *Updater) copyInitialConfig() error {
 		return decErr
 	}
 
-	cg.UpdatedConfig = updatedConfig
+	cu.UpdatedConfig = updatedConfig
 	return nil
 }
 
-func (cg *Updater) addStorageTransformerNames() {
-	flipTransformerName := cg.Collateral.GetFlipTransformerName()
+func (cu *Updater) addStorageTransformerNames() {
+	flipTransformerName := cu.Collateral.GetFlipTransformerName()
 	newTransformerNames := []string{flipTransformerName}
-	if cg.MedianContractRequired {
-		medianTransformerName := cg.Collateral.GetMedianTransformerName()
+	if cu.MedianContractRequired {
+		medianTransformerName := cu.Collateral.GetMedianTransformerName()
 		newTransformerNames = []string{flipTransformerName, medianTransformerName}
 	}
 
-	cg.UpdatedConfig.ExporterMetadata.TransformerNames = append(
-		cg.UpdatedConfig.ExporterMetadata.TransformerNames,
+	cu.UpdatedConfig.ExporterMetadata.TransformerNames = append(
+		cu.UpdatedConfig.ExporterMetadata.TransformerNames,
 		newTransformerNames...,
 	)
 }
 
-func (cg *Updater) addStorageExporters() {
+func (cu *Updater) addStorageExporters() {
 	flipStorageExporter := types.TransformerExporter{
-		Path:       fmt.Sprintf("transformers/storage/flip/initializers/%s", cg.Collateral.GetFlipInitializerDirectory()),
+		Path:       fmt.Sprintf("transformers/storage/flip/initializers/%s", cu.Collateral.GetFlipInitializerDirectory()),
 		Type:       "eth_storage",
 		Repository: "github.com/makerdao/vdb-mcd-transformers",
 		Migrations: "db/migrations",
 		Rank:       "0",
 	}
 	transformerExporters := make(map[string]types.TransformerExporter)
-	flipKey := cg.Collateral.GetFlipTransformerName()
+	flipKey := cu.Collateral.GetFlipTransformerName()
 	transformerExporters[flipKey] = flipStorageExporter
 
-	if cg.MedianContractRequired {
+	if cu.MedianContractRequired {
 		medianStorageExporter := types.TransformerExporter{
-			Path:       fmt.Sprintf("transformers/storage/median/initializers/%s", cg.Collateral.GetMedianTransformerName()),
+			Path:       fmt.Sprintf("transformers/storage/median/initializers/%s", cu.Collateral.GetMedianTransformerName()),
 			Type:       "eth_storage",
 			Repository: "github.com/makerdao/vdb-mcd-transformers",
 			Migrations: "db/migrations",
 			Rank:       "0",
 		}
-		medianKey := cg.Collateral.GetMedianTransformerName()
+		medianKey := cu.Collateral.GetMedianTransformerName()
 		transformerExporters[medianKey] = medianStorageExporter
 	}
 
 	for k, v := range transformerExporters {
-		cg.UpdatedConfig.TransformerExporters[k] = v
+		cu.UpdatedConfig.TransformerExporters[k] = v
 	}
 }
 
-func (cg *Updater) addContractsToEventExporters() error {
-	flipErr := cg.addNewContractToFlipExporters()
+func (cu *Updater) addContractsToEventExporters() error {
+	flipErr := cu.addNewContractToFlipExporters()
 	if flipErr != nil {
 		return flipErr
 	}
 
-	medianErr := cg.addNewContractToMedianExporters()
+	medianErr := cu.addNewContractToMedianExporters()
 	if medianErr != nil {
 		return medianErr
 	}
 
-	osmErr := cg.addNewContractToOsmExporters()
+	osmErr := cu.addNewContractToOsmExporters()
 	if osmErr != nil {
 		return osmErr
 	}
@@ -151,20 +151,20 @@ func IsOsmExporter(contractName string) (bool, error) {
 	return regexp.Match("OSM", []byte(contractName))
 }
 
-func (cg *Updater) addNewContractToFlipExporters() error {
-	return cg.addNewContractToExporters(IsFlipExporter, cg.Collateral.GetFlipContractName)
+func (cu *Updater) addNewContractToFlipExporters() error {
+	return cu.addNewContractToExporters(IsFlipExporter, cu.Collateral.GetFlipContractName)
 }
 
-func (cg *Updater) addNewContractToMedianExporters() error {
-	if cg.MedianContractRequired {
-		return cg.addNewContractToExporters(IsMedianExporter, cg.Collateral.GetMedianContractName)
+func (cu *Updater) addNewContractToMedianExporters() error {
+	if cu.MedianContractRequired {
+		return cu.addNewContractToExporters(IsMedianExporter, cu.Collateral.GetMedianContractName)
 	}
 	return nil
 }
 
-func (cg *Updater) addNewContractToOsmExporters() error {
-	if cg.OsmContractRequired {
-		return cg.addNewContractToExporters(IsOsmExporter, cg.Collateral.GetOsmContractName)
+func (cu *Updater) addNewContractToOsmExporters() error {
+	if cu.OsmContractRequired {
+		return cu.addNewContractToExporters(IsOsmExporter, cu.Collateral.GetOsmContractName)
 	}
 	return nil
 }
@@ -172,8 +172,8 @@ func (cg *Updater) addNewContractToOsmExporters() error {
 type matcherFunc func(string) (bool, error)
 type collateralFormatter func() string
 
-func (cg *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateralFormatter collateralFormatter) error {
-	for name, exporter := range cg.UpdatedConfig.TransformerExporters {
+func (cu *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateralFormatter collateralFormatter) error {
+	for name, exporter := range cu.UpdatedConfig.TransformerExporters {
 		for _, contract := range exporter.Contracts {
 			contractTypeMatched, matchErr := matcherFunc(contract)
 			if matchErr != nil {
@@ -185,46 +185,46 @@ func (cg *Updater) addNewContractToExporters(matcherFunc matcherFunc, collateral
 				break
 			}
 		}
-		cg.UpdatedConfig.TransformerExporters[name] = exporter
+		cu.UpdatedConfig.TransformerExporters[name] = exporter
 	}
 
 	return nil
 }
 
-func (cg *Updater) addContracts() {
+func (cu *Updater) addContracts() {
 	formattedContracts := make(map[string]types.Contract)
 
-	flipContractKey := cg.Collateral.GetFlipContractName()
-	formattedContracts[flipContractKey] = cg.Contracts["flip"]
+	flipContractKey := cu.Collateral.GetFlipContractName()
+	formattedContracts[flipContractKey] = cu.Contracts["flip"]
 
-	if cg.MedianContractRequired {
-		medianContractKey := cg.Collateral.GetMedianContractName()
-		formattedContracts[medianContractKey] = cg.Contracts["median"]
+	if cu.MedianContractRequired {
+		medianContractKey := cu.Collateral.GetMedianContractName()
+		formattedContracts[medianContractKey] = cu.Contracts["median"]
 	}
 
-	if cg.OsmContractRequired {
-		osmContractKey := cg.Collateral.GetOsmContractName()
-		formattedContracts[osmContractKey] = cg.Contracts["osm"]
+	if cu.OsmContractRequired {
+		osmContractKey := cu.Collateral.GetOsmContractName()
+		formattedContracts[osmContractKey] = cu.Contracts["osm"]
 	}
 
 	for k, v := range formattedContracts {
-		cg.UpdatedConfig.Contracts[k] = v
+		cu.UpdatedConfig.Contracts[k] = v
 	}
 }
 
-func (cg *Updater) GetUpdatedConfig() types.TransformersConfig {
-	return cg.UpdatedConfig
+func (cu *Updater) GetUpdatedConfig() types.TransformersConfig {
+	return cu.UpdatedConfig
 }
 
 // GetUpdatedConfigForToml converts TransformersConfig.ExporterMetadata and TransformerExporter structs into a
 // map[string]interface{} to allow for proper toml encoding when writing to the config file^
-func (cg *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
-	metadataMap, metadataMapErr := convertToLowerCaseStringToInterfaceMap(cg.UpdatedConfig.ExporterMetadata)
+func (cu *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, error) {
+	metadataMap, metadataMapErr := convertToLowerCaseStringToInterfaceMap(cu.UpdatedConfig.ExporterMetadata)
 	if metadataMapErr != nil {
 		return types.TransformersConfigForToml{}, metadataMapErr
 	}
 
-	transformerExporterMap, transformerExporterMapErr := convertToLowerCaseStringToInterfaceMap(cg.UpdatedConfig.TransformerExporters)
+	transformerExporterMap, transformerExporterMapErr := convertToLowerCaseStringToInterfaceMap(cu.UpdatedConfig.TransformerExporters)
 	if transformerExporterMapErr != nil {
 		return types.TransformersConfigForToml{}, transformerExporterMapErr
 	}
@@ -233,7 +233,7 @@ func (cg *Updater) GetUpdatedConfigForToml() (types.TransformersConfigForToml, e
 
 	return types.TransformersConfigForToml{
 		Exporter:  exporterMap,
-		Contracts: cg.UpdatedConfig.Contracts,
+		Contracts: cu.UpdatedConfig.Contracts,
 	}, nil
 }
 
