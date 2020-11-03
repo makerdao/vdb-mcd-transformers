@@ -65,7 +65,7 @@ func (p *Prompter) GetCollateralDetails() (types.Collateral, error) {
 	var answers CollateralAnswers
 	err := p.PromptAsker(CollateralQuestions, &answers)
 	if err != nil {
-		return types.Collateral{}, err
+		return types.Collateral{}, fmt.Errorf("error getting collateral from CLI: %w", err)
 	}
 
 	return types.Collateral{
@@ -79,7 +79,7 @@ func (p *Prompter) GetContractDetails() (types.Contracts, error) {
 
 	flipErr := p.PromptAsker(FlipContractQuestions, &p.FlipContractAnswers)
 	if flipErr != nil {
-		return types.Contracts{}, flipErr
+		return types.Contracts{}, fmt.Errorf("error getting flip contract details: %w", flipErr)
 	}
 	contracts["flip"] = types.Contract{
 		Address:  p.FlipContractAnswers.Address,
@@ -89,12 +89,12 @@ func (p *Prompter) GetContractDetails() (types.Contracts, error) {
 
 	medianRequiredErr := p.PromptAsker(MedianContractRequiredQuestion, &p.MedianRequired)
 	if medianRequiredErr != nil {
-		return types.Contracts{}, medianRequiredErr
+		return types.Contracts{}, fmt.Errorf("error getting if median contract required: %w", medianRequiredErr)
 	}
 	if p.MedianRequired {
 		medianErr := p.PromptAsker(MedianContractQuestions, &p.MedianContractAnswers)
 		if medianErr != nil {
-			return types.Contracts{}, medianErr
+			return types.Contracts{}, fmt.Errorf("error getting median contract details: %w", medianErr)
 		}
 		contracts["median"] = types.Contract{
 			Address:  p.MedianContractAnswers.Address,
@@ -105,12 +105,12 @@ func (p *Prompter) GetContractDetails() (types.Contracts, error) {
 
 	osmRequiredErr := p.PromptAsker(OsmContractRequiredQuestion, &p.OsmRequired)
 	if osmRequiredErr != nil {
-		return types.Contracts{}, osmRequiredErr
+		return types.Contracts{}, fmt.Errorf("error getting if osm contract required: %w", osmRequiredErr)
 	}
 	if p.OsmRequired {
 		osmErr := p.PromptAsker(OsmContractQuestions, &p.OsmContractAnswers)
 		if osmErr != nil {
-			return types.Contracts{}, osmErr
+			return types.Contracts{}, fmt.Errorf("error getting osm contract details: %w", osmErr)
 		}
 		contracts["osm"] = types.Contract{
 			Address:  p.OsmContractAnswers.Address,
@@ -148,7 +148,7 @@ func intValidator(val interface{}) error {
 		return errors.New("error validating input")
 	}
 	_, err := strconv.Atoi(valString)
-	return err
+	return fmt.Errorf("error parsing input into int: %w", err)
 }
 
 func createContractRequiredQuestions(contractType string) []*survey.Question {

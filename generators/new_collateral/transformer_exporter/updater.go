@@ -1,6 +1,7 @@
 package transformer_exporter
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/generators/new_collateral/helpers"
@@ -30,7 +31,7 @@ func (p updater) PreparePluginConfig(updatedConfig types.TransformersConfig) (pl
 	for k, v := range updatedConfig.TransformerExporters {
 		rank, rankErr := strconv.Atoi(v.Rank)
 		if rankErr != nil {
-			return pluginConfig.Plugin{}, rankErr
+			return pluginConfig.Plugin{}, fmt.Errorf("error converting transformer rank to int: %w", rankErr)
 		}
 		transformers[k] = pluginConfig.Transformer{
 			Path:           v.Path,
