@@ -12,6 +12,51 @@ import (
 	flip_bat_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_1_0"
 	flip_comp_a_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/comp_a/v1_1_2"
 	flip_eth_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_0"
+	flip_eth_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_0_9"
+	flip_eth_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_a/v1_1_0"
+	flip_eth_b_v1_1_3 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/eth_b/v1_1_3"
+	flip_knc_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_8"
+	flip_knc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_0_9"
+	flip_knc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/knc_a/v1_1_0"
+	flip_link_a_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/link_a/v1_1_2"
+	flip_lrc_a_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/lrc_a/v1_1_2"
+	flip_mana_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_0_9"
+	flip_mana_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/mana_a/v1_1_0"
+	flip_paxusd_a_v1_1_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/paxusd_a/v1_1_1"
+	flip_sai_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/sai/v1_0_0"
+	flip_tusd_a_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_7"
+	flip_tusd_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_9"
+	flip_tusd_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_1_0"
+	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
+	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
+	flip_usdc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_1_0"
+	flip_usdc_b_v1_0_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_7"
+	flip_usdc_b_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_0_9"
+	flip_usdc_b_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_b/v1_1_0"
+	flip_usdt_a_v1_1_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdt_a/v1_1_1"
+	flip_wbtc_a_v1_0_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_6"
+	flip_wbtc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_0_9"
+	flip_wbtc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/wbtc_a/v1_1_0"
+	flip_zrx_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_8"
+	flip_zrx_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_9"
+	flip_zrx_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_1_0"
+	flop_v1_0_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_1"
+	flop_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop/initializers/v1_0_9"
+	jug "github.com/makerdao/vdb-mcd-transformers/transformers/storage/jug/initializer"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_bat"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_comp"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_eth"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_link"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_lrc"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_mana"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_usdt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_zrx"
+	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
+	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
+	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
+	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -82,16 +127,316 @@ var _ = Describe("Storage transformer initializers", func() {
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
 
-	It("configures the v1_1_2 flip comp_a", func() {
-		address := "0x524826F84cB3A19B6593370a5889A58c00554739"
-		transformer := flip_comp_a_v1_1_2.StorageTransformerInitializer(db)
+	It("configures the v1_0_0 flip eth_a", func() {
+		address := "0xd8a04F5412223F513DC55F839574430f5EC15531"
+		transformer := flip_eth_a_v1_0_0.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
 
-	It("configures the v1_0_0 flip eth_a", func() {
-		address := "0xd8a04F5412223F513DC55F839574430f5EC15531"
-		transformer := flip_eth_a_v1_0_0.StorageTransformerInitializer(db)
+	It("configures the v1_0_9 flip eth_a", func() {
+		address := "0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1"
+		transformer := flip_eth_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip eth_a", func() {
+		address := "0xF32836B9E1f47a0515c6Ec431592D5EbC276407f"
+		transformer := flip_eth_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_3 flip eth_b", func() {
+		address := "0xD499d71bE9e9E5D236A07ac562F7B6CeacCa624c"
+		transformer := flip_eth_b_v1_1_3.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_8 flip knc_a", func() {
+		address := "0xAbBCB9Ae89cDD3C27E02D279480C7fF33083249b"
+		transformer := flip_knc_a_v1_0_8.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip knc_a", func() {
+		address := "0xAD4a0B5F3c6Deb13ADE106Ba6E80Ca6566538eE6"
+		transformer := flip_knc_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip knc_a", func() {
+		address := "0x57B01F1B3C59e2C0bdfF3EC9563B71EEc99a3f2f"
+		transformer := flip_knc_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_2 flip link_a", func() {
+		address := "0xB907EEdD63a30A3381E6D898e5815Ee8c9fd2c85"
+		transformer := flip_link_a_v1_1_2.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_2 flip lrc_a", func() {
+		address := "0x7FdDc36dcdC435D8F54FDCB3748adcbBF70f3dAC"
+		transformer := flip_lrc_a_v1_1_2.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip mana_a", func() {
+		address := "0x4bf9D2EBC4c57B9B783C12D30076507660B58b3a"
+		transformer := flip_mana_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip mana_a", func() {
+		address := "0x0a1D75B4f49BA80724a214599574080CD6B68357"
+		transformer := flip_mana_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_1 flip paxusd_a", func() {
+		address := "0x52D5D1C05CC79Fc24A629Cb24cB06C5BE5d766E7"
+		transformer := flip_paxusd_a_v1_1_1.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_0 flip sai", func() {
+		address := "0x5432b2f3c0DFf95AA191C45E5cbd539E2820aE72"
+		transformer := flip_sai_v1_0_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_7 flip tusd_a", func() {
+		address := "0xba3f6a74BD12Cf1e48d4416c7b50963cA98AfD61"
+		transformer := flip_tusd_a_v1_0_7.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip tusd_a", func() {
+		address := "0x04C42fAC3e29Fd27118609a5c36fD0b3Cb8090b3"
+		transformer := flip_tusd_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip tusd_a", func() {
+		address := "0x9E4b213C4defbce7564F2Ac20B6E3bF40954C440"
+		transformer := flip_tusd_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_4 flip usdc_a", func() {
+		address := "0xE6ed1d09a19Bd335f051d78D5d22dF3bfF2c28B1"
+		transformer := flip_usdc_a_v1_0_4.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip usdc_a", func() {
+		address := "0x545521e0105C5698f75D6b3C3050CfCC62FB0C12"
+		transformer := flip_usdc_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip usdc_a", func() {
+		address := "0xbe359e53038E41a1ffA47DAE39645756C80e557a"
+		transformer := flip_usdc_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_7 flip usdc_b", func() {
+		address := "0xec25Ca3fFa512afbb1784E17f1D414E16D01794F"
+		transformer := flip_usdc_b_v1_0_7.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip usdc_b", func() {
+		address := "0x6002d3B769D64A9909b0B26fC00361091786fe48"
+		transformer := flip_usdc_b_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip usdc_b", func() {
+		address := "0x77282aD36aADAfC16bCA42c865c674F108c4a616"
+		transformer := flip_usdc_b_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_1 flip usdt_a", func() {
+		address := "0x667F41d0fDcE1945eE0f56A79dd6c142E37fCC26"
+		transformer := flip_usdt_a_v1_1_1.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_6 flip wbtc_a", func() {
+		address := "0x3E115d85D4d7253b05fEc9C0bB5b08383C2b0603"
+		transformer := flip_wbtc_a_v1_0_6.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip wbtc_a", func() {
+		address := "0xF70590Fa4AaBe12d3613f5069D02B8702e058569"
+		transformer := flip_wbtc_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip wbtc_a", func() {
+		address := "0x58CD24ac7322890382eE45A3E4F903a5B22Ee930"
+		transformer := flip_wbtc_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_8 flip zrx_a", func() {
+		address := "0x08c89251FC058cC97d5bA5F06F95026C0A5CF9B0"
+		transformer := flip_zrx_a_v1_0_8.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flip zrx_a", func() {
+		address := "0x92645a34d07696395b6e5b8330b000D0436A9aAD"
+		transformer := flip_zrx_a_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_1_0 flip zrx_a", func() {
+		address := "0xa4341cAf9F9F098ecb20fb2CeE2a0b8C78A18118"
+		transformer := flip_zrx_a_v1_1_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_1 flop", func() {
+		address := "0x4D95A049d5B0b7d32058cd3F2163015747522e99"
+		transformer := flop_v1_0_1.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_0_9 flop", func() {
+		address := "0xA41B6EF151E06da0e34B009B86E828308986736D"
+		transformer := flop_v1_0_9.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the jug", func() {
+		address := "0x19c0976f590D67707E62397C87829d896Dc0f1F1"
+		transformer := jug.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_bat", func() {
+		address := "0x18B4633D6E39870f398597f3c1bA8c4A41294966"
+		transformer := median_bat.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_comp", func() {
+		address := "0xA3421Be733125405Ea20aA853839D34b364eB524"
+		transformer := median_comp.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_eth", func() {
+		address := "0x64DE91F5A373Cd4c28de3600cB34C7C6cE410C85"
+		transformer := median_eth.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_link", func() {
+		address := "0xbAd4212d73561B240f10C56F27e6D9608963f17b"
+		transformer := median_link.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_lrc", func() {
+		address := "0xcCe92282d9fe310F4c232b0DA9926d5F24611C7B"
+		transformer := median_lrc.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_mana", func() {
+		address := "0x681c4F8f69cF68852BAd092086ffEaB31F5B812c"
+		transformer := median_mana.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_usdt", func() {
+		address := "0x56D4bBF358D7790579b55eA6Af3f605BcA2c0C3A"
+		transformer := median_usdt.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_wbtc", func() {
+		address := "0xe0F30cb149fAADC7247E953746Be9BbBB6B5751f"
+		transformer := median_wbtc.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the median_zrx", func() {
+		address := "0x956ecD6a9A9A0d84e8eB4e6BaaC09329E202E55e"
+		transformer := median_zrx.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the pot", func() {
+		address := "0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7"
+		transformer := pot.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the spot", func() {
+		address := "0x65C79fcB50Ca1594B025960e539eD7A9a6D434A3"
+		transformer := spot.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the vat", func() {
+		address := "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B"
+		transformer := vat.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+	It("configures the vow", func() {
+		address := "0xA950524441892A31ebddF91d3cEEFa04Bf454466"
+		transformer := vow.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})

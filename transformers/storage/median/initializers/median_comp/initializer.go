@@ -1,4 +1,4 @@
-package median_bat
+package median_comp
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"
