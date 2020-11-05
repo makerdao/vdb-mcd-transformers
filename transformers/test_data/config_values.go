@@ -154,6 +154,7 @@ func MedianAddresses() []string {
 		"MEDIAN_LINK",
 		"MEDIAN_LRC",
 		"MEDIAN_MANA",
+		"MEDIAN_USDT",
 		"MEDIAN_WBTC",
 		"MEDIAN_ZRX",
 	})
@@ -184,6 +185,7 @@ func OsmAddresses() []string {
 		"OSM_LINK",
 		"OSM_LRC",
 		"OSM_MANA",
+		"OSM_USDT",
 		"OSM_WBTC",
 		"OSM_ZRX",
 	})

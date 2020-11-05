@@ -31,6 +31,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.BiteSignature()).To(Equal("0xa716da86bc1fb6d43d1493373f34d7a418b619681cd7b90f7ea667ba1489be28"))
 	})
 
+	It("generates cat claw signature", func() {
+		Expect(constants.CatClawSignature()).To(Equal("0xe66d279b00000000000000000000000000000000000000000000000000000000"))
+	})
+
 	It("generates cat file box signature", func() {
 		Expect(constants.CatFileBoxSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
 	})
@@ -45,10 +49,6 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates cat file vow signature", func() {
 		Expect(constants.CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
-	})
-
-	It("generates cat claw signature", func() {
-		Expect(constants.CatClawSignature()).To(Equal("0xe66d279b00000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates deal signature", func() {
@@ -135,12 +135,12 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.NewCdpSignature()).To(Equal("0xd6be0bc178658a382ff4f91c8c68b542aa6b71685b8fe427966b87745c3ea7a2"))
 	})
 
-	It("generates pot cage signature", func() {
-		Expect(constants.PotCageSignature()).To(Equal("0x6924500900000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates osm change signature", func() {
 		Expect(constants.OsmChangeSignature()).To(Equal("0x1e77933e00000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates pot cage signature", func() {
+		Expect(constants.PotCageSignature()).To(Equal("0x6924500900000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates pot drip signature", func() {
@@ -251,12 +251,12 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.VowFessSignature()).To(Equal("0x697efb7800000000000000000000000000000000000000000000000000000000"))
 	})
 
-	It("generates vow file auction attributes signature", func() {
-		Expect(constants.VowFileAuctionAttributesSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
-	})
-
 	It("generates vow file auction address signature", func() {
 		Expect(constants.VowFileAuctionAddressSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates vow file auction attributes signature", func() {
+		Expect(constants.VowFileAuctionAttributesSignature()).To(Equal("0x29ae811400000000000000000000000000000000000000000000000000000000"))
 	})
 
 	It("generates vow flog signature", func() {

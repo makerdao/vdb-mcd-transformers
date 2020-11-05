@@ -198,7 +198,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			vow_heal.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]storage.TransformerInitializer{median_bat.StorageTransformerInitializer,
+		[]storage.TransformerInitializer{
 			cat_v1_0_0.StorageTransformerInitializer,
 			cat_v1_1_0.StorageTransformerInitializer,
 			cdp_manager.StorageTransformerInitializer,
@@ -240,6 +240,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flop_v1_0_1.StorageTransformerInitializer,
 			flop_v1_0_9.StorageTransformerInitializer,
 			jug.StorageTransformerInitializer,
+			median_bat.StorageTransformerInitializer,
 			median_comp.StorageTransformerInitializer,
 			median_eth.StorageTransformerInitializer,
 			median_knc.StorageTransformerInitializer,
