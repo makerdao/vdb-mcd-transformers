@@ -13,7 +13,6 @@ before_install:
 - bash ./scripts/install-postgres-11.sh
 - sudo apt-get update && sudo apt-get install python3-pip -y
 - sudo pip3 install awscli
-- docker build -f dockerfiles/gomoderator/Dockerfile .
 script:
 - set -e
 - scripts/check_config.sh
