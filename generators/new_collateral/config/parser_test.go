@@ -18,7 +18,6 @@ var _ = Describe("Config Parser", func() {
 				Home:             "github.com/makerdao/vulcanizedb",
 				Name:             "transformerExporter",
 				Save:             false,
-				Schema:           "maker",
 				TransformerNames: []string{"cat_v1_1_0", "cat_file_vow"},
 			},
 			TransformerExporters: types.TransformerExporters{
@@ -34,7 +33,7 @@ var _ = Describe("Config Parser", func() {
 
 	Context("ParseCurrentConfigFile", func() {
 		It("returns an error if it fails to decode the file", func() {
-			configFile    := "non-existent-file"
+			configFile := "non-existent-file"
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFile)
 			Expect(parseErr).To(HaveOccurred())
 			Expect(parseErr).To(MatchError("error decoding config file: open ../test_data/non-existent-file.toml: no such file or directory"))
@@ -51,7 +50,7 @@ var _ = Describe("Config Parser", func() {
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFileName)
 			Expect(parseErr).To(HaveOccurred())
 			Expect(parseErr).To(MatchError(
-				"error parsing exporter metadata from config file: error asserting exporterMetadata types - homeOk: false, nameOk: false, saveOk: false, schemaOk: false",
+				"error parsing exporter metadata from config file: error asserting exporterMetadata types - homeOk: false, nameOk: false, saveOk: false",
 			))
 		})
 
@@ -63,7 +62,6 @@ var _ = Describe("Config Parser", func() {
 				Home:             "github.com/makerdao/vulcanizedb",
 				Name:             "transformerExporter",
 				Save:             true,
-				Schema:           "maker",
 				TransformerNames: nil,
 			}))
 		})
@@ -81,7 +79,7 @@ var _ = Describe("Config Parser", func() {
 			Expect(parseErr).To(HaveOccurred())
 			Expect(parseErr).To(MatchError(
 				"error parsing transformer exporters from config file: error decoding transformerExporters:" +
-					" 1 error(s) decoding:\n\n* 'Path' expected type 'string', got unconvertible type 'int64'",))
+					" 1 error(s) decoding:\n\n* 'Path' expected type 'string', got unconvertible type 'int64'"))
 		})
 	})
 })

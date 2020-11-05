@@ -10,7 +10,6 @@ var (
 			Home:             "github.com/makerdao/vulcanizedb",
 			Name:             "transformerExporter",
 			Save:             false,
-			Schema:           "maker",
 			TransformerNames: []string{"cat_v1_1_0", "cat_file_vow"},
 		},
 		TransformerExporters: types.TransformerExporters{
@@ -213,7 +212,6 @@ var (
 			Home:             "test-home",
 			Name:             "test-config",
 			Save:             false,
-			Schema:           "test-schema",
 			TransformerNames: []string{"transformer1", "transformer2"},
 		},
 		TransformerExporters: types.TransformerExporters{
@@ -252,10 +250,9 @@ var (
 	}
 	UpdatedConfigForToml = types.TransformersConfigForToml{
 		Exporter: map[string]interface{}{
-			"home":   "github.com/makerdao/vulcanizedb",
-			"name":   "transformerExporter",
-			"save":   false,
-			"schema": "maker",
+			"home": "github.com/makerdao/vulcanizedb",
+			"name": "transformerExporter",
+			"save": false,
 			"transformerNames": []interface{}{
 				"cat_v1_1_0",
 				"cat_file_vow",
@@ -283,7 +280,6 @@ var (
   home = "github.com/makerdao/vulcanizedb"
   name = "transformerExporter"
   save = false
-  schema = "maker"
   transformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_b"]
   [exporter.cat_file_vow]
     contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0"]

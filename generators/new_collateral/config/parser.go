@@ -48,11 +48,10 @@ func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 	home, homeOk := tomlConfig.Exporter["home"].(string)
 	name, nameOk := tomlConfig.Exporter["name"].(string)
 	save, saveOk := tomlConfig.Exporter["save"].(bool)
-	schema, schemaOk := tomlConfig.Exporter["schema"].(string)
-	if !homeOk || !nameOk || !saveOk || !schemaOk {
+	if !homeOk || !nameOk || !saveOk {
 		return types.ExporterMetaData{}, fmt.Errorf(
-			"error asserting exporterMetadata types - homeOk: %t, nameOk: %t, saveOk: %t, schemaOk: %t",
-			homeOk, nameOk, saveOk, schemaOk,
+			"error asserting exporterMetadata types - homeOk: %t, nameOk: %t, saveOk: %t",
+			homeOk, nameOk, saveOk,
 		)
 	}
 
@@ -66,7 +65,6 @@ func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 		Home:             home,
 		Name:             name,
 		Save:             save,
-		Schema:           schema,
 		TransformerNames: transformerNames,
 	}, nil
 }

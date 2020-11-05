@@ -48,7 +48,6 @@ func (p updater) PreparePluginConfig(updatedConfig types.TransformersConfig) (pl
 		FileName:     updatedConfig.ExporterMetadata.Name,
 		Save:         updatedConfig.ExporterMetadata.Save,
 		Home:         updatedConfig.ExporterMetadata.Home,
-		Schema:       updatedConfig.ExporterMetadata.Schema,
 	}, nil
 }
 

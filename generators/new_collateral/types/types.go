@@ -17,7 +17,6 @@ type ExporterMetaData struct {
 	Home             string   `toml:"home"`
 	Name             string   `toml:"name"`
 	Save             bool     `toml:"save"`
-	Schema           string   `toml:"schema"`
 	TransformerNames []string `toml:"transformerNames"`
 }
 

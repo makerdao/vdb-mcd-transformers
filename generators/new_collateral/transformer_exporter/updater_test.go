@@ -39,7 +39,6 @@ var _ = Describe("PluginWriter", func() {
 				FileName: test_data.UpdatedConfig.ExporterMetadata.Name,
 				Save:     test_data.UpdatedConfig.ExporterMetadata.Save,
 				Home:     test_data.UpdatedConfig.ExporterMetadata.Home,
-				Schema:   test_data.UpdatedConfig.ExporterMetadata.Schema,
 			}
 			Expect(config).To(Equal(expectedPluginConfig))
 		})

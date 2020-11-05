@@ -20,10 +20,9 @@ var _ = Describe("NewConfigUpdater", func() {
 
 			It("adds new transformer names to the exporter metadata for the new collateral", func() {
 				expectedExporterMetadata := types.ExporterMetaData{
-					Home:   "github.com/makerdao/vulcanizedb",
-					Name:   "transformerExporter",
-					Save:   false,
-					Schema: "maker",
+					Home: "github.com/makerdao/vulcanizedb",
+					Name: "transformerExporter",
+					Save: false,
 					TransformerNames: []string{
 						"cat_v1_1_0",
 						"cat_file_vow",
@@ -130,10 +129,9 @@ var _ = Describe("NewConfigUpdater", func() {
 
 			It("adds new transformer names to the exporter metadata for the new collateral", func() {
 				expectedExporterMetadata := types.ExporterMetaData{
-					Home:   "github.com/makerdao/vulcanizedb",
-					Name:   "transformerExporter",
-					Save:   false,
-					Schema: "maker",
+					Home: "github.com/makerdao/vulcanizedb",
+					Name: "transformerExporter",
+					Save: false,
 					TransformerNames: []string{
 						"cat_v1_1_0",
 						"cat_file_vow",
@@ -207,10 +205,9 @@ var _ = Describe("NewConfigUpdater", func() {
 			updatedConfig := configUpdater.GetUpdatedConfig()
 			expectedUpdatedConfig := types.TransformersConfig{
 				ExporterMetadata: types.ExporterMetaData{
-					Home:   "github.com/makerdao/vulcanizedb",
-					Name:   "transformerExporter",
-					Save:   false,
-					Schema: "maker",
+					Home: "github.com/makerdao/vulcanizedb",
+					Name: "transformerExporter",
+					Save: false,
 					TransformerNames: []string{
 						"cat_v1_1_0",
 						"cat_file_vow",

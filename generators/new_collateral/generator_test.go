@@ -123,7 +123,6 @@ var _ = Describe("NewCollateral", func() {
 					FileName: "fileName",
 					Save:     true,
 					Home:     "home",
-					Schema:   "schema",
 				}
 				transformerExporterUpdater.PluginConfigToReturn = pluginConfigToWrite
 				err := collateralGenerator.Execute()
