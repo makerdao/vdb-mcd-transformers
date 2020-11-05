@@ -203,6 +203,58 @@ func IlkSnapshotFromValues(ilk, updated, created string, ilkValues map[string]in
 	}
 }
 
+type BucketedIlkSnapshot struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	IlkIdentifier  string `db:"ilk_identifier"`
+	BlockNumber    string `db:"block_number"`
+	Rate           string
+	Art            string
+	Spot           string
+	Line           string
+	Dust           string
+	Chop           string
+	Lump           string
+	Dunk           string
+	Flip           string
+	Rho            string
+	Duty           string
+	Pip            string
+	Mat            string
+	Created        sql.NullString
+	Updated        sql.NullString
+}
+
+func BucketedIlkSnapshotFromValues(ilk, updated, created, interval string, bucketStart, bucketEnd int64, ilkValues map[string]interface{}) BucketedIlkSnapshot {
+	bucketStartTimestamp := time.Unix(bucketStart, 0).UTC().Format(time.RFC3339)
+	bucketEndTimestamp := time.Unix(bucketEnd, 0).UTC().Format(time.RFC3339)
+
+	ilkSnapshot := IlkSnapshotFromValues(ilk, updated, created, ilkValues)
+
+	return BucketedIlkSnapshot{
+		BucketStart:    bucketStartTimestamp,
+		BucketEnd:      bucketEndTimestamp,
+		BucketInterval: interval,
+		IlkIdentifier:  ilkSnapshot.IlkIdentifier,
+		Rate:           ilkSnapshot.Rate,
+		Art:            ilkSnapshot.Art,
+		Spot:           ilkSnapshot.Spot,
+		Line:           ilkSnapshot.Line,
+		Dust:           ilkSnapshot.Dust,
+		Chop:           ilkSnapshot.Chop,
+		Lump:           ilkSnapshot.Lump,
+		Dunk:           ilkSnapshot.Dunk,
+		Flip:           ilkSnapshot.Flip,
+		Rho:            ilkSnapshot.Rho,
+		Duty:           ilkSnapshot.Duty,
+		Pip:            ilkSnapshot.Pip,
+		Mat:            ilkSnapshot.Mat,
+		Created:        ilkSnapshot.Created,
+		Updated:        ilkSnapshot.Updated,
+	}
+}
+
 func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
