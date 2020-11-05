@@ -148,7 +148,10 @@ func intValidator(val interface{}) error {
 		return errors.New("error validating input")
 	}
 	_, err := strconv.Atoi(valString)
-	return fmt.Errorf("error parsing input into int: %w", err)
+	if err != nil {
+		return fmt.Errorf("error parsing input into int: %w", err)
+	}
+	return nil
 }
 
 func createContractRequiredQuestions(contractType string) []*survey.Question {
