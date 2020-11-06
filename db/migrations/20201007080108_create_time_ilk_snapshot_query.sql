@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE INDEX ON api.ilk_snapshot (updated);
+CREATE INDEX ON api.ilk_snapshot (ilk_identifier, updated);
 
 CREATE TYPE api.time_ilk_snapshot AS
 (
@@ -83,4 +83,4 @@ $$
 -- +goose Down
 DROP FUNCTION api.time_ilk_snapshots(TEXT, TIMESTAMP, TIMESTAMP, INTERVAL);
 DROP TYPE api.time_ilk_snapshot CASCADE;
-DROP INDEX api.ilk_snapshot_updated_idx;
+DROP INDEX api.ilk_snapshot_ilk_identifier_updated_idx;
