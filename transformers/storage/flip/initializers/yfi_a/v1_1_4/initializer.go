@@ -3,8 +3,8 @@
 package v1_1_4
 
 import (
+	constants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers"
-	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
 var contractAddress = constants.GetContractAddress("MCD_FLIP_YFI_A_1_1_4")

@@ -3,8 +3,8 @@
 package median_yfi_a
 
 import (
+	constants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"
-	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
 var contractAddress = constants.GetContractAddress("MEDIAN_YFI_A")
