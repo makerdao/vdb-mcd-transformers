@@ -34,6 +34,13 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510870), test_data.FlapV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip BAL v1.1.14 rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		relyIntegrationTest(int64(11198257), test_data.FlipBalV110Address(), msgSenderAddress,
+			usrAddress)
+	})
+
 	Context("Flip BAT v1.0.0 rely events", func() {
 		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
