@@ -43,6 +43,7 @@ func Flip100Addresses() []string {
 func Flip110Addresses() []string {
 	var addressesResult []string
 	flipAddresses := constants.GetContractAddresses([]string{
+		"MCD_FLIP_BAL_A_1_1_14",
 		"MCD_FLIP_BAT_A_1_1_0",
 		"MCD_FLIP_COMP_A_1_1_2",
 		"MCD_FLIP_ETH_A_1_1_0",
@@ -66,6 +67,9 @@ func Flip110Addresses() []string {
 	return addressesResult
 }
 
+func FlipBalV110Address() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_BAL_A_1_1_14"))
+}
 func FlipBatV100Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_BAT_A_1_0_0"))
 }
@@ -147,6 +151,7 @@ func JugAddress() string      { return checksum(constants.GetContractAddress("MC
 func MedianAddresses() []string {
 	var addressesResult []string
 	medianAddresses := constants.GetContractAddresses([]string{
+		"MEDIAN_BAL",
 		"MEDIAN_BAT",
 		"MEDIAN_COMP",
 		"MEDIAN_ETH",
@@ -163,6 +168,7 @@ func MedianAddresses() []string {
 	}
 	return addressesResult
 }
+func MedianBalAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAL")) }
 func MedianBatAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
 func MedianCompAddress() string { return checksum(constants.GetContractAddress("MEDIAN_COMP")) }
 func MedianEthAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
@@ -187,6 +193,7 @@ func OsmAddresses() []string {
 	var addressesResult []string
 	// Does not include OSM_USDC since that's actually just a DSValue contract right now, not an OSM
 	osmAddresses := constants.GetContractAddresses([]string{
+		"OSM_BAL",
 		"OSM_BAT",
 		"OSM_COMP",
 		"OSM_ETH",
@@ -203,6 +210,7 @@ func OsmAddresses() []string {
 	}
 	return addressesResult
 }
+func OsmBalAddress() string     { return checksum(constants.GetContractAddress("OSM_BAL")) }
 func OsmBatAddress() string     { return checksum(constants.GetContractAddress("OSM_BAT")) }
 func OsmCompAddress() string    { return checksum(constants.GetContractAddress("OSM_COMP")) }
 func OsmEthAddress() string     { return checksum(constants.GetContractAddress("OSM_ETH")) }
