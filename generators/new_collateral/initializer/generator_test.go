@@ -107,8 +107,8 @@ var expectedFlipInitializerFileContents = `// This is a plugin generated to expo
 package v0_1_2
 
 import (
+	constants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers"
-	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
 var contractAddress = constants.GetContractAddress("MCD_FLIP_TEST_COLLATERAL_0_1_2")
@@ -120,8 +120,8 @@ var expectedMedianInitializerFileContents = `// This is a plugin generated to ex
 package median_test_collateral
 
 import (
+	constants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"
-	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
 var contractAddress = constants.GetContractAddress("MEDIAN_TEST_COLLATERAL")
