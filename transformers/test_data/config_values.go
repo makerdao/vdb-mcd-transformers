@@ -141,7 +141,7 @@ func FlipWbtcAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A_1_0_9"))
 }
 func FlipYfiAV1114Address() string {
-	return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A_1_1_14"))
+	return checksum(constants.GetContractAddress("MCD_FLIP_YFI_A_1_1_14"))
 }
 func FlipZrxAV108Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_ZRX_A_1_0_8"))
