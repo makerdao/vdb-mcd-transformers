@@ -2,6 +2,7 @@ package log_kill
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -46,26 +47,28 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		return nil, fmt.Errorf("transformer couldn't convert logs to entities: %v", entityErr)
 	}
 	var models []event.InsertionModel
-	for _, logKillEntity := range entities {
-		contractAddressId, contractAddressErr := shared.GetOrCreateAddress(logKillEntity.ContractAddress.Hex(), db)
+	for _, entity := range entities {
+		contractAddressId, contractAddressErr := shared.GetOrCreateAddress(entity.ContractAddress.Hex(), db)
 		if contractAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(contractAddressErr)
 		}
 
-		makerAddressId, makerAddressErr := shared.GetOrCreateAddress(logKillEntity.Maker.Hex(), db)
+		makerAddressId, makerAddressErr := shared.GetOrCreateAddress(entity.Maker.Hex(), db)
 		if makerAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(makerAddressErr)
 		}
 
-		payGemAddressId, payGemAddressErr := shared.GetOrCreateAddress(logKillEntity.PayGem.Hex(), db)
+		payGemAddressId, payGemAddressErr := shared.GetOrCreateAddress(entity.PayGem.Hex(), db)
 		if payGemAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(payGemAddressErr)
 		}
 
-		buyGemAddressId, buyGemAddressErr := shared.GetOrCreateAddress(logKillEntity.BuyGem.Hex(), db)
+		buyGemAddressId, buyGemAddressErr := shared.GetOrCreateAddress(entity.BuyGem.Hex(), db)
 		if buyGemAddressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(buyGemAddressErr)
 		}
+
+		offerID := big.NewInt(0).SetBytes(entity.Id[:])
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
@@ -84,17 +87,17 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 				constants.TimestampColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:            logKillEntity.HeaderID,
-				event.LogFK:               logKillEntity.LogID,
+				event.HeaderFK:            entity.HeaderID,
+				event.LogFK:               entity.LogID,
 				event.AddressFK:           contractAddressId,
-				constants.OfferId:         shared.BigIntToString(logKillEntity.Id),
-				constants.PairColumn:      logKillEntity.Pair.Hex(),
+				constants.OfferId:         shared.BigIntToString(offerID),
+				constants.PairColumn:      entity.Pair.Hex(),
 				constants.MakerColumn:     makerAddressId,
 				constants.PayGemColumn:    payGemAddressId,
 				constants.BuyGemColumn:    buyGemAddressId,
-				constants.PayAmtColumn:    shared.BigIntToString(logKillEntity.PayAmt),
-				constants.BuyAmtColumn:    shared.BigIntToString(logKillEntity.BuyAmt),
-				constants.TimestampColumn: strconv.FormatUint(logKillEntity.Timestamp, 10),
+				constants.PayAmtColumn:    shared.BigIntToString(entity.PayAmt),
+				constants.BuyAmtColumn:    shared.BigIntToString(entity.BuyAmt),
+				constants.TimestampColumn: strconv.FormatUint(entity.Timestamp, 10),
 			},
 		}
 		models = append(models, model)

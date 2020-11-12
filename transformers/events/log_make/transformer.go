@@ -2,6 +2,7 @@ package log_make
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -63,6 +64,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 		if buyGemErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(buyGemErr)
 		}
+		offerID := big.NewInt(0).SetBytes(entity.Id[:])
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
 			TableName:  constants.LogMakeTable,
@@ -75,7 +77,7 @@ func (t Transformer) ToModels(abi string, logs []core.EventLog, db *postgres.DB)
 				event.HeaderFK:            entity.HeaderID,
 				event.LogFK:               entity.LogID,
 				event.AddressFK:           addressID,
-				constants.OfferId:         shared.BigIntToString(entity.Id),
+				constants.OfferId:         shared.BigIntToString(offerID),
 				constants.PairColumn:      entity.Pair.Hex(),
 				constants.MakerColumn:     makerID,
 				constants.PayGemColumn:    payGemID,
