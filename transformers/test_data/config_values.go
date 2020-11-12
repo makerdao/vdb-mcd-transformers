@@ -68,7 +68,7 @@ func Flip110Addresses() []string {
 	return addressesResult
 }
 
-func FlipBalV110Address() string {
+func FlipBalAV1114Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_BAL_A_1_1_14"))
 }
 func FlipBatV100Address() string {
