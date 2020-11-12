@@ -34,6 +34,9 @@ docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfi
 message BUILDING BACKFILL-EVENTS DOCKER IMAGE
 docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG
 
+message BUILDING EXTRACT-DIFFS DOCKER IMAGE
+docker build -f dockerfiles/extract_diffs/Dockerfile . -t makerdao/vdb-extract-diffs:$TAG
+
 message LOGGING INTO DOCKERHUB
 echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
 
@@ -45,6 +48,9 @@ docker push makerdao/vdb-backfill-storage:$TAG
 
 message PUSHING BACKFILL-EVENTS DOCKER IMAGE
 docker push makerdao/vdb-backfill-events:$TAG
+
+message PUSHING EXTRACT-DIFFS DOCKER IMAGE
+docker push makerdao/vdb-extract-diffs:$TAG
 
 # service deploy
 if [ "$ENVIRONMENT" == "prod" ]; then
