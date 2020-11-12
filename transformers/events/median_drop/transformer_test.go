@@ -26,7 +26,7 @@ var _ = Describe("Median drop transformer", func() {
 
 	It("returns err if log is missing topics", func() {
 		incompleteLog := core.EventLog{}
-		_, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{incompleteLog}, db)
+		_, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{incompleteLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -36,12 +36,12 @@ var _ = Describe("Median drop transformer", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("convert a log with 5 accounts to an insertion model and expect 5th to be truncated", func() {
-		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithFiveAccounts}, db)
+		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.MedianDropLogWithFiveAccounts}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithFiveAccounts.Log.Data)
@@ -69,7 +69,7 @@ var _ = Describe("Median drop transformer", func() {
 	})
 
 	It("convert a log with 1 account to an insertion model", func() {
-		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianDropLogWithOneAccount}, db)
+		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.MedianDropLogWithOneAccount}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		a0Bytes, a0Err := shared.GetLogNoteArgumentAtIndex(2, test_data.MedianDropLogWithOneAccount.Log.Data)

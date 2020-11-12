@@ -19,7 +19,7 @@ var _ = Describe("MedianKissSingle EventTransformer", func() {
 	medianKissConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianKissSingleTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
+		ContractAbi:       constants.Medianv100ABI(),
 		Topic:             constants.MedianKissSingleSignature(),
 	}
 

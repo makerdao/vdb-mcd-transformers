@@ -26,7 +26,7 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 
 	It("returns err if log is missing topics", func() {
 		incompleteLog := core.EventLog{}
-		_, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{incompleteLog}, db)
+		_, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{incompleteLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
@@ -36,12 +36,12 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 				Topics: []common.Hash{{}, {}, {}, {}},
 			}}
 
-		_, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{badLog}, db)
+		_, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{badLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("converts a log with a 1-address array to an insertion model", func() {
-		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianKissBatchLogOneAddress}, db)
+		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.MedianKissBatchLogOneAddress}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianKissBatchModelOneAddress()
@@ -58,7 +58,7 @@ var _ = Describe("Median kiss (batch) transformer", func() {
 	})
 
 	It("converts a log with a 5-address array to an insertion model, truncating the array to 4 addresses", func() {
-		models, err := transformer.ToModels(constants.MedianABI(), []core.EventLog{test_data.MedianKissBatchLogFiveAddresses}, db)
+		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.MedianKissBatchLogFiveAddresses}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianKissBatchModelFiveAddresses()

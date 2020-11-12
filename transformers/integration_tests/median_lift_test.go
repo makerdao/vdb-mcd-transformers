@@ -21,7 +21,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 	medianLiftConfig := event.TransformerConfig{
 		TransformerName:   mcdConstants.MedianLiftTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       mcdConstants.MedianABI(),
+		ContractAbi:       mcdConstants.Medianv100ABI(),
 		Topic:             mcdConstants.MedianLiftSignature(),
 	}
 

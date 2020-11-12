@@ -19,7 +19,7 @@ var _ = Describe("MedianDissBatch EventTransformer", func() {
 	medianDissConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianDissBatchTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
+		ContractAbi:       constants.Medianv100ABI(),
 		Topic:             constants.MedianDissBatchSignature(),
 	}
 
