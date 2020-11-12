@@ -68,7 +68,7 @@ func FlipV110Addresses() []string {
 	return addressesResult
 }
 
-func FlipBalV110Address() string {
+func FlipBalAV1114Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_BAL_A_1_1_14"))
 }
 func FlipBatV100Address() string {
@@ -140,7 +140,7 @@ func FlipWbtcAV106Address() string {
 func FlipWbtcAV109Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_WBTC_A_1_0_9"))
 }
-func FlipYfiV110Address() string {
+func FlipYfiAV1114Address() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_YFI_A_1_1_14"))
 }
 func FlipZrxAV108Address() string {
