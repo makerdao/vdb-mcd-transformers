@@ -67,6 +67,7 @@ func FlipV110ABI() string {
 		"MCD_FLIP_USDC_B_1_1_0",
 		"MCD_FLIP_USDT_A_1_1_1",
 		"MCD_FLIP_WBTC_A_1_1_0",
+		"MCD_FLIP_YFI_A_1_1_14",
 		"MCD_FLIP_ZRX_A_1_1_0",
 	})
 }
@@ -95,6 +96,7 @@ func Medianv100ABI() string {
 func MedianV110ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAL",
+		"MEDIAN_YFI",
 	})
 }
 func OsmABI() string {
@@ -109,6 +111,7 @@ func OsmABI() string {
 		"OSM_MANA",
 		"OSM_USDT",
 		"OSM_WBTC",
+		"OSM_YFI",
 		"OSM_ZRX",
 	})
 }
