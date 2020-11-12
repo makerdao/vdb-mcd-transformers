@@ -90,9 +90,18 @@ func MedianABI() string {
 		"MEDIAN_ZRX",
 	})
 }
+
 func OasisABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 }
+
+func MedianV110ABI() string {
+	return GetABIFromContractsWithMatchingABI([]string{
+		"MEDIAN_BAL",
+		"MEDIAN_YFI",
+	})
+}
+
 func OsmABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"OSM_BAL",

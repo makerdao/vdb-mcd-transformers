@@ -37,7 +37,7 @@ var _ = Describe("Rely transformer", func() {
 	Context("Flip BAL v1.1.14 rely events", func() {
 		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
 		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
-		relyIntegrationTest(int64(11198257), test_data.FlipBalV110Address(), msgSenderAddress,
+		relyIntegrationTest(int64(11198257), test_data.FlipBalAV1114Address(), msgSenderAddress,
 			usrAddress)
 	})
 
