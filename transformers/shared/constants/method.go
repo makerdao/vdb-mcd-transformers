@@ -52,6 +52,7 @@ func FlipV100ABI() string {
 }
 func FlipV110ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLIP_BAL_A_1_1_14",
 		"MCD_FLIP_BAT_A_1_1_0",
 		"MCD_FLIP_COMP_A_1_1_2",
 		"MCD_FLIP_ETH_A_1_1_0",
@@ -76,7 +77,7 @@ func FlopABI() string {
 	})
 }
 func JugABI() string { return constants.GetContractABI("MCD_JUG") }
-func MedianABI() string {
+func Medianv100ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT",
 		"MEDIAN_COMP",
@@ -90,8 +91,15 @@ func MedianABI() string {
 		"MEDIAN_ZRX",
 	})
 }
+
+func MedianV110ABI() string {
+	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"MEDIAN_BAL",
+	})
+}
 func OsmABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"OSM_BAL",
 		"OSM_BAT",
 		"OSM_COMP",
 		"OSM_ETH",
@@ -145,27 +153,27 @@ func jugFileVowMethod() string {
 }
 func jugInitMethod() string { return constants.GetSolidityFunctionSignature(JugABI(), "init") }
 func logMedianPriceEvent() string {
-	return constants.GetSolidityFunctionSignature(MedianABI(), "LogMedianPrice")
+	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "LogMedianPrice")
 }
 func logValueMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "LogValue") }
 
 func medianDissBatchMethod() string {
-	return constants.GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
+	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "diss", []string{"address[]"})
 }
 func medianDissSingleMethod() string {
-	return constants.GetOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "diss", []string{"address"})
 }
 func medianDropMethod() string {
-	return constants.GetSolidityFunctionSignature(MedianABI(), "drop")
+	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "drop")
 }
 func medianLiftMethod() string {
-	return constants.GetSolidityFunctionSignature(MedianABI(), "lift")
+	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "lift")
 }
 func medianKissBatchMethod() string {
-	return constants.GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
+	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "kiss", []string{"address[]"})
 }
 func medianKissSingleMethod() string {
-	return constants.GetOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
+	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "kiss", []string{"address"})
 }
 func newCdpMethod() string    { return constants.GetSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func osmChangeMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "change") }

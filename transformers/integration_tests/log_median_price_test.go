@@ -79,7 +79,7 @@ func logMedianPriceIntegrationTest(blockNumber int64, contractAddressHex, val, a
 	It("persists event", func() {
 		test_config.CleanTestDB(db)
 		config := event.TransformerConfig{
-			ContractAbi:         constants.MedianABI(),
+			ContractAbi:         constants.Medianv100ABI(),
 			ContractAddresses:   []string{contractAddressHex},
 			EndingBlockNumber:   blockNumber,
 			StartingBlockNumber: blockNumber,

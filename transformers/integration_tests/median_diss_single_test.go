@@ -20,7 +20,7 @@ var _ = XDescribe("MedianDissSingle EventTransformer", func() {
 	medianDissConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianDissSingleTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
+		ContractAbi:       constants.Medianv100ABI(),
 		Topic:             constants.MedianDissSingleSignature(),
 	}
 
