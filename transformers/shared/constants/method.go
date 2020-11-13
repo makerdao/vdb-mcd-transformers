@@ -98,7 +98,7 @@ func OasisABI() string {
 func MedianV110ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAL_1_1_14",
-		"MEDIAN_YFI",
+		"MEDIAN_YFI_1_1_14",
 	})
 }
 
