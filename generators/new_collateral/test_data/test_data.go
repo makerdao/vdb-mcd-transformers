@@ -163,7 +163,7 @@ var (
 
 	FlipBatAContractName  = "MCD_FLIP_BAT_A_1_0_0"
 	FlipEthAContractName  = "MCD_FLIP_ETH_A_1_0_0"
-	MedianBatContractName = "MEDIAN_BAT"
+	MedianBatContractName = "MEDIAN_BAT_1_0_0"
 	OsmBatContractName    = "OSM_BAT"
 
 	Cat100ContractName = "MCD_CAT_1_0_0"
@@ -295,7 +295,7 @@ var (
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.deny]
-    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_B", "OSM_ETH_B"]
+    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT_1_0_0", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_B", "OSM_ETH_B"]
     migrations = "db/migrations"
     path = "transformers/events/auth/deny/initializer"
     rank = "0"
@@ -308,7 +308,7 @@ var (
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.log_median_price]
-    contracts = ["MEDIAN_BAT", "MEDIAN_ETH_B"]
+    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_ETH_B"]
     migrations = "db/migrations"
     path = "transformers/events/log_median_price/initializer"
     rank = "0"

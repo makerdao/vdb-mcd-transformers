@@ -156,7 +156,7 @@ func MedianAddresses() []string {
 	var addressesResult []string
 	medianAddresses := constants.GetContractAddresses([]string{
 		"MEDIAN_BAL_1_1_14",
-		"MEDIAN_BAT",
+		"MEDIAN_BAT_1_0_0",
 		"MEDIAN_COMP",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
@@ -174,7 +174,7 @@ func MedianAddresses() []string {
 	return addressesResult
 }
 func MedianBalAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAL_1_1_14")) }
-func MedianBatAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAT")) }
+func MedianBatAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_BAT_1_0_0")) }
 func MedianCompAddress() string { return checksum(constants.GetContractAddress("MEDIAN_COMP")) }
 func MedianEthAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ETH")) }
 func MedianKncAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_KNC")) }
