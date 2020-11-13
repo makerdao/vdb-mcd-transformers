@@ -411,7 +411,7 @@
     type = "eth_event"
   [exporter.median_bal_v1_1_14]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/v1_1_14/median_bal"
+    path = "transformers/storage/median/initializers/median_bal/v1_1_14"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
