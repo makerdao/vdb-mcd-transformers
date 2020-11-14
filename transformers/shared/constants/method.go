@@ -81,7 +81,7 @@ func JugABI() string { return constants.GetContractABI("MCD_JUG") }
 func Medianv100ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT_1_0_0",
-		"MEDIAN_COMP",
+		"MEDIAN_COMP_1_1_2",
 		"MEDIAN_ETH",
 		"MEDIAN_KNC",
 		"MEDIAN_LINK",
