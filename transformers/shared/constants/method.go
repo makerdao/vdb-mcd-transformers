@@ -16,7 +16,11 @@
 
 package constants
 
-import "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+import (
+	"fmt"
+
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
+)
 
 // TODO Figure out signatures automatically from config somehow :(
 func Cat100ABI() string     { return constants.GetContractABI("MCD_CAT_1_0_0") }
@@ -78,7 +82,7 @@ func FlopABI() string {
 	})
 }
 func JugABI() string { return constants.GetContractABI("MCD_JUG") }
-func Medianv100ABI() string {
+func MedianV100ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAT_1_0_0",
 		"MEDIAN_COMP_1_1_2",
@@ -93,7 +97,7 @@ func Medianv100ABI() string {
 	})
 }
 
-func MedianV110ABI() string {
+func MedianV114ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAL_1_1_14",
 		"MEDIAN_YFI_1_1_14",
@@ -155,28 +159,46 @@ func jugFileVowMethod() string {
 	return constants.GetOverloadedFunctionSignature(JugABI(), "file", []string{"bytes32", "address"})
 }
 func jugInitMethod() string { return constants.GetSolidityFunctionSignature(JugABI(), "init") }
-func logMedianPriceEvent() string {
-	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "LogMedianPrice")
+
+func getMedianFunctionSignature(name string) string {
+	signature := constants.GetSolidityFunctionSignature(MedianV114ABI(), name)
+	if oldSignature := constants.GetSolidityFunctionSignature(MedianV100ABI(), name); signature != oldSignature {
+		panic(fmt.Sprintf("ABI Function signature has changed! was %s but is now %s", oldSignature, signature))
+	}
+	return signature
 }
+
+func getOverloadedMedianFunctionSignature(name string, paramTypes []string) string {
+	signature := constants.GetOverloadedFunctionSignature(MedianV114ABI(), name, paramTypes)
+	if oldSignature := constants.GetOverloadedFunctionSignature(MedianV100ABI(), name, paramTypes); signature != oldSignature {
+		panic(fmt.Sprintf("ABI Function signature has changed! was %s but is now %s", oldSignature, signature))
+	}
+	return signature
+}
+
+func logMedianPriceEvent() string {
+	return getMedianFunctionSignature("LogMedianPrice")
+}
+
 func logValueMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "LogValue") }
 
 func medianDissBatchMethod() string {
-	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "diss", []string{"address[]"})
+	return getOverloadedMedianFunctionSignature("diss", []string{"address[]"})
 }
 func medianDissSingleMethod() string {
-	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "diss", []string{"address"})
+	return getOverloadedMedianFunctionSignature("diss", []string{"address"})
 }
 func medianDropMethod() string {
-	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "drop")
+	return getMedianFunctionSignature("drop")
 }
 func medianLiftMethod() string {
-	return constants.GetSolidityFunctionSignature(Medianv100ABI(), "lift")
+	return getMedianFunctionSignature("lift")
 }
 func medianKissBatchMethod() string {
-	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "kiss", []string{"address[]"})
+	return getOverloadedMedianFunctionSignature("kiss", []string{"address[]"})
 }
 func medianKissSingleMethod() string {
-	return constants.GetOverloadedFunctionSignature(Medianv100ABI(), "kiss", []string{"address"})
+	return getOverloadedMedianFunctionSignature("kiss", []string{"address"})
 }
 func newCdpMethod() string    { return constants.GetSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func osmChangeMethod() string { return constants.GetSolidityFunctionSignature(OsmABI(), "change") }

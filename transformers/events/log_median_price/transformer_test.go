@@ -22,7 +22,7 @@ var _ = Describe("LogMedianPrice Transformer", func() {
 	})
 
 	It("converts a raw to a LogMedianPrice model", func() {
-		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.EthLogMedianPriceEventLog}, db)
+		models, err := transformer.ToModels(constants.MedianV100ABI(), []core.EventLog{test_data.EthLogMedianPriceEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.EthLogMedianPriceModel()
