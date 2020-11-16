@@ -90,7 +90,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		medianWbtcAddress := constants.GetContractAddress("MEDIAN_WBTC")
+		medianWbtcAddress := constants.GetContractAddress("MEDIAN_WBTC_1_0_6")
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(medianWbtcAddress)},
