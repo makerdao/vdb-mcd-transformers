@@ -162,8 +162,8 @@ func MedianAddresses() []string {
 		"MEDIAN_KNC_1_0_8",
 		"MEDIAN_LINK_1_1_2",
 		"MEDIAN_LRC_1_1_2",
-		"MEDIAN_MANA",
-		"MEDIAN_USDT",
+		"MEDIAN_MANA_1_0_9",
+		"MEDIAN_USDT_1_0_4",
 		"MEDIAN_WBTC",
 		"MEDIAN_YFI_1_1_14",
 		"MEDIAN_ZRX",
@@ -183,8 +183,8 @@ func MedianEthAddress() string  { return checksum(constants.GetContractAddress("
 func MedianKncAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_KNC_1_0_8")) }
 func MedianLinkAddress() string { return checksum(constants.GetContractAddress("MEDIAN_LINK_1_1_2")) }
 func MedianLrcAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_LRC_1_1_2")) }
-func MedianManaAddress() string { return checksum(constants.GetContractAddress("MEDIAN_MANA")) }
-func MedianUsdtAddress() string { return checksum(constants.GetContractAddress("MEDIAN_USDT")) }
+func MedianManaAddress() string { return checksum(constants.GetContractAddress("MEDIAN_MANA_1_0_9")) }
+func MedianUsdtAddress() string { return checksum(constants.GetContractAddress("MEDIAN_USDT_1_0_4")) }
 func MedianWbtcAddress() string { return checksum(constants.GetContractAddress("MEDIAN_WBTC")) }
 func MedianYfiAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_YFI_1_1_14")) }
 func MedianZrxAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ZRX")) }
