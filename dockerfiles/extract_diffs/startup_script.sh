@@ -28,7 +28,6 @@ if test -z "$VDB_PG_CONNECT"; then
 fi
 
 # Run the DB migrations
-echo "Connecting with: $VDB_PG_CONNECT"
 ./goose -dir db/migrations postgres "$VDB_PG_CONNECT" up
 
 if [ $? -ne 0 ]; then
