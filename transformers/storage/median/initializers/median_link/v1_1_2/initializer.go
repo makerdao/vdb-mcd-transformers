@@ -5,4 +5,4 @@ import (
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
-var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MEDIAN_LINK"))
+var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(constants.GetContractAddress("MEDIAN_LINK_1_1_2"))
