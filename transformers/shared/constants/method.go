@@ -89,7 +89,7 @@ func Medianv100ABI() string {
 		"MEDIAN_MANA_1_0_9",
 		"MEDIAN_USDT_1_0_4",
 		"MEDIAN_WBTC_1_0_6",
-		"MEDIAN_ZRX",
+		"MEDIAN_ZRX_1_0_8",
 	})
 }
 
