@@ -20,7 +20,7 @@ var _ = XDescribe("MedianDrop EventTransformer", func() {
 	medianDropConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianDropTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
+		ContractAbi:       constants.MedianV100ABI(),
 		Topic:             constants.MedianDropSignature(),
 	}
 
