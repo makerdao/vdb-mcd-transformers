@@ -417,13 +417,13 @@
     type = "eth_storage"
   [exporter.median_bat_v1_0_0]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/median_bat"
+    path = "transformers/storage/median/initializers/median_bat/v1_0_0"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_comp_v1_1_2]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/median_comp_v_1_2"
+    path = "transformers/storage/median/initializers/median_comp/v1_1_2"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
@@ -450,7 +450,7 @@
     type = "eth_event"
   [exporter.median_eth_v1_0_0]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/median_eth_v1_0_0"
+    path = "transformers/storage/median/initializers/median_eth/v1_0_0"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
@@ -468,9 +468,9 @@
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
-  [exporter.median_knc]
+  [exporter.median_knc_v1_0_8]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/median_knc"
+    path = "transformers/storage/median/initializers/median_knc/v1_0_8"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
