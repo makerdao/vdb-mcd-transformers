@@ -23,12 +23,12 @@ var _ = Describe("Median diss (single) transformer", func() {
 
 	It("returns err if log is missing topics", func() {
 		incompleteLog := core.EventLog{}
-		_, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{incompleteLog}, db)
+		_, err := transformer.ToModels(constants.MedianV100ABI(), []core.EventLog{incompleteLog}, db)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("convert a log to an insertion model", func() {
-		models, err := transformer.ToModels(constants.Medianv100ABI(), []core.EventLog{test_data.MedianDissSingleLog}, db)
+		models, err := transformer.ToModels(constants.MedianV100ABI(), []core.EventLog{test_data.MedianDissSingleLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 
 		expectedModel := test_data.MedianDissSingleModel()

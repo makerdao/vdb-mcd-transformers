@@ -19,7 +19,7 @@ var _ = Describe("MedianKissBatch EventTransformer", func() {
 	medianKissConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianKissBatchTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.Medianv100ABI(),
+		ContractAbi:       constants.MedianV100ABI(),
 		Topic:             constants.MedianKissBatchSignature(),
 	}
 
