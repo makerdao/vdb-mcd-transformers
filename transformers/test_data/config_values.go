@@ -166,7 +166,7 @@ func MedianAddresses() []string {
 		"MEDIAN_USDT_1_0_4",
 		"MEDIAN_WBTC_1_0_6",
 		"MEDIAN_YFI_1_1_14",
-		"MEDIAN_ZRX",
+		"MEDIAN_ZRX_1_0_8",
 	})
 
 	for _, address := range medianAddresses {
@@ -187,7 +187,7 @@ func MedianManaAddress() string { return checksum(constants.GetContractAddress("
 func MedianUsdtAddress() string { return checksum(constants.GetContractAddress("MEDIAN_USDT_1_0_4")) }
 func MedianWbtcAddress() string { return checksum(constants.GetContractAddress("MEDIAN_WBTC_1_0_6")) }
 func MedianYfiAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_YFI_1_1_14")) }
-func MedianZrxAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ZRX")) }
+func MedianZrxAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_ZRX_1_0_8")) }
 func OsmAddresses() []string {
 	var addressesResult []string
 	// Does not include OSM_USDC since that's actually just a DSValue contract right now, not an OSM
