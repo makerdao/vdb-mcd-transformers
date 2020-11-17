@@ -16,6 +16,13 @@ jobs:
         with:
           python-version: 3.7
       -
+        name: Build extract diffs image
+        uses: docker/build-push-action@v2
+        with:
+          file: ./dockerfiles/extract_diffs/Dockerfile
+          push: false
+          tags: makerdao/extract_diffs:gh_actions_test_version
+      -
         name: Build execute image
         uses: docker/build-push-action@v2
         with:
