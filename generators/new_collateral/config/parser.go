@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/BurntSushi/toml"
@@ -19,22 +20,28 @@ func NewParser() parser {
 	return parser{}
 }
 
+var (
+	ErrorDecodingConfigFile = errors.New("error decoding config file")
+	ErrorParsingExporterMetadata = errors.New("error parsing exporter metadata from config file")
+    ErrorParsingTransformerExporters = errors.New("error parsing transformer exporters from config file")
+)
+
 func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
 	var tomlConfig types.TransformersConfigForToml
 	fullConfigFilePath := helpers.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
-		return types.TransformersConfig{}, fmt.Errorf("error decoding config file: %w", decodeErr)
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorDecodingConfigFile, decodeErr)
 	}
 
 	metadata, metadataErr := parseExporterMetaData(tomlConfig)
 	if metadataErr != nil {
-		return types.TransformersConfig{}, fmt.Errorf("error parsing exporter metadata from config file: %w", metadataErr)
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorParsingExporterMetadata, metadataErr.Error())
 	}
 
 	transformerExporters, transformerExportersErr := parseTransformerExporters(tomlConfig)
 	if transformerExportersErr != nil {
-		return types.TransformersConfig{}, fmt.Errorf("error parsing transformer exporters from config file: %w", transformerExportersErr)
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorParsingTransformerExporters, transformerExportersErr)
 	}
 
 	return types.TransformersConfig{
