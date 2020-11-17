@@ -36,7 +36,7 @@ var _ = Describe("Config Parser", func() {
 			configFile := "non-existent-file"
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFile)
 			Expect(parseErr).To(HaveOccurred())
-			Expect(parseErr).To(MatchError("error decoding config file: open ../test_data/non-existent-file.toml: no such file or directory"))
+			Expect(parseErr).To(MatchError(config.ErrorDecodingConfigFile))
 		})
 
 		It("parses metadata", func() {
@@ -49,9 +49,7 @@ var _ = Describe("Config Parser", func() {
 			configFileName := "testConfigWithBadMetadata"
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFileName)
 			Expect(parseErr).To(HaveOccurred())
-			Expect(parseErr).To(MatchError(
-				"error parsing exporter metadata from config file: error asserting exporterMetadata types - homeOk: false, nameOk: false, saveOk: false",
-			))
+			Expect(parseErr).To(MatchError(config.ErrorParsingExporterMetadata))
 		})
 
 		It("can handle an empty transformerNames slice", func() {
@@ -77,9 +75,7 @@ var _ = Describe("Config Parser", func() {
 			configFile := "testConfigWithBadTransformerExporter"
 			_, parseErr := configParser.ParseCurrentConfig(testConfigFilePath, configFile)
 			Expect(parseErr).To(HaveOccurred())
-			Expect(parseErr).To(MatchError(
-				"error parsing transformer exporters from config file: error decoding transformerExporters:" +
-					" 1 error(s) decoding:\n\n* 'Path' expected type 'string', got unconvertible type 'int64'"))
+			Expect(parseErr).To(MatchError(config.ErrorParsingTransformerExporters))
 		})
 	})
 })
