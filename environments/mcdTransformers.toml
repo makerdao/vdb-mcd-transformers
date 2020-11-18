@@ -409,7 +409,7 @@
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
-  [exporter.median_bal_v_1_1_14]
+  [exporter.median_bal_v1_1_14]
     migrations = "db/migrations"
     path = "transformers/storage/median/initializers/v1_1_14/median_bal"
     rank = "0"
