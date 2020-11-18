@@ -18,7 +18,6 @@ package new_cdp_test
 
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
@@ -29,14 +28,14 @@ var _ = Describe("NewCdp Transformer", func() {
 	var transformer = new_cdp.Transformer{}
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.CdpManagerABI(), []core.EventLog{test_data.NewCdpEventLog}, nil)
+		models, err := transformer.ToModels("", []core.EventLog{test_data.NewCdpEventLog}, nil)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(models).To(ConsistOf(test_data.NewCdpModel()))
 	})
 
 	It("returns an error if converting log to entity fails", func() {
-		_, err := transformer.ToModels("error abi", []core.EventLog{test_data.NewCdpEventLog}, nil)
+		_, err := transformer.ToModels("", []core.EventLog{{}}, nil)
 		Expect(err).To(HaveOccurred())
 	})
 })
