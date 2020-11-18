@@ -14,9 +14,6 @@ ENVIRONMENT=$1
 if [ "$ENVIRONMENT" == "prod" ]; then
 TAG=latest
 EXECUTE_NAME=vdb-mcd-execute
-elif [ "$ENVIRONMENT" == "staging" ]; then
-TAG=staging
-EXECUTE_NAME=vdb-execute
 else
    message UNKNOWN ENVIRONMENT
 fi
@@ -64,15 +61,6 @@ if [ "$ENVIRONMENT" == "prod" ]; then
 
   message DEPLOYING EXTRACT-DIFFS-US
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-us-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
-elif [ "$ENVIRONMENT" == "staging" ]; then
-  message DEPLOYING EXECUTE
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
-
-  message DEPLOYING EXTRACT-DIFFS
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
-
-  message DEPLOYING EXTRACT-DIFFS2
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs2-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
 else
    message UNKNOWN ENVIRONMENT
 fi
