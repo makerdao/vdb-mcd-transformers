@@ -11,9 +11,7 @@ function message() {
 }
 
 ENVIRONMENT=$1
-if [ "$ENVIRONMENT" == "prod" ]; then
-TAG=latest
-elif [ "$ENVIRONMENT" == "staging" ]; then
+if [ "$ENVIRONMENT" == "staging" ]; then
 TAG=staging
 else
    message UNKNOWN ENVIRONMENT
@@ -53,10 +51,7 @@ message PUSHING EXTRACT-DIFFS DOCKER IMAGE
 docker push makerdao/vdb-extract-diffs:$TAG
 
 # service deploy
-if [ "$ENVIRONMENT" == "prod" ]; then
-  message DEPLOYING EXECUTE
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
-elif [ "$ENVIRONMENT" == "staging" ]; then
+if [ "$ENVIRONMENT" == "staging" ]; then
   message DEPLOYING EXECUTE
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
 
