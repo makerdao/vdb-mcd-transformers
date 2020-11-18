@@ -78,7 +78,6 @@ func FlopABI() string {
 func JugABI() string { return getContractABI("MCD_JUG") }
 func MedianABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MEDIAN_BAL",
 		"MEDIAN_BAT",
 		"MEDIAN_COMP",
 		"MEDIAN_ETH",
@@ -88,7 +87,6 @@ func MedianABI() string {
 		"MEDIAN_MANA",
 		"MEDIAN_USDT",
 		"MEDIAN_WBTC",
-		"MEDIAN_YFI",
 		"MEDIAN_ZRX",
 	})
 }
