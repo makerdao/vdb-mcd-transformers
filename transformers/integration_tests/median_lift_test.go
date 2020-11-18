@@ -9,7 +9,6 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/median_lift"
 	mcdConstants "github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
-	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -35,7 +34,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		medianEthAddress := constants.GetContractAddress("MEDIAN_ETH_1_0_0")
+		medianEthAddress := test_data.MedianEthAddress()
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(medianEthAddress)},
@@ -91,7 +90,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		medianWbtcAddress := constants.GetContractAddress("MEDIAN_WBTC_1_0_6")
+		medianWbtcAddress := test_data.MedianWbtcAddress()
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(medianWbtcAddress)},
