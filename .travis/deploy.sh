@@ -53,15 +53,15 @@ message PUSHING EXTRACT-DIFFS DOCKER IMAGE
 docker push makerdao/vdb-extract-diffs:$TAG
 
 # service deploy
-if [ "$ENVIRONMENT" == "prod" ]; then
-  message DEPLOYING EXECUTE
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
-elif [ "$ENVIRONMENT" == "staging" ]; then
+if [ "$ENVIRONMENT" == "staging" ]; then
   message DEPLOYING EXECUTE
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
 
   message DEPLOYING EXTRACT-DIFFS
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
+
+  message DEPLOYING EXTRACT-DIFFS2
+  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs2-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$STAGING_REGION.amazonaws.com --region $STAGING_REGION
 
   message DEPLOYING BACKFILL-EVENTS
   aws ecs run-task --cluster vdb-cluster-$ENVIRONMENT \
