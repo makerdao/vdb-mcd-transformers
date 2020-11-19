@@ -16,22 +16,6 @@ jobs:
         with:
           python-version: 3.7
       -
-        name: Build extract diffs image
-        uses: docker/build-push-action@v2
-        with:
-          file: ./dockerfiles/extract_diffs/Dockerfile
-          push: false
-          tags: makerdao/extract_diffs:gh_actions_test_version
-      -
-        name: Run the extract diffs container
-        env:
-          CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
-          DATABASE_USER: ${{ secrets.DATABASE_USER }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }} 
-        run: |
-          ./.github/workflows/check_execute makerdao/extract_diffs:gh_actions_test_version --storagediffs_source new-geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
-      -
         name: Build execute image
         uses: docker/build-push-action@v2
         with:
@@ -61,3 +45,45 @@ jobs:
           --health-timeout 5s
           --health-retries 5
   
+  test-extract:
+    runs-on: ubuntu-latest
+    name: Test Extract_Diffs Image
+    steps:
+      -
+       name: Checkout repo
+       uses: actions/checkout@v2
+      -
+       name: Setup Python
+       uses: actions/setup-python@v2
+       with:
+        python-version: 3.7
+      -
+       name: Build extract diffs image
+       uses: docker/build-push-action@v2
+       with:
+          file: ./dockerfiles/extract_diffs/Dockerfile
+          push: false
+          tags: makerdao/extract_diffs:gh_actions_test_version
+      -
+       name: Run the extract diffs container
+       env:
+        CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
+        DATABASE_USER: ${{ secrets.DATABASE_USER }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_NAME: ${{ secrets.DATABASE_NAME }} 
+       run: |
+         ./.github/workflows/check_execute makerdao/extract_diffs:gh_actions_test_version --storagediffs_source new-geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
+
+    services:
+      postgres:
+        image: postgres:11.6
+        env:
+          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DATABASE_NAME }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      

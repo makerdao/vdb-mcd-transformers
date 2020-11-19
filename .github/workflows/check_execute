@@ -32,6 +32,7 @@ try:
   stdout, _stderr = popen.communicate(timeout=5)
   # For some reason errors seem to go to stdout
   print(f'docker run failed to start image\nout: {stdout}')
+  print(f'docker run failed to start image\nout: {_stderr}')
   sys.exit(popen.returncode)
 except subprocess.TimeoutExpired:
   print(f'started container from image {args.image} with pid {popen.pid}')
