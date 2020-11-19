@@ -18,7 +18,7 @@ container_id = cp.stdout.decode('utf-8').strip().replace('"', '')
 
 popen = subprocess.Popen(['docker', 'run', '-i',
                           '--network', f'container:{container_id}',
-                          '--name', 'test_execute',
+                          '--name', 'test_vdb_command',
                           '-e', f'DATABASE_NAME={args.database_name}',
                           '-e', f'DATABASE_HOSTNAME={args.database_hostname}',
                           '-e', f'DATABASE_PORT={args.database_port}',
@@ -32,7 +32,6 @@ try:
   stdout, _stderr = popen.communicate(timeout=5)
   # For some reason errors seem to go to stdout
   print(f'docker run failed to start image\nout: {stdout}')
-  print(f'docker run failed to start image\nout: {_stderr}')
   sys.exit(popen.returncode)
 except subprocess.TimeoutExpired:
   print(f'started container from image {args.image} with pid {popen.pid}')
@@ -41,7 +40,7 @@ time_waiting = 0
 while time_waiting <= args.wait_time:
   time.sleep(5)
   cp = subprocess.run(['docker', 'ps',
-                       '--filter', f'name=test_execute',
+                       '--filter', f'name=test_vdb_command',
                        '--format', '"{{.Status}}"'],
                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   status = cp.stdout.decode('utf-8').strip().replace('"', '')

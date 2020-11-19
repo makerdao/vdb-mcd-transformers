@@ -1,9 +1,9 @@
-name: TestExecute
+name: TestVDBCommands
 
 on: push
 
 jobs:
-  test:
+  test-execute:
     runs-on: ubuntu-latest
     name: Test Execute Image
     steps:
@@ -23,14 +23,14 @@ jobs:
           push: false
           tags: makerdao/execute:gh_actions_test_version
       -
-        name: Run the docker container
+        name: Run the execute container
         env:
           CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
           DATABASE_USER: ${{ secrets.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
         run: |
-          ./.github/workflows/check_execute makerdao/execute:gh_actions_test_version --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
+          ./.github/workflows/check_vdb_command makerdao/execute:gh_actions_test_version --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
 
     services:
       postgres:
@@ -47,7 +47,7 @@ jobs:
   
   test-extract:
     runs-on: ubuntu-latest
-    name: Test Extract_Diffs Image
+    name: Test Extract Diffs Image
     steps:
       -
        name: Checkout repo
@@ -72,7 +72,7 @@ jobs:
         DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE_NAME: ${{ secrets.DATABASE_NAME }} 
        run: |
-         ./.github/workflows/check_execute makerdao/extract_diffs:gh_actions_test_version --storagediffs_source new-geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
+         ./.github/workflows/check_vdb_command makerdao/extract_diffs:gh_actions_test_version --storagediffs_source new-geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
 
     services:
       postgres:
