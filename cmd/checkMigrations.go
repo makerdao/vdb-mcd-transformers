@@ -114,7 +114,7 @@ func getGithubFileNames() ([]string, error) {
 	jsonErr := json.Unmarshal(body, &files)
 
 	if jsonErr != nil {
-		return []string{}, fmt.Errorf("Failed to unmarshal %s, %w", string(body), jsonErr)
+		return []string{}, fmt.Errorf("failed to unmarshal %s, %w", string(body), jsonErr)
 	}
 
 	var namedFiles = make([]NamedFile, len(files))
