@@ -30,7 +30,7 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }} 
         run: |
-          ./.github/workflows/check_execute makerdao/extract_diffs:gh_actions_test_version --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
+          ./.github/workflows/check_execute makerdao/extract_diffs:gh_actions_test_version --storagediffs_source new-geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
       -
         name: Build execute image
         uses: docker/build-push-action@v2
