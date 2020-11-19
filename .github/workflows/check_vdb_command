@@ -9,7 +9,7 @@ parser.add_argument("--database_name", help="name of the postgres database", def
 parser.add_argument("--database_port", help="port of the postgres database", default="5432")
 parser.add_argument("--database_user", help="username of the postgres database user", default="postgres")
 parser.add_argument("--database_password", help="password of the postgres database user", default="postgres")
-parser.add_argument("--storagediffs_source", help="geth version", default="new-geth")
+parser.add_argument("--storagediffs_source", help="geth version", default="geth")
 parser.add_argument("--wait_time", help="seconds to wait for the container to be ready", default="60", type=int)
 args = parser.parse_args()
 
@@ -32,6 +32,7 @@ try:
   stdout, _stderr = popen.communicate(timeout=5)
   # For some reason errors seem to go to stdout
   print(f'docker run failed to start image\nout: {stdout}')
+  print(f'docker run failed to start image\nout: {_stderr}')
   sys.exit(popen.returncode)
 except subprocess.TimeoutExpired:
   print(f'started container from image {args.image} with pid {popen.pid}')
