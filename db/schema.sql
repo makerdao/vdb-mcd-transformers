@@ -314,6 +314,7 @@ CREATE FUNCTION api.all_bites(ilk_identifier text, max_results integer DEFAULT '
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier,
        identifier AS urn_identifier,
        bid_id,
@@ -405,6 +406,7 @@ WITH address_id AS (
                                 AND flap_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
+
 SELECT flap_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -531,6 +533,7 @@ WITH address_ids AS (
                                 AND flip_bid_lot.header_id = headers.id
          WHERE tick.address_id IN (SELECT * FROM address_ids)
      )
+
 SELECT flip_kick.bid_id,
        lot,
        bid                 AS                                          bid_amount,
@@ -684,6 +687,7 @@ WITH address_id AS (
                                 AND flop_bid_lot.header_id = headers.id
          WHERE tick.address_id = (SELECT * FROM address_id)
      )
+
 SELECT flop_kick.bid_id,
        lot,
        bid                          AS bid_amount,
@@ -759,6 +763,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
+
 SELECT ilk_identifier,
        urns.identifier                                                             AS urn_identifier,
        dink,
@@ -785,6 +790,7 @@ CREATE FUNCTION api.all_ilk_file_events(ilk_identifier text, max_results integer
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier)
+
 SELECT ilk_identifier, what, data :: text, block_number, log_id
 FROM maker.cat_file_chop_lump
          LEFT JOIN headers ON cat_file_chop_lump.header_id = headers.id
@@ -1313,6 +1319,7 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
+
 SELECT get_flap.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1353,6 +1360,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
                   AND urns.identifier = (SELECT usr FROM kicks)),
+
      storage_values AS (
          SELECT guy,
                 tic,
@@ -1376,6 +1384,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip.ilk)
                WHERE deal.bid_id = get_flip.bid_id
                  AND deal.address_id = (SELECT * FROM address_id)
                  AND headers.block_number <= block_height)
+
 SELECT get_flip.block_height,
        get_flip.bid_id,
        (SELECT id FROM ilk_ids),
@@ -1435,6 +1444,7 @@ WITH address_id AS (
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
+
 SELECT get_flop.bid_id,
        storage_values.guy,
        storage_values.tic,
@@ -1470,6 +1480,7 @@ WITH created AS (SELECT era, h.block_number, api.epoch_to_datetime(block_timesta
                  WHERE era = get_queued_sin.era
                  ORDER BY h.block_number DESC
                  LIMIT 1)
+
 SELECT get_queued_sin.era,
        tab,
        (SELECT EXISTS(SELECT id FROM maker.vow_flog WHERE vow_flog.era = get_queued_sin.era)) AS flogged,
@@ -1491,6 +1502,7 @@ $$;
 CREATE FUNCTION api.get_urn(ilk_identifier text, urn_identifier text, block_height bigint DEFAULT api.max_block()) RETURNS api.urn_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
+
 SELECT urn_identifier, ilk_identifier, get_urn.block_height, ink, art, created, updated
     FROM api.urn_snapshot
     WHERE ilk_identifier = get_urn.ilk_identifier
@@ -1510,12 +1522,12 @@ CREATE FUNCTION api.get_urns_by_ilk(ilk_identifier text, block_height bigint DEF
     AS $$
 SELECT *
 FROM (SELECT DISTINCT ON (urn_identifier, urn_snapshot.ilk_identifier) urn_identifier,
-                                                          urn_snapshot.ilk_identifier,
-                                                          urn_snapshot.block_height,
-                                                          ink,
-                                                          coalesce(art, 0),
-                                                          created,
-                                                          updated
+                                                                       urn_snapshot.ilk_identifier,
+                                                                       urn_snapshot.block_height,
+                                                                       ink,
+                                                                       coalesce(art, 0),
+                                                                       created,
+                                                                       updated
       FROM api.urn_snapshot
       WHERE urn_snapshot.block_height <= get_urns_by_ilk.block_height
         AND urn_snapshot.ilk_identifier = get_urns_by_ilk.ilk_identifier
@@ -1708,6 +1720,7 @@ DECLARE
     r api.time_bite_total%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    
     FOR r IN 
         WITH buckets AS (
             SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
@@ -1755,6 +1768,7 @@ DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    
     FOR r IN 
         WITH buckets AS (
             SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
@@ -1813,6 +1827,7 @@ DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    
     FOR r IN 
         WITH buckets AS (
             SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
@@ -1866,6 +1881,7 @@ DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    
     FOR r IN 
         WITH buckets AS (
             SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
@@ -1988,6 +2004,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
              FROM maker.urns
              WHERE ilk_id = (SELECT id FROM ilk)
                AND identifier = urn_bites.urn_identifier)
+
 SELECT ilk_identifier,
        urn_bites.urn_identifier,
        bid_id,
@@ -2024,6 +2041,7 @@ WITH ilk AS (SELECT id FROM maker.ilks WHERE ilks.identifier = ilk_identifier),
                WHERE ilk_id = (SELECT id FROM ilk)
                ORDER BY block_number DESC
      )
+
 SELECT ilk_identifier,
        urn_identifier,
        dink,
@@ -6906,15 +6924,18 @@ BEGIN
     IF last_storage_value = create_back_filled_diff.storage_value THEN
         RETURN;
     END IF;
+
     IF last_storage_value is null and create_back_filled_diff.storage_value = empty_storage_value THEN
         RETURN;
     END IF;
+
     INSERT INTO public.storage_diff (block_height, block_hash, hashed_address, storage_key, storage_value,
                                      from_backfill)
     VALUES (create_back_filled_diff.block_height, create_back_filled_diff.block_hash,
             create_back_filled_diff.hashed_address, create_back_filled_diff.storage_key,
             create_back_filled_diff.storage_value, true)
     ON CONFLICT DO NOTHING;
+
     RETURN;
 END
 $$;
@@ -7472,16 +7493,20 @@ BEGIN
     IF matching_header_id != 0 THEN
         RETURN matching_header_id;
     END IF;
+
     IF nonmatching_header_id != 0 AND block_number <= max_block_number - 15 THEN
         RETURN nonmatching_header_id;
     END IF;
+
     IF nonmatching_header_id != 0 AND block_number > max_block_number - 15 THEN
         DELETE FROM public.headers WHERE id = nonmatching_header_id;
     END IF;
+
     INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id)
     VALUES (get_or_create_header.hash, get_or_create_header.block_number, get_or_create_header.raw,
             get_or_create_header.block_timestamp, get_or_create_header.eth_node_id)
     RETURNING id INTO inserted_header_id;
+
     RETURN inserted_header_id;
 END
 $$;
@@ -7501,6 +7526,7 @@ FROM public.transactions txs
 WHERE headers.block_number = block_height
   AND event_logs.id = log_id
 ORDER BY block_number DESC
+
 $$;
 
 
@@ -7516,6 +7542,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT art
 FROM maker.vat_ilk_art
          LEFT JOIN public.headers ON vat_ilk_art.header_id = headers.id
@@ -7545,6 +7572,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT chop
 FROM maker.cat_ilk_chop
          LEFT JOIN public.headers ON cat_ilk_chop.header_id = headers.id
@@ -7574,6 +7602,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT dunk
 FROM maker.cat_ilk_dunk
          LEFT JOIN public.headers ON cat_ilk_dunk.header_id = headers.id
@@ -7603,6 +7632,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT dust
 FROM maker.vat_ilk_dust
          LEFT JOIN public.headers ON vat_ilk_dust.header_id = headers.id
@@ -7632,6 +7662,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT duty
 FROM maker.jug_ilk_duty
          LEFT JOIN public.headers ON jug_ilk_duty.header_id = headers.id
@@ -7661,6 +7692,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT flip
 FROM maker.cat_ilk_flip
          LEFT JOIN public.headers ON cat_ilk_flip.header_id = headers.id
@@ -7690,6 +7722,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT line
 FROM maker.vat_ilk_line
          LEFT JOIN public.headers ON vat_ilk_line.header_id = headers.id
@@ -7719,6 +7752,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT lump
 FROM maker.cat_ilk_lump
          LEFT JOIN public.headers ON cat_ilk_lump.header_id = headers.id
@@ -7748,6 +7782,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT mat
 FROM maker.spot_ilk_mat
          LEFT JOIN public.headers ON spot_ilk_mat.header_id = headers.id
@@ -7777,6 +7812,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT pip
 FROM maker.spot_ilk_pip
          LEFT JOIN public.headers ON spot_ilk_pip.header_id = headers.id
@@ -7806,6 +7842,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT rate
 FROM maker.vat_ilk_rate
          LEFT JOIN public.headers ON vat_ilk_rate.header_id = headers.id
@@ -7830,11 +7867,13 @@ COMMENT ON FUNCTION public.ilk_rate_before_block(ilk_id integer, header_id integ
 CREATE FUNCTION public.ilk_rho_before_block(ilk_id integer, header_id integer) RETURNS numeric
     LANGUAGE sql
     AS $$
+
 WITH passed_block_number AS (
     SELECT block_number
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT rho
 FROM maker.jug_ilk_rho
          LEFT JOIN public.headers ON jug_ilk_rho.header_id = headers.id
@@ -7864,6 +7903,7 @@ WITH passed_block_number AS (
     FROM public.headers
     WHERE id = header_id
 )
+
 SELECT spot
 FROM maker.vat_ilk_spot
          LEFT JOIN public.headers ON vat_ilk_spot.header_id = headers.id

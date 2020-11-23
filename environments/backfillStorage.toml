@@ -2,14 +2,7 @@
     home     = "github.com/makerdao/vulcanizedb"
     name     = "transformerExporter"
     save     = true
-    transformerNames = ["flip_eth_b_v1_1_3"]
-
-[exporter.flip_eth_b_v1_1_3]
-    path = "transformers/storage/flip/initializers/eth_b/v1_1_3"
-    type = "eth_storage"
-    repository = "github.com/makerdao/vdb-mcd-transformers"
-    migrations = "db/migrations"
-    rank = "0"
+    transformerNames = []
 
 [contract]
     [contract.CDP_MANAGER]
