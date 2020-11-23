@@ -2,11 +2,13 @@
 
 ## Architecture
 
-Transformers fetch logs from Ethereum, convert/decode them into usable data, and then persist them in postgres. A transformer converts the raw chain data into a human friendly representation suitable for consumption in the API.
+Event Transformers fetch raw event log data from the `public.event_logs` table, decode them and convert them into more specific tables in the postgres database. For example the `vat_move` transformer takes a raw event log and transforms it into the `maker.vat_move` table with `src`, `dst` and `rad` as fields. These fields are now available in the API.
+
+For more detail see the doc at the bottom of the document. 
 
 ## Event Types
 
-For Maker there are three main types of log events that we're tracking:
+There are three types of log events we track.
   
 1. Custom events that are defined in the contract solidity code.
 1. `LogNote` events which utilize the [DSNote library](https://github.com/dapphub/ds-note).
@@ -29,28 +31,27 @@ If the contract isn't already present in the environment you'll need to add it b
     [contract]
     [contract.MCD_FLIP_ETH_A_1.0.0]
         address  = "0xd8a04f5412223f513dc55f839574430f5ec15531"
-        abi      = '[{"inputs":[{"internalType":"address","name":"vat_","type":"address"},{"internalType":"bytes32","name":"ilk_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lot","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bid","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tab","type":"uint256"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"address","name":"gal","type":"address"}],"name":"Kick","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"constant":true,"inputs":[],"name":"beg","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"bids","outputs":[{"internalType":"uint256","name":"bid","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint48","name":"tic","type":"uint48"},{"internalType":"uint48","name":"end","type":"uint48"},{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"deal","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"dent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"bytes32","name":"what","type":"bytes32"},{"internalType":"uint256","name":"data","type":"uint256"}],"name":"file","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ilk","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"address","name":"gal","type":"address"},{"internalType":"uint256","name":"tab","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"kick","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"kicks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"tau","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"lot","type":"uint256"},{"internalType":"uint256","name":"bid","type":"uint256"}],"name":"tend","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"tick","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ttl","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"vat","outputs":[{"internalType":"contract VatLike","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"yank","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+        abi      = '<huge blob of json>'
         deployed = 8928180
     ```
  
-     * The address field is the contract address you searched for, as a string.
+    * The address field is the contract you searched for, as a string.
     * The abi can be found on the `contracts` tab in Etherscan (scroll down). You'll need the entire thing as a string, so it's best to use single quotes like above.
     * The deployed field is the block number of the transaction where the contract was deployed. That can be found on the Contract's page, by looking for the Contract Creator and clicking it's transaction hash. That will take you to the transaction where the it was deployed on.
 
 ### Create the Transformer
-
+    
 To create a custom transformer you will need to create a new `Transformer`
 struct with a `ToModels` method on it which converts a `core.EventLog` object
 (the raw, untransformed data) to an `event.InsertionModel` (the domain object).
 
-Note that for this step you may _not_ need to create the database
-migration, because to write the transformer you don't need to save the transformed
+Much of the time it is possible to complete this step without creating the database
+migration, because to write the transformer you don't actually save the transformed
 object to the database. You may be saving addresses, which
 go into the already existing address table and are referenced by a foreign key. 
 
 This isn't always the case, but if you do need to create the
-migration, you'll know, because the tests won't pass. The directions here assume
-you do not, yet, as this is most likely.
+migration, you'll know, because the tests won't pass. 
 
 1. Search for the contract on etherscan using it's signature. 
 1. Find the events for the contract in the contract's source.
@@ -79,7 +80,7 @@ you do not, yet, as this is most likely.
            . "github.com/onsi/gomega"
        )
 
-       func TestLogMinSell(t *testing.T) {
+       func Test<EventName>(t *testing.T) {
            RegisterFailHandler(Fail)
            RunSpecs(t, "<PackageName>  Suite")
        }
@@ -154,11 +155,11 @@ configuration, and creating an initializer for the transformer.
 
     Simply replace the constants and package names with your transformer.
 
-1. Finally add your package to the list of transformerExporters in `plugins/execute/transformerExporter.go`. Again alphabetically. This can also be generated using the `./vulcanizedb compose --config=/path/to/config.toml` command.
+1. Generate a new version of the transformerExporter with `plugins/execute/transformerExporter.go`  using the `vulcanizedb` compose command like so: `./vulcanizedb compose --config=/path/to/config.toml`.
 
 ### Fetching Logs
 
-In the event there are not logs for an event you're looking to transform in etherscan (be it in Mainnet, Kovan or other) you can generate an example raw event by deploying the contract to a local chain and emitting the event manually.
+In the event there are not logs for an event you're looking to transform in Etherscan (be it in Mainnet, Kovan or other) you can generate an example raw event by deploying the contract to a local chain and emitting the event manually.
 
 1. Fetch the logs from the chain based on the example event's topic zero:
    * The topic zero is based on the keccak-256 hash of the log event's method signature. These are located in [`pkg/transformers/shared/constants/signature.go`](../shared/constants/signature.go). 
@@ -168,3 +169,9 @@ In the event there are not logs for an event you're looking to transform in ethe
 ## Useful Documents
 
 [Ethereum Event ABI Specification](https://solidity.readthedocs.io/en/develop/abi-spec.html#events)
+
+## Diagram
+
+This shows the entire process, from the perspective of the `execute` process. Writing transformers means writing code for the little loop near the end.
+
+![Transformer Sequence Diagram](./Transforming Events.svg)
