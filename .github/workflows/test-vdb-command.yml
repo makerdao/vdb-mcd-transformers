@@ -67,12 +67,12 @@ jobs:
       -
        name: Run the extract diffs container
        env:
-        CLIENT_IPCPATH: ${{ secrets.CLIENT_IPCPATH }}
+        CLIENT_WSSPATH: ${{ secrets.CLIENT_WSSPATH }}
         DATABASE_USER: ${{ secrets.DATABASE_USER }}
         DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         DATABASE_NAME: ${{ secrets.DATABASE_NAME }} 
        run: |
-         ./.github/workflows/check_vdb_command makerdao/extract_diffs:gh_actions_test_version --storagediffs_source geth --client_ipcpath $CLIENT_IPCPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
+         ./.github/workflows/check_vdb_command makerdao/extract_diffs:gh_actions_test_version --storagediffs_source geth --client_ipcpath $CLIENT_WSSPATH --database_user $DATABASE_USER --database_password $DATABASE_PASSWORD --database_name $DATABASE_NAME
 
     services:
       postgres:
