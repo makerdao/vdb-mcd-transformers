@@ -64,6 +64,20 @@
     "vow"
   ]
 
+  [exporter.bite]
+    contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0"]
+    migrations = "db/migrations"
+    path = "transformers/events/bite/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
+  [exporter.cat_file_flip]
+    contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0"]
+    migrations = "db/migrations"
+    path = "transformers/events/cat_file/flip/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
   [exporter.cat_v1_0_0]
     migrations = "db/migrations"
     path = "transformers/storage/cat/v1_0_0/initializer"
@@ -82,6 +96,13 @@
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
+  [exporter.deal]
+    contracts = ["MCD_FLAP_1_0_0", "MCD_FLAP_1_0_9", "MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_BAT_A_1_0_9", "MCD_FLIP_BAT_A_1_1_0", "MCD_FLIP_COMP_A_1_1_2", "MCD_FLIP_ETH_A_1_0_0", "MCD_FLIP_ETH_A_1_0_9", "MCD_FLIP_ETH_A_1_1_0", "MCD_FLIP_ETH_B_1_1_3", "MCD_FLIP_KNC_A_1_0_8", "MCD_FLIP_KNC_A_1_0_9", "MCD_FLIP_KNC_A_1_1_0", "MCD_FLIP_LINK_A_1_1_2", "MCD_FLIP_LRC_A_1_1_2", "MCD_FLIP_MANA_A_1_0_9", "MCD_FLIP_MANA_A_1_1_0", "MCD_FLIP_PAXUSD_A_1_1_1", "MCD_FLIP_SAI_1_0_0", "MCD_FLIP_TUSD_A_1_0_7", "MCD_FLIP_TUSD_A_1_0_9", "MCD_FLIP_TUSD_A_1_1_0", "MCD_FLIP_USDC_A_1_0_4", "MCD_FLIP_USDC_A_1_0_9", "MCD_FLIP_USDC_A_1_1_0", "MCD_FLIP_USDC_B_1_0_7", "MCD_FLIP_USDC_B_1_0_9", "MCD_FLIP_USDC_B_1_1_0", "MCD_FLIP_USDT_A_1_1_1", "MCD_FLIP_WBTC_A_1_0_6", "MCD_FLIP_WBTC_A_1_0_9", "MCD_FLIP_WBTC_A_1_1_0", "MCD_FLIP_ZRX_A_1_0_8", "MCD_FLIP_ZRX_A_1_0_9", "MCD_FLIP_ZRX_A_1_1_0", "MCD_FLOP_1_0_1", "MCD_FLOP_1_0_9", "MCD_FLIP_BAL_A_1_1_14", "MCD_FLIP_YFI_A_1_1_14"]
+    migrations = "db/migrations"
+    path = "transformers/events/deal/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
   [exporter.flap_v1_0_0]
     migrations = "db/migrations"
     path = "transformers/storage/flap/initializers/v1_0_0"
