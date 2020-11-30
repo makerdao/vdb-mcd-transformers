@@ -3,84 +3,6 @@
 package main
 
 import (
-	auction_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/auction_file/initializer"
-	deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/deny_initializer"
-	rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/auth/rely_initializer"
-	bite "github.com/makerdao/vdb-mcd-transformers/transformers/events/bite/initializer"
-	cat_claw "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_claw/initializer"
-	cat_file_box "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/box/initializer"
-	cat_file_chop_lump "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump/initializer"
-	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
-	cat_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow/initializer"
-	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
-	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
-	flap_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick/initializer"
-	flip_file_cat "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_file/cat/initializer"
-	flip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick/initializer"
-	flop_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flop_kick/initializer"
-	jug_drip "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_drip/initializer"
-	jug_file_base "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/base/initializer"
-	jug_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/ilk/initializer"
-	jug_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_file/vow/initializer"
-	jug_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/jug_init/initializer"
-	log_bump "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_bump/initializer"
-	log_buy_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_buy_enabled/initializer"
-	log_delete "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_delete/initializer"
-	log_insert "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_insert/initializer"
-	log_item_update "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_item_update/initializer"
-	log_kill "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_kill/initializer"
-	log_make "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_make/initializer"
-	log_matching_enabled "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_matching_enabled/initializer"
-	log_median_price "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_median_price/initializer"
-	log_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_min_sell/initializer"
-	log_sorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_sorted_offer/initializer"
-	log_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_take/initializer"
-	log_trade "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_trade/initializer"
-	log_unsorted_offer "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_unsorted_offer/initializer"
-	log_value "github.com/makerdao/vdb-mcd-transformers/transformers/events/log_value/initializer"
-	median_diss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/batch/initializer"
-	median_diss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_diss/single/initializer"
-	median_drop "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_drop/initializer"
-	median_kiss_batch "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_kiss/batch/initializer"
-	median_kiss_single "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_kiss/single/initializer"
-	median_lift "github.com/makerdao/vdb-mcd-transformers/transformers/events/median_lift/initializer"
-	new_cdp "github.com/makerdao/vdb-mcd-transformers/transformers/events/new_cdp/initializer"
-	osm_change "github.com/makerdao/vdb-mcd-transformers/transformers/events/osm_change/initializer"
-	pot_cage "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_cage/initializer"
-	pot_drip "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_drip/initializer"
-	pot_exit "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_exit/initializer"
-	pot_file_dsr "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/dsr/initializer"
-	pot_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_file/vow/initializer"
-	pot_join "github.com/makerdao/vdb-mcd-transformers/transformers/events/pot_join/initializer"
-	set_min_sell "github.com/makerdao/vdb-mcd-transformers/transformers/events/set_min_sell/initializer"
-	spot_file_mat "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/mat/initializer"
-	spot_file_par "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/par/initializer"
-	spot_file_pip "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_file/pip/initializer"
-	spot_poke "github.com/makerdao/vdb-mcd-transformers/transformers/events/spot_poke/initializer"
-	tend "github.com/makerdao/vdb-mcd-transformers/transformers/events/tend/initializer"
-	tick "github.com/makerdao/vdb-mcd-transformers/transformers/events/tick/initializer"
-	vat_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/deny_initializer"
-	vat_hope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/hope_initializer"
-	vat_nope "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/nope_initializer"
-	vat_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_auth/rely_initializer"
-	vat_file_debt_ceiling "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/debt_ceiling/initializer"
-	vat_file_ilk "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_file/ilk/initializer"
-	vat_flux "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_flux/initializer"
-	vat_fold "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fold/initializer"
-	vat_fork "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_fork/initializer"
-	vat_frob "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_frob/initializer"
-	vat_grab "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_grab/initializer"
-	vat_heal "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_heal/initializer"
-	vat_init "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_init/initializer"
-	vat_move "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_move/initializer"
-	vat_slip "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_slip/initializer"
-	vat_suck "github.com/makerdao/vdb-mcd-transformers/transformers/events/vat_suck/initializer"
-	vow_fess "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_fess/initializer"
-	vow_file_auction_address "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/auction_address/initializer"
-	vow_file "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_file/initializer"
-	vow_flog "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_flog/initializer"
-	vow_heal "github.com/makerdao/vdb-mcd-transformers/transformers/events/vow_heal/initializer"
-	yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/yank/initializer"
 	cat_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0/initializer"
 	cat_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_1_0/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
@@ -150,5 +72,67 @@ type exporter string
 var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
-	return []event.TransformerInitializer{log_make.EventTransformerInitializer, log_unsorted_offer.EventTransformerInitializer, vat_fork.EventTransformerInitializer, vat_nope.EventTransformerInitializer, cat_claw.EventTransformerInitializer, cat_file_flip.EventTransformerInitializer, new_cdp.EventTransformerInitializer, vat_fold.EventTransformerInitializer, vat_init.EventTransformerInitializer, vow_file_auction_address.EventTransformerInitializer, median_kiss_batch.EventTransformerInitializer, vat_grab.EventTransformerInitializer, median_kiss_single.EventTransformerInitializer, vat_flux.EventTransformerInitializer, deny.EventTransformerInitializer, pot_join.EventTransformerInitializer, log_insert.EventTransformerInitializer, jug_init.EventTransformerInitializer, vat_slip.EventTransformerInitializer, log_sorted_offer.EventTransformerInitializer, cat_file_chop_lump.EventTransformerInitializer, vat_move.EventTransformerInitializer, cat_file_box.EventTransformerInitializer, vat_suck.EventTransformerInitializer, log_trade.EventTransformerInitializer, jug_drip.EventTransformerInitializer, tick.EventTransformerInitializer, median_diss_single.EventTransformerInitializer, cat_file_vow.EventTransformerInitializer, auction_file.EventTransformerInitializer, vow_heal.EventTransformerInitializer, vow_file.EventTransformerInitializer, pot_cage.EventTransformerInitializer, log_kill.EventTransformerInitializer, jug_file_base.EventTransformerInitializer, spot_file_mat.EventTransformerInitializer, vat_heal.EventTransformerInitializer, log_value.EventTransformerInitializer, vat_frob.EventTransformerInitializer, log_buy_enabled.EventTransformerInitializer, log_matching_enabled.EventTransformerInitializer, tend.EventTransformerInitializer, vat_file_ilk.EventTransformerInitializer, spot_poke.EventTransformerInitializer, log_min_sell.EventTransformerInitializer, spot_file_par.EventTransformerInitializer, pot_drip.EventTransformerInitializer, vow_fess.EventTransformerInitializer, spot_file_pip.EventTransformerInitializer, log_median_price.EventTransformerInitializer, bite.EventTransformerInitializer, vat_deny.EventTransformerInitializer, deal.EventTransformerInitializer, vow_flog.EventTransformerInitializer, log_take.EventTransformerInitializer, median_drop.EventTransformerInitializer, pot_file_dsr.EventTransformerInitializer, osm_change.EventTransformerInitializer, set_min_sell.EventTransformerInitializer, flip_file_cat.EventTransformerInitializer, flip_kick.EventTransformerInitializer, rely.EventTransformerInitializer, pot_exit.EventTransformerInitializer, jug_file_ilk.EventTransformerInitializer, dent.EventTransformerInitializer, log_delete.EventTransformerInitializer, vat_hope.EventTransformerInitializer, vat_rely.EventTransformerInitializer, median_lift.EventTransformerInitializer, flop_kick.EventTransformerInitializer, median_diss_batch.EventTransformerInitializer, jug_file_vow.EventTransformerInitializer, log_item_update.EventTransformerInitializer, pot_file_vow.EventTransformerInitializer, flap_kick.EventTransformerInitializer, log_bump.EventTransformerInitializer, vat_file_debt_ceiling.EventTransformerInitializer, yank.EventTransformerInitializer}, []storage.TransformerInitializer{flip_bat_a_v1_1_0.StorageTransformerInitializer, flip_eth_a_v1_0_9.StorageTransformerInitializer, flip_eth_b_v1_1_3.StorageTransformerInitializer, flip_eth_a_v1_1_0.StorageTransformerInitializer, flip_paxusd_a_v1_1_1.StorageTransformerInitializer, flip_sai_v1_0_0.StorageTransformerInitializer, flip_bat_a_v1_0_0.StorageTransformerInitializer, flip_usdc_b_v1_1_0.StorageTransformerInitializer, flip_knc_a_v1_0_8.StorageTransformerInitializer, median_yfi_v1_1_14.StorageTransformerInitializer, median_bat_v1_0_0.StorageTransformerInitializer, flip_wbtc_a_v1_0_6.StorageTransformerInitializer, median_wbtc_v1_0_6.StorageTransformerInitializer, flip_usdc_a_v1_0_4.StorageTransformerInitializer, median_link_v1_1_2.StorageTransformerInitializer, median_knc_v1_0_8.StorageTransformerInitializer, flip_knc_a_v1_0_9.StorageTransformerInitializer, median_bal_v1_1_14.StorageTransformerInitializer, cdp_manager.StorageTransformerInitializer, spot.StorageTransformerInitializer, flip_wbtc_a_v1_1_0.StorageTransformerInitializer, jug.StorageTransformerInitializer, flip_usdc_a_v1_1_0.StorageTransformerInitializer, flip_eth_a_v1_0_0.StorageTransformerInitializer, flip_yfi_a_v1_1_14.StorageTransformerInitializer, flip_zrx_a_v1_0_9.StorageTransformerInitializer, vat.StorageTransformerInitializer, flip_usdc_a_v1_0_9.StorageTransformerInitializer, flip_comp_a_v1_1_2.StorageTransformerInitializer, flip_tusd_a_v1_1_0.StorageTransformerInitializer, flop_v1_0_9.StorageTransformerInitializer, flip_knc_a_v1_1_0.StorageTransformerInitializer, flip_zrx_a_v1_0_8.StorageTransformerInitializer, flip_bat_a_v1_0_9.StorageTransformerInitializer, flip_wbtc_a_v1_0_9.StorageTransformerInitializer, vow.StorageTransformerInitializer, cat_v1_1_0.StorageTransformerInitializer, flip_mana_a_v1_0_9.StorageTransformerInitializer, median_mana_v1_0_9.StorageTransformerInitializer, flip_link_a_v1_1_2.StorageTransformerInitializer, flip_tusd_a_v1_0_7.StorageTransformerInitializer, median_usdt_v1_0_4.StorageTransformerInitializer, flop_v1_0_1.StorageTransformerInitializer, median_lrc_v1_1_2.StorageTransformerInitializer, median_eth_v1_0_0.StorageTransformerInitializer, pot.StorageTransformerInitializer, flip_zrx_a_v1_1_0.StorageTransformerInitializer, median_comp_v1_1_2.StorageTransformerInitializer, flap_v1_0_0.StorageTransformerInitializer, flip_usdc_b_v1_0_9.StorageTransformerInitializer, flip_usdt_a_v1_1_1.StorageTransformerInitializer, flip_tusd_a_v1_0_9.StorageTransformerInitializer, flip_usdc_b_v1_0_7.StorageTransformerInitializer, flip_bal_a_v1_1_14.StorageTransformerInitializer, median_zrx_v1_0_8.StorageTransformerInitializer, flap_v1_0_9.StorageTransformerInitializer, cat_v1_0_0.StorageTransformerInitializer, flip_mana_a_v1_1_0.StorageTransformerInitializer, flip_lrc_a_v1_1_2.StorageTransformerInitializer}, []interface1.ContractTransformerInitializer{}
+	return []event.TransformerInitializer{},
+		[]storage.TransformerInitializer{
+			cat_v1_0_0.StorageTransformerInitializer,
+			cat_v1_1_0.StorageTransformerInitializer,
+			cdp_manager.StorageTransformerInitializer,
+			flap_v1_0_0.StorageTransformerInitializer,
+			flap_v1_0_9.StorageTransformerInitializer,
+			flip_bal_a_v1_1_14.StorageTransformerInitializer,
+			flip_bat_a_v1_0_0.StorageTransformerInitializer,
+			flip_bat_a_v1_0_9.StorageTransformerInitializer,
+			flip_bat_a_v1_1_0.StorageTransformerInitializer,
+			flip_comp_a_v1_1_2.StorageTransformerInitializer,
+			flip_eth_a_v1_0_0.StorageTransformerInitializer,
+			flip_eth_a_v1_0_9.StorageTransformerInitializer,
+			flip_eth_a_v1_1_0.StorageTransformerInitializer,
+			flip_eth_b_v1_1_3.StorageTransformerInitializer,
+			flip_knc_a_v1_0_8.StorageTransformerInitializer,
+			flip_knc_a_v1_0_9.StorageTransformerInitializer,
+			flip_knc_a_v1_1_0.StorageTransformerInitializer,
+			flip_link_a_v1_1_2.StorageTransformerInitializer,
+			flip_lrc_a_v1_1_2.StorageTransformerInitializer,
+			flip_mana_a_v1_0_9.StorageTransformerInitializer,
+			flip_mana_a_v1_1_0.StorageTransformerInitializer,
+			flip_paxusd_a_v1_1_1.StorageTransformerInitializer,
+			flip_sai_v1_0_0.StorageTransformerInitializer,
+			flip_tusd_a_v1_0_7.StorageTransformerInitializer,
+			flip_tusd_a_v1_0_9.StorageTransformerInitializer,
+			flip_tusd_a_v1_1_0.StorageTransformerInitializer,
+			flip_usdc_a_v1_0_4.StorageTransformerInitializer,
+			flip_usdc_a_v1_0_9.StorageTransformerInitializer,
+			flip_usdc_a_v1_1_0.StorageTransformerInitializer,
+			flip_usdc_b_v1_0_7.StorageTransformerInitializer,
+			flip_usdc_b_v1_0_9.StorageTransformerInitializer,
+			flip_usdc_b_v1_1_0.StorageTransformerInitializer,
+			flip_usdt_a_v1_1_1.StorageTransformerInitializer,
+			flip_wbtc_a_v1_0_6.StorageTransformerInitializer,
+			flip_wbtc_a_v1_0_9.StorageTransformerInitializer,
+			flip_wbtc_a_v1_1_0.StorageTransformerInitializer,
+			flip_yfi_a_v1_1_14.StorageTransformerInitializer,
+			flip_zrx_a_v1_0_8.StorageTransformerInitializer,
+			flip_zrx_a_v1_0_9.StorageTransformerInitializer,
+			flip_zrx_a_v1_1_0.StorageTransformerInitializer,
+			flop_v1_0_1.StorageTransformerInitializer,
+			flop_v1_0_9.StorageTransformerInitializer,
+			jug.StorageTransformerInitializer,
+			median_bal_v1_1_14.StorageTransformerInitializer,
+			median_bat_v1_0_0.StorageTransformerInitializer,
+			median_comp_v1_1_2.StorageTransformerInitializer,
+			median_eth_v1_0_0.StorageTransformerInitializer,
+			median_knc_v1_0_8.StorageTransformerInitializer,
+			median_link_v1_1_2.StorageTransformerInitializer,
+			median_lrc_v1_1_2.StorageTransformerInitializer,
+			median_mana_v1_0_9.StorageTransformerInitializer,
+			median_usdt_v1_0_4.StorageTransformerInitializer,
+			median_wbtc_v1_0_6.StorageTransformerInitializer,
+			median_yfi_v1_1_14.StorageTransformerInitializer,
+			median_zrx_v1_0_8.StorageTransformerInitializer,
+			pot.StorageTransformerInitializer,
+			spot.StorageTransformerInitializer,
+			vat.StorageTransformerInitializer,
+			vow.StorageTransformerInitializer,
+		},
+		[]interface1.ContractTransformerInitializer{}
 }

@@ -1,12 +1,7 @@
 #!/bin/sh
 source run_migrations.sh
 
-DIFF_STARTING_BLOCK="-1"
-
-if test -n "$DIFF_BLOCK_FROM_HEAD_OF_CHAIN"; then
-    DIFF_STARTING_BLOCK=$DIFF_BLOCK_FROM_HEAD_OF_CHAIN
-fi
-
-echo "Starting transformer execution from $DIFF_STARTING_BLOCK blocks back"
+echo "Starting transformer execution from 200000 blocks back"
 # Fire up execute
-./vulcanizedb execute --config config.toml -d $DIFF_STARTING_BLOCK
+# rescanning diffs in last 200,000 to cover missed diffs between blocks 11234894 and 11315955
+./vulcanizedb execute --config config.toml -d 200000
