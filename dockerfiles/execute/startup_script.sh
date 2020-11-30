@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source run_migrations.sh
 
 echo "Starting transformer execution from 200000 blocks back"
