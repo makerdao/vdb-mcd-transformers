@@ -34,6 +34,13 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510870), test_data.FlapV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip BAL v1.1.14 rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
+		relyIntegrationTest(int64(11198257), test_data.FlipBalAV1114Address(), msgSenderAddress,
+			usrAddress)
+	})
+
 	Context("Flip BAT v1.0.0 rely events", func() {
 		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
@@ -160,6 +167,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510885), test_data.FlipWbtcAV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip YFI v1.1.14 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0fab05039809e63c5d068c897c3e602fa97457"
+		relyIntegrationTest(int64(11198283), test_data.FlipYfiAV1114Address(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip ZRX-A v1.0.8 rely events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
@@ -188,6 +201,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xbaa65281c2fa2baacb2cb550ba051525a480d3f4"
 		msgSenderAddress := "0x45f0a929889ec8cc2d5b8cd79ab55e3279945cde"
 		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Median BAL rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(11199049), test_data.MedianBalAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Median BAT rely events", func() {
@@ -244,10 +263,22 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8956963), test_data.MedianWbtcAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median YFI rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(11199055), test_data.MedianYfiAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median ZRX rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		relyIntegrationTest(int64(10323394), test_data.MedianZrxAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM BAL rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225d1f3ea4385627efdc5b4709cab4a21c"
+		relyIntegrationTest(int64(11198841), test_data.OsmBalAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM BAT rely events", func() {
@@ -302,6 +333,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		relyIntegrationTest(int64(9975536), test_data.OsmWbtcAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM YFI rely events", func() {
+		usrAddress := "0xbe8e3e3618f7474f8cb1d074a26affef007e98fb"
+		msgSenderAddress := "0x0048d6225d1f3ea4385627efdc5b4709cab4a21c"
+		relyIntegrationTest(int64(11199166), test_data.OsmYfiAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM ZRX rely events", func() {

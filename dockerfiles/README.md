@@ -64,6 +64,18 @@ For execution on linux, replace instances of `host.docker.internal` with `localh
           --statediff.watchedaddresses <contract address>
     ```
   
+## extractDiffs
+Dockerfile for populating storage diffs in db to be transformed by execute.
+
+### Build
+`docker build -f dockerfiles/extract_diffs/Dockerfile . -t extract_diffs:latest`
+
+## Run
+Against statediffing Geth pubsub:
+```
+docker run -e DATABASE_USER=user -e DATABASE_PASSWORD=password -e DATABASE_HOSTNAME=host -e DATABASE_PORT=port -e DATABASE_NAME=name -e CLIENT_IPCPATH=path -e STORAGEDIFFS_SOURCE=geth -it extract_diffs:latest
+```
+
 ## backfillEvents
 Dockerfile for getting events from previously checked headers when adding a new event transformer.
 

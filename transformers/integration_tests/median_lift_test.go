@@ -20,7 +20,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 	medianLiftConfig := event.TransformerConfig{
 		TransformerName:   constants.MedianLiftTable,
 		ContractAddresses: test_data.MedianAddresses(),
-		ContractAbi:       constants.MedianABI(),
+		ContractAbi:       constants.MedianV100ABI(),
 		Topic:             constants.MedianLiftSignature(),
 	}
 
@@ -34,7 +34,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		medianEthAddress := constants.GetContractAddress("MEDIAN_ETH")
+		medianEthAddress := test_data.MedianEthAddress()
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(medianEthAddress)},
@@ -90,7 +90,7 @@ var _ = Describe("MedianLift EventTransformer", func() {
 		header, headerErr := persistHeader(db, blockNumber, blockChain)
 		Expect(headerErr).NotTo(HaveOccurred())
 
-		medianWbtcAddress := constants.GetContractAddress("MEDIAN_WBTC")
+		medianWbtcAddress := test_data.MedianWbtcAddress()
 		logFetcher := fetcher.NewLogFetcher(blockChain)
 		logs, logErr := logFetcher.FetchLogs(
 			[]common.Address{common.HexToAddress(medianWbtcAddress)},

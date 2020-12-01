@@ -16,6 +16,10 @@
 
 package constants
 
+import (
+	"fmt"
+)
+
 // TODO Figure out signatures automatically from config somehow :(
 func Cat100ABI() string     { return getContractABI("MCD_CAT_1_0_0") }
 func Cat110ABI() string     { return getContractABI("MCD_CAT_1_1_0") }
@@ -50,6 +54,7 @@ func FlipV100ABI() string {
 }
 func FlipV110ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLIP_BAL_A_1_1_14",
 		"MCD_FLIP_BAT_A_1_1_0",
 		"MCD_FLIP_COMP_A_1_1_2",
 		"MCD_FLIP_ETH_A_1_1_0",
@@ -64,6 +69,7 @@ func FlipV110ABI() string {
 		"MCD_FLIP_USDC_B_1_1_0",
 		"MCD_FLIP_USDT_A_1_1_1",
 		"MCD_FLIP_WBTC_A_1_1_0",
+		"MCD_FLIP_YFI_A_1_1_14",
 		"MCD_FLIP_ZRX_A_1_1_0",
 	})
 }
@@ -73,26 +79,38 @@ func FlopABI() string {
 		"MCD_FLOP_1_0_9",
 	})
 }
+
 func JugABI() string { return getContractABI("MCD_JUG") }
-func MedianABI() string {
+
+func MedianV100ABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
-		"MEDIAN_BAT",
-		"MEDIAN_COMP",
-		"MEDIAN_ETH",
-		"MEDIAN_KNC",
-		"MEDIAN_LINK",
-		"MEDIAN_LRC",
-		"MEDIAN_MANA",
-		"MEDIAN_USDT",
-		"MEDIAN_WBTC",
-		"MEDIAN_ZRX",
+		"MEDIAN_BAT_1_0_0",
+		"MEDIAN_COMP_1_1_2",
+		"MEDIAN_ETH_1_0_0",
+		"MEDIAN_KNC_1_0_8",
+		"MEDIAN_LINK_1_1_2",
+		"MEDIAN_LRC_1_1_2",
+		"MEDIAN_MANA_1_0_9",
+		"MEDIAN_USDT_1_0_4",
+		"MEDIAN_WBTC_1_0_6",
+		"MEDIAN_ZRX_1_0_8",
 	})
 }
+
 func OasisABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{"OASIS_MATCHING_MARKET_ONE", "OASIS_MATCHING_MARKET_TWO"})
 }
+
+func MedianV114ABI() string {
+	return GetABIFromContractsWithMatchingABI([]string{
+		"MEDIAN_BAL_1_1_14",
+		"MEDIAN_YFI_1_1_14",
+	})
+}
+
 func OsmABI() string {
 	return GetABIFromContractsWithMatchingABI([]string{
+		"OSM_BAL",
 		"OSM_BAT",
 		"OSM_COMP",
 		"OSM_ETH",
@@ -102,6 +120,7 @@ func OsmABI() string {
 		"OSM_MANA",
 		"OSM_USDT",
 		"OSM_WBTC",
+		"OSM_YFI",
 		"OSM_ZRX",
 	})
 }
@@ -155,7 +174,26 @@ func logMakeEvent() string       { return getSolidityFunctionSignature(OasisABI(
 func logMatchingEnabledEvent() string {
 	return getSolidityFunctionSignature(OasisABI(), "LogMatchingEnabled")
 }
-func logMedianPriceEvent() string  { return getSolidityFunctionSignature(MedianABI(), "LogMedianPrice") }
+
+func getMedianFunctionSignature(name string) string {
+	signature := getSolidityFunctionSignature(MedianV114ABI(), name)
+	if oldSignature := getSolidityFunctionSignature(MedianV100ABI(), name); signature != oldSignature {
+		panic(fmt.Sprintf("ABI Function signature has changed! was %s but is now %s", oldSignature, signature))
+	}
+	return signature
+}
+
+func getOverloadedMedianFunctionSignature(name string, paramTypes []string) string {
+	signature := getOverloadedFunctionSignature(MedianV114ABI(), name, paramTypes)
+	if oldSignature := getOverloadedFunctionSignature(MedianV100ABI(), name, paramTypes); signature != oldSignature {
+		panic(fmt.Sprintf("ABI Function signature has changed! was %s but is now %s", oldSignature, signature))
+	}
+	return signature
+}
+
+func logMedianPriceEvent() string {
+	return getMedianFunctionSignature("LogMedianPrice")
+}
 func logMinSellEvent() string      { return getSolidityFunctionSignature(OasisABI(), "LogMinSell") }
 func logSortedOfferMethod() string { return getSolidityFunctionSignature(OasisABI(), "LogSortedOffer") }
 func logTakeEvent() string         { return getSolidityFunctionSignature(OasisABI(), "LogTake") }
@@ -166,22 +204,22 @@ func logUnsortedOfferMethod() string {
 func logValueMethod() string { return getSolidityFunctionSignature(OsmABI(), "LogValue") }
 
 func medianDissBatchMethod() string {
-	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address[]"})
+	return getOverloadedMedianFunctionSignature("diss", []string{"address[]"})
 }
 func medianDissSingleMethod() string {
-	return getOverloadedFunctionSignature(MedianABI(), "diss", []string{"address"})
+	return getOverloadedMedianFunctionSignature("diss", []string{"address"})
 }
 func medianDropMethod() string {
-	return getSolidityFunctionSignature(MedianABI(), "drop")
+	return getMedianFunctionSignature("drop")
 }
 func medianLiftMethod() string {
-	return getSolidityFunctionSignature(MedianABI(), "lift")
+	return getMedianFunctionSignature("lift")
 }
 func medianKissBatchMethod() string {
-	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address[]"})
+	return getOverloadedMedianFunctionSignature("kiss", []string{"address[]"})
 }
 func medianKissSingleMethod() string {
-	return getOverloadedFunctionSignature(MedianABI(), "kiss", []string{"address"})
+	return getOverloadedMedianFunctionSignature("kiss", []string{"address"})
 }
 func newCdpMethod() string    { return getSolidityFunctionSignature(CdpManagerABI(), "NewCdp") }
 func osmChangeMethod() string { return getSolidityFunctionSignature(OsmABI(), "change") }
