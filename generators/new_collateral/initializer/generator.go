@@ -34,12 +34,12 @@ func (g *Generator) GenerateFlipInitializer() error {
 	path := g.GetAbsoluteFlipStorageInitializersDirectoryPath()
 	mkDirErr := os.MkdirAll(path, os.ModePerm)
 	if mkDirErr != nil {
-		return mkDirErr
+		return fmt.Errorf("error creating flip intializer directory: %w", mkDirErr)
 	}
 
 	writeFileErr := initializer.Save(g.GetAbsoluteFlipStorageInitializerFilePath())
 	if writeFileErr != nil {
-		return writeFileErr
+		return fmt.Errorf("error writing flip initializer file: %w", writeFileErr)
 	}
 
 	return nil
@@ -52,12 +52,12 @@ func (g Generator) GenerateMedianInitializer() error {
 		path := g.GetAbsoluteMedianStorageInitializersDirectoryPath()
 		mkDirErr := os.MkdirAll(path, os.ModePerm)
 		if mkDirErr != nil {
-			return mkDirErr
+			return fmt.Errorf("error creating median intializer directory: %w", mkDirErr)
 		}
 
 		writeFileErr := initializer.Save(g.GetAbsoluteMedianStorageInitializerFilePath())
 		if writeFileErr != nil {
-			return writeFileErr
+			return fmt.Errorf("error writing median initializer file: %w", writeFileErr)
 		}
 	}
 	return nil

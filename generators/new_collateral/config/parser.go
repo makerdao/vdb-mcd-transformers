@@ -20,22 +20,28 @@ func NewParser() parser {
 	return parser{}
 }
 
+var (
+	ErrorDecodingConfigFile = errors.New("error decoding config file")
+	ErrorParsingExporterMetadata = errors.New("error parsing exporter metadata from config file")
+    ErrorParsingTransformerExporters = errors.New("error parsing transformer exporters from config file")
+)
+
 func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
 	var tomlConfig types.TransformersConfigForToml
 	fullConfigFilePath := helpers.GetFullConfigFilePath(configFilePath, configFileName)
 	_, decodeErr := toml.DecodeFile(fullConfigFilePath, &tomlConfig)
 	if decodeErr != nil {
-		return types.TransformersConfig{}, decodeErr
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorDecodingConfigFile, decodeErr)
 	}
 
-	metadata, metadataErr := ParseExporterMetaData(tomlConfig)
+	metadata, metadataErr := parseExporterMetaData(tomlConfig)
 	if metadataErr != nil {
-		return types.TransformersConfig{}, metadataErr
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorParsingExporterMetadata, metadataErr.Error())
 	}
 
-	transformerExporters, transformerExportersErr := ParseTransformerExporters(tomlConfig)
+	transformerExporters, transformerExportersErr := parseTransformerExporters(tomlConfig)
 	if transformerExportersErr != nil {
-		return types.TransformersConfig{}, transformerExportersErr
+		return types.TransformersConfig{}, fmt.Errorf("%w: %s", ErrorParsingTransformerExporters, transformerExportersErr)
 	}
 
 	return types.TransformersConfig{
@@ -45,23 +51,22 @@ func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.T
 	}, nil
 }
 
-// ParseExporterMetaData is exported for testing
-func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.ExporterMetaData, error) {
+func parseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.ExporterMetaData, error) {
 	home, homeOk := tomlConfig.Exporter["home"].(string)
 	name, nameOk := tomlConfig.Exporter["name"].(string)
 	save, saveOk := tomlConfig.Exporter["save"].(bool)
 	schema, schemaOk := tomlConfig.Exporter["schema"].(string)
 	if !homeOk || !nameOk || !saveOk || !schemaOk {
-		return types.ExporterMetaData{}, errors.New(fmt.Sprintf(
+		return types.ExporterMetaData{}, fmt.Errorf(
 			"error asserting exporterMetadata types - homeOk: %t, nameOk: %t, saveOk: %t, schemaOk: %t",
 			homeOk, nameOk, saveOk, schemaOk,
-		))
+		)
 	}
 
 	var transformerNames []string
 	decodeErr := mapstructure.Decode(tomlConfig.Exporter["transformerNames"], &transformerNames)
 	if decodeErr != nil {
-		return types.ExporterMetaData{}, decodeErr
+		return types.ExporterMetaData{}, fmt.Errorf("error decoding transformerNames: %w", decodeErr)
 	}
 
 	return types.ExporterMetaData{
@@ -73,8 +78,7 @@ func ParseExporterMetaData(tomlConfig types.TransformersConfigForToml) (types.Ex
 	}, nil
 }
 
-// ParseTransformerExporters is exported for testing
-func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
+func parseTransformerExporters(tomlConfig types.TransformersConfigForToml) (types.TransformerExporters, error) {
 	var exporters = make(map[string]types.TransformerExporter)
 	for exporterKey, exporterValue := range tomlConfig.Exporter {
 		if keyIsForMetadata(exporterKey) {
@@ -83,7 +87,7 @@ func ParseTransformerExporters(tomlConfig types.TransformersConfigForToml) (type
 			var result types.TransformerExporter
 			decodeErr := mapstructure.Decode(exporterValue, &result)
 			if decodeErr != nil {
-				return types.TransformerExporters{}, decodeErr
+				return types.TransformerExporters{}, fmt.Errorf("error decoding transformerExporters: %w", decodeErr)
 			}
 
 			exporters[exporterKey] = result
