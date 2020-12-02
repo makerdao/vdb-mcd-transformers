@@ -174,4 +174,4 @@ In the event there are not logs for an event you're looking to transform in Ethe
 
 This shows the entire process, from the perspective of the `execute` process. Writing transformers means writing code for the little loop near the end.
 
-![Transformer Sequence Diagram](./Transforming Events.svg)
+![Transformer Sequence Diagram](./Transforming_Events.svg)
