@@ -21,7 +21,7 @@ DECLARE
     r api.time_frob_total%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
-    
+
     FOR r IN 
         SELECT TO_TIMESTAMP(EXTRACT(EPOCH FROM range_start) + ROUND((headers.block_timestamp - EXTRACT(EPOCH FROM range_start)) / EXTRACT(EPOCH FROM bucket_interval)) * EXTRACT(EPOCH FROM bucket_interval)) AS bucket_start,
             TO_TIMESTAMP(EXTRACT(EPOCH FROM range_start) + ROUND((headers.block_timestamp - EXTRACT(EPOCH FROM range_start)) / EXTRACT(EPOCH FROM bucket_interval)) * EXTRACT(EPOCH FROM bucket_interval)) + bucket_interval AS bucket_end,
