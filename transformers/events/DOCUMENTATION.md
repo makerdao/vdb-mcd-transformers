@@ -4,7 +4,7 @@
 
 Event Transformers fetch raw event log data from the `public.event_logs` table, decode them and convert them into more specific tables in the postgres database. For example the `vat_move` transformer takes a raw event log and transforms it into the `maker.vat_move` table with `src`, `dst` and `rad` as fields. These fields are now available in the API.
 
-For more detail see the doc at the bottom of the document. 
+For more detail see the image at the bottom of the document. 
 
 ## Event Types
 
@@ -45,9 +45,9 @@ To create a custom transformer you will need to create a new `Transformer`
 struct with a `ToModels` method on it which converts a `core.EventLog` object
 (the raw, untransformed data) to an `event.InsertionModel` (the domain object).
 
-Much of the time it is possible to complete this step without creating the database
-migration, because to write the transformer you don't actually save the transformed
-object to the database. You may be saving addresses, which
+Note that for this step you may _not_ need to create the database
+migration yet, because to write the transformer you don't need to save the transformed
+object to the database. That happens later in the process. You may be saving addresses, which
 go into the already existing address table and are referenced by a foreign key. 
 
 This isn't always the case, but if you do need to create the
