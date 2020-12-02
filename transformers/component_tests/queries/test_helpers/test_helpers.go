@@ -255,6 +255,19 @@ func BucketedIlkSnapshotFromValues(ilk, updated, created, interval string, bucke
 	}
 }
 
+type BucketedFrobTotals struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	Count          string
+	Dink           string
+	Dart           string
+	Lock           string
+	Free           string
+	Draw           string
+	Wipe           string
+}
+
 func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }
