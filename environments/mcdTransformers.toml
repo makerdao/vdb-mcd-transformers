@@ -402,14 +402,14 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.log_median_price]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/log_median_price/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.log_value]
-    contracts = ["OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX", "OSM_BAL", "OSM_YFI"]
+    contracts = ["OSM_BAL", "OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_YFI", "OSM_ZRX"]
     migrations = "db/migrations"
     path = "transformers/events/log_value/initializer"
     rank = "0"
@@ -434,21 +434,21 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_diss_batch]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_diss/batch/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_diss_single]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_diss/single/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_drop]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_drop/initializer"
     rank = "0"
@@ -461,14 +461,14 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_kiss_batch]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_kiss/batch/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.median_kiss_single]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_kiss/single/initializer"
     rank = "0"
@@ -481,7 +481,7 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.median_lift]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_ZRX_1_0_8", "MEDIAN_BAL_1_1_14", "MEDIAN_YFI_1_1_14"]
+    contracts = ["MEDIAN_BAL_1_1_14", "MEDIAN_BAT_1_0_0", "MEDIAN_COMP_1_1_2", "MEDIAN_ETH_1_0_0", "MEDIAN_KNC_1_0_8", "MEDIAN_LINK_1_1_2", "MEDIAN_LRC_1_1_2", "MEDIAN_MANA_1_0_9", "MEDIAN_USDT_1_0_4", "MEDIAN_WBTC_1_0_6", "MEDIAN_YFI_1_1_14", "MEDIAN_ZRX_1_0_8"]
     migrations = "db/migrations"
     path = "transformers/events/median_lift/initializer"
     rank = "0"
@@ -537,7 +537,7 @@
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.osm_change]
-    contracts = ["OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_ZRX", "OSM_BAL", "OSM_YFI"]
+    contracts = ["OSM_BAL", "OSM_BAT", "OSM_COMP", "OSM_ETH", "OSM_KNC", "OSM_LINK", "OSM_LRC", "OSM_MANA", "OSM_USDT", "OSM_WBTC", "OSM_YFI", "OSM_ZRX"]
     migrations = "db/migrations"
     path = "transformers/events/osm_change/initializer"
     rank = "0"

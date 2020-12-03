@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO: add ending block number once execute is live with new event transformers
 if test -z "$ENDING_BLOCK_NUMBER"
 then
     echo ENDING_BLOCK_NUMBER is required and no value was given
