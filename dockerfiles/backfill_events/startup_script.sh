@@ -1,4 +1,4 @@
 #!/bin/sh
-echo "Starting event backfill to block 11108609"
+echo "Starting event backfill to block 11376200"
 # Fire up execute
-./vulcanizedb backfillEvents --config config.toml -e 11108609 # TODO: update before next run
+./vulcanizedb backfillEvents --config config.toml -e 11376200 # TODO: update before next run
