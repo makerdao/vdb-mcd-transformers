@@ -18,7 +18,7 @@ $$
 DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
-    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
     
     FOR r IN 
         WITH buckets AS (
@@ -72,7 +72,7 @@ $$
 DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
-    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
     
     FOR r IN 
         WITH buckets AS (
@@ -131,7 +131,7 @@ $$
 DECLARE
     r api.time_bid_total%rowtype;
 BEGIN
-    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
     
     FOR r IN 
         WITH buckets AS (
@@ -201,7 +201,7 @@ $$
 DECLARE
     r api.time_bite_total%rowtype;
 BEGIN
-    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
     
     FOR r IN 
         WITH buckets AS (
