@@ -339,6 +339,52 @@ CREATE TYPE api.time_ilk_snapshot AS (
 
 
 --
+-- Name: time_frob_total; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_frob_total AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	count bigint,
+	dink numeric,
+	dart numeric,
+	lock numeric,
+	free numeric,
+	draw numeric,
+	wipe numeric
+);
+
+
+--
+-- Name: time_ilk_snapshot; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_ilk_snapshot AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	ilk_identifier text,
+	block_number bigint,
+	rate numeric,
+	art numeric,
+	spot numeric,
+	line numeric,
+	dust numeric,
+	chop numeric,
+	lump numeric,
+	dunk numeric,
+	flip text,
+	rho numeric,
+	duty numeric,
+	pip text,
+	mat numeric,
+	created timestamp without time zone,
+	updated timestamp without time zone
+);
+
+
+--
 -- Name: tx; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -2032,6 +2078,101 @@ DECLARE
     r api.time_ilk_snapshot%rowtype;
 BEGIN
     ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 100, 'Please limit requests to at most 100 buckets.';
+    
+    FOR r IN 
+        WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start)
+        SELECT buckets.bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval,
+            time_ilk_snapshots.ilk_identifier,
+            block_number,
+            rate,
+            art,
+            spot,
+            line,
+            dust,
+            chop,
+            lump,
+            dunk,
+            flip,
+            rho,
+            duty,
+            pip,
+            mat,
+            created,
+            updated
+        FROM buckets
+            LEFT JOIN api.ilk_snapshot ON
+            (
+                ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND
+                block_number = (
+                    SELECT block_number
+                    FROM api.ilk_snapshot
+                    WHERE ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND updated < buckets.bucket_start + bucket_interval
+                    ORDER BY updated DESC
+                    LIMIT 1
+                )
+            )
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_frob_totals(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_frob_totals(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_frob_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_frob_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+
+    FOR r IN 
+        SELECT TO_TIMESTAMP(EXTRACT(EPOCH FROM range_start) + ROUND((headers.block_timestamp - EXTRACT(EPOCH FROM range_start)) / EXTRACT(EPOCH FROM bucket_interval)) * EXTRACT(EPOCH FROM bucket_interval)) AS bucket_start,
+            TO_TIMESTAMP(EXTRACT(EPOCH FROM range_start) + ROUND((headers.block_timestamp - EXTRACT(EPOCH FROM range_start)) / EXTRACT(EPOCH FROM bucket_interval)) * EXTRACT(EPOCH FROM bucket_interval)) + bucket_interval AS bucket_end,
+            bucket_interval,
+            COUNT(dink) AS count,
+            COALESCE(SUM(dink), 0) AS dink,
+            COALESCE(SUM(dart), 0) AS dart,
+            COALESCE(SUM(GREATEST(dink, 0)), 0) AS lock,
+            COALESCE(SUM(GREATEST(-dink, 0)), 0) AS free,
+            COALESCE(SUM(GREATEST(dart, 0)), 0) AS draw,
+            COALESCE(SUM(GREATEST(-dart, 0)), 0) AS wipe
+        FROM maker.vat_frob
+            LEFT JOIN public.headers ON (vat_frob.header_id = headers.id)
+            LEFT JOIN maker.urns ON (urns.id = urn_id)
+            LEFT JOIN maker.ilks ON (ilks.id = ilk_id)
+            WHERE ilks.identifier = time_frob_totals.ilk_identifier AND
+                headers.block_timestamp >= EXTRACT(EPOCH FROM range_start) and
+                headers.block_timestamp < EXTRACT(EPOCH FROM range_end)
+        GROUP BY bucket_start
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_ilk_snapshots(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_ilk_snapshots(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_ilk_snapshot
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_ilk_snapshot%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
     
     FOR r IN 
         WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start)
@@ -19149,6 +19290,13 @@ ALTER TABLE ONLY public.watched_logs
 --
 
 CREATE INDEX ilk_snapshot_updated_idx ON api.ilk_snapshot USING btree (updated);
+
+
+--
+-- Name: ilk_snapshot_ilk_identifier_updated_idx; Type: INDEX; Schema: api; Owner: -
+--
+
+CREATE INDEX ilk_snapshot_ilk_identifier_updated_idx ON api.ilk_snapshot USING btree (ilk_identifier, updated);
 
 
 --
