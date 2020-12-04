@@ -1473,12 +1473,12 @@ CREATE FUNCTION api.get_urns_by_ilk(ilk_identifier text, block_height bigint DEF
     AS $$
 SELECT *
 FROM (SELECT DISTINCT ON (urn_identifier, urn_snapshot.ilk_identifier) urn_identifier,
-                                                          urn_snapshot.ilk_identifier,
-                                                          urn_snapshot.block_height,
-                                                          ink,
-                                                          coalesce(art, 0),
-                                                          created,
-                                                          updated
+                                                                       urn_snapshot.ilk_identifier,
+                                                                       urn_snapshot.block_height,
+                                                                       ink,
+                                                                       coalesce(art, 0),
+                                                                       created,
+                                                                       updated
       FROM api.urn_snapshot
       WHERE urn_snapshot.block_height <= get_urns_by_ilk.block_height
         AND urn_snapshot.ilk_identifier = get_urns_by_ilk.ilk_identifier

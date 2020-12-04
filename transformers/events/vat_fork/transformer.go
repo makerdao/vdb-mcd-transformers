@@ -46,6 +46,15 @@ func (Transformer) ToModels(_ string, logs []core.EventLog, db *postgres.DB) ([]
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
+		_, srcUrnIDErr := mcdShared.GetOrCreateUrn(src, ilk, db)
+		if srcUrnIDErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(srcUrnIDErr)
+		}
+		_, dstUrnIDErr := mcdShared.GetOrCreateUrn(dst, ilk, db)
+		if dstUrnIDErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(dstUrnIDErr)
+		}
+
 		dinkBytes, dinkErr := mcdShared.GetLogNoteArgumentAtIndex(3, log.Log.Data)
 		if dinkErr != nil {
 			return nil, dinkErr

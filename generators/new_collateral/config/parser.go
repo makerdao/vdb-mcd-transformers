@@ -21,9 +21,9 @@ func NewParser() parser {
 }
 
 var (
-	ErrorDecodingConfigFile = errors.New("error decoding config file")
-	ErrorParsingExporterMetadata = errors.New("error parsing exporter metadata from config file")
-    ErrorParsingTransformerExporters = errors.New("error parsing transformer exporters from config file")
+	ErrorDecodingConfigFile          = errors.New("error decoding config file")
+	ErrorParsingExporterMetadata     = errors.New("error parsing exporter metadata from config file")
+	ErrorParsingTransformerExporters = errors.New("error parsing transformer exporters from config file")
 )
 
 func (parser) ParseCurrentConfig(configFilePath, configFileName string) (types.TransformersConfig, error) {
