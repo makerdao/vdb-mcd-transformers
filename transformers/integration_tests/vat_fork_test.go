@@ -30,24 +30,27 @@ import (
 )
 
 var _ = Describe("Vat fork transformer", func() {
+	var (
+		ilkID         int64
+		src           = "0x7939E55BE6A8CB8fceE57F409543E25489C06aaC"
+		dst           = "0xd175Dfd88939eE702CB69e96f8bedAa2f93FBFfA"
+		vatForkConfig = event.TransformerConfig{
+			TransformerName:   constants.VatForkTable,
+			ContractAddresses: []string{test_data.VatAddress()},
+			ContractAbi:       constants.VatABI(),
+			Topic:             constants.VatForkSignature(),
+		}
+	)
+
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-	})
 
-	vatForkConfig := event.TransformerConfig{
-		TransformerName:   constants.VatForkTable,
-		ContractAddresses: []string{test_data.VatAddress()},
-		ContractAbi:       constants.VatABI(),
-		Topic:             constants.VatForkSignature(),
-	}
-
-	It("fetches and transforms vat fork event", func() {
 		blockNumber := int64(9003611)
 		vatForkConfig.StartingBlockNumber = blockNumber
 		vatForkConfig.EndingBlockNumber = blockNumber
 
-		header, err := persistHeader(db, blockNumber, blockChain)
-		Expect(err).NotTo(HaveOccurred())
+		header, headerErr := persistHeader(db, blockNumber, blockChain)
+		Expect(headerErr).NotTo(HaveOccurred())
 
 		initializer := event.ConfiguredTransformer{
 			Config:      vatForkConfig,
@@ -56,27 +59,43 @@ var _ = Describe("Vat fork transformer", func() {
 		tr := initializer.NewTransformer(db)
 
 		f := fetcher.NewLogFetcher(blockChain)
-		logs, err := f.FetchLogs(
+		logs, logsErr := f.FetchLogs(
 			event.HexStringsToAddresses(vatForkConfig.ContractAddresses),
 			[]common.Hash{common.HexToHash(vatForkConfig.Topic)},
 			header)
-		Expect(err).NotTo(HaveOccurred())
+		Expect(logsErr).NotTo(HaveOccurred())
 		eventLogs := test_data.CreateLogs(header.Id, logs, db)
 
-		err = tr.Execute(eventLogs)
-		Expect(err).NotTo(HaveOccurred())
+		executeErr := tr.Execute(eventLogs)
+		Expect(executeErr).NotTo(HaveOccurred())
 
+		var ilkErr error
+		ilkID, ilkErr = shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
+		Expect(ilkErr).NotTo(HaveOccurred())
+	})
+
+	It("fetches and transforms vat fork event", func() {
 		var dbResult vatForkModel
-		err = db.Get(&dbResult, `SELECT ilk_id, src, dst, dink, dart FROM maker.vat_fork`)
+		err := db.Get(&dbResult, `SELECT ilk_id, src, dst, dink, dart FROM maker.vat_fork`)
 		Expect(err).NotTo(HaveOccurred())
 
-		ilkID, err := shared.GetOrCreateIlk("0x4554482d41000000000000000000000000000000000000000000000000000000", db)
-		Expect(err).NotTo(HaveOccurred())
 		Expect(dbResult.Ilk).To(Equal(ilkID))
-		Expect(dbResult.Src).To(Equal("0x7939E55BE6A8CB8fceE57F409543E25489C06aaC"))
-		Expect(dbResult.Dst).To(Equal("0xd175Dfd88939eE702CB69e96f8bedAa2f93FBFfA"))
+		Expect(dbResult.Src).To(Equal(src))
+		Expect(dbResult.Dst).To(Equal(dst))
 		Expect(dbResult.Dink).To(Equal("3248431462049897973"))
 		Expect(dbResult.Dart).To(Equal("218121873079553101113"))
+	})
+
+	It("creates urn IDs for src and dst fields in fork payload", func() {
+		// necessary so that the API knows about urns that have passed through a fork but not a frob
+		var srcUrnID, dstUrnID int64
+		srcErr := db.Get(&srcUrnID, `SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2`, src, ilkID)
+		Expect(srcErr).NotTo(HaveOccurred())
+		Expect(srcUrnID).NotTo(BeZero())
+
+		dstErr := db.Get(&dstUrnID, `SELECT id FROM maker.urns WHERE identifier = $1 AND ilk_id = $2`, dst, ilkID)
+		Expect(dstErr).NotTo(HaveOccurred())
+		Expect(dstUrnID).NotTo(BeZero())
 	})
 })
 
