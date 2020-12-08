@@ -1,6 +1,8 @@
-FROM golang:alpine as builder
+FROM golang:1.15.5-buster as builder
 
-RUN apk --update --no-cache add make git g++ linux-headers
+RUN apt-get update && \
+    apt-get install -y \
+    make git g++ linux-headers-amd64
 
 # Build migration tool
 WORKDIR /go
@@ -28,20 +30,17 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
-FROM golang:alpine
-WORKDIR /go/src/github.com/makerdao/vulcanizedb
+FROM golang:1.15.5-buster
 
-# add certificates for node requests via https
-# bash for wait-for-it
-RUN apk update \
-        && apk upgrade \
-        && apk add --no-cache \
+RUN apt-get update \
+        && apt-get install -y \
         ca-certificates \
         bash \
+        busybox \
+        postgresql-client \
         && update-ca-certificates 2>/dev/null || true
 
-# add go so we can build the plugin
-RUN apk add --update --no-cache git g++ linux-headers
+WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 ARG CONFIG_FILE=environments/backfillEvents.toml
 
