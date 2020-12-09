@@ -1,5 +1,5 @@
 // VulcanizeDB
-// Copyright © 2019 Vulcanize
+// Copyright © 2020 Vulcanize
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,17 +26,18 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("New State Diff Query", func() {
-	const transformationStatusQuery = `SELECT * FROM api.storage_transformation_status()`
+var _ = Describe("New Storage Block Heights Query", func() {
+	const newStorageBlockHeightsQuery = `SELECT * FROM api.new_storage_block_heights()`
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
-	It("includes the total number of new storage diffs", func() {
+
+	It("has a row for ever new storage diff", func() {
 		storage_helper.CreateFakeDiffRecord(db)
 
 		var diff []int
-		Expect(db.Select(&diff, transformationStatusQuery)).To(Succeed())
+		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
 
 		Expect(len(diff)).To(Equal(1))
 	})
@@ -47,12 +48,12 @@ var _ = Describe("New State Diff Query", func() {
 		diffRepo.MarkTransformed(diffID)
 
 		var diff []int
-		Expect(db.Select(&diff, transformationStatusQuery)).To(Succeed())
+		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
 
 		Expect(diff).To(BeEmpty())
 	})
 
-	It("includes the block numbers, in ascending order", func() {
+	It("includes the block heights, in ascending order for all new diffs", func() {
 		firstHeader := fakes.GetFakeHeader(1)
 		secondHeader := fakes.GetFakeHeader(2)
 		firstDiff := storage_helper.CreateFakeDiffRecordWithHeader(db, firstHeader)
@@ -60,7 +61,7 @@ var _ = Describe("New State Diff Query", func() {
 		Expect(firstDiff).NotTo(Equal(secondDiff))
 
 		var diff []int
-		Expect(db.Select(&diff, transformationStatusQuery)).To(Succeed())
+		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
 
 		Expect(len(diff)).To(Equal(2))
 		Expect(diff[0]).To(Equal(1))
