@@ -60,7 +60,7 @@ if [ "$ENVIRONMENT" == "prod" ]; then
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-mcd-execute-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
 
   message DEPLOYING EXTRACT-DIFFS
-  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
+  aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-eu-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
 
   message DEPLOYING EXTRACT-DIFFS-US
   aws ecs update-service --cluster vdb-cluster-$ENVIRONMENT --service vdb-extract-diffs-us-$ENVIRONMENT --force-new-deployment --endpoint https://ecs.$PROD_REGION.amazonaws.com --region $PROD_REGION
