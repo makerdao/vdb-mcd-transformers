@@ -1605,6 +1605,17 @@ $$;
 
 
 --
+-- Name: new_storage_block_heights(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.new_storage_block_heights() RETURNS SETOF bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
+$$;
+
+
+--
 -- Name: poke_event_ilk(api.poke_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1657,17 +1668,6 @@ CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
     AS $$
 SELECT *
 FROM get_tx_data(event.block_height, event.log_id)
-$$;
-
-
---
--- Name: storage_transformation_status(); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.storage_transformation_status() RETURNS SETOF bigint
-    LANGUAGE sql STABLE
-    AS $$
-SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
 $$;
 
 

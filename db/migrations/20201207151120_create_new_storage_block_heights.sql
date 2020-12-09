@@ -1,6 +1,6 @@
 -- +goose Up
 
-CREATE OR REPLACE FUNCTION api.storage_transformation_status()
+CREATE OR REPLACE FUNCTION api.new_storage_block_heights()
     RETURNS SETOF BIGINT
     LANGUAGE sql
     STABLE
@@ -12,4 +12,4 @@ $$;
 
 -- +goose Down
 
-DROP FUNCTION api.storage_transformation_status();
+DROP FUNCTION api.new_storage_block_heights();
