@@ -1365,7 +1365,70 @@ SELECT get_flip.block_height,
            ELSE TRUE END,
        storage_values.tab,
        storage_values.created,
-       storage_values.updated
+       storage_values.updated,
+       (SELECT address from addresses where id = (SELECT * FROM address_id)) AS flip_address
+FROM storage_values
+$$;
+
+
+--
+-- Name: get_flip_with_address(numeric, text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_flip_with_address(bid_id numeric, flip_address text, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_bid_snapshot
+    LANGUAGE sql STABLE STRICT
+    AS $$
+WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_address.ilk),
+     address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
+     kicks AS (SELECT usr
+               FROM maker.flip_kick
+               WHERE flip_kick.bid_id = get_flip_with_address.bid_id
+                 AND address_id = (SELECT * FROM address_id)
+               LIMIT 1),
+     urn_id AS (SELECT id
+                FROM maker.urns
+                WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
+                  AND urns.identifier = (SELECT usr FROM kicks)),
+     storage_values AS (
+         SELECT guy,
+                tic,
+                "end",
+                lot,
+                bid,
+                gal,
+                tab,
+                created,
+                updated
+         FROM maker.flip
+         WHERE flip.bid_id = get_flip_with_address.bid_id
+           AND flip.address_id = (SELECT id FROM address_id)
+           AND block_number <= block_height
+         ORDER BY block_number DESC
+         LIMIT 1
+     ),
+     deals AS (SELECT deal.bid_id
+               FROM maker.deal
+                        LEFT JOIN public.headers ON deal.header_id = headers.id
+               WHERE deal.bid_id = get_flip_with_address.bid_id
+                 AND deal.address_id = (SELECT * FROM address_id)
+                 AND headers.block_number <= block_height)
+SELECT get_flip_with_address.block_height,
+       get_flip_with_address.bid_id,
+       (SELECT id FROM ilk_ids),
+       (SELECT id FROM urn_id),
+       storage_values.guy,
+       storage_values.tic,
+       storage_values."end",
+       storage_values.lot,
+       storage_values.bid,
+       storage_values.gal,
+       CASE (SELECT COUNT(*) FROM deals)
+           WHEN 0 THEN FALSE
+           ELSE TRUE END,
+       storage_values.tab,
+       storage_values.created,
+       storage_values.updated,
+       flip_address AS flip_address
 FROM storage_values
 $$;
 
