@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vulcanizedb/pkg/config"
+	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -33,6 +34,25 @@ var _ = Describe("data generator", func() {
 			Expect(cleanEthNodesErr).NotTo(HaveOccurred())
 
 			state = NewGenerator(db)
+		})
+
+		It("uses the newly created node for created headers", func() {
+			Expect(db.CreateNode(&core.Node{
+				GenesisBlock: "test",
+				NetworkID:    100,
+				ID:           "id",
+				ClientName:   "Bob",
+			})).To(Succeed())
+			firstNodeId := db.NodeID
+
+			Expect(state.Run(1)).To(Succeed())
+			// Make sure the current node id is not the same
+			Expect(firstNodeId).NotTo(Equal(db.NodeID))
+
+			var nodeID int64
+			Expect(db.Get(&nodeID, "SELECT eth_node_id FROM headers")).To(Succeed())
+
+			Expect(nodeID).To(Equal(db.NodeID))
 		})
 
 		// Runs twice with the same seed, dumps the DB data, repeats and compares results

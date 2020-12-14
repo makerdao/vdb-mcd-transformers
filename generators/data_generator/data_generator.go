@@ -429,7 +429,7 @@ func (state *GeneratorState) insertCurrentHeader() error {
 	header := state.currentHeader
 	var id int64
 	// TODO: derive eth node id from db so this doesn't fail if id 1 does not exist
-	err := state.pgTx.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, 1).Scan(&id)
+	err := state.pgTx.QueryRow(headerSql, header.Hash, header.BlockNumber, header.Raw, header.Timestamp, state.db.NodeID).Scan(&id)
 	state.currentHeader.Id = id
 	return err
 }
