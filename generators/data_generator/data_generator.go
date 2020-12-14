@@ -27,8 +27,7 @@ import (
 const (
 	headerSql = `INSERT INTO public.headers (hash, block_number, raw, block_timestamp, eth_node_id)
 		VALUES ($1, $2, $3, $4, $5) RETURNING id`
-	nodeSql = `INSERT INTO public.eth_nodes (genesis_block, network_id, eth_node_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`
-	txSql   = `INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
+	txSql = `INSERT INTO public.transactions (header_id, hash, tx_from, tx_index, tx_to)
 		VALUES ($1, $2, $3, $4, $5)`
 	insertIlkQuery = `INSERT INTO maker.ilks (ilk, identifier) VALUES ($1, $2) RETURNING id`
 	insertUrnQuery = `INSERT INTO maker.urns (identifier, ilk_id) VALUES ($1, $2) RETURNING id`
@@ -79,9 +78,8 @@ func main() {
 	}
 
 	pg := postgres.DB{
-		DB:     db,
-		Node:   node,
-		NodeID: 0,
+		DB:   db,
+		Node: node,
 	}
 
 	if *seedPtr != -1 {
@@ -186,7 +184,7 @@ func (state *GeneratorState) Run(steps int) error {
 // Creates a starting ilk and urn, with the corresponding header.
 func (state *GeneratorState) doInitialSetup() error {
 	// This may or may not have been initialised, needed for a FK constraint
-	_, nodeErr := state.pgTx.Exec(nodeSql, "GENESIS", 1, node.ID)
+	nodeErr := state.db.CreateNode(&state.db.Node)
 	if nodeErr != nil {
 		return fmt.Errorf("could not insert initial node: %v", nodeErr)
 	}

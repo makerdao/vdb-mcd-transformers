@@ -5,7 +5,9 @@ import (
 	"math/rand"
 	"os/exec"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vulcanizedb/pkg/config"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -22,8 +24,14 @@ var _ = Describe("data generator", func() {
 		BeforeEach(func() {
 			seed = rand.Int63()
 			rand.Seed(int64(seed))
-			db = test_config.NewTestDB(test_config.NewTestNode())
+			var newDBerr error
+			db, newDBerr = newTestDB()
+			Expect(newDBerr).NotTo(HaveOccurred())
+
 			test_config.CleanTestDB(db)
+			cleanEthNodesErr := deleteEthNodes(db)
+			Expect(cleanEthNodesErr).NotTo(HaveOccurred())
+
 			state = NewGenerator(db)
 		})
 
@@ -47,6 +55,24 @@ var _ = Describe("data generator", func() {
 		})
 	})
 })
+
+/* This special NewDB creaets a db WITHOUT a node. It does this because the code under*/
+/* test creates a node, and so using the standard postgres.NewDB here can cause false*/
+/* positives. */
+func newTestDB() (*postgres.DB, error) {
+	connectString := config.DbConnectionString(test_config.DBConfig)
+	db, connectErr := sqlx.Connect("postgres", connectString)
+	if connectErr != nil {
+		return &postgres.DB{}, postgres.ErrDBConnectionFailed(connectErr)
+	}
+	pg := postgres.DB{DB: db}
+	return &pg, nil
+}
+
+func deleteEthNodes(db *postgres.DB) error {
+	_, err := db.Exec("TRUNCATE TABLE eth_nodes CASCADE;")
+	return err
+}
 
 /* pg_dump is a bit erratic and sometimes moves the ordering around in the dump, so we filter out all insert-lines
 representing the data, and sort alphabetically. Each line is explicit in everything including indices, so data
