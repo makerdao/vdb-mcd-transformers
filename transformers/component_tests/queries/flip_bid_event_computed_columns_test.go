@@ -80,7 +80,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `
-				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
+				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated
 				FROM api.flip_bid_event_bid(
 					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flip_bid_event FROM api.all_flip_bid_events())
 				)`)
@@ -130,7 +130,7 @@ var _ = Describe("Flip bid event computed columns", func() {
 
 			var actualBid test_helpers.FlipBid
 			queryErr := db.Get(&actualBid, `
-				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
+				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated
 				FROM api.flip_bid_event_bid(
 					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flip_bid_event FROM api.all_flip_bid_events() WHERE contract_address = $1)
 				)`, contractAddress)

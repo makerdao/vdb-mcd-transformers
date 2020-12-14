@@ -19,7 +19,7 @@ import (
 var _ = Describe("All flips view", func() {
 	var (
 		headerRepo             datastore.HeaderRepository
-		contractAddress        = fakes.RandomString(42)
+		contractAddress        = fakes.FakeAddress.Hex()
 		blockOne, timestampOne int
 		headerOne              core.Header
 	)
@@ -65,7 +65,7 @@ var _ = Describe("All flips view", func() {
 		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
 			strconv.FormatInt(urnId, 10), "false", headerTwo.Timestamp, headerOne.Timestamp, flipStorageValuesTwo)
 		var actualBid1 test_helpers.FlipBid
-		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
+		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			test_helpers.FakeIlk.Identifier, fakeBidId)
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
@@ -77,7 +77,7 @@ var _ = Describe("All flips view", func() {
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId2), strconv.FormatInt(ilkId, 10),
 			strconv.FormatInt(urnId, 10), "false", headerTwo.Timestamp, headerTwo.Timestamp, flipStorageValuesThree)
 		var actualBid2 test_helpers.FlipBid
-		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
+		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			test_helpers.FakeIlk.Identifier, fakeBidId2)
 		Expect(queryErr2).NotTo(HaveOccurred())
 		Expect(expectedBid2).To(Equal(actualBid2))
@@ -153,7 +153,7 @@ var _ = Describe("All flips view", func() {
 
 		bidIdTwo := bidIdOne + 1
 		ilkTwo := test_helpers.AnotherFakeIlk
-		anotherFlipAddress := "flip2"
+		anotherFlipAddress := fakes.AnotherFakeAddress.Hex()
 
 		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
@@ -179,15 +179,16 @@ var _ = Describe("All flips view", func() {
 
 		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(bidIdTwo), strconv.Itoa(int(ilkIdTwo)),
 			strconv.Itoa(int(urnIdTwo)), "false", headerTwo.Timestamp, headerTwo.Timestamp, flipStorageValuesTwo)
+		expectedBid2.FlipAddress = anotherFlipAddress
 
 		var actualBid1 test_helpers.FlipBid
-		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
+		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			ilkOne.Identifier, bidIdOne)
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
 
 		var actualBid2 test_helpers.FlipBid
-		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
+		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
 			ilkTwo.Identifier, bidIdTwo)
 		Expect(queryErr2).NotTo(HaveOccurred())
 		Expect(expectedBid2).To(Equal(actualBid2))
@@ -236,7 +237,7 @@ var _ = Describe("All flips view", func() {
 			maxResults := 1
 			var actualBids []test_helpers.FlipBid
 			queryErr := db.Select(&actualBids, `
-				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
+				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated
 				FROM api.all_flips($1, $2)`,
 				test_helpers.FakeIlk.Identifier, maxResults)
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -254,7 +255,7 @@ var _ = Describe("All flips view", func() {
 			resultOffset := 1
 			var actualBids []test_helpers.FlipBid
 			queryErr := db.Select(&actualBids, `
-				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated
+				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated
 				FROM api.all_flips($1, $2, $3)`,
 				test_helpers.FakeIlk.Identifier, maxResults, resultOffset)
 			Expect(queryErr).NotTo(HaveOccurred())

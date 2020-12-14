@@ -114,7 +114,7 @@ var _ = Describe("Bite event computed columns", func() {
 
 			var actualBid test_helpers.FlipBid
 			err := db.Get(&actualBid, `
-				SELECT bid_id, ilk_id, urn_id, bid, lot, guy, tic, "end", gal, tab, dealt, created, updated FROM api.bite_event_bid(
+				SELECT bid_id, ilk_id, urn_id, bid, lot, guy, tic, "end", gal, tab, dealt, flip_address, created, updated FROM api.bite_event_bid(
 					(SELECT (ilk_identifier, urn_identifier, bid_id, ink, art, tab, block_height, log_id)::api.bite_event FROM api.all_bites($1)))`,
 				test_helpers.FakeIlk.Identifier)
 			Expect(err).NotTo(HaveOccurred())

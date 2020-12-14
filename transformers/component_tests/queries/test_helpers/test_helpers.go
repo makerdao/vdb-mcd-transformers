@@ -45,6 +45,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/gomega"
 )
 
@@ -488,11 +489,12 @@ func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[stri
 
 func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
 	return FlipBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
-		IlkId:     ilkId,
-		UrnId:     urnId,
-		Gal:       bidValues[storage.BidGal].(string),
-		Tab:       bidValues[storage.BidTab].(string),
+		commonBid:   commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		IlkId:       ilkId,
+		UrnId:       urnId,
+		Gal:         bidValues[storage.BidGal].(string),
+		Tab:         bidValues[storage.BidTab].(string),
+		FlipAddress: fakes.FakeAddress.Hex(),
 	}
 }
 
@@ -526,10 +528,11 @@ type FlapBid struct {
 
 type FlipBid struct {
 	commonBid
-	IlkId string `db:"ilk_id"`
-	UrnId string `db:"urn_id"`
-	Gal   string
-	Tab   string
+	IlkId       string `db:"ilk_id"`
+	UrnId       string `db:"urn_id"`
+	Gal         string
+	Tab         string
+	FlipAddress string `db:"flip_address"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
