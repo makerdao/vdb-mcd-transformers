@@ -1,6 +1,6 @@
 -- +goose Up
 
-CREATE OR REPLACE FUNCTION api.new_storage_block_heights()
+CREATE OR REPLACE FUNCTION api.get_block_heights_for_new_untransformed_diffs()
     RETURNS SETOF BIGINT
     LANGUAGE sql
     STABLE
@@ -12,4 +12,4 @@ $$;
 
 -- +goose Down
 
-DROP FUNCTION api.new_storage_block_heights();
+DROP FUNCTION api.get_block_heights_for_new_untransformed_diffs();

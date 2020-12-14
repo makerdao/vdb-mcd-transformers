@@ -26,18 +26,18 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("New Storage Block Heights Query", func() {
-	const newStorageBlockHeightsQuery = `SELECT * FROM api.new_storage_block_heights()`
+var _ = Describe("Get Block Heights for New Untransformed Diffs Query", func() {
+	const blockHeightsForNewUntransformedStorageDiffs = `SELECT * FROM api.get_block_heights_for_new_untransformed_diffs()`
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("has a row for ever new storage diff", func() {
+	It("has a row for every new storage diff", func() {
 		storage_helper.CreateFakeDiffRecord(db)
 
 		var diff []int
-		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
+		Expect(db.Select(&diff, blockHeightsForNewUntransformedStorageDiffs)).To(Succeed())
 
 		Expect(len(diff)).To(Equal(1))
 	})
@@ -48,7 +48,7 @@ var _ = Describe("New Storage Block Heights Query", func() {
 		diffRepo.MarkTransformed(diffID)
 
 		var diff []int
-		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
+		Expect(db.Select(&diff, blockHeightsForNewUntransformedStorageDiffs)).To(Succeed())
 
 		Expect(diff).To(BeEmpty())
 	})
@@ -61,7 +61,7 @@ var _ = Describe("New Storage Block Heights Query", func() {
 		Expect(firstDiff).NotTo(Equal(secondDiff))
 
 		var diff []int
-		Expect(db.Select(&diff, newStorageBlockHeightsQuery)).To(Succeed())
+		Expect(db.Select(&diff, blockHeightsForNewUntransformedStorageDiffs)).To(Succeed())
 
 		Expect(len(diff)).To(Equal(2))
 		Expect(diff[0]).To(Equal(1))

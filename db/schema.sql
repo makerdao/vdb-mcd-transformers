@@ -1238,6 +1238,17 @@ $$;
 
 
 --
+-- Name: get_block_heights_for_new_untransformed_diffs(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_block_heights_for_new_untransformed_diffs() RETURNS SETOF bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
+$$;
+
+
+--
 -- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1601,17 +1612,6 @@ CREATE FUNCTION api.managed_cdp_urn(cdp api.managed_cdp) RETURNS api.urn_snapsho
     AS $$
 SELECT *
 FROM api.get_urn(cdp.ilk_identifier, cdp.urn_identifier, api.max_block())
-$$;
-
-
---
--- Name: new_storage_block_heights(); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.new_storage_block_heights() RETURNS SETOF bigint
-    LANGUAGE sql STABLE
-    AS $$
-SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
 $$;
 
 
