@@ -1084,7 +1084,7 @@ WITH ilks AS (
     LIMIT 1
 )
 SELECT *
-FROM api.get_flip(event.bid_id, (SELECT identifier FROM ilks))
+FROM api.get_flip_with_address(event.bid_id, event.contract_address, (SELECT identifier FROM ilks))
 $$;
 
 
