@@ -38,7 +38,7 @@ import (
 
 var _ = Describe("urn_snapshot computed columns", func() {
 	var (
-		fakeGuy = fakes.RandomString(42)
+		fakeGuy         = fakes.RandomString(42)
 		fakeFlipAddress = fakes.FakeAddress.Hex()
 		blockOne,
 		blockTwo,

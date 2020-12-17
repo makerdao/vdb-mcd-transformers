@@ -37,7 +37,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 	var (
 		blockOne, timestampOne int
 		fakeGuy                = fakes.RandomString(42)
-		fakeFlipAddress = fakes.FakeAddress.Hex()
+		fakeFlipAddress        = fakes.FakeAddress.Hex()
 		headerOne              core.Header
 		headerRepository       datastore.HeaderRepository
 		logID                  int64
