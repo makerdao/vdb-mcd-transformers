@@ -61,6 +61,7 @@ func FlipV110ABI() string {
 		"MCD_FLIP_COMP_A_1_1_2",
 		"MCD_FLIP_ETH_A_1_1_0",
 		"MCD_FLIP_ETH_B_1_1_3",
+		"MCD_FLIP_GUSD_A_1_1_5",
 		"MCD_FLIP_KNC_A_1_1_0",
 		"MCD_FLIP_LINK_A_1_1_2",
 		"MCD_FLIP_LRC_A_1_1_2",
