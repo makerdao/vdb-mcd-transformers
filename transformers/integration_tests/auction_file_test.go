@@ -44,6 +44,13 @@ var _ = Describe("Auction file transformer", func() {
 		auctionFileIntegrationTest(int64(11314893), test_data.FlipGusdAV115Address(), msgSender, what, data)
 	})
 
+	Context("Flip RENBTC file events", func() {
+		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		what := "tau"
+		data := "21600"
+		auctionFileIntegrationTest(int64(11451553), test_data.FlipRenbtcA121Address(), msgSender, what, data)
+	})
+
 	Context("Flip TUSD file events", func() {
 		msgSender := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		what := "ttl"
