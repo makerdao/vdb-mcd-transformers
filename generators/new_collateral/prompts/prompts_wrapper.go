@@ -87,22 +87,6 @@ func (p *Prompter) GetContractDetails() (types.Contracts, error) {
 		Deployed: p.FlipContractAnswers.Block,
 	}
 
-	medianRequiredErr := p.PromptAsker(MedianContractRequiredQuestion, &p.MedianRequired)
-	if medianRequiredErr != nil {
-		return types.Contracts{}, fmt.Errorf("error getting if median contract required: %w", medianRequiredErr)
-	}
-	if p.MedianRequired {
-		medianErr := p.PromptAsker(MedianContractQuestions, &p.MedianContractAnswers)
-		if medianErr != nil {
-			return types.Contracts{}, fmt.Errorf("error getting median contract details: %w", medianErr)
-		}
-		contracts["median"] = types.Contract{
-			Address:  p.MedianContractAnswers.Address,
-			Abi:      p.MedianContractAnswers.Abi,
-			Deployed: p.MedianContractAnswers.Block,
-		}
-	}
-
 	osmRequiredErr := p.PromptAsker(OsmContractRequiredQuestion, &p.OsmRequired)
 	if osmRequiredErr != nil {
 		return types.Contracts{}, fmt.Errorf("error getting if osm contract required: %w", osmRequiredErr)
@@ -116,6 +100,22 @@ func (p *Prompter) GetContractDetails() (types.Contracts, error) {
 			Address:  p.OsmContractAnswers.Address,
 			Abi:      p.OsmContractAnswers.Abi,
 			Deployed: p.OsmContractAnswers.Block,
+		}
+	}
+
+	medianRequiredErr := p.PromptAsker(MedianContractRequiredQuestion, &p.MedianRequired)
+	if medianRequiredErr != nil {
+		return types.Contracts{}, fmt.Errorf("error getting if median contract required: %w", medianRequiredErr)
+	}
+	if p.MedianRequired {
+		medianErr := p.PromptAsker(MedianContractQuestions, &p.MedianContractAnswers)
+		if medianErr != nil {
+			return types.Contracts{}, fmt.Errorf("error getting median contract details: %w", medianErr)
+		}
+		contracts["median"] = types.Contract{
+			Address:  p.MedianContractAnswers.Address,
+			Abi:      p.MedianContractAnswers.Abi,
+			Deployed: p.MedianContractAnswers.Block,
 		}
 	}
 
