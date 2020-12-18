@@ -29,7 +29,7 @@ func NewInitializerGenerator(projectPath string, collateral types.Collateral, me
 }
 
 func (g *Generator) GenerateFlipInitializer() error {
-	initializer := g.createInitializer(g.Collateral.FormattedVersion(), g.Collateral.GetFlipContractName(), "flip")
+	initializer := g.createInitializer(g.Collateral.FormattedVersionWithPrependedV(), g.Collateral.GetFlipContractName(), "flip")
 	//create the path to the initializer file
 	path := g.GetAbsoluteFlipStorageInitializersDirectoryPath()
 	mkDirErr := os.MkdirAll(path, os.ModePerm)
@@ -47,7 +47,7 @@ func (g *Generator) GenerateFlipInitializer() error {
 
 func (g Generator) GenerateMedianInitializer() error {
 	if g.MedianInitializerRequired {
-		initializer := g.createInitializer(g.Collateral.GetMedianInitializerDirectory(), g.Collateral.GetMedianContractName(), "median")
+		initializer := g.createInitializer(g.Collateral.FormattedVersionWithPrependedV(), g.Collateral.GetMedianContractName(), "median")
 
 		path := g.GetAbsoluteMedianStorageInitializersDirectoryPath()
 		mkDirErr := os.MkdirAll(path, os.ModePerm)

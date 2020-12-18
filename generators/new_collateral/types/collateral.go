@@ -17,33 +17,38 @@ func NewCollateral(name, version string) Collateral {
 	}
 }
 
-func (c Collateral) FormattedVersion() string {
+func (c Collateral) FormattedVersionWithPrependedV() string {
 	// example: v1_2_3
-	return fmt.Sprintf("v%s", strings.Replace(c.Version, ".", "_", -1))
+	return fmt.Sprintf("v%s", c.FormattedVersion())
+}
+
+func (c Collateral) FormattedVersion() string {
+	// example: 1_2_3
+	return fmt.Sprintf("%s", strings.Replace(c.Version, ".", "_", -1))
 }
 
 func (c Collateral) GetFlipTransformerName() string {
 	// example: flip_eth_b_v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	return fmt.Sprintf("flip_%s_%s", name, c.FormattedVersion())
+	return fmt.Sprintf("flip_%s_%s", name, c.FormattedVersionWithPrependedV())
 }
 
 func (c Collateral) GetMedianTransformerName() string {
-	// example: median_eth_b
+	// example: median_eth_b_v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	return fmt.Sprintf("median_%s", name)
+	return fmt.Sprintf("median_%s_%s", name, c.FormattedVersionWithPrependedV())
 }
 
 func (c Collateral) GetFlipInitializerDirectory() string {
 	// example: eth_b/v1_2_3
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	return fmt.Sprintf("%s/%s", name, c.FormattedVersion())
+	return fmt.Sprintf("%s/%s", name, c.FormattedVersionWithPrependedV())
 }
 
 func (c Collateral) GetMedianInitializerDirectory() string {
 	// example: median_eth_b
 	name := strings.ToLower(strings.Replace(c.Name, "-", "_", -1))
-	return fmt.Sprintf("median_%s", name)
+	return fmt.Sprintf("median_%s/%s", name, c.FormattedVersionWithPrependedV())
 }
 
 func (c Collateral) GetFlipContractName() string {
@@ -54,9 +59,10 @@ func (c Collateral) GetFlipContractName() string {
 }
 
 func (c Collateral) GetMedianContractName() string {
-	// example: MEDIAN_ETH_B
+	// example: MEDIAN_ETH_B_1_1_3
 	name := strings.ToUpper(strings.Replace(c.Name, "-", "_", -1))
-	return fmt.Sprintf("MEDIAN_%s", name)
+	version := fmt.Sprintf("%s", strings.Replace(c.Version, ".", "_", -1))
+	return fmt.Sprintf("MEDIAN_%s_%s", name, version)
 }
 
 func (c Collateral) GetOsmContractName() string {

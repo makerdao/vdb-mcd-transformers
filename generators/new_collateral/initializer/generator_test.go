@@ -34,7 +34,7 @@ var _ = Describe("InitializerGenerator", func() {
 
 		It("formats the collateral as a median initializer path", func() {
 			medianInitializersPath := filepath.Join(testProjectPath, "transformers", "storage", "median", "initializers")
-			Expect(generator.GetAbsoluteMedianStorageInitializersDirectoryPath()).To(Equal(filepath.Join(medianInitializersPath, "median_test_collateral")))
+			Expect(generator.GetAbsoluteMedianStorageInitializersDirectoryPath()).To(Equal(filepath.Join(medianInitializersPath, "median_test_collateral/v0_1_2")))
 		})
 	})
 
@@ -46,7 +46,7 @@ var _ = Describe("InitializerGenerator", func() {
 
 		It("formats the collateral as a median initializer file path", func() {
 			medianInitializersPath := filepath.Join(testProjectPath, "transformers", "storage", "median", "initializers")
-			Expect(generator.GetAbsoluteMedianStorageInitializerFilePath()).To(Equal(filepath.Join(medianInitializersPath, "median_test_collateral", "initializer.go")))
+			Expect(generator.GetAbsoluteMedianStorageInitializerFilePath()).To(Equal(filepath.Join(medianInitializersPath, "median_test_collateral/v0_1_2", "initializer.go")))
 		})
 	})
 
@@ -117,13 +117,13 @@ var StorageTransformerInitializer = initializers.GenerateStorageTransformerIniti
 
 var expectedMedianInitializerFileContents = `// This is a plugin generated to export the configured transformer initializers
 
-package median_test_collateral
+package v0_1_2
 
 import (
 	initializers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers"
 	constants "github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
-var contractAddress = constants.GetContractAddress("MEDIAN_TEST_COLLATERAL")
+var contractAddress = constants.GetContractAddress("MEDIAN_TEST_COLLATERAL_0_1_2")
 var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(contractAddress)
 `
