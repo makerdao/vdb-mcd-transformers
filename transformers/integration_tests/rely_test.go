@@ -137,6 +137,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510886), test_data.FlipTusdAV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip UNI-A v1.2.1 rely events", func() {
+		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(11451553), test_data.FlipUniAV121Address(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip USDC-A v1.0.4 rely events", func() {
 		usrAddress := "0x9BdDB99625A711bf9bda237044924E34E8570f75"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
@@ -263,6 +269,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10511187), test_data.MedianManaAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median UNI-A rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(11424316), test_data.MedianUniAAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median USDT rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
@@ -335,11 +347,18 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10516692), test_data.OsmManaAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("OSM UNI-A rely events", func() {
+		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(11451553), test_data.OsmUniAAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("OSM USDT rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(int64(10821399), test_data.OsmUsdtAddress(), msgSenderAddress, usrAddress)
 	})
+
 	Context("OSM WBTC rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
