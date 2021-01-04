@@ -272,7 +272,7 @@ var _ = Describe("Rely transformer", func() {
 	Context("Median UNI-A rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
-		relyIntegrationTest(int64(11424316), test_data.MedianUniAAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(11424316), test_data.MedianUniAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Median USDT rely events", func() {
@@ -350,7 +350,7 @@ var _ = Describe("Rely transformer", func() {
 	Context("OSM UNI-A rely events", func() {
 		usrAddress := "0x76416A4d5190d071bfed309861527431304aA14f"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
-		relyIntegrationTest(int64(11451553), test_data.OsmUniAAddress(), msgSenderAddress, usrAddress)
+		relyIntegrationTest(int64(11451553), test_data.OsmUniAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM USDT rely events", func() {

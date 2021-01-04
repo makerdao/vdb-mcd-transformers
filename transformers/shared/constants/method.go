@@ -103,7 +103,7 @@ func MedianV100ABI() string {
 func MedianV114ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MEDIAN_BAL_1_1_14",
-		"MEDIAN_UNI_A_1_2_1",
+		"MEDIAN_UNI_1_2_1",
 		"MEDIAN_YFI_1_1_14",
 	})
 }
@@ -117,7 +117,7 @@ func OsmABI() string {
 		"OSM_LINK",
 		"OSM_LRC",
 		"OSM_MANA",
-		"OSM_UNI_A",
+		"OSM_UNI",
 		"OSM_USDT",
 		"OSM_WBTC",
 		"OSM_YFI",
