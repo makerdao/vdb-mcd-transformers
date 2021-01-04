@@ -146,7 +146,7 @@ var (
 	}
 
 	MedianEthBStorageExporter = types.TransformerExporter{
-		Path:       "transformers/storage/median/initializers/median_eth_b/v1_1_3",
+		Path:       "transformers/storage/median/initializers/median_eth/v1_1_3",
 		Type:       "eth_storage",
 		Repository: "github.com/makerdao/vdb-mcd-transformers",
 		Migrations: "db/migrations",
@@ -188,14 +188,14 @@ var (
 		Deployed: 123,
 	}
 
-	MedianEthBContractName = "MEDIAN_ETH_B_1_1_3"
+	MedianEthBContractName = "MEDIAN_ETH_1_1_3"
 	MedianEthBContract     = types.Contract{
 		Address:  "testMedianContractAddress",
 		Abi:      "testMedianContractAbi",
 		Deployed: 456,
 	}
 
-	OsmEthBContractName = "OSM_ETH_B"
+	OsmEthBContractName = "OSM_ETH"
 	OsmEthBContract     = types.Contract{
 		Address:  "testOsmContractAddress",
 		Abi:      "testOsmContractAbi",
@@ -259,23 +259,23 @@ var (
 			"transformerNames": []interface{}{
 				"cat_v1_1_0",
 				"cat_file_vow",
-				"flip_eth_b_v1_1_3",   // new storage flip transformer
-				"median_eth_b_v1_1_3", // new median eth transformer
+				"flip_eth_b_v1_1_3", // new storage flip transformer
+				"median_eth_v1_1_3", // new median eth transformer
 			},
-			"median_eth_b_v1_1_3": MedianEthBStorageExporterMap,
-			"flip_eth_b_v1_1_3":   FlipEthBStorageExporterMap,
-			"cat_file_vow":        CatFileVowExporterMap,
-			"cat_v1_1_0":          Cat110ExporterMap,
-			"log_median_price":    UpdatedLogMedianPriceExporterMap,
-			"log_value":           UpdatedLogValueExporterMap,
-			"deny":                UpdatedDenyExporterMap,
+			"median_eth_v1_1_3": MedianEthBStorageExporterMap,
+			"flip_eth_b_v1_1_3": FlipEthBStorageExporterMap,
+			"cat_file_vow":      CatFileVowExporterMap,
+			"cat_v1_1_0":        Cat110ExporterMap,
+			"log_median_price":  UpdatedLogMedianPriceExporterMap,
+			"log_value":         UpdatedLogValueExporterMap,
+			"deny":              UpdatedDenyExporterMap,
 		},
 		Contracts: types.Contracts{
 			"MCD_CAT_1_0_0":        Cat100Contract,
 			"MCD_CAT_1_1_0":        Cat110Contract,
 			"MCD_FLIP_ETH_B_1_1_3": FlipEthBContract,
-			"MEDIAN_ETH_B_1_1_3":   MedianEthBContract,
-			"OSM_ETH_B":            OsmEthBContract,
+			"MEDIAN_ETH_1_1_3":     MedianEthBContract,
+			"OSM_ETH":              OsmEthBContract,
 		},
 	}
 
@@ -284,7 +284,7 @@ var (
   name = "transformerExporter"
   save = false
   schema = "maker"
-  transformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_b_v1_1_3"]
+  transformerNames = ["cat_v1_1_0", "cat_file_vow", "flip_eth_b_v1_1_3", "median_eth_v1_1_3"]
   [exporter.cat_file_vow]
     contracts = ["MCD_CAT_1_0_0", "MCD_CAT_1_1_0"]
     migrations = "db/migrations"
@@ -299,7 +299,7 @@ var (
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.deny]
-    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT_1_0_0", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_B_1_1_3", "OSM_ETH_B"]
+    contracts = ["MCD_FLIP_BAT_A_1_0_0", "MCD_FLIP_ETH_A_1_0_0", "MEDIAN_BAT_1_0_0", "OSM_BAT", "MCD_FLIP_ETH_B_1_1_3", "MEDIAN_ETH_1_1_3", "OSM_ETH"]
     migrations = "db/migrations"
     path = "transformers/events/auth/deny/initializer"
     rank = "0"
@@ -312,22 +312,22 @@ var (
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
   [exporter.log_median_price]
-    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_ETH_B_1_1_3"]
+    contracts = ["MEDIAN_BAT_1_0_0", "MEDIAN_ETH_1_1_3"]
     migrations = "db/migrations"
     path = "transformers/events/log_median_price/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
   [exporter.log_value]
-    contracts = ["OSM_BAT", "OSM_ETH_B"]
+    contracts = ["OSM_BAT", "OSM_ETH"]
     migrations = "db/migrations"
     path = "transformers/events/log_value/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
-  [exporter.median_eth_b_v1_1_3]
+  [exporter.median_eth_v1_1_3]
     migrations = "db/migrations"
-    path = "transformers/storage/median/initializers/median_eth_b/v1_1_3"
+    path = "transformers/storage/median/initializers/median_eth/v1_1_3"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
@@ -345,11 +345,11 @@ var (
     address = "testFlipContractAddress"
     abi = "testFlipContractAbi"
     deployed = 123
-  [contract.MEDIAN_ETH_B_1_1_3]
+  [contract.MEDIAN_ETH_1_1_3]
     address = "testMedianContractAddress"
     abi = "testMedianContractAbi"
     deployed = 456
-  [contract.OSM_ETH_B]
+  [contract.OSM_ETH]
     address = "testOsmContractAddress"
     abi = "testOsmContractAbi"
     deployed = 789
