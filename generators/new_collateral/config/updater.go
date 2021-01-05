@@ -105,7 +105,7 @@ func (cu *Updater) addStorageExporters() {
 
 	if cu.MedianContractRequired {
 		medianStorageExporter := types.TransformerExporter{
-			Path:       fmt.Sprintf("transformers/storage/median/initializers/%s", cu.Collateral.GetMedianTransformerName()),
+			Path:       fmt.Sprintf("transformers/storage/median/initializers/%s", cu.Collateral.GetMedianInitializerDirectory()),
 			Type:       "eth_storage",
 			Repository: "github.com/makerdao/vdb-mcd-transformers",
 			Migrations: "db/migrations",
