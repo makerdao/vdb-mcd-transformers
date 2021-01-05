@@ -26,7 +26,7 @@ func (c Collateral) formattedUpperCaseName() string {
 }
 
 func (c Collateral) FormattedLowerCaseNameWithoutVersionLetter() string {
-	// example: ETH_B => ETH
+	// example: eth_b => eth
 	return strings.Split(c.formattedLowerCaseName(), "_")[0]
 }
 
