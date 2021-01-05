@@ -13,4 +13,4 @@ if test -n "$UNRECOGNIZED_DIFF_BLOCK_FROM_HEAD_OF_CHAIN"; then
 fi
 echo "Starting transformer execution..."
 # Fire up execute
-./vulcanizedb execute --config config.toml -d $NEW_DIFF_STARTING_BLOCK -u 10000
+./vulcanizedb execute --config config.toml -d $NEW_DIFF_STARTING_BLOCK -u 30000
