@@ -2574,7 +2574,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -2590,7 +2590,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET art = new_diff.art;
     RETURN new_diff;
@@ -2642,7 +2643,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -2658,7 +2659,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET chop = new_diff.chop;
     RETURN new_diff;
@@ -2778,7 +2780,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -2794,7 +2796,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET dust = new_diff.dust;
     RETURN new_diff;
@@ -2845,7 +2848,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -2861,7 +2864,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET duty = new_diff.duty;
     RETURN new_diff;
@@ -3158,7 +3162,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3174,7 +3178,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET flip = new_diff.flip;
     RETURN new_diff;
@@ -3872,7 +3877,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3888,7 +3893,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET line = new_diff.line;
     RETURN new_diff;
@@ -3940,7 +3946,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -3956,7 +3962,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET lump = new_diff.lump;
     RETURN new_diff;
@@ -4007,7 +4014,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4023,7 +4030,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             new_diff.mat,
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET mat = new_diff.mat;
     RETURN new_diff;
@@ -4074,7 +4082,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4090,7 +4098,8 @@ BEGIN
             new_diff.pip,
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET pip = new_diff.pip;
     RETURN new_diff;
@@ -4141,7 +4150,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             new_diff.rate,
@@ -4157,7 +4166,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET rate = new_diff.rate;
     RETURN new_diff;
@@ -4208,7 +4218,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4224,7 +4234,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET rho = new_diff.rho;
     RETURN new_diff;
@@ -4275,7 +4286,7 @@ DECLARE
 BEGIN
     INSERT
     INTO api.ilk_snapshot (ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho,
-                           duty, pip, mat, created, updated)
+                           duty, pip, mat, created, updated, dunk)
     VALUES (diff_ilk_identifier,
             diff_block_number,
             ilk_rate_before_block(new_diff.ilk_id, new_diff.header_id),
@@ -4291,7 +4302,8 @@ BEGIN
             ilk_pip_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_mat_before_block(new_diff.ilk_id, new_diff.header_id),
             ilk_time_created(new_diff.ilk_id),
-            diff_block_timestamp)
+            diff_block_timestamp,
+            ilk_dunk_before_block(new_diff.ilk_id, new_diff.header_id))
     ON CONFLICT (ilk_identifier, block_number)
         DO UPDATE SET spot = new_diff.spot;
     RETURN new_diff;
