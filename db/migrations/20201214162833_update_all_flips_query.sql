@@ -8,13 +8,13 @@ CREATE OR REPLACE FUNCTION api.all_flips(ilk TEXT, max_results INTEGER DEFAULT -
 $BODY$
 BEGIN
     RETURN QUERY (
-        WITH ilk_ids AS (SELECT id
+        WITH ilk_id AS (SELECT id
                          FROM maker.ilks
                          WHERE identifier = all_flips.ilk),
              address_ids AS (
                  SELECT DISTINCT address_id as id
                  FROM maker.flip_ilk
-                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_ids)
+                 WHERE flip_ilk.ilk_id = (SELECT id FROM ilk_id)
              ),
              bids AS (
                  SELECT DISTINCT bid_id, address

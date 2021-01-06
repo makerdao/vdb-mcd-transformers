@@ -6,17 +6,17 @@ CREATE OR REPLACE FUNCTION api.get_flip_with_address(bid_id NUMERIC, flip_addres
     RETURNS api.flip_bid_snapshot
 AS
 $$
-WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_address.ilk),
+WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_address.ilk),
      address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
-     kicks AS (SELECT usr
+     kick AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip_with_address.bid_id
                  AND address_id = (SELECT * FROM address_id)
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
-                WHERE urns.ilk_id = (SELECT id FROM ilk_ids)
-                  AND urns.identifier = (SELECT usr FROM kicks)),
+                WHERE urns.ilk_id = (SELECT id FROM ilk_id)
+                  AND urns.identifier = (SELECT usr FROM kick)),
 
      storage_values AS (
          SELECT guy,
@@ -44,7 +44,7 @@ WITH ilk_ids AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with
 
 SELECT get_flip_with_address.block_height,
        get_flip_with_address.bid_id,
-       (SELECT id FROM ilk_ids),
+       (SELECT id FROM ilk_id),
        (SELECT id FROM urn_id),
        storage_values.guy,
        storage_values.tic,
@@ -58,7 +58,7 @@ SELECT get_flip_with_address.block_height,
        storage_values.tab,
        storage_values.created,
        storage_values.updated,
-       flip_address AS flip_address
+       get_flip_with_address.flip_address
 FROM storage_values
 $$
     LANGUAGE SQL

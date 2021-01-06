@@ -179,74 +179,113 @@ var _ = Describe("All flips view", func() {
 		expectedBid2.FlipAddress = anotherContractAddress
 
 		var actualBid1 test_helpers.FlipBid
-		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			ilkOne.Identifier, fakeBidIdOne)
+		queryErr1 := db.Get(
+			&actualBid1,
+			`SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1)`,
+			ilkOne.Identifier,
+		)
 		Expect(queryErr1).NotTo(HaveOccurred())
 		Expect(expectedBid1).To(Equal(actualBid1))
 
 		var actualBid2 test_helpers.FlipBid
-		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			ilkTwo.Identifier, fakeBidIdTwo)
+		queryErr2 := db.Get(&actualBid2,
+			`SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1)`,
+			ilkTwo.Identifier,
+		)
 		Expect(queryErr2).NotTo(HaveOccurred())
 		Expect(expectedBid2).To(Equal(actualBid2))
 	})
 
-	It("gets the all flip bids when there are multiple flip contracts for one ilk", func() {
-		flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, ilkOne.Hex, fakeBidIdOne)
-		test_helpers.CreateFlip(db, headerOne, flipStorageValuesOne, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
+	Context("when there are multiple flip contracts for one ilk", func() {
+		var (
+			ilkId, urnId int64
+			expectedBid1 test_helpers.FlipBid
+		)
+		BeforeEach(func() {
+			flipStorageValuesOne := test_helpers.GetFlipStorageValues(1, ilkOne.Hex, fakeBidIdOne)
+			test_helpers.CreateFlip(db, headerOne, flipStorageValuesOne, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidIdOne)), contractAddress)
 
-		ilkId, urnId, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
-			DealCreationInput: test_helpers.DealCreationInput{
-				DB:              db,
-				BidId:           fakeBidIdOne,
-				ContractAddress: contractAddress,
-			},
-			Dealt:            false,
-			IlkHex:           ilkOne.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
-			FlipKickHeaderId: headerOne.Id,
+			var setupErr error
+			ilkId, urnId, setupErr = test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
+				DealCreationInput: test_helpers.DealCreationInput{
+					DB:              db,
+					BidId:           fakeBidIdOne,
+					ContractAddress: contractAddress,
+				},
+				Dealt:            false,
+				IlkHex:           ilkOne.Hex,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.UsrColumn].(string),
+				FlipKickHeaderId: headerOne.Id,
+			})
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			expectedBid1 = test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdOne), strconv.FormatInt(ilkId, 10),
+				strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
 		})
-		Expect(setupErr).NotTo(HaveOccurred())
 
-		anotherFlipAddress := fakes.AnotherFakeAddress.Hex()
+		It("gets the all flip bids when they have different bid ids", func() {
+			anotherFlipAddress := fakes.AnotherFakeAddress.Hex()
+			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-		headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
+			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, ilkOne.Hex, fakeBidIdTwo)
+			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidIdTwo)), anotherFlipAddress)
 
-		flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, ilkOne.Hex, fakeBidIdTwo)
-		test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidIdTwo)), anotherFlipAddress)
+			// insert a new bid associated with a different flip contract address
+			ilkIdTwo, urnIdTwo, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
+				DealCreationInput: test_helpers.DealCreationInput{
+					DB:              db,
+					BidId:           fakeBidIdTwo,
+					ContractAddress: anotherFlipAddress,
+				},
+				Dealt:            false,
+				IlkHex:           ilkOne.Hex,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.GalColumn].(string),
+				FlipKickHeaderId: headerTwo.Id,
+			})
+			Expect(setupErr).NotTo(HaveOccurred())
 
-		// insert a new bid associated with a different flip contract address
-		ilkIdTwo, urnIdTwo, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
-			DealCreationInput: test_helpers.DealCreationInput{
-				DB:              db,
-				BidId:           fakeBidIdTwo,
-				ContractAddress: anotherFlipAddress,
-			},
-			Dealt:            false,
-			IlkHex:           ilkOne.Hex,
-			UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.GalColumn].(string),
-			FlipKickHeaderId: headerTwo.Id,
+			expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdTwo), strconv.Itoa(int(ilkIdTwo)),
+				strconv.FormatInt(urnIdTwo, 10), "false", headerTwo.Timestamp, headerTwo.Timestamp, flipStorageValuesTwo)
+			expectedBid2.FlipAddress = anotherFlipAddress
+
+			var actualBids []test_helpers.FlipBid
+			queryErr := db.Select(&actualBids, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1)`,
+				ilkOne.Identifier)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualBids).To(ConsistOf(expectedBid1, expectedBid2))
 		})
-		Expect(setupErr).NotTo(HaveOccurred())
 
-		expectedBid1 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdOne), strconv.FormatInt(ilkId, 10),
-			strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
+		It("gets the all flip bids when they have the same bid ids on different contracts", func() {
+			anotherFlipAddress := fakes.AnotherFakeAddress.Hex()
+			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 
-		expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdTwo), strconv.Itoa(int(ilkIdTwo)),
-			strconv.Itoa(int(urnIdTwo)), "false", headerTwo.Timestamp, headerTwo.Timestamp, flipStorageValuesTwo)
-		expectedBid2.FlipAddress = anotherFlipAddress
+			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, ilkOne.Hex, fakeBidIdOne)
+			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidIdOne)), anotherFlipAddress)
 
-		var actualBid1 test_helpers.FlipBid
-		queryErr1 := db.Get(&actualBid1, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			ilkOne.Identifier, fakeBidIdOne)
-		Expect(queryErr1).NotTo(HaveOccurred())
-		Expect(expectedBid1).To(Equal(actualBid1))
+			// insert a new bid associated with a different flip contract address
+			ilkIdTwo, urnIdTwo, setupErr := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
+				DealCreationInput: test_helpers.DealCreationInput{
+					DB:              db,
+					BidId:           fakeBidIdOne,
+					ContractAddress: anotherFlipAddress,
+				},
+				Dealt:            false,
+				IlkHex:           ilkOne.Hex,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues[constants.GalColumn].(string),
+				FlipKickHeaderId: headerTwo.Id,
+			})
+			Expect(setupErr).NotTo(HaveOccurred())
 
-		var actualBid2 test_helpers.FlipBid
-		queryErr2 := db.Get(&actualBid2, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1) WHERE bid_id = $2`,
-			ilkOne.Identifier, fakeBidIdTwo)
-		Expect(queryErr2).NotTo(HaveOccurred())
-		Expect(expectedBid2).To(Equal(actualBid2))
+			expectedBid2 := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidIdOne), strconv.Itoa(int(ilkIdTwo)),
+				strconv.FormatInt(urnIdTwo, 10), "false", headerTwo.Timestamp, headerTwo.Timestamp, flipStorageValuesTwo)
+			expectedBid2.FlipAddress = anotherFlipAddress
+
+			var actualBids []test_helpers.FlipBid
+			queryErr := db.Select(&actualBids, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.all_flips($1)`,
+				ilkOne.Identifier)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualBids).To(ConsistOf(expectedBid1, expectedBid2))
+		})
 	})
 
 	Describe("result pagination", func() {

@@ -21,7 +21,7 @@ $$
 CREATE OR REPLACE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event)
     RETURNS api.flip_bid_snapshot AS
 $$
-WITH ilks AS (
+WITH ilk AS (
     SELECT ilks.identifier
     FROM maker.flip_ilk
              LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
@@ -29,7 +29,7 @@ WITH ilks AS (
     LIMIT 1
 )
 SELECT *
-FROM api.get_flip(event.bid_id, (SELECT identifier FROM ilks))
+FROM api.get_flip(event.bid_id, (SELECT identifier FROM ilk))
 $$
     LANGUAGE sql
     STABLE;
