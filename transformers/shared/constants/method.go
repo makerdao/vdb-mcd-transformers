@@ -56,6 +56,7 @@ func FlipV100ABI() string {
 }
 func FlipV110ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"MCD_FLIP_AAVE_A_1_2_2",
 		"MCD_FLIP_BAL_A_1_1_14",
 		"MCD_FLIP_BAT_A_1_1_0",
 		"MCD_FLIP_COMP_A_1_1_2",
@@ -70,6 +71,7 @@ func FlipV110ABI() string {
 		"MCD_FLIP_RENBTC_A_1_2_1",
 		"MCD_FLIP_TUSD_A_1_1_0",
 		"MCD_FLIP_UNI_A_1_2_1",
+		"MCD_FLIP_UNIV2DAIETH_A_1_2_2",
 		"MCD_FLIP_USDC_A_1_1_0",
 		"MCD_FLIP_USDC_B_1_1_0",
 		"MCD_FLIP_USDT_A_1_1_1",
@@ -102,6 +104,7 @@ func MedianV100ABI() string {
 
 func MedianV114ABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"MEDIAN_AAVE_1_2_2",
 		"MEDIAN_BAL_1_1_14",
 		"MEDIAN_UNI_1_2_1",
 		"MEDIAN_YFI_1_1_14",
@@ -109,6 +112,7 @@ func MedianV114ABI() string {
 }
 func OsmABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"OSM_AAVE",
 		"OSM_BAL",
 		"OSM_BAT",
 		"OSM_COMP",

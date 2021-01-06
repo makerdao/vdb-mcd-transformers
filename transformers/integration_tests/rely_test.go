@@ -34,6 +34,13 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510870), test_data.FlapV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip AAVE v1.2.2 rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
+		relyIntegrationTest(int64(11471534), test_data.FlipAaveAV122Address(), msgSenderAddress,
+			usrAddress)
+	})
+
 	Context("Flip BAL v1.1.14 rely events", func() {
 		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
 		msgSenderAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
@@ -137,6 +144,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(10510886), test_data.FlipTusdAV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip UNIV2DAIETH v1.2.2 rely events", func() {
+		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
+		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		relyIntegrationTest(int64(11497506), test_data.FlipUniV2DaiEthAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip UNI-A v1.2.1 rely events", func() {
 		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
@@ -221,6 +234,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(int64(8928160), test_data.JugAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Median AAVE-A rely events", func() {
+		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
+		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
+		relyIntegrationTest(int64(11472295), test_data.MedianAaveAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Median BAL rely events", func() {
 		usrAddress := "0xBE8E3E3618F7474F8CB1D074A26AFFEF007E98FB"
 		msgSenderAddress := "0x0048d6225D1F3eA4385627eFDC5B4709Cab4A21c"
@@ -297,6 +316,12 @@ var _ = Describe("Rely transformer", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		relyIntegrationTest(int64(10323394), test_data.MedianZrxAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("OSM AAVE-A rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0x0048d6225d1f3ea4385627efdc5b4709cab4a21c"
+		relyIntegrationTest(int64(11472399), test_data.OsmAaveAddress(), msgSenderAddress, usrAddress)
 	})
 
 	Context("OSM BAL rely events", func() {
