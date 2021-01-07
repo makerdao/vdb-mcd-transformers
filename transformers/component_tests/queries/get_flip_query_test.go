@@ -54,13 +54,14 @@ var _ = Describe("Single flip view", func() {
 
 			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10),
 				strconv.FormatInt(urnId, 10), "true", headerOne.Timestamp, headerOne.Timestamp, flipStorageValuesOne)
+			expectedBid.BlockHeight = strconv.FormatInt(headerOne.BlockNumber, 10)
 
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, fakeBidId)
 			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBid test_helpers.FlipBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.get_flip_with_address($1, $2, $3, $4)`,
+			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated, block_height FROM api.get_flip_with_address($1, $2, $3, $4)`,
 				fakeBidId, contractAddress, test_helpers.FakeIlk.Identifier, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 

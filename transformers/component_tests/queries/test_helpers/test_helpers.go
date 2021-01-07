@@ -533,6 +533,7 @@ type FlipBid struct {
 	Gal         string
 	Tab         string
 	FlipAddress string `db:"flip_address"`
+	BlockHeight string `db:"block_height"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {

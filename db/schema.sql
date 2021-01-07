@@ -1335,7 +1335,8 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                 gal,
                 tab,
                 created,
-                updated
+                updated,
+                block_number
          FROM maker.flip
          WHERE flip.bid_id = get_flip_with_address.bid_id
            AND flip.address_id = (SELECT id FROM address_id)
@@ -1349,7 +1350,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                WHERE deal.bid_id = get_flip_with_address.bid_id
                  AND deal.address_id = (SELECT * FROM address_id)
                  AND headers.block_number <= block_height)
-SELECT get_flip_with_address.block_height,
+SELECT storage_values.block_number,
        get_flip_with_address.bid_id,
        (SELECT id FROM ilk_id),
        (SELECT id FROM urn_id),
