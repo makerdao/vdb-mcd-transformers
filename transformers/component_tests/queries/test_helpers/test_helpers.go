@@ -45,7 +45,6 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/gomega"
 )
 
@@ -487,14 +486,14 @@ func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[stri
 	}
 }
 
-func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
+func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created, flipAddress string, bidValues map[string]interface{}) FlipBid {
 	return FlipBid{
 		commonBid:   commonBidFromValues(bidId, dealt, updated, created, bidValues),
 		IlkId:       ilkId,
 		UrnId:       urnId,
 		Gal:         bidValues[storage.BidGal].(string),
 		Tab:         bidValues[storage.BidTab].(string),
-		FlipAddress: fakes.FakeAddress.Hex(),
+		FlipAddress: flipAddress,
 	}
 }
 
