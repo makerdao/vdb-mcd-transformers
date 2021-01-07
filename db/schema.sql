@@ -565,7 +565,7 @@ BEGIN
         )
         SELECT f.*
         FROM bids,
-             LATERAL api.get_flip_with_address(bids.bid_id, bids.address, all_flips.ilk) f
+             LATERAL api.get_flip_with_address(bids.bid_id, bids.address) f
     );
 END
 $$;
@@ -973,7 +973,7 @@ CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS api.flip_bid_sn
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_flip_with_address(event.bid_id, event.flip_address, event.ilk_identifier, event.block_height)
+FROM api.get_flip_with_address(event.bid_id, event.flip_address, event.block_height)
 $$;
 
 
@@ -1076,15 +1076,7 @@ $$;
 CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
-WITH ilks AS (
-    SELECT ilks.identifier
-    FROM maker.flip_ilk
-             LEFT JOIN maker.ilks ON ilks.id = flip_ilk.ilk_id
-    WHERE flip_ilk.address_id = (SELECT id FROM addresses WHERE address = event.contract_address)
-    LIMIT 1
-)
-SELECT *
-FROM api.get_flip_with_address(event.bid_id, event.contract_address, (SELECT identifier FROM ilks))
+SELECT * FROM api.get_flip_with_address(event.bid_id, event.contract_address)
 $$;
 
 
@@ -1309,14 +1301,14 @@ $$;
 
 
 --
--- Name: get_flip_with_address(numeric, text, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_flip_with_address(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flip_with_address(bid_id numeric, flip_address text, ilk text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_bid_snapshot
+CREATE FUNCTION api.get_flip_with_address(bid_id numeric, flip_address text, block_height bigint DEFAULT api.max_block()) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_address.ilk),
-     address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
+     ilk_id as (SELECT DISTINCT ilk_id FROM maker.flip_ilk WHERE flip_ilk.address_id = (SELECT id FROM address_id)),
      kick AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip_with_address.bid_id
@@ -1324,7 +1316,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
-                WHERE urns.ilk_id = (SELECT id FROM ilk_id)
+                WHERE urns.ilk_id = (SELECT ilk_id FROM ilk_id)
                   AND urns.identifier = (SELECT usr FROM kick)),
      storage_values AS (
          SELECT guy,
@@ -1352,7 +1344,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                  AND headers.block_number <= block_height)
 SELECT storage_values.block_number,
        get_flip_with_address.bid_id,
-       (SELECT id FROM ilk_id),
+       (SELECT ilk_id FROM ilk_id),
        (SELECT id FROM urn_id),
        storage_values.guy,
        storage_values.tic,

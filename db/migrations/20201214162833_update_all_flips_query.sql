@@ -28,7 +28,7 @@ BEGIN
         )
         SELECT f.*
         FROM bids,
-             LATERAL api.get_flip_with_address(bids.bid_id, bids.address, all_flips.ilk) f
+             LATERAL api.get_flip_with_address(bids.bid_id, bids.address) f
     );
 END
 $BODY$

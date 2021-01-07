@@ -60,8 +60,8 @@ var _ = Describe("Single flip view", func() {
 			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, test_helpers.GetFlipMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
 			var actualBid test_helpers.FlipBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated, block_height FROM api.get_flip_with_address($1, $2, $3, $4)`,
-				fakeBidId, contractAddress, test_helpers.FakeIlk.Identifier, blockOne)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated, block_height FROM api.get_flip_with_address($1, $2, $3)`,
+				fakeBidId, contractAddress, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid).To(Equal(actualBid))
@@ -88,8 +88,8 @@ var _ = Describe("Single flip view", func() {
 				expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, contractAddress, flipStorageValues)
 
 				var actualBid test_helpers.FlipBid
-				queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.get_flip_with_address($1, $2, $3, $4)`,
-					fakeBidId, contractAddress, test_helpers.FakeIlk.Identifier, blockOne)
+				queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.get_flip_with_address($1, $2, $3)`,
+					fakeBidId, contractAddress, blockOne)
 				Expect(queryErr).NotTo(HaveOccurred())
 
 				Expect(expectedBid).To(Equal(actualBid))
@@ -121,8 +121,8 @@ var _ = Describe("Single flip view", func() {
 				expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, contractAddress, flipStorageValuesOne)
 
 				var actualBid test_helpers.FlipBid
-				queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.get_flip_with_address($1, $2, $3, $4)`,
-					fakeBidId, contractAddress, test_helpers.FakeIlk.Identifier, blockOne)
+				queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated FROM api.get_flip_with_address($1, $2, $3)`,
+					fakeBidId, contractAddress, blockOne)
 				Expect(queryErr).NotTo(HaveOccurred())
 
 				Expect(expectedBid).To(Equal(actualBid))
@@ -154,8 +154,8 @@ var _ = Describe("Single flip view", func() {
 			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(fakeBidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10), "true", headerTwo.Timestamp, headerOne.Timestamp, contractAddress, flipStorageValuesOne)
 
 			var actualBid test_helpers.FlipBid
-			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip_with_address($1, $2, $3, $4)`,
-				fakeBidId, contractAddress, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber)
+			queryErr := db.Get(&actualBid, `SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, created, updated FROM api.get_flip_with_address($1, $2, $3)`,
+				fakeBidId, contractAddress, headerTwo.BlockNumber)
 			Expect(queryErr).NotTo(HaveOccurred())
 
 			Expect(expectedBid.Created).To(Equal(actualBid.Created))

@@ -2,12 +2,12 @@
 
 -- add a new function that works the same as get_flip but takes into account a specific flip_address
 -- this is required because there are now more than one flip contract per ilk
-CREATE OR REPLACE FUNCTION api.get_flip_with_address(bid_id NUMERIC, flip_address TEXT, ilk TEXT, block_height BIGINT DEFAULT api.max_block())
+CREATE OR REPLACE FUNCTION api.get_flip_with_address(bid_id NUMERIC, flip_address TEXT, block_height BIGINT DEFAULT api.max_block())
     RETURNS api.flip_bid_snapshot
 AS
 $$
-WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_address.ilk),
-     address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
+     ilk_id as (SELECT DISTINCT ilk_id FROM maker.flip_ilk WHERE flip_ilk.address_id = (SELECT id FROM address_id)),
      kick AS (SELECT usr
                FROM maker.flip_kick
                WHERE flip_kick.bid_id = get_flip_with_address.bid_id
@@ -15,7 +15,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
-                WHERE urns.ilk_id = (SELECT id FROM ilk_id)
+                WHERE urns.ilk_id = (SELECT ilk_id FROM ilk_id)
                   AND urns.identifier = (SELECT usr FROM kick)),
 
      storage_values AS (
@@ -44,7 +44,7 @@ WITH ilk_id AS (SELECT id FROM maker.ilks WHERE ilks.identifier = get_flip_with_
                  AND headers.block_number <= block_height)
 SELECT storage_values.block_number,
        get_flip_with_address.bid_id,
-       (SELECT id FROM ilk_id),
+       (SELECT ilk_id FROM ilk_id),
        (SELECT id FROM urn_id),
        storage_values.guy,
        storage_values.tic,
@@ -67,4 +67,4 @@ $$
 
 
 -- +goose Down
-DROP FUNCTION api.get_flip_with_address(bid_id NUMERIC, flip_address TEXT, ilk TEXT, block_height BIGINT);
+DROP FUNCTION api.get_flip_with_address(bid_id NUMERIC, flip_address TEXT, block_height BIGINT);

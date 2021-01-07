@@ -67,7 +67,7 @@ CREATE OR REPLACE FUNCTION api.bite_event_bid(event api.bite_event)
     RETURNS api.flip_bid_snapshot AS
 $$
 SELECT *
-FROM api.get_flip_with_address(event.bid_id, event.flip_address, event.ilk_identifier, event.block_height)
+FROM api.get_flip_with_address(event.bid_id, event.flip_address, event.block_height)
 $$
     LANGUAGE sql
     STABLE;
