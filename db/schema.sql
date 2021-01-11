@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.6
--- Dumped by pg_dump version 11.6
+-- Dumped from database version 11.2
+-- Dumped by pg_dump version 11.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16367,6 +16367,13 @@ ALTER TABLE ONLY maker.yank
 
 ALTER TABLE ONLY maker.yank
     ADD CONSTRAINT yank_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: urn_snapshot_block_height_index; Type: INDEX; Schema: api; Owner: -
+--
+
+CREATE INDEX urn_snapshot_block_height_index ON api.urn_snapshot USING btree (block_height);
 
 
 --
