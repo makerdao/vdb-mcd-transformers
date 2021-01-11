@@ -16370,6 +16370,13 @@ ALTER TABLE ONLY maker.yank
 
 
 --
+-- Name: urn_snapshot_block_height_index; Type: INDEX; Schema: api; Owner: -
+--
+
+CREATE INDEX urn_snapshot_block_height_index ON api.urn_snapshot USING btree (block_height);
+
+
+--
 -- Name: auction_file_address_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
