@@ -125,7 +125,7 @@ func SharedIlkTriggerTests(input IlkTriggerTestInput) {
 			hashTwo          = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 			hashThree        = common.BytesToHash([]byte{6, 7, 8, 9, 0})
 			table            = shared.GetFullTableName(input.Schema, input.TableName)
-			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated FROM api.ilk_snapshot ORDER BY block_number`
+			getStateQuery    = `SELECT ilk_identifier, block_number, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, updated, dunk FROM api.ilk_snapshot ORDER BY block_number`
 			getFieldQuery    = fmt.Sprintf(`SELECT %s FROM api.ilk_snapshot ORDER BY block_number`, input.Metadata.Name)
 			insertFieldQuery = fmt.Sprintf(`INSERT INTO api.ilk_snapshot (ilk_identifier, block_number, %s) VALUES ($1, $2, $3)`, input.Metadata.Name)
 			deleteRowQuery   = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, table)
@@ -337,6 +337,7 @@ func assertIlk(actualIlk test_helpers.IlkSnapshot, expectedIlk test_helpers.IlkS
 	Expect(actualIlk.Dust).To(Equal(expectedIlk.Dust))
 	Expect(actualIlk.Chop).To(Equal(expectedIlk.Chop))
 	Expect(actualIlk.Lump).To(Equal(expectedIlk.Lump))
+	Expect(actualIlk.Dunk).To(Equal(expectedIlk.Dunk))
 	Expect(actualIlk.Flip).To(Equal(expectedIlk.Flip))
 	Expect(actualIlk.Rho).To(Equal(expectedIlk.Rho))
 	Expect(actualIlk.Duty).To(Equal(expectedIlk.Duty))
