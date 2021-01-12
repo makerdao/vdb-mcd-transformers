@@ -35,13 +35,11 @@ var _ = Describe("Get Block Height for Transformed Diffs Query", func() {
 	It("ignores untransformed diffs", func() {
 		test_helpers.CreateFakeDiffRecord(db)
 
-		var diff []int
-		Expect(db.Select(&diff, blockHeightsForTransformedStorageDiffs)).To(Succeed())
-
-		Expect(diff).To(BeEmpty())
+		var diff int
+		Expect(diff).To(Equal(0))
 	})
 
-	It("includes the block heights, in ascending order for all transformed diffs", func() {
+	It("returns the max block height of transformed diffs", func() {
 		diffRepo := storage.NewDiffRepository(db)
 		firstHeader := fakes.GetFakeHeader(1)
 		secondHeader := fakes.GetFakeHeader(2)
@@ -50,11 +48,9 @@ var _ = Describe("Get Block Height for Transformed Diffs Query", func() {
 		diffRepo.MarkTransformed(firstDiff)
 		diffRepo.MarkTransformed(secondDiff)
 
-		var diff []int
-		Expect(db.Select(&diff, blockHeightsForTransformedStorageDiffs)).To(Succeed())
+		var diff int
+		Expect(db.Get(&diff, blockHeightsForTransformedStorageDiffs)).To(Succeed())
 
-		Expect(len(diff)).To(Equal(2))
-		Expect(diff[0]).To(Equal(1))
-		Expect(diff[1]).To(Equal(2))
+		Expect(diff).To(Equal(2))
 	})
 })
