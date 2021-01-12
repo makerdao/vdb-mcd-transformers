@@ -1249,6 +1249,17 @@ $$;
 
 
 --
+-- Name: get_block_heights_for_transformed_diffs(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_block_heights_for_transformed_diffs() RETURNS SETOF bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT block_height FROM public.storage_diff WHERE status = 'transformed' ORDER BY block_height ASC
+$$;
+
+
+--
 -- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
