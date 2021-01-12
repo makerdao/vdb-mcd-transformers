@@ -268,7 +268,8 @@ var _ = Describe("All Urns function", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
+			diffIdTwo := test_helpers.CreateFakeDiffRecordWithHeader(db, fakeHeaderTwo)
+			err = vatRepo.Create(diffIdTwo, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			expectedTimestampOne := helper.GetExpectedTimestamp(timestampOne)

@@ -2199,21 +2199,21 @@ COMMENT ON FUNCTION maker.delete_obsolete_flop(bid_id numeric, address_id bigint
 
 
 --
--- Name: delete_obsolete_urn_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
+-- Name: delete_obsolete_urn_snapshot(integer, integer, bigint); Type: FUNCTION; Schema: maker; Owner: -
 --
 
-CREATE FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) RETURNS api.urn_snapshot
+CREATE FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer, diff_id bigint) RETURNS api.urn_snapshot
     LANGUAGE plpgsql
     AS $$
 DECLARE
     urn_snapshot_block_number BIGINT := (
-        SELECT block_number
-        FROM public.headers
-        WHERE id = header_id);
+        SELECT block_height
+        FROM public.storage_diff
+        WHERE id = diff_id);
 BEGIN
     DELETE
     FROM api.urn_snapshot
-        USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
+         USING maker.urns LEFT JOIN maker.ilks ON urns.ilk_id = ilks.id
     WHERE urn_snapshot.urn_identifier = urns.identifier
       AND urn_snapshot.ilk_identifier = ilks.identifier
       AND urns.id = urn_id
@@ -4410,7 +4410,7 @@ BEGIN
     VALUES ((SELECT urn_identifier FROM urn),
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
-            urn_ink_before_block(new_diff.urn_id, new_diff.header_id),
+            urn_ink_before_block(new_diff.urn_id, new_diff.diff_id),
             new_diff.art,
             urn_time_created(new_diff.urn_id),
             (SELECT block_timestamp FROM new_diff_header))
@@ -4464,7 +4464,7 @@ BEGIN
             (SELECT ilk_identifier FROM urn),
             (SELECT block_number FROM new_diff_header),
             new_diff.ink,
-            urn_art_before_block(new_diff.urn_id, new_diff.header_id),
+            urn_art_before_block(new_diff.urn_id, new_diff.diff_id),
             urn_time_created(new_diff.urn_id),
             (SELECT block_timestamp FROM new_diff_header))
     ON CONFLICT (urn_identifier, ilk_identifier, block_height)
@@ -6532,8 +6532,8 @@ BEGIN
         PERFORM maker.insert_urn_art(NEW);
         PERFORM maker.update_urn_arts_until_next_diff(NEW, NEW.art);
     ELSIF (TG_OP = 'DELETE') THEN
-        PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
+        PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.diff_id));
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
     END IF;
     RETURN NULL;
 END
@@ -6549,9 +6549,9 @@ CREATE FUNCTION maker.update_urn_arts_until_next_diff(start_at_diff maker.vat_ur
     AS $$
 DECLARE
     diff_block_number    BIGINT := (
-        SELECT block_number
-        FROM public.headers
-        WHERE id = start_at_diff.header_id);
+        SELECT block_height
+        FROM public.storage_diff
+        WHERE id = start_at_diff.diff_id);
     next_rate_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_urn_art
@@ -6625,8 +6625,8 @@ BEGIN
         PERFORM maker.update_urn_inks_until_next_diff(NEW, NEW.ink);
         PERFORM maker.update_urn_created(NEW.urn_id);
     ELSIF (TG_OP = 'DELETE') THEN
-        PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.header_id));
-        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id);
+        PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.diff_id));
+        PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
     END IF;
     RETURN NULL;
@@ -6643,10 +6643,10 @@ CREATE FUNCTION maker.update_urn_inks_until_next_diff(start_at_diff maker.vat_ur
     AS $$
 DECLARE
     diff_block_number    BIGINT := (
-        SELECT block_number
-        FROM public.headers
-        WHERE id = start_at_diff.header_id);
-    next_rate_diff_block BIGINT := (
+        SELECT block_height
+        FROM public.storage_diff
+        WHERE id = start_at_diff.diff_id);
+    next_ink_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_urn_ink
                  LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
@@ -6664,8 +6664,8 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urn.urn_identifier
       AND urn_snapshot.ilk_identifier = urn.ilk_identifier
       AND urn_snapshot.block_height >= diff_block_number
-      AND (next_rate_diff_block IS NULL
-        OR urn_snapshot.block_height < next_rate_diff_block);
+      AND (next_ink_diff_block IS NULL
+        OR urn_snapshot.block_height < next_ink_diff_block);
     RETURN NULL;
 END
 $$;

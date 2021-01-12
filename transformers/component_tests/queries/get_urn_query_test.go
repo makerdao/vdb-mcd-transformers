@@ -135,7 +135,8 @@ var _ = Describe("Single urn view", func() {
 		It("gets urn state with updated values", func() {
 			updatedInk := rand.Int()
 
-			createErr := vatRepo.Create(diffID, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
+			diffIdTwo := storage_helper.CreateFakeDiffRecordWithHeader(db, headerTwo)
+			createErr := vatRepo.Create(diffIdTwo, headerTwo.Id, metadata.UrnInk, strconv.Itoa(updatedInk))
 			Expect(createErr).NotTo(HaveOccurred())
 
 			expectedTimestampOne := test_helpers.GetExpectedTimestamp(timestampOne)
