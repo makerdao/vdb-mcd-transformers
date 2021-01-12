@@ -144,7 +144,7 @@ if [ "$ENVIRONMENT" == "prod" ]; then
 elif [ "$ENVIRONMENT" == "staging" ]; then
 
     message DEPLOYING EXECUTE
-    aws ecs update-service
+    aws ecs update-service \
       --cluster vdb-cluster-$ENVIRONMENT \
       --service vdb-execute-$ENVIRONMENT \
       --force-new-deployment \
