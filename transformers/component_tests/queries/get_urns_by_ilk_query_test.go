@@ -177,7 +177,7 @@ var _ = Describe("All Urns function", func() {
 
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
-			FROM api.get_urns_by_ilk($1, $2, $3)`, helper.FakeIlk.Identifier, blockTwo, maxResults)
+			FROM api.get_urns_by_ilk($1, $2, $3, $4)`, helper.FakeIlk.Identifier, blockTwo, blockOne, maxResults)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(maxResults))
@@ -190,7 +190,7 @@ var _ = Describe("All Urns function", func() {
 
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
-			FROM api.get_urns_by_ilk($1, $2, $3, $4)`, helper.FakeIlk.Identifier, blockTwo, maxResults, resultOffset)
+			FROM api.get_urns_by_ilk($1, $2, $3, $4, $5)`, helper.FakeIlk.Identifier, blockTwo, blockOne, maxResults, resultOffset)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(1))
@@ -203,12 +203,13 @@ var _ = Describe("All Urns function", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Describe("it includes diffs only up to given block height", func() {
+	Describe("selecting diffs by block height", func() {
 		var (
-			actualUrn                          helper.UrnState
-			blockTwo, timestampTwo, updatedInk int
-			setupDataOne                       map[string]interface{}
-			metadata                           helper.UrnMetadata
+			actualUrn                                 helper.UrnState
+			blockTwo, timestampTwo, blockTwoInk       int
+			blockThree, timestampThree, blockThreeInk int
+			setupDataOne                              map[string]interface{}
+			metadata                                  helper.UrnMetadata
 		)
 
 		BeforeEach(func() {
@@ -225,12 +226,25 @@ var _ = Describe("All Urns function", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
-			updatedInk = rand.Int()
-			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(updatedInk))
+			blockTwoInk = rand.Int()
+			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(blockTwoInk))
+			Expect(err).NotTo(HaveOccurred())
+
+			blockThree = blockTwo + 1
+			fakeHeaderThree := fakes.GetFakeHeader(int64(blockThree))
+			timestampThree = timestampTwo + 1
+			fakeHeaderThree.Timestamp = strconv.Itoa(timestampThree)
+			hashThree := test_data.RandomString(5)
+			fakeHeaderThree.Hash = hashThree
+			fakeHeaderThreeID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderThree)
+			Expect(err).NotTo(HaveOccurred())
+
+			blockThreeInk = rand.Int()
+			err = vatRepo.Create(diffID, fakeHeaderThreeID, metadata.UrnInk, strconv.Itoa(blockThreeInk))
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("gets urn state as of block one", func() {
+		It("gets past urn state as of block one", func() {
 			err = db.Get(&actualUrn, urnsByIlkQuery, helper.FakeIlk.Identifier, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -248,20 +262,40 @@ var _ = Describe("All Urns function", func() {
 			helper.AssertUrn(actualUrn, expectedUrn)
 		})
 
-		It("gets urn state with updated values", func() {
+		It("gets latest urn state with updated values as of block three", func() {
+			createdTimestamp := helper.GetExpectedTimestamp(timestampOne)
+			updatedTimestampThree := helper.GetExpectedTimestamp(timestampThree)
+			expectedUrn := helper.UrnState{
+				UrnIdentifier: urnOne,
+				IlkIdentifier: helper.FakeIlk.Identifier,
+				BlockHeight:   blockThree,
+				Ink:           strconv.Itoa(blockThreeInk),
+				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)), // Not changed
+				Created:       helper.GetValidNullString(createdTimestamp),
+				Updated:       helper.GetValidNullString(updatedTimestampThree),
+			}
+
+			err = db.Get(&actualUrn, urnsByIlkQuery, helper.FakeIlk.Identifier, blockThree)
+			Expect(err).NotTo(HaveOccurred())
+
+			helper.AssertUrn(actualUrn, expectedUrn)
+		})
+
+		It("gets urn state as of block two by filtering by both min and max block height", func() {
 			createdTimestamp := helper.GetExpectedTimestamp(timestampOne)
 			updatedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
 				UrnIdentifier: urnOne,
 				IlkIdentifier: helper.FakeIlk.Identifier,
 				BlockHeight:   blockTwo,
-				Ink:           strconv.Itoa(updatedInk),
+				Ink:           strconv.Itoa(blockTwoInk),
 				Art:           strconv.Itoa(setupDataOne[vat.UrnArt].(int)), // Not changed
 				Created:       helper.GetValidNullString(createdTimestamp),
 				Updated:       helper.GetValidNullString(updatedTimestampTwo),
 			}
 
-			err = db.Get(&actualUrn, urnsByIlkQuery, helper.FakeIlk.Identifier, blockTwo)
+			urnsByIlkMinHeightQuery := `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.get_urns_by_ilk($1, $2, $3)`
+			err = db.Get(&actualUrn, urnsByIlkMinHeightQuery, helper.FakeIlk.Identifier, blockTwo, blockOne)
 			Expect(err).NotTo(HaveOccurred())
 
 			helper.AssertUrn(actualUrn, expectedUrn)

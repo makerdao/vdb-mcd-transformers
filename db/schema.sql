@@ -1476,10 +1476,10 @@ $$;
 
 
 --
--- Name: get_urns_by_ilk(text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_urns_by_ilk(text, bigint, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_urns_by_ilk(ilk_identifier text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_snapshot
+CREATE FUNCTION api.get_urns_by_ilk(ilk_identifier text, block_height bigint DEFAULT api.max_block(), min_block_height bigint DEFAULT 0, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.urn_snapshot
     LANGUAGE sql STABLE
     AS $$
 SELECT *
@@ -1492,6 +1492,7 @@ FROM (SELECT DISTINCT ON (urn_identifier, urn_snapshot.ilk_identifier) urn_ident
                                                                        updated
       FROM api.urn_snapshot
       WHERE urn_snapshot.block_height <= get_urns_by_ilk.block_height
+        AND urn_snapshot.block_height >= get_urns_by_ilk.min_block_height
         AND urn_snapshot.ilk_identifier = get_urns_by_ilk.ilk_identifier
       ORDER BY urn_identifier, ilk_identifier, updated DESC) AS latest_urns
 ORDER BY updated DESC
