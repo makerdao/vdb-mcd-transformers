@@ -1492,7 +1492,7 @@ FROM (SELECT DISTINCT ON (urn_identifier, urn_snapshot.ilk_identifier) urn_ident
                                                                        updated
       FROM api.urn_snapshot
       WHERE urn_snapshot.block_height <= get_urns_by_ilk.block_height
-        AND urn_snapshot.block_height > get_urns_by_ilk.min_block_height
+        AND urn_snapshot.block_height >= get_urns_by_ilk.min_block_height
         AND urn_snapshot.ilk_identifier = get_urns_by_ilk.ilk_identifier
       ORDER BY urn_identifier, ilk_identifier, updated DESC) AS latest_urns
 ORDER BY updated DESC

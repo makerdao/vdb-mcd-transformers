@@ -190,7 +190,7 @@ var _ = Describe("All Urns function", func() {
 
 			var result []helper.UrnState
 			err = db.Select(&result, `SELECT urn_identifier, ilk_identifier, ink, art, created, updated
-			FROM api.get_urns_by_ilk($1, $2, $3, $4, $5)`, helper.FakeIlk.Identifier, blockTwo, 0, maxResults, resultOffset)
+			FROM api.get_urns_by_ilk($1, $2, $3, $4, $5)`, helper.FakeIlk.Identifier, blockTwo, blockOne, maxResults, resultOffset)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(len(result)).To(Equal(1))
@@ -281,7 +281,7 @@ var _ = Describe("All Urns function", func() {
 			helper.AssertUrn(actualUrn, expectedUrn)
 		})
 
-		It("gets block two urn state with updated values using both min and max block height", func() {
+		It("gets urn state as of block two by filtering by both min and max block height", func() {
 			createdTimestamp := helper.GetExpectedTimestamp(timestampOne)
 			updatedTimestampTwo := helper.GetExpectedTimestamp(timestampTwo)
 			expectedUrn := helper.UrnState{
