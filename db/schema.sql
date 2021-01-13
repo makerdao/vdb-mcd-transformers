@@ -546,8 +546,8 @@ CREATE FUNCTION api.all_flips(ilk text, max_results integer DEFAULT '-1'::intege
 BEGIN
     RETURN QUERY (
         WITH ilk_id AS (SELECT id
-                         FROM maker.ilks
-                         WHERE identifier = all_flips.ilk),
+                        FROM maker.ilks
+                        WHERE identifier = all_flips.ilk),
              address_ids AS (
                  SELECT DISTINCT address_id as id
                  FROM maker.flip_ilk
@@ -556,13 +556,13 @@ BEGIN
              bids AS (
                  SELECT DISTINCT bid_id, address
                  FROM maker.flip
-                 JOIN addresses on addresses.id = maker.flip.address_id
+                          JOIN addresses on addresses.id = maker.flip.address_id
                  WHERE maker.flip.address_id IN (SELECT * FROM address_ids)
                  ORDER BY bid_id DESC
                  LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
                      OFFSET
                      all_flips.result_offset
-        )
+             )
         SELECT f.*
         FROM bids,
              LATERAL api.get_flip_with_address(bids.bid_id, bids.address) f
@@ -1310,10 +1310,10 @@ CREATE FUNCTION api.get_flip_with_address(bid_id numeric, flip_address text, blo
 WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_flip_with_address.flip_address),
      ilk_id as (SELECT DISTINCT ilk_id FROM maker.flip_ilk WHERE flip_ilk.address_id = (SELECT id FROM address_id)),
      kick AS (SELECT usr
-               FROM maker.flip_kick
-               WHERE flip_kick.bid_id = get_flip_with_address.bid_id
-                 AND address_id = (SELECT * FROM address_id)
-               LIMIT 1),
+              FROM maker.flip_kick
+              WHERE flip_kick.bid_id = get_flip_with_address.bid_id
+                AND address_id = (SELECT * FROM address_id)
+              LIMIT 1),
      urn_id AS (SELECT id
                 FROM maker.urns
                 WHERE urns.ilk_id = (SELECT ilk_id FROM ilk_id)
