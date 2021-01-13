@@ -66,11 +66,14 @@ func CreateTestHeader(db *postgres.DB) int64 {
 
 // Create a header sync log to reference in an event, returning inserted header sync log
 func CreateTestLog(headerID int64, db *postgres.DB) core.EventLog {
+	var blockNumber uint64
+	err := db.Get(&blockNumber, `SELECT block_number FROM public.headers WHERE id = $1`, headerID)
+	Expect(err).NotTo(HaveOccurred())
 	log := types.Log{
 		Address:     common.Address{},
 		Topics:      nil,
 		Data:        nil,
-		BlockNumber: 0,
+		BlockNumber: blockNumber,
 		TxHash:      common.HexToHash("0x" + RandomString(64)),
 		TxIndex:     uint(rand.Int31()),
 		BlockHash:   common.Hash{},
