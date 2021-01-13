@@ -37,6 +37,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 	var (
 		blockOne, timestampOne int
 		fakeGuy                = fakes.RandomString(42)
+		fakeFlipAddress = fakes.FakeAddress.Hex()
 		headerOne              core.Header
 		headerRepository       datastore.HeaderRepository
 		logID                  int64
@@ -250,7 +251,7 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 
 	Describe("ilk_snapshot_bites", func() {
 		It("returns bite event for an ilk_snapshot", func() {
-			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerOne.Id, logID, db)
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeFlipAddress, headerOne.Id, logID, db)
 			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
@@ -279,14 +280,14 @@ var _ = Describe("ilk_snapshot computed columns", func() {
 			)
 
 			BeforeEach(func() {
-				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, headerOne.Id, logID, db)
+				oldBite = generateBite(test_helpers.FakeIlk.Hex, oldGuy, fakeFlipAddress, headerOne.Id, logID, db)
 				insertOldBiteErr := event.PersistModels([]event.InsertionModel{oldBite}, db)
 				Expect(insertOldBiteErr).NotTo(HaveOccurred())
 
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepository)
 				newLogId := test_data.CreateTestLog(headerTwo.Id, db).ID
 
-				newBite = generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, headerTwo.Id, newLogId, db)
+				newBite = generateBite(test_helpers.FakeIlk.Hex, test_data.FakeUrn, fakeFlipAddress, headerTwo.Id, newLogId, db)
 				insertNewBiteErr := event.PersistModels([]event.InsertionModel{newBite}, db)
 				Expect(insertNewBiteErr).NotTo(HaveOccurred())
 			})

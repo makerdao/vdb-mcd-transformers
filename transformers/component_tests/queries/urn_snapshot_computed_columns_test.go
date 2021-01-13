@@ -39,6 +39,7 @@ import (
 var _ = Describe("urn_snapshot computed columns", func() {
 	var (
 		fakeGuy = fakes.RandomString(42)
+		fakeFlipAddress = fakes.FakeAddress.Hex()
 		blockOne,
 		blockTwo,
 		timestampOne,
@@ -200,7 +201,7 @@ var _ = Describe("urn_snapshot computed columns", func() {
 			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
 
-			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logIdOne, db)
+			biteEvent := generateBite(test_helpers.FakeIlk.Hex, fakeGuy, fakeFlipAddress, headerOne.Id, logIdOne, db)
 			insertBiteErr := event.PersistModels([]event.InsertionModel{biteEvent}, db)
 			Expect(insertBiteErr).NotTo(HaveOccurred())
 
@@ -230,11 +231,11 @@ var _ = Describe("urn_snapshot computed columns", func() {
 				urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy)
 				test_helpers.CreateUrn(db, urnSetupData, headerTwo, urnMetadata, vatRepository)
 
-				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerOne.Id, logIdOne, db)
+				biteEventOne = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, fakeFlipAddress, headerOne.Id, logIdOne, db)
 				insertBiteOneErr := event.PersistModels([]event.InsertionModel{biteEventOne}, db)
 				Expect(insertBiteOneErr).NotTo(HaveOccurred())
 
-				biteEventTwo = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, headerTwo.Id, logIdTwo, db)
+				biteEventTwo = generateBite(test_helpers.FakeIlk.Hex, fakeGuy, fakeFlipAddress, headerTwo.Id, logIdTwo, db)
 				insertBiteTwoErr := event.PersistModels([]event.InsertionModel{biteEventTwo}, db)
 				Expect(insertBiteTwoErr).NotTo(HaveOccurred())
 			})

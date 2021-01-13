@@ -56,7 +56,8 @@ CREATE TYPE api.bite_event AS (
 	art numeric,
 	tab numeric,
 	block_height bigint,
-	log_id bigint
+	log_id bigint,
+	flip_address text
 );
 
 
@@ -277,15 +278,16 @@ SELECT ilk_identifier,
        art,
        tab,
        block_number,
-       log_id
+       log_id,
+       flip
 FROM maker.bite
          LEFT JOIN maker.urns ON bite.urn_id = urns.id
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE urns.ilk_id = (SELECT id FROM ilk)
 ORDER BY urn_identifier, block_number DESC
 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
-OFFSET
-all_bites.result_offset
+    OFFSET
+    all_bites.result_offset
 $$;
 
 
@@ -971,7 +973,7 @@ CREATE FUNCTION api.bite_event_bid(event api.bite_event) RETURNS api.flip_bid_sn
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_flip(event.bid_id, event.ilk_identifier, event.block_height)
+FROM api.get_flip_with_address(event.bid_id, event.flip_address, event.ilk_identifier, event.block_height)
 $$;
 
 
@@ -1847,14 +1849,15 @@ SELECT ilk_identifier,
        art,
        tab,
        block_number,
-       log_id
+       log_id,
+       flip
 FROM maker.bite
          LEFT JOIN headers ON bite.header_id = headers.id
 WHERE bite.urn_id = (SELECT id FROM urn)
 ORDER BY block_number DESC
 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
-OFFSET
-urn_bites.result_offset
+    OFFSET
+    urn_bites.result_offset
 $$;
 
 

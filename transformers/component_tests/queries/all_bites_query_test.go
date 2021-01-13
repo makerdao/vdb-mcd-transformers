@@ -15,6 +15,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -24,6 +25,7 @@ var _ = Describe("Bites query", func() {
 		headerRepo             datastore.HeaderRepository
 		blockOne, timestampOne int
 		fakeUrn                = test_data.RandomString(5)
+		fakeFlipAddress        = fakes.FakeAddress.Hex()
 		headerOne              core.Header
 	)
 
@@ -42,7 +44,7 @@ var _ = Describe("Bites query", func() {
 		It("returns bites for an ilk", func() {
 			biteLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
+			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteLog.ID, db)
 			createErr := event.PersistModels([]event.InsertionModel{biteOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
@@ -65,7 +67,7 @@ var _ = Describe("Bites query", func() {
 		It("returns bites from multiple blocks", func() {
 			biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteBlockOneLog.ID, db)
 			createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
@@ -73,7 +75,7 @@ var _ = Describe("Bites query", func() {
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
-			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerTwo.Id, biteBlockTwoLog.ID, db)
 			createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 			Expect(createErrTwo).NotTo(HaveOccurred())
 
@@ -103,8 +105,8 @@ var _ = Describe("Bites query", func() {
 			biteLog := test_data.CreateTestLog(headerOne.Id, db)
 			irrelevantBiteLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
-			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn, headerOne.Id, irrelevantBiteLog.ID, db)
+			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteLog.ID, db)
+			irrelevantBite := generateBite(test_helpers.AnotherFakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, irrelevantBiteLog.ID, db)
 
 			createErr := event.PersistModels([]event.InsertionModel{bite, irrelevantBite}, db)
 			Expect(createErr).NotTo(HaveOccurred())
@@ -136,7 +138,7 @@ var _ = Describe("Bites query", func() {
 			BeforeEach(func() {
 				biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
-				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
+				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteBlockOneLog.ID, db)
 				biteOneErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 				Expect(biteOneErr).NotTo(HaveOccurred())
 
@@ -144,7 +146,7 @@ var _ = Describe("Bites query", func() {
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 				biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
-				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
+				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerTwo.Id, biteBlockTwoLog.ID, db)
 				biteTwoErr := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 				Expect(biteTwoErr).NotTo(HaveOccurred())
 			})
@@ -192,7 +194,7 @@ var _ = Describe("Bites query", func() {
 		It("returns bites for relevant ilk/urn", func() {
 			biteOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteOneLog.ID, db)
+			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteOneLog.ID, db)
 			createErr := event.PersistModels([]event.InsertionModel{biteOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
@@ -214,7 +216,7 @@ var _ = Describe("Bites query", func() {
 		It("returns bites from multiple blocks", func() {
 			biteOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteOneLog.ID, db)
+			biteBlockOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteOneLog.ID, db)
 			createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 
@@ -222,7 +224,7 @@ var _ = Describe("Bites query", func() {
 			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 			biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
-			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
+			biteBlockTwo := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerTwo.Id, biteBlockTwoLog.ID, db)
 			createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 			Expect(createErrTwo).NotTo(HaveOccurred())
 
@@ -254,7 +256,7 @@ var _ = Describe("Bites query", func() {
 			BeforeEach(func() {
 				biteBlockOneLog := test_data.CreateTestLog(headerOne.Id, db)
 
-				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteBlockOneLog.ID, db)
+				biteBlockOne = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteBlockOneLog.ID, db)
 				createErr := event.PersistModels([]event.InsertionModel{biteBlockOne}, db)
 				Expect(createErr).NotTo(HaveOccurred())
 
@@ -262,7 +264,7 @@ var _ = Describe("Bites query", func() {
 				headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
 				biteBlockTwoLog := test_data.CreateTestLog(headerTwo.Id, db)
 
-				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerTwo.Id, biteBlockTwoLog.ID, db)
+				biteBlockTwo = generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerTwo.Id, biteBlockTwoLog.ID, db)
 				createErrTwo := event.PersistModels([]event.InsertionModel{biteBlockTwo}, db)
 				Expect(createErrTwo).NotTo(HaveOccurred())
 			})
@@ -309,8 +311,8 @@ var _ = Describe("Bites query", func() {
 			biteLog := test_data.CreateTestLog(headerOne.Id, db)
 			irrelevantBiteLog := test_data.CreateTestLog(headerOne.Id, db)
 
-			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
-			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn", headerOne.Id, irrelevantBiteLog.ID, db)
+			bite := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteLog.ID, db)
+			irrelevantBite := generateBite(test_helpers.FakeIlk.Hex, "irrelevantUrn", fakeFlipAddress, headerOne.Id, irrelevantBiteLog.ID, db)
 
 			createErr := event.PersistModels([]event.InsertionModel{bite, irrelevantBite}, db)
 			Expect(createErr).NotTo(HaveOccurred())
@@ -332,7 +334,7 @@ var _ = Describe("Bites query", func() {
 	})
 })
 
-func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event.InsertionModel {
+func generateBite(ilk, urn, flipAddress string, headerID, logID int64, db *postgres.DB) event.InsertionModel {
 	urnID, urnErr := shared.GetOrCreateUrn(urn, ilk, db)
 	Expect(urnErr).NotTo(HaveOccurred())
 	addressID, addressErr := repository.GetOrCreateAddress(db, test_data.Cat100Address())
@@ -347,5 +349,6 @@ func generateBite(ilk, urn string, headerID, logID int64, db *postgres.DB) event
 	biteEvent.ColumnValues[event.HeaderFK] = headerID
 	biteEvent.ColumnValues[event.LogFK] = logID
 	biteEvent.ColumnValues[event.AddressFK] = addressID
+	biteEvent.ColumnValues[constants.FlipColumn] = flipAddress
 	return biteEvent
 }
