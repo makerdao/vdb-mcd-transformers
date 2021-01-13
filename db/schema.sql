@@ -1249,17 +1249,6 @@ $$;
 
 
 --
--- Name: get_block_heights_for_transformed_diffs(); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_block_heights_for_transformed_diffs() RETURNS SETOF bigint
-    LANGUAGE sql STABLE
-    AS $$
-SELECT MAX (block_height) FROM public.storage_diff WHERE status = 'transformed'
-$$;
-
-
---
 -- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1433,6 +1422,17 @@ SELECT get_flop.bid_id,
        storage_values.created,
        storage_values.updated
 FROM storage_values
+$$;
+
+
+--
+-- Name: get_max_transformed_diff_block(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_max_transformed_diff_block() RETURNS bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT MAX (block_height) FROM public.storage_diff WHERE status = 'transformed'
 $$;
 
 

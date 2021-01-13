@@ -25,8 +25,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Get Block Height for Transformed Diffs Query", func() {
-	const blockHeightsForTransformedStorageDiffs = `SELECT * FROM api.get_block_heights_for_transformed_diffs()`
+var _ = Describe("Get the Max Block Height of Transformed Diffs Query", func() {
+	const maxBlockHeightOfTransformedStorageDiffs = `SELECT * FROM api.get_max_transformed_diff_block()`
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
@@ -36,6 +36,9 @@ var _ = Describe("Get Block Height for Transformed Diffs Query", func() {
 		test_helpers.CreateFakeDiffRecord(db)
 
 		var diff int
+		err := db.Get(&diff, maxBlockHeightOfTransformedStorageDiffs)
+		Expect(err).Should(HaveOccurred())
+
 		Expect(diff).To(Equal(0))
 	})
 
@@ -49,7 +52,7 @@ var _ = Describe("Get Block Height for Transformed Diffs Query", func() {
 		diffRepo.MarkTransformed(secondDiff)
 
 		var diff int
-		Expect(db.Get(&diff, blockHeightsForTransformedStorageDiffs)).To(Succeed())
+		Expect(db.Get(&diff, maxBlockHeightOfTransformedStorageDiffs)).To(Succeed())
 
 		Expect(diff).To(Equal(2))
 	})
