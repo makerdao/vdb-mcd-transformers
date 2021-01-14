@@ -1426,6 +1426,17 @@ $$;
 
 
 --
+-- Name: get_max_transformed_diff_block(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_max_transformed_diff_block() RETURNS bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT MAX (block_height) FROM public.storage_diff WHERE status = 'transformed'
+$$;
+
+
+--
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
