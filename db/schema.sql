@@ -1437,6 +1437,22 @@ $$;
 
 
 --
+-- Name: get_max_transformed_event_block(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_max_transformed_event_block() RETURNS bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT h.block_number
+FROM public.event_logs
+         JOIN headers h on h.id = event_logs.header_id
+WHERE transformed = true
+ORDER BY h.block_number DESC
+LIMIT 1
+$$;
+
+
+--
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
