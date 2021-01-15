@@ -781,6 +781,58 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(queryErr).NotTo(HaveOccurred())
 					Expect(len(urnStates)).To(Equal(0))
 				})
+
+				It("handles removing snapshots when there's a three-part reorg", func() {
+					// this test case mimics the issue that is detailed in VDB-1756 where we saw a reorg that resulted in
+					// receiving three headers - canonical, noncanonical, canonical
+
+					// set up the header, diff and snapshot before the scenario being tested
+					artBefore := rand.Int()
+					blockBefore := rand.Int()
+					blockBeforeTimestamp := int64(rand.Int31())
+
+					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
+					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
+					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
+					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnArtMetadata, strconv.Itoa(artBefore))
+					Expect(beforeSetupErr).NotTo(HaveOccurred())
+
+					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
+					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
+					art := artBefore + 1
+					block := blockBefore + 1
+					blockTimestamp := blockBeforeTimestamp + 1
+
+					// HEADER WITH HASH ONE
+					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
+					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					//HEADER WITH HASH TWO
+					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
+					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					var urnStates []test_helpers.UrnState
+					queryErr := db.Select(&urnStates, getArtQuery)
+					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(len(urnStates)).To(Equal(2))
+
+					// HEADER WITH HASH ONE AGAIN (but no diff)
+					// This is our current state, with urn 0x93d6F47469fBE0F37d6df5dAC7C876E86322071B. We are getting a
+					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
+					// the associated diffs at that block and are therefore not reinserting the associated
+					// vat_urn_ink/vat_urn_art records
+					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					var urnStates2 []test_helpers.UrnState
+					queryErr2 := db.Select(&urnStates2, getArtQuery)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					// TODO: once we fix the issue where we're not reprocessing the canonical diff, this assertion should
+					// be change to: Expect(len(urnStates2)).To(Equal(2))
+					Expect(len(urnStates2)).To(Equal(1))
+				})
 			})
 		})
 	})
@@ -1108,6 +1160,58 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(len(actualCreatedValues)).To(Equal(2))
 					Expect(actualCreatedValues[0]).To(Equal(expectedTimeCreated))
 					Expect(actualCreatedValues[1]).To(Equal(expectedTimeCreated))
+				})
+
+				It("handles removing snapshots when there's a three-part reorg", func() {
+					// this test case mimics the issue that is detailed in VDB-1756 where we saw a reorg that resulted in
+					// receiving three headers - canonical, noncanonical, canonical
+
+					// set up the header, diff and snapshot before the scenario being tested
+					inkBefore := rand.Int()
+					blockBefore := rand.Int()
+					blockBeforeTimestamp := int64(rand.Int31())
+
+					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
+					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
+					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
+					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnInkMetadata, strconv.Itoa(inkBefore))
+					Expect(beforeSetupErr).NotTo(HaveOccurred())
+
+					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
+					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
+					ink := inkBefore + 1
+					block := blockBefore + 1
+					blockTimestamp := blockBeforeTimestamp + 1
+
+					// HEADER WITH HASH ONE
+					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
+					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					//HEADER WITH HASH TWO
+					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
+					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					var urnStates []test_helpers.UrnState
+					queryErr := db.Select(&urnStates, getInkQuery)
+					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(len(urnStates)).To(Equal(2))
+
+					// HEADER WITH HASH ONE AGAIN (but no diff)
+					// This is our current state, with urn 0x93d6F47469fBE0F37d6df5dAC7C876E86322071B. We are getting a
+					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
+					// the associated diffs at that block and are therefore not reinserting the associated
+					// vat_urn_ink/vat_urn_art records
+					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					var urnStates2 []test_helpers.UrnState
+					queryErr2 := db.Select(&urnStates2, getInkQuery)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					// TODO: once we fix the issue where we're not reprocessing the canonical diff, this assertion should
+					// be change to: Expect(len(urnStates2)).To(Equal(2))
+					Expect(len(urnStates2)).To(Equal(1))
 				})
 			})
 		})
