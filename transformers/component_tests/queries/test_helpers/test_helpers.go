@@ -486,13 +486,14 @@ func FlapBidFromValues(bidId, dealt, updated, created string, bidValues map[stri
 	}
 }
 
-func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created string, bidValues map[string]interface{}) FlipBid {
+func FlipBidFromValues(bidId, ilkId, urnId, dealt, updated, created, flipAddress string, bidValues map[string]interface{}) FlipBid {
 	return FlipBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
-		IlkId:     ilkId,
-		UrnId:     urnId,
-		Gal:       bidValues[storage.BidGal].(string),
-		Tab:       bidValues[storage.BidTab].(string),
+		commonBid:   commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		IlkId:       ilkId,
+		UrnId:       urnId,
+		Gal:         bidValues[storage.BidGal].(string),
+		Tab:         bidValues[storage.BidTab].(string),
+		FlipAddress: flipAddress,
 	}
 }
 
@@ -526,10 +527,12 @@ type FlapBid struct {
 
 type FlipBid struct {
 	commonBid
-	IlkId string `db:"ilk_id"`
-	UrnId string `db:"urn_id"`
-	Gal   string
-	Tab   string
+	IlkId       string `db:"ilk_id"`
+	UrnId       string `db:"urn_id"`
+	Gal         string
+	Tab         string
+	FlipAddress string `db:"flip_address"`
+	BlockHeight string `db:"block_height"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
