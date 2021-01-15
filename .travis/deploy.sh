@@ -10,6 +10,7 @@ function message() {
     echo
 }
 
+ENVIRONMENT=$1
 if [ -z "$ENVIRONMENT" ]; then
     echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
     echo 'Allowed values are "staging" or "prod"'
@@ -19,7 +20,6 @@ fi
 #--------------------------
 # INIT
 #--------------------------
-ENVIRONMENT=$1
 if [ "$ENVIRONMENT" == "prod" ]; then
     TAG=latest
     REGION=$PROD_REGION
