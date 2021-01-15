@@ -37,6 +37,7 @@ COPY --from=builder /go/bin/goose goose
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/wait-for-it.sh .
 COPY --from=builder /go/src/github.com/makerdao/vdb-mcd-transformers/dockerfiles/execute/run_migrations.sh .
 
+# NOTE: You may need to update this in your cloud provider config in addition to changes here
 HEALTHCHECK CMD grep -q "event watcher starting" /tmp/execute_health_check \
     && grep -q "storage watcher for new diffs starting" /tmp/execute_health_check \
     && grep -q "storage watcher for unrecognized diffs starting" /tmp/execute_health_check
