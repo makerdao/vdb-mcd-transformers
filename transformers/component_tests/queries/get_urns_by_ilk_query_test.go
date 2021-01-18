@@ -27,7 +27,6 @@ var _ = Describe("All Urns function", func() {
 		urnOne                 string
 		urnTwo                 string
 		err                    error
-		diffID                 int64
 	)
 
 	const urnsByIlkQuery = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.get_urns_by_ilk($1, $2)`
@@ -44,8 +43,6 @@ var _ = Describe("All Urns function", func() {
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
-
-		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
 	It("returns multiple urns for same ilk", func() {
@@ -226,8 +223,9 @@ var _ = Describe("All Urns function", func() {
 			fakeHeaderTwoID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderTwo)
 			Expect(err).NotTo(HaveOccurred())
 
+			diffIdTwo := test_helpers.CreateFakeDiffRecordWithHeader(db, fakeHeaderTwo)
 			blockTwoInk = rand.Int()
-			err = vatRepo.Create(diffID, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(blockTwoInk))
+			err = vatRepo.Create(diffIdTwo, fakeHeaderTwoID, metadata.UrnInk, strconv.Itoa(blockTwoInk))
 			Expect(err).NotTo(HaveOccurred())
 
 			blockThree = blockTwo + 1
@@ -239,8 +237,9 @@ var _ = Describe("All Urns function", func() {
 			fakeHeaderThreeID, err := headerRepo.CreateOrUpdateHeader(fakeHeaderThree)
 			Expect(err).NotTo(HaveOccurred())
 
+			diffIdThree := test_helpers.CreateFakeDiffRecordWithHeader(db, fakeHeaderThree)
 			blockThreeInk = rand.Int()
-			err = vatRepo.Create(diffID, fakeHeaderThreeID, metadata.UrnInk, strconv.Itoa(blockThreeInk))
+			err = vatRepo.Create(diffIdThree, fakeHeaderThreeID, metadata.UrnInk, strconv.Itoa(blockThreeInk))
 			Expect(err).NotTo(HaveOccurred())
 		})
 

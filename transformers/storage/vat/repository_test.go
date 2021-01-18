@@ -49,6 +49,7 @@ var _ = Describe("Vat storage repository", func() {
 		fakeGuy              = "fake_urn"
 		fakeUint256          = "12345"
 		diffID, fakeHeaderID int64
+		deleteHeaderQuery    = `DELETE from public.headers WHERE id =$1`
 	)
 
 	BeforeEach(func() {
@@ -557,9 +558,9 @@ var _ = Describe("Vat storage repository", func() {
 				hashTwo        = common.BytesToHash([]byte{5, 4, 3, 2, 1})
 				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
 				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
+				getArtAndBlockQuery  = `SELECT art, block_height FROM api.urn_snapshot ORDER BY block_height`
 				getArtQuery    = `SELECT art FROM api.urn_snapshot ORDER BY block_height`
 				insertArtQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
-				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnArtTable))
 				urnArtMetadata = types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
@@ -596,7 +597,8 @@ var _ = Describe("Vat storage repository", func() {
 				newArt := rand.Int()
 				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(newArt))
+				diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
+				err := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -636,7 +638,8 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
+				diffIdOne := CreateFakeDiffRecordWithHeader(db, headerTwo)
+				err := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(newArt))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -683,7 +686,8 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialArt)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
+				diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
+				err := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -694,36 +698,46 @@ var _ = Describe("Vat storage repository", func() {
 			})
 
 			Describe("when diff is deleted", func() {
+				var diffIdOne, diffIdTwo int64
+
+				BeforeEach(func() {
+					diffIdOne = CreateFakeDiffRecordWithHeader(db, headerOne)
+					diffIdTwo = CreateFakeDiffRecordWithHeader(db, headerTwo)
+				})
+
 				It("updates art to previous value until block number of next diff", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
-					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
+					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
+
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
 					Expect(setupErrThree).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerTwo.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
 					queryErr := db.Select(&urnStates, getArtQuery)
 					Expect(queryErr).NotTo(HaveOccurred())
+					Expect(len(urnStates)).To(Equal(2))
 					Expect(urnStates[1].Art).To(Equal(strconv.Itoa(initialArt)))
 				})
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialArt := strconv.Itoa(rand.Int())
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, initialArt)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, initialArt)
 					Expect(setupErrOne).NotTo(HaveOccurred())
+
 					_, setupErrTwo := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockTwo, initialArt)
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var actualArts []sql.NullString
@@ -735,17 +749,18 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
-					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
+					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
+
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
 					Expect(setupErrThree).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerTwo.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
@@ -756,16 +771,85 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialArt := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
 					queryErr := db.Select(&urnStates, getArtQuery)
 					Expect(queryErr).NotTo(HaveOccurred())
 					Expect(len(urnStates)).To(Equal(0))
+				})
+
+				It("handles removing snapshots when there's a three-part reorg", func() {
+					// This test case models the issue that is detailed in VDB-1756 where we saw a reorg that resulted in
+					// receiving three headers events- canonical, noncanonical, canonical
+
+					// Adding a preliminary header, diff and snapshot before the scenario being tested to more closely
+					// model what we observed in production in VDB-1756.
+					artBefore := rand.Int()
+					blockBefore := rand.Int()
+					blockBeforeTimestamp := int64(rand.Int31())
+
+					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
+					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
+					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
+					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnArtMetadata, strconv.Itoa(artBefore))
+					Expect(beforeSetupErr).NotTo(HaveOccurred())
+
+					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
+					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
+					art := artBefore + 1
+					block := blockBefore + 1
+					blockTimestamp := blockBeforeTimestamp + 1
+
+					// HEADER WITH HASH ONE
+					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
+					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					var urnStates1 []test_helpers.UrnState
+					queryErr1 := db.Select(&urnStates1, getArtAndBlockQuery)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(len(urnStates1)).To(Equal(2))
+					Expect(urnStates1[0].Art).To(Equal(strconv.Itoa(artBefore)))
+					Expect(urnStates1[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates1[1].Art).To(Equal(strconv.Itoa(art)))
+					Expect(urnStates1[1].BlockHeight).To(Equal(block))
+
+					//HEADER WITH HASH TWO
+					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
+					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					var urnStates2 []test_helpers.UrnState
+					queryErr2 := db.Select(&urnStates2, getArtAndBlockQuery)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(len(urnStates2)).To(Equal(2))
+					Expect(urnStates2[0].Art).To(Equal(strconv.Itoa(artBefore)))
+					Expect(urnStates2[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates2[1].Art).To(Equal(strconv.Itoa(art)))
+					Expect(urnStates2[1].BlockHeight).To(Equal(block))
+
+					// HEADER WITH HASH ONE AGAIN (but no diff)
+					// This is our current state, with urn 0x93d6F47469fBE0F37d6df5dAC7C876E86322071B. We are getting a
+					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
+					// the associated diffs at that block and are therefore not reinserting the associated
+					// vat_urn_ink/vat_urn_art records
+					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					var urnStates3 []test_helpers.UrnState
+					queryErr3 := db.Select(&urnStates3, getArtAndBlockQuery)
+					Expect(queryErr3).NotTo(HaveOccurred())
+					// TODO: once we fix the issue where we're not reprocessing the canonical diff, this assertion should
+					// be change to: Expect(len(urnStates2)).To(Equal(2))
+					// The only snapshot left is the one that was in the db before this scenario took place
+					Expect(len(urnStates3)).To(Equal(1))
+					Expect(urnStates3[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates3[0].Art).To(Equal(strconv.Itoa(artBefore)))
 				})
 			})
 		})
@@ -837,8 +921,8 @@ var _ = Describe("Vat storage repository", func() {
 				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
 				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
 				getInkQuery    = `SELECT ink FROM api.urn_snapshot ORDER BY block_height`
+				getInkAndBlockQuery    = `SELECT ink, block_height FROM api.urn_snapshot ORDER BY block_height`
 				insertInkQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
-				deleteRowQuery = fmt.Sprintf(`DELETE FROM %s WHERE header_id = $1`, shared.GetFullTableName(constants.MakerSchema, constants.VatUrnInkTable))
 				urnInkMetadata = types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
@@ -891,7 +975,8 @@ var _ = Describe("Vat storage repository", func() {
 				newInk := rand.Int()
 				test_helpers.CreateUrn(db, initialUrnValues, headerOne, test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, fakeGuy), repo)
 
-				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(newInk))
+				diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
+				err := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -931,7 +1016,8 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerTwo.BlockNumber, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
+				diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
+				err := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(newInk))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -978,7 +1064,8 @@ var _ = Describe("Vat storage repository", func() {
 					fakeGuy, test_helpers.FakeIlk.Identifier, headerOne.BlockNumber, initialInk)
 				Expect(setupErr).NotTo(HaveOccurred())
 
-				err := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
+				diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
+				err := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(rand.Int()))
 				Expect(err).NotTo(HaveOccurred())
 
 				var urnStates []test_helpers.UrnState
@@ -989,19 +1076,26 @@ var _ = Describe("Vat storage repository", func() {
 			})
 
 			Describe("when diff is deleted", func() {
+				var diffIdOne, diffIdTwo int64
+
+				BeforeEach(func() {
+					diffIdOne = CreateFakeDiffRecordWithHeader(db, headerOne)
+					diffIdTwo = CreateFakeDiffRecordWithHeader(db, headerTwo)
+				})
+
 				It("updates ink to previous value until block number of next diff", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerTwo.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
@@ -1012,13 +1106,13 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialInk := strconv.Itoa(rand.Int())
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, initialInk)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, initialInk)
 					Expect(setupErrOne).NotTo(HaveOccurred())
 					_, setupErrTwo := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockTwo, initialInk)
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var actualInks []sql.NullString
@@ -1030,17 +1124,17 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerTwo.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerTwo.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
@@ -1051,10 +1145,10 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var urnStates []test_helpers.UrnState
@@ -1065,18 +1159,18 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("updates time created for all urn's states", func() {
 					initialInk := rand.Int()
-					setupErrOne := repo.Create(diffID, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
-					setupErrTwo := repo.Create(diffID, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
+					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
 
-					_, deleteErr := db.Exec(deleteRowQuery, headerOne.Id)
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
 					Expect(deleteErr).NotTo(HaveOccurred())
 
 					var actualCreatedValues []sql.NullString
@@ -1085,6 +1179,75 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(len(actualCreatedValues)).To(Equal(2))
 					Expect(actualCreatedValues[0]).To(Equal(expectedTimeCreated))
 					Expect(actualCreatedValues[1]).To(Equal(expectedTimeCreated))
+				})
+
+				It("handles removing snapshots when there's a three-part reorg", func() {
+					// This test case models the issue that is detailed in VDB-1756 where we saw a reorg that resulted in
+					// receiving three headers events- canonical, noncanonical, canonical
+
+					// Adding a preliminary header, diff and snapshot before the scenario being tested to more closely
+					// model what we observed in production in VDB-1756.
+					inkBefore := rand.Int()
+					blockBefore := rand.Int()
+					blockBeforeTimestamp := int64(rand.Int31())
+
+					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
+					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
+					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
+					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnInkMetadata, strconv.Itoa(inkBefore))
+					Expect(beforeSetupErr).NotTo(HaveOccurred())
+
+					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
+					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
+					ink := inkBefore + 1
+					block := blockBefore + 1
+					blockTimestamp := blockBeforeTimestamp + 1
+
+					// HEADER WITH HASH ONE
+					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
+					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					var urnStates1 []test_helpers.UrnState
+					queryErr1 := db.Select(&urnStates1, getInkAndBlockQuery)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(len(urnStates1)).To(Equal(2))
+					Expect(urnStates1[0].Ink).To(Equal(strconv.Itoa(inkBefore)))
+					Expect(urnStates1[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates1[1].Ink).To(Equal(strconv.Itoa(ink)))
+					Expect(urnStates1[1].BlockHeight).To(Equal(block))
+
+					//HEADER WITH HASH TWO
+					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
+					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					var urnStates2 []test_helpers.UrnState
+					queryErr2 := db.Select(&urnStates2, getInkAndBlockQuery)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(len(urnStates1)).To(Equal(2))
+					Expect(urnStates2[0].Ink).To(Equal(strconv.Itoa(inkBefore)))
+					Expect(urnStates2[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates2[1].Ink).To(Equal(strconv.Itoa(ink)))
+					Expect(urnStates2[1].BlockHeight).To(Equal(block))
+
+					// HEADER WITH HASH ONE AGAIN (but no diff)
+					// This is our current state, with urn 0x93d6F47469fBE0F37d6df5dAC7C876E86322071B. We are getting a
+					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
+					// the associated diffs at that block and are therefore not reinserting the associated
+					// vat_urn_ink/vat_urn_art records
+					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					var urnStates3 []test_helpers.UrnState
+					queryErr3 := db.Select(&urnStates3, getInkAndBlockQuery)
+					Expect(queryErr3).NotTo(HaveOccurred())
+					// TODO: once we fix the issue where we're not reprocessing the canonical diff, this assertion should
+					// be change to: Expect(len(urnStates2)).To(Equal(2))
+					// The only snapshot left is the one that was in the db before this scenario took place
+					Expect(len(urnStates3)).To(Equal(1))
+					Expect(urnStates3[0].BlockHeight).To(Equal(blockBefore))
+					Expect(urnStates3[0].Ink).To(Equal(strconv.Itoa(inkBefore)))
 				})
 			})
 		})
