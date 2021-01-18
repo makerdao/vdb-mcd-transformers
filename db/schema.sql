@@ -2234,13 +2234,6 @@ $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_urn_snapshot(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) IS '@omit';
-
-
---
 -- Name: delete_redundant_ilk_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 

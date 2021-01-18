@@ -554,14 +554,14 @@ var _ = Describe("Vat storage repository", func() {
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
-				hashOne        = common.BytesToHash([]byte{1, 2, 3, 4, 5})
-				hashTwo        = common.BytesToHash([]byte{5, 4, 3, 2, 1})
-				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
-				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
-				getArtAndBlockQuery  = `SELECT art, block_height FROM api.urn_snapshot ORDER BY block_height`
-				getArtQuery    = `SELECT art FROM api.urn_snapshot ORDER BY block_height`
-				insertArtQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
-				urnArtMetadata = types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
+				hashOne             = common.BytesToHash([]byte{1, 2, 3, 4, 5})
+				hashTwo             = common.BytesToHash([]byte{5, 4, 3, 2, 1})
+				hashThree           = common.BytesToHash([]byte{9, 8, 7, 6, 5})
+				getStateQuery       = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
+				getArtAndBlockQuery = `SELECT art, block_height FROM api.urn_snapshot ORDER BY block_height`
+				getArtQuery         = `SELECT art FROM api.urn_snapshot ORDER BY block_height`
+				insertArtQuery      = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, art, updated) VALUES ($1, $2, $3, $4, NOW())`
+				urnArtMetadata      = types.GetValueMetadata(vat.UrnArt, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
 			BeforeEach(func() {
@@ -916,14 +916,14 @@ var _ = Describe("Vat storage repository", func() {
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
-				hashOne        = common.BytesToHash([]byte{1, 2, 3, 4, 5})
-				hashTwo        = common.BytesToHash([]byte{5, 4, 3, 2, 1})
-				hashThree      = common.BytesToHash([]byte{9, 8, 7, 6, 5})
-				getStateQuery  = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
-				getInkQuery    = `SELECT ink FROM api.urn_snapshot ORDER BY block_height`
-				getInkAndBlockQuery    = `SELECT ink, block_height FROM api.urn_snapshot ORDER BY block_height`
-				insertInkQuery = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
-				urnInkMetadata = types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
+				hashOne             = common.BytesToHash([]byte{1, 2, 3, 4, 5})
+				hashTwo             = common.BytesToHash([]byte{5, 4, 3, 2, 1})
+				hashThree           = common.BytesToHash([]byte{9, 8, 7, 6, 5})
+				getStateQuery       = `SELECT urn_identifier, ilk_identifier, block_height, ink, art, created, updated FROM api.urn_snapshot ORDER BY block_height`
+				getInkQuery         = `SELECT ink FROM api.urn_snapshot ORDER BY block_height`
+				getInkAndBlockQuery = `SELECT ink, block_height FROM api.urn_snapshot ORDER BY block_height`
+				insertInkQuery      = `INSERT INTO api.urn_snapshot (urn_identifier, ilk_identifier, block_height, ink, updated) VALUES ($1, $2, $3, $4, NOW())`
+				urnInkMetadata      = types.GetValueMetadata(vat.UrnInk, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex, constants.Guy: fakeGuy}, types.Uint256)
 			)
 
 			BeforeEach(func() {
