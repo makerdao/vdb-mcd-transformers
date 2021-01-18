@@ -221,7 +221,7 @@ DECLARE
         SELECT block_height
         FROM public.storage_diff
         WHERE id = start_at_diff.diff_id);
-    next_rate_diff_block BIGINT := (
+    next_art_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_urn_art
                  LEFT JOIN public.headers ON vat_urn_art.header_id = headers.id
@@ -239,8 +239,8 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urn.urn_identifier
       AND urn_snapshot.ilk_identifier = urn.ilk_identifier
       AND urn_snapshot.block_height >= diff_block_number
-      AND (next_rate_diff_block IS NULL
-        OR urn_snapshot.block_height < next_rate_diff_block);
+      AND (next_art_diff_block IS NULL
+        OR urn_snapshot.block_height < next_art_diff_block);
     RETURN NULL;
 END
 $$
@@ -248,8 +248,6 @@ $$
 -- +goose StatementEnd
 
 -- +goose Down
-
-
 
 -- drop new urn_ink_before_block and replace with old function
 DROP FUNCTION urn_ink_before_block(urn_id INTEGER, diff_id BIGINT);
@@ -369,7 +367,7 @@ DECLARE
         SELECT block_number
         FROM public.headers
         WHERE id = start_at_diff.header_id);
-    next_rate_diff_block BIGINT := (
+    next_ink_diff_block BIGINT := (
         SELECT MIN(block_number)
         FROM maker.vat_urn_ink
                  LEFT JOIN public.headers ON vat_urn_ink.header_id = headers.id
@@ -387,8 +385,8 @@ BEGIN
     WHERE urn_snapshot.urn_identifier = urn.urn_identifier
       AND urn_snapshot.ilk_identifier = urn.ilk_identifier
       AND urn_snapshot.block_height >= diff_block_number
-      AND (next_rate_diff_block IS NULL
-        OR urn_snapshot.block_height < next_rate_diff_block);
+      AND (next_ink_diff_block IS NULL
+        OR urn_snapshot.block_height < next_ink_diff_block);
     RETURN NULL;
 END
 $$
