@@ -36,6 +36,7 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 CREATE TYPE public.diff_status AS ENUM (
     'new',
+    'pending',
     'transformed',
     'unrecognized',
     'noncanonical',
@@ -847,6 +848,13 @@ CREATE INDEX storage_diff_eth_node ON public.storage_diff USING btree (eth_node_
 --
 
 CREATE INDEX storage_diff_new_status_index ON public.storage_diff USING btree (status) WHERE (status = 'new'::public.diff_status);
+
+
+--
+-- Name: storage_diff_pending_status_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX storage_diff_pending_status_index ON public.storage_diff USING btree (status) WHERE (status = 'pending'::public.diff_status);
 
 
 --
