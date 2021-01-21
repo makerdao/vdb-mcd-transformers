@@ -548,9 +548,7 @@ var _ = Describe("Vat storage repository", func() {
 
 		Describe("updating urn_snapshot trigger table", func() {
 			var (
-				blockOne,
-				blockTwo,
-				blockThree int
+				blockOne, blockTwo int
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
@@ -567,13 +565,12 @@ var _ = Describe("Vat storage repository", func() {
 			BeforeEach(func() {
 				blockOne = rand.Int()
 				blockTwo = blockOne + 1
-				blockThree = blockTwo + 1
 				rawTimestampOne = int64(rand.Int31())
 				rawTimestampTwo = rawTimestampOne + 1
 				rawTimestampThree = rawTimestampTwo + 1
 				headerOne = CreateHeaderWithHash(hashOne.String(), rawTimestampOne, blockOne, db)
 				headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, db)
-				CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
+
 			})
 
 			It("inserts time of first ink diff into created", func() {
@@ -697,23 +694,20 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(urnStates[0].Art).To(Equal(strconv.Itoa(initialArt)))
 			})
 
-			Describe("when diff is deleted", func() {
-				var diffIdOne, diffIdTwo int64
-
-				BeforeEach(func() {
-					diffIdOne = CreateFakeDiffRecordWithHeader(db, headerOne)
-					diffIdTwo = CreateFakeDiffRecordWithHeader(db, headerTwo)
-				})
-
+			Describe("when transformed vat_urn_art diff is deleted", func() {
 				It("updates art to previous value until block number of next diff", func() {
 					initialArt := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 
+					blockThree := blockTwo + 1
+					CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
 					Expect(setupErrThree).NotTo(HaveOccurred())
@@ -730,6 +724,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialArt := strconv.Itoa(rand.Int())
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, initialArt)
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
@@ -749,13 +744,17 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialArt := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentArt := initialArt + 1
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnArtMetadata, strconv.Itoa(subsequentArt))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 
+					blockThree := blockTwo + 1
+					CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 					_, setupErrThree := db.Exec(insertArtQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentArt)
 					Expect(setupErrThree).NotTo(HaveOccurred())
@@ -771,6 +770,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialArt := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(initialArt))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
@@ -790,11 +790,9 @@ var _ = Describe("Vat storage repository", func() {
 					// Adding a preliminary header, diff and snapshot before the scenario being tested to more closely
 					// model what we observed in production in VDB-1756.
 					artBefore := rand.Int()
-					blockBefore := rand.Int()
-					blockBeforeTimestamp := int64(rand.Int31())
+					headerBefore := headerOne
+					blockBefore := int(headerBefore.BlockNumber)
 
-					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
-					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
 					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
 					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnArtMetadata, strconv.Itoa(artBefore))
 					Expect(beforeSetupErr).NotTo(HaveOccurred())
@@ -802,11 +800,12 @@ var _ = Describe("Vat storage repository", func() {
 					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
 					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
 					art := artBefore + 1
-					block := blockBefore + 1
-					blockTimestamp := blockBeforeTimestamp + 1
+					headerWithHashOne := headerTwo
+					block := int(headerWithHashOne.BlockNumber)
+					blockTimestamp, timestampConvErr := strconv.ParseInt(headerWithHashOne.Timestamp, 10, 64)
+					Expect(timestampConvErr).NotTo(HaveOccurred())
 
 					// HEADER WITH HASH ONE
-					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
 					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
 					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnArtMetadata, strconv.Itoa(art))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -821,7 +820,8 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(urnStates1[1].BlockHeight).To(Equal(block))
 
 					//HEADER WITH HASH TWO
-					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					anotherHash := common.BytesToHash([]byte{9, 8, 7, 6, 5})
+					headerWithHashTwo := CreateHeaderWithHash(anotherHash.String(), blockTimestamp, block, db)
 					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnArtMetadata, strconv.Itoa(art))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
@@ -840,7 +840,7 @@ var _ = Describe("Vat storage repository", func() {
 					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
 					// the associated diffs at that block and are therefore not reinserting the associated
 					// vat_urn_ink/vat_urn_art records
-					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					CreateHeaderWithHash(headerWithHashOne.Hash, blockTimestamp, block, db)
 					var urnStates3 []test_helpers.UrnState
 					queryErr3 := db.Select(&urnStates3, getArtAndBlockQuery)
 					Expect(queryErr3).NotTo(HaveOccurred())
@@ -910,9 +910,7 @@ var _ = Describe("Vat storage repository", func() {
 
 		Describe("updating urn_snapshot trigger table", func() {
 			var (
-				blockOne,
-				blockTwo,
-				blockThree int
+				blockOne, blockTwo int
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
@@ -929,12 +927,10 @@ var _ = Describe("Vat storage repository", func() {
 			BeforeEach(func() {
 				blockOne = rand.Int()
 				blockTwo = blockOne + 1
-				blockThree = blockTwo + 1
 				rawTimestampOne = int64(rand.Int31())
 				rawTimestampTwo = rawTimestampOne + 1
 				headerOne = CreateHeaderWithHash(hashOne.String(), rawTimestampOne, blockOne, db)
 				headerTwo = CreateHeaderWithHash(hashTwo.String(), rawTimestampTwo, blockTwo, db)
-				CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 			})
 
 			It("inserts time of first ink diff into created", func() {
@@ -1075,22 +1071,20 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(urnStates[0].Ink).To(Equal(strconv.Itoa(initialInk)))
 			})
 
-			Describe("when diff is deleted", func() {
-				var diffIdOne, diffIdTwo int64
-
-				BeforeEach(func() {
-					diffIdOne = CreateFakeDiffRecordWithHeader(db, headerOne)
-					diffIdTwo = CreateFakeDiffRecordWithHeader(db, headerTwo)
-				})
-
+			Describe("when vat_urn_ink transformed diff is deleted", func() {
 				It("updates ink to previous value until block number of next diff", func() {
 					initialInk := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					blockThree := blockTwo + 1
+					CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
@@ -1106,6 +1100,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("sets field in subsequent rows to null if no previous diff exists", func() {
 					initialInk := strconv.Itoa(rand.Int())
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, initialInk)
 					Expect(setupErrOne).NotTo(HaveOccurred())
 					_, setupErrTwo := db.Exec(insertInkQuery,
@@ -1124,12 +1119,17 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if identical to previous state", func() {
 					initialInk := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
+
+					blockThree := blockTwo + 1
+					CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
@@ -1145,6 +1145,7 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("deletes urn state associated with diff if it's the earliest state in the table", func() {
 					initialInk := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
@@ -1159,13 +1160,18 @@ var _ = Describe("Vat storage repository", func() {
 
 				It("updates time created for all urn's states", func() {
 					initialInk := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
 					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(initialInk))
 					Expect(setupErrOne).NotTo(HaveOccurred())
 
 					subsequentInk := initialInk + 1
+					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerTwo.Id, urnInkMetadata, strconv.Itoa(subsequentInk))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
 					expectedTimeCreated := test_helpers.GetValidNullString(FormatTimestamp(rawTimestampTwo))
+
+					blockThree := blockTwo + 1
+					CreateHeaderWithHash(hashThree.String(), rawTimestampThree, blockThree, db)
 					_, setupErrThree := db.Exec(insertInkQuery,
 						fakeGuy, test_helpers.FakeIlk.Identifier, blockThree, subsequentInk)
 					Expect(setupErrThree).NotTo(HaveOccurred())
@@ -1188,11 +1194,9 @@ var _ = Describe("Vat storage repository", func() {
 					// Adding a preliminary header, diff and snapshot before the scenario being tested to more closely
 					// model what we observed in production in VDB-1756.
 					inkBefore := rand.Int()
-					blockBefore := rand.Int()
-					blockBeforeTimestamp := int64(rand.Int31())
+					headerBefore := headerOne
+					blockBefore := int(headerBefore.BlockNumber)
 
-					hashBefore := common.BytesToHash([]byte{0, 2, 4, 6, 8})
-					headerBefore := CreateHeaderWithHash(hashBefore.String(), blockBeforeTimestamp, blockBefore, db)
 					diffId0 := CreateFakeDiffRecordWithHeader(db, headerBefore)
 					beforeSetupErr := repo.Create(diffId0, headerBefore.Id, urnInkMetadata, strconv.Itoa(inkBefore))
 					Expect(beforeSetupErr).NotTo(HaveOccurred())
@@ -1200,11 +1204,12 @@ var _ = Describe("Vat storage repository", func() {
 					// TEST SCENARIO: header with hashOne inserted and then removed in lieu of header with hashTwo
 					// then header with hashOne is reinserted as canonical and header with hashTwo is removed
 					ink := inkBefore + 1
-					block := blockBefore + 1
-					blockTimestamp := blockBeforeTimestamp + 1
+					headerWithHashOne := headerTwo
+					block := int(headerWithHashOne.BlockNumber)
+					blockTimestamp, timestampConvErr := strconv.ParseInt(headerWithHashOne.Timestamp, 10, 64)
+					Expect(timestampConvErr).NotTo(HaveOccurred())
 
 					// HEADER WITH HASH ONE
-					headerWithHashOne := CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
 					diffId1 := CreateFakeDiffRecordWithHeader(db, headerWithHashOne)
 					setupErrOne := repo.Create(diffId1, headerWithHashOne.Id, urnInkMetadata, strconv.Itoa(ink))
 					Expect(setupErrOne).NotTo(HaveOccurred())
@@ -1219,7 +1224,8 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(urnStates1[1].BlockHeight).To(Equal(block))
 
 					//HEADER WITH HASH TWO
-					headerWithHashTwo := CreateHeaderWithHash(hashTwo.String(), blockTimestamp, block, db)
+					anotherHash := common.BytesToHash([]byte{9, 8, 7, 6, 5})
+					headerWithHashTwo := CreateHeaderWithHash(anotherHash.String(), blockTimestamp, block, db)
 					diffIdTwo := CreateFakeDiffRecordWithHeader(db, headerWithHashTwo)
 					setupErrTwo := repo.Create(diffIdTwo, headerWithHashTwo.Id, urnInkMetadata, strconv.Itoa(ink))
 					Expect(setupErrTwo).NotTo(HaveOccurred())
@@ -1238,7 +1244,7 @@ var _ = Describe("Vat storage repository", func() {
 					// third header event for the same block, which turns out to be canonical. But we are not reprocessing
 					// the associated diffs at that block and are therefore not reinserting the associated
 					// vat_urn_ink/vat_urn_art records
-					CreateHeaderWithHash(hashOne.String(), blockTimestamp, block, db)
+					CreateHeaderWithHash(headerWithHashOne.Hash, blockTimestamp, block, db)
 					var urnStates3 []test_helpers.UrnState
 					queryErr3 := db.Select(&urnStates3, getInkAndBlockQuery)
 					Expect(queryErr3).NotTo(HaveOccurred())
@@ -1253,107 +1259,115 @@ var _ = Describe("Vat storage repository", func() {
 		})
 	})
 
-	It("persists vat debt", func() {
-		err := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
+	Describe("vat debt", func() {
+		It("persists vat debt", func() {
+			err := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
 
-		Expect(err).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, debt AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+			var result VariableRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, debt AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
+			err = db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		})
+
+		It("does not duplicate vat debt", func() {
+			insertOneErr := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
 	})
 
-	It("does not duplicate vat debt", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("vat vice", func() {
+		It("persists vat vice", func() {
+			err := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.DebtMetadata, fakeUint256)
+			Expect(err).NotTo(HaveOccurred())
 
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatDebtTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+			var result VariableRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, vice AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
+			err = db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		})
+
+		It("does not duplicate vat vice", func() {
+			insertOneErr := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
 	})
 
-	It("persists vat vice", func() {
-		err := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
+	Describe("vat line", func() {
+		It("persists vat Line", func() {
+			err := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
 
-		Expect(err).NotTo(HaveOccurred())
+			Expect(err).NotTo(HaveOccurred())
 
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, vice AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+			var result VariableRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, line AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
+			err = db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		})
+
+		It("does not duplicate vat Line", func() {
+			insertOneErr := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
 	})
 
-	It("does not duplicate vat vice", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
+	Describe("vat live", func() {
+		It("persists vat live", func() {
+			err := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
 
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.ViceMetadata, fakeUint256)
+			Expect(err).NotTo(HaveOccurred())
 
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatViceTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
+			var result VariableRes
+			query := fmt.Sprintf(`SELECT diff_id, header_id, live AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
+			err = db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
+		})
 
-	It("persists vat Line", func() {
-		err := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
+		It("does not duplicate vat live", func() {
+			insertOneErr := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
 
-		Expect(err).NotTo(HaveOccurred())
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
 
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, line AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate vat Line", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.LineMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLineTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
-	})
-
-	It("persists vat live", func() {
-		err := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
-
-		Expect(err).NotTo(HaveOccurred())
-
-		var result VariableRes
-		query := fmt.Sprintf(`SELECT diff_id, header_id, live AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
-		err = db.Get(&result, query)
-		Expect(err).NotTo(HaveOccurred())
-		AssertVariable(result, diffID, fakeHeaderID, fakeUint256)
-	})
-
-	It("does not duplicate vat live", func() {
-		insertOneErr := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
-		Expect(insertOneErr).NotTo(HaveOccurred())
-
-		insertTwoErr := repo.Create(diffID, fakeHeaderID, vat.LiveMetadata, fakeUint256)
-
-		Expect(insertTwoErr).NotTo(HaveOccurred())
-		var count int
-		query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
-		getCountErr := db.Get(&count, query)
-		Expect(getCountErr).NotTo(HaveOccurred())
-		Expect(count).To(Equal(1))
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.VatLiveTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
 	})
 })
