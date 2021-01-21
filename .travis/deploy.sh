@@ -92,6 +92,7 @@ elif [ "$ENVIRONMENT" == "staging" ]; then
 
 else
     message UNKNOWN ENVIRONMENT
+    exit 1 # don't continue
 fi
 
 #--------------------------
@@ -116,56 +117,39 @@ aws ecs run-task \
   --region $REGION
 
 if [ "$ENVIRONMENT" == "prod" ]; then
-
-    message DEPLOYING EXECUTE
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-mcd-execute-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-
-    message DEPLOYING EXTRACT-DIFFS
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-extract-diffs-eu-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-
-    message DEPLOYING EXTRACT-DIFFS-US
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-extract-diffs-us-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-
+    EXECUTE_NAME = vdb-mcd-execute
+    EXTRACT_DIFFS_NAME = vdb-extract-diffs-eu
+    EXTRACT_DIFFS_US_NAME = vdb-extract-diffs-us
 elif [ "$ENVIRONMENT" == "staging" ]; then
-
-    message DEPLOYING EXECUTE
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-execute-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-
-    message DEPLOYING EXTRACT-DIFFS
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-extract-diffs-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-
-    message DEPLOYING EXTRACT-DIFFS2
-    aws ecs update-service \
-      --cluster vdb-cluster-$ENVIRONMENT \
-      --service vdb-extract-diffs2-$ENVIRONMENT \
-      --force-new-deployment \
-      --endpoint https://ecs.$REGION.amazonaws.com \
-      --region $REGION
-else
-    message UNKNOWN ENVIRONMENT
+    EXECUTE_NAME=vdb-execute
+    EXTRACT_DIFFS_NAME = vdb-extract-diffs
+    EXTRACT_DIFFS_US_NAME = vdb-extract-diffs2
 fi
+
+message DEPLOYING EXECUTE
+aws ecs update-service \
+  --cluster vdb-cluster-$ENVIRONMENT \
+  --service $EXECUTE_NAME-$ENVIRONMENT \
+  --force-new-deployment \
+  --endpoint https://ecs.$REGION.amazonaws.com \
+  --region $REGION
+
+message DEPLOYING EXTRACT-DIFFS
+aws ecs update-service \
+  --cluster vdb-cluster-$ENVIRONMENT \
+  --service $EXTRACT_DIFFS_NAME-$ENVIRONMENT \
+  --force-new-deployment \
+  --endpoint https://ecs.$REGION.amazonaws.com \
+  --region $REGION
+
+message DEPLOYING EXTRACT-DIFFS-US
+aws ecs update-service \
+  --cluster vdb-cluster-$ENVIRONMENT \
+  --service $EXTRACT_DIFFS_US_NAME-$ENVIRONMENT \
+  --force-new-deployment \
+  --endpoint https://ecs.$REGION.amazonaws.com \
+  --region $REGION
+
+
+# announce deploy
+.travis/announce.sh $ENVIRONMENT vdb-mcd-transformers
