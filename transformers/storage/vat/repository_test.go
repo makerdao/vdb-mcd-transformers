@@ -34,6 +34,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -548,7 +549,7 @@ var _ = Describe("Vat storage repository", func() {
 
 		Describe("updating urn_snapshot trigger table", func() {
 			var (
-				blockOne, blockTwo int
+				blockOne, blockTwo                                  int
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
@@ -694,7 +695,7 @@ var _ = Describe("Vat storage repository", func() {
 				Expect(urnStates[0].Art).To(Equal(strconv.Itoa(initialArt)))
 			})
 
-			Describe("when transformed vat_urn_art diff is deleted", func() {
+			Describe("when vat_urn_art transformed diff is deleted", func() {
 				It("updates art to previous value until block number of next diff", func() {
 					initialArt := rand.Int()
 					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
@@ -851,6 +852,48 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(urnStates3[0].BlockHeight).To(Equal(blockBefore))
 					Expect(urnStates3[0].Art).To(Equal(strconv.Itoa(artBefore)))
 				})
+
+				It("marks the associated storage_diff as PENDING when it's currently TRANSFORMED", func() {
+					art := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					_, updateErr := db.Exec(`UPDATE storage_diff SET status=$1 WHERE id = $2`, storage.Transformed, diffIdOne)
+					Expect(updateErr).NotTo(HaveOccurred())
+					var diffStatusBefore string
+					queryErr1 := db.Get(&diffStatusBefore, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(diffStatusBefore).To(Equal(storage.Transformed))
+
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
+					Expect(deleteErr).NotTo(HaveOccurred())
+
+					var diffStatusAfter string
+					queryErr2 := db.Get(&diffStatusAfter, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(diffStatusAfter).To(Equal(storage.Pending))
+				})
+
+				It("does not mark the associated storage_diff as PENDING when it's not TRANSFORMED", func() {
+					art := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnArtMetadata, strconv.Itoa(art))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					var diffStatusBefore string
+					queryErr1 := db.Get(&diffStatusBefore, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(diffStatusBefore).To(Equal(storage.New))
+
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
+					Expect(deleteErr).NotTo(HaveOccurred())
+
+					var diffStatusAfter string
+					queryErr2 := db.Get(&diffStatusAfter, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(diffStatusAfter).To(Equal(storage.New))
+				})
 			})
 		})
 	})
@@ -910,7 +953,7 @@ var _ = Describe("Vat storage repository", func() {
 
 		Describe("updating urn_snapshot trigger table", func() {
 			var (
-				blockOne, blockTwo int
+				blockOne, blockTwo                                  int
 				rawTimestampOne, rawTimestampTwo, rawTimestampThree int64
 				headerOne,
 				headerTwo core.Header
@@ -1254,6 +1297,47 @@ var _ = Describe("Vat storage repository", func() {
 					Expect(len(urnStates3)).To(Equal(1))
 					Expect(urnStates3[0].BlockHeight).To(Equal(blockBefore))
 					Expect(urnStates3[0].Ink).To(Equal(strconv.Itoa(inkBefore)))
+				})
+				It("marks the associated storage_diff as PENDING when it's currently TRANSFORMED", func() {
+					ink := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					_, updateErr := db.Exec(`UPDATE storage_diff SET status=$1 WHERE id = $2`, storage.Transformed, diffIdOne)
+					Expect(updateErr).NotTo(HaveOccurred())
+					var diffStatusBefore string
+					queryErr1 := db.Get(&diffStatusBefore, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(diffStatusBefore).To(Equal(storage.Transformed))
+
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
+					Expect(deleteErr).NotTo(HaveOccurred())
+
+					var diffStatusAfter string
+					queryErr2 := db.Get(&diffStatusAfter, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(diffStatusAfter).To(Equal(storage.Pending))
+				})
+
+				It("does not mark the associated storage_diff as PENDING when it's not currently TRANSFORMED", func() {
+					ink := rand.Int()
+					diffIdOne := CreateFakeDiffRecordWithHeader(db, headerOne)
+					setupErrOne := repo.Create(diffIdOne, headerOne.Id, urnInkMetadata, strconv.Itoa(ink))
+					Expect(setupErrOne).NotTo(HaveOccurred())
+
+					var diffStatusBefore string
+					queryErr1 := db.Get(&diffStatusBefore, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr1).NotTo(HaveOccurred())
+					Expect(diffStatusBefore).To(Equal(storage.New))
+
+					_, deleteErr := db.Exec(deleteHeaderQuery, headerOne.Id)
+					Expect(deleteErr).NotTo(HaveOccurred())
+
+					var diffStatusAfter string
+					queryErr2 := db.Get(&diffStatusAfter, `SELECT status FROM storage_diff WHERE id = $1`, diffIdOne)
+					Expect(queryErr2).NotTo(HaveOccurred())
+					Expect(diffStatusAfter).To(Equal(storage.New))
 				})
 			})
 		})
