@@ -83,7 +83,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case Live:
 		return repository.insertVatLive(diffID, headerID, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized vat contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized vat contract storage name: %s", metadata.Name)
 	}
 }
 

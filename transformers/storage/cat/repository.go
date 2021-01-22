@@ -64,7 +64,7 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 	case IlkDunk:
 		return repo.insertIlkDunk(diffID, headerID, metadata, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized cat contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized cat contract storage name: %s", metadata.Name)
 	}
 }
 

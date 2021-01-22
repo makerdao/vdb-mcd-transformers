@@ -49,7 +49,7 @@ func (repo StorageRepository) Create(diffID, headerID int64, metadata types.Valu
 	case Live:
 		return repo.insertLive(diffID, headerID, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized pot contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized pot contract storage name: %s", metadata.Name)
 	}
 }
 

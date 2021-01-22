@@ -65,7 +65,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case Count:
 		return repository.insertCount(diffID, headerID, metadata, value.(string))
 	default:
-		panic("unrecognized storage metadata name")
+		return fmt.Errorf("unrecognized cdp manager contract storage name: %s", metadata.Name)
 	}
 }
 

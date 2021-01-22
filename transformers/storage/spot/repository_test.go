@@ -60,6 +60,14 @@ var _ = Describe("Spot storage repository", func() {
 		diffID = CreateFakeDiffRecord(db)
 	})
 
+	It("returns an error if the metadata name is not recognized", func() {
+		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
+
+		err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+		Expect(err).Should(HaveOccurred())
+	})
+
 	Describe("Wards mapping", func() {
 		It("writes a row", func() {
 			fakeUserAddress := "0x" + fakes.RandomString(40)

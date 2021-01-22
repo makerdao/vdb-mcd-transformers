@@ -78,7 +78,7 @@ func (repository StorageRepository) Create(diffID, headerID int64, metadata type
 	case Live:
 		return repository.insertVowLive(diffID, headerID, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized storage metadata name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized storage metadata name: %s", metadata.Name)
 	}
 }
 
