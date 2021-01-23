@@ -169,7 +169,8 @@ CREATE TYPE api.flop_bid_snapshot AS (
 	bid numeric,
 	dealt boolean,
 	created timestamp without time zone,
-	updated timestamp without time zone
+	updated timestamp without time zone,
+	flop_address text
 );
 
 
@@ -689,17 +690,16 @@ CREATE FUNCTION api.all_flops(max_results integer DEFAULT NULL::integer, result_
     AS $$
 BEGIN
     RETURN QUERY (
-        WITH bid_ids AS (
-            SELECT DISTINCT bid_id
+        WITH bids AS (
+            SELECT DISTINCT bid_id, address
             FROM maker.flop
+                     JOIN addresses on addresses.id = flop.address_id
             ORDER BY bid_id DESC
-            LIMIT all_flops.max_results
-            OFFSET
-            all_flops.result_offset
+            LIMIT all_flops.max_results OFFSET all_flops.result_offset
         )
         SELECT f.*
-        FROM bid_ids,
-             LATERAL api.get_flop(bid_ids.bid_id) f
+        FROM bids,
+             LATERAL api.get_flop_with_address(bids.bid_id, bids.address) f
     );
 END
 $$;
@@ -1161,7 +1161,7 @@ CREATE FUNCTION api.flop_bid_event_bid(event api.flop_bid_event) RETURNS api.flo
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_flop(event.bid_id, event.block_height)
+FROM api.get_flop_with_address(event.bid_id, event.contract_address, event.block_height)
 $$;
 
 
@@ -1364,21 +1364,15 @@ $$;
 
 
 --
--- Name: get_flop(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_flop_with_address(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flop(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_bid_snapshot
+CREATE FUNCTION api.get_flop_with_address(bid_id numeric, flop_address text, block_height bigint DEFAULT api.max_block()) RETURNS api.flop_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH address_id AS (
-    SELECT address_id
-    FROM maker.flop
-    WHERE flop.bid_id = get_flop.bid_id
-      AND block_number <= block_height
-    LIMIT 1
-),
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_flop_with_address.flop_address),
      storage_values AS (
-         SELECT bid_id,
+         SELECT flop.bid_id,
                 guy,
                 tic,
                 "end",
@@ -1387,7 +1381,8 @@ WITH address_id AS (
                 created,
                 updated
          FROM maker.flop
-         WHERE bid_id = get_flop.bid_id
+         WHERE flop.bid_id = get_flop_with_address.bid_id
+           AND flop.address_id = (SELECT * FROM address_id)
            AND block_number <= block_height
          ORDER BY block_number DESC
          LIMIT 1
@@ -1396,13 +1391,13 @@ WITH address_id AS (
          SELECT deal.bid_id
          FROM maker.deal
                   LEFT JOIN public.headers ON deal.header_id = headers.id
-         WHERE deal.bid_id = get_flop.bid_id
-           AND deal.address_id = (SELECT address_id FROM address_id)
+         WHERE deal.bid_id = get_flop_with_address.bid_id
+           AND deal.address_id = (SELECT * FROM address_id)
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-SELECT get_flop.bid_id,
+SELECT get_flop_with_address.bid_id,
        storage_values.guy,
        storage_values.tic,
        storage_values."end",
@@ -1413,7 +1408,8 @@ SELECT get_flop.bid_id,
            ELSE TRUE
            END AS dealt,
        storage_values.created,
-       storage_values.updated
+       storage_values.updated,
+       get_flop_with_address.flop_address
 FROM storage_values
 $$;
 
@@ -2231,13 +2227,6 @@ BEGIN
     RETURN NULL;
 END
 $$;
-
-
---
--- Name: FUNCTION delete_obsolete_urn_snapshot(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) IS '@omit';
 
 
 --
