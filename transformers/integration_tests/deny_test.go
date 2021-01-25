@@ -116,6 +116,16 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(int64(11420948), test_data.FlipUniAV121Address(), usrAddress, usrAddress)
 	})
 
+	Context("Flip UNIV2USDCETH_A deny events", func() {
+		usrAddress := "0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
+		denyIntegrationTest(11700547, test_data.FlipUniV2UsdcEthAddress(), usrAddress, usrAddress)
+	})
+
+	Context("Flip UNIV2WBTCETH_A deny events", func() {
+		usrAddress := "0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
+		denyIntegrationTest(11700520, test_data.FlipUniV2WbtcEthAddress(), usrAddress, usrAddress)
+	})
+
 	Context("Flip USDC-A v1.0.4 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		denyIntegrationTest(int64(9686502), test_data.FlipUsdcAV104Address(), usrAddress, usrAddress)
