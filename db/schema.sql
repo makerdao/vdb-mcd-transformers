@@ -99,7 +99,8 @@ CREATE TYPE api.flap_bid_snapshot AS (
 	bid numeric,
 	dealt boolean,
 	created timestamp without time zone,
-	updated timestamp without time zone
+	updated timestamp without time zone,
+	flap_address text
 );
 
 
@@ -410,8 +411,9 @@ CREATE FUNCTION api.all_flaps(max_results integer DEFAULT NULL::integer, result_
 BEGIN
     RETURN QUERY (
         WITH bid_ids AS (
-            SELECT DISTINCT bid_id
+            SELECT DISTINCT bid_id, address
             FROM maker.flap
+				JOIN addresses on addresses.id = flap.address_id
             ORDER BY bid_id DESC
             LIMIT all_flaps.max_results
             OFFSET
@@ -419,7 +421,7 @@ BEGIN
         )
         SELECT f.*
         FROM bid_ids,
-             LATERAL api.get_flap(bid_ids.bid_id) f
+             LATERAL api.get_flap_with_address(bid_ids.bid_id, bid_ids.address) f
     );
 END
 $$;
@@ -1036,7 +1038,7 @@ CREATE FUNCTION api.flap_bid_event_bid(event api.flap_bid_event) RETURNS api.fla
     LANGUAGE sql STABLE
     AS $$
 SELECT *
-FROM api.get_flap(event.bid_id, event.block_height)
+FROM api.get_flap_with_address(event.bid_id, event.contract_address, event.block_height)
 $$;
 
 
@@ -1246,19 +1248,13 @@ $$;
 
 
 --
--- Name: get_flap(numeric, bigint); Type: FUNCTION; Schema: api; Owner: -
+-- Name: get_flap_with_address(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.get_flap(bid_id numeric, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_bid_snapshot
+CREATE FUNCTION api.get_flap_with_address(bid_id numeric, flap_address text, block_height bigint DEFAULT api.max_block()) RETURNS api.flap_bid_snapshot
     LANGUAGE sql STABLE STRICT
     AS $$
-WITH address_id AS (
-    SELECT address_id
-    FROM maker.flap
-    WHERE flap.bid_id = get_flap.bid_id
-      AND block_number <= block_height
-    LIMIT 1
-),
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_flap_with_address.flap_address),
      storage_values AS (
          SELECT bid_id,
                 guy,
@@ -1269,7 +1265,8 @@ WITH address_id AS (
                 created,
                 updated
          FROM maker.flap
-         WHERE bid_id = get_flap.bid_id
+         WHERE bid_id = get_flap_with_address.bid_id
+		   AND flap.address_id = (SELECT * from address_id)
            AND block_number <= block_height
          ORDER BY block_number DESC
          LIMIT 1
@@ -1278,13 +1275,13 @@ WITH address_id AS (
          SELECT deal, bid_id
          FROM maker.deal
                   LEFT JOIN public.headers ON deal.header_id = headers.id
-         WHERE deal.bid_id = get_flap.bid_id
+         WHERE deal.bid_id = get_flap_with_address.bid_id
            AND deal.address_id = (SELECT * FROM address_id)
            AND headers.block_number <= block_height
          ORDER BY bid_id, block_number DESC
          LIMIT 1
      )
-SELECT get_flap.bid_id,
+SELECT get_flap_with_address.bid_id,
        storage_values.guy,
        storage_values.tic,
        storage_values."end",
@@ -1295,7 +1292,8 @@ SELECT get_flap.bid_id,
            ELSE TRUE
            END AS dealt,
        storage_values.created,
-       storage_values.updated
+       storage_values.updated,
+       get_flap_with_address.flap_address
 FROM storage_values
 $$;
 
