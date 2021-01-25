@@ -2234,13 +2234,6 @@ $$;
 
 
 --
--- Name: FUNCTION delete_obsolete_urn_snapshot(urn_id integer, header_id integer); Type: COMMENT; Schema: maker; Owner: -
---
-
-COMMENT ON FUNCTION maker.delete_obsolete_urn_snapshot(urn_id integer, header_id integer) IS '@omit';
-
-
---
 -- Name: delete_redundant_ilk_snapshot(integer, integer); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -4482,6 +4475,19 @@ COMMENT ON FUNCTION maker.insert_urn_ink(new_diff maker.vat_urn_ink) IS '@omit';
 
 
 --
+-- Name: mark_transformed_diff_as_pending(bigint); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.mark_transformed_diff_as_pending(diff_id bigint) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    UPDATE public.storage_diff SET status = 'pending' WHERE id = diff_id AND status = 'transformed';
+END
+$$;
+
+
+--
 -- Name: update_arts_until_next_diff(maker.vat_ilk_art, numeric); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -6534,6 +6540,7 @@ BEGIN
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.diff_id));
         PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
+        PERFORM maker.mark_transformed_diff_as_pending(OLD.diff_id);
     END IF;
     RETURN NULL;
 END
@@ -6628,6 +6635,7 @@ BEGIN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.diff_id));
         PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
+        PERFORM maker.mark_transformed_diff_as_pending(OLD.diff_id);
     END IF;
     RETURN NULL;
 END

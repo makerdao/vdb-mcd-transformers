@@ -17,6 +17,7 @@
 package integration_tests
 
 import (
+	"math/rand"
 	"plugin"
 	"time"
 
@@ -326,7 +327,7 @@ var _ = Describe("Plugin test", func() {
 				Expect(ok).To(Equal(true))
 				_, storageTransformerInitializers, _ := exporter.Export()
 
-				w := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
+				w := watcher.NewStorageWatcher(db, -1, &statusWriter, time.Duration(rand.Int63()))
 				w.AddTransformers(storageTransformerInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
@@ -415,7 +416,7 @@ var _ = Describe("Plugin test", func() {
 					return flip
 				}).Should(Equal(test_data.FlipEthAV100Address()))
 
-				sw := watcher.NewStorageWatcher(db, -1, &statusWriter, watcher.New)
+				sw := watcher.NewStorageWatcher(db, -1, &statusWriter, time.Duration(rand.Int63()))
 				sw.AddTransformers(storageInitializers)
 				// This blocks right now, need to make test file to read from
 				//err = w.Execute()
