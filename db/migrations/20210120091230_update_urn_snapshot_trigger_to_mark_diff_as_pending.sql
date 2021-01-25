@@ -1,12 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION maker.mark_noncanonical_transformed_diff_as_pending(diff_id BIGINT) RETURNS VOID
+CREATE OR REPLACE FUNCTION maker.mark_transformed_diff_as_pending(diff_id BIGINT) RETURNS VOID
 AS
-    $$
-    BEGIN
-        UPDATE public.storage_diff SET status = 'pending' WHERE id = diff_id AND status = 'transformed';
-    END
-    $$
+$$
+BEGIN
+    UPDATE public.storage_diff SET status = 'pending' WHERE id = diff_id AND status = 'transformed';
+END
+$$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
@@ -24,7 +24,7 @@ BEGIN
         PERFORM maker.update_urn_inks_until_next_diff(OLD, urn_ink_before_block(OLD.urn_id, OLD.diff_id));
         PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
         PERFORM maker.update_urn_created(OLD.urn_id);
-        PERFORM maker.mark_noncanonical_transformed_diff_as_pending(OLD.diff_id);
+        PERFORM maker.mark_transformed_diff_as_pending(OLD.diff_id);
     END IF;
     RETURN NULL;
 END
@@ -43,7 +43,7 @@ BEGIN
     ELSIF (TG_OP = 'DELETE') THEN
         PERFORM maker.update_urn_arts_until_next_diff(OLD, urn_art_before_block(OLD.urn_id, OLD.diff_id));
         PERFORM maker.delete_obsolete_urn_snapshot(OLD.urn_id, OLD.header_id, OLD.diff_id);
-        PERFORM maker.mark_noncanonical_transformed_diff_as_pending(OLD.diff_id);
+        PERFORM maker.mark_transformed_diff_as_pending(OLD.diff_id);
     END IF;
     RETURN NULL;
 END
@@ -93,5 +93,5 @@ $$
     LANGUAGE plpgsql;
 -- +goose StatementEnd
 
-DROP FUNCTION maker.mark_noncanonical_transformed_diff_as_pending(diff_id BIGINT);
+DROP FUNCTION maker.mark_transformed_diff_as_pending(diff_id BIGINT);
 
