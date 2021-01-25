@@ -41,13 +41,12 @@ var _ = Describe("Flop storage repository", func() {
 		diffID = CreateFakeDiffRecord(db)
 	})
 
-	It("panics if the metadata name is not recognized", func() {
+	It("returns an error if the metadata name is not recognized", func() {
 		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
-		flopCreate := func() {
-			repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
-		}
 
-		Expect(flopCreate).Should(Panic())
+		err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+		Expect(err).Should(HaveOccurred())
 	})
 
 	Describe("Vat", func() {
@@ -161,7 +160,7 @@ var _ = Describe("Flop storage repository", func() {
 			AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 		})
 
-		It("panics if the packed name is not recognized", func() {
+		It("returns an error if the packed name is not recognized", func() {
 			packedNames := make(map[int]string)
 			packedNames[0] = "notRecognized"
 
@@ -170,10 +169,9 @@ var _ = Describe("Flop storage repository", func() {
 				PackedNames: packedNames,
 			}
 
-			createFunc := func() {
-				_ = repo.Create(diffID, fakeHeaderID, badMetadata, values)
-			}
-			Expect(createFunc).To(Panic())
+			err := repo.Create(diffID, fakeHeaderID, badMetadata, values)
+
+			Expect(err).To(HaveOccurred())
 		})
 
 		It("returns an error if inserting fails", func() {

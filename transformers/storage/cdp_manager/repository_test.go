@@ -58,13 +58,12 @@ var _ = Describe("CDP Manager storage repository", func() {
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
-	It("panics if the metadata name is not recognized", func() {
+	It("returns an error if the metadata name is not recognized", func() {
 		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
-		repoCreate := func() {
-			repository.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
-		}
 
-		Expect(repoCreate).Should(Panic())
+		err := repository.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+		Expect(err).Should(HaveOccurred())
 	})
 
 	Describe("vat", func() {

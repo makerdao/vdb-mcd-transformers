@@ -43,13 +43,12 @@ var _ = Describe("Pot storage repository", func() {
 	})
 
 	Describe("Variable", func() {
-		It("panics if the metadata name is not recognized", func() {
+		It("returns an error if the metadata name is not recognized", func() {
 			unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
-			repoCreate := func() {
-				repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
-			}
 
-			Expect(repoCreate).Should(Panic())
+			err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+			Expect(err).Should(HaveOccurred())
 		})
 	})
 

@@ -42,13 +42,12 @@ var _ = Describe("Flap storage repository", func() {
 		diffID = CreateFakeDiffRecord(db)
 	})
 
-	It("panics if the metadata name is not recognized", func() {
+	It("returns an error if the metadata name is not recognized", func() {
 		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
-		flapCreate := func() {
-			repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
-		}
 
-		Expect(flapCreate).Should(Panic())
+		err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+		Expect(err).Should(HaveOccurred())
 	})
 
 	It("rolls back the record and address insertions if there's a failure", func() {
@@ -233,10 +232,8 @@ var _ = Describe("Flap storage repository", func() {
 				PackedNames: packedNames,
 			}
 
-			createFunc := func() {
-				repo.Create(diffID, fakeHeaderID, badMetadata, values)
-			}
-			Expect(createFunc).To(Panic())
+			err := repo.Create(diffID, fakeHeaderID, badMetadata, values)
+			Expect(err).Should(HaveOccurred())
 		})
 
 		It("returns an error if inserting fails", func() {

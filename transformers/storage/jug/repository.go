@@ -55,7 +55,7 @@ func (repository StorageRepository) Create(diffID, headerID int64, metadata type
 		return repository.insertJugBase(diffID, headerID, value.(string))
 
 	default:
-		panic(fmt.Sprintf("unrecognized jug contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized jug contract storage name: %s", metadata.Name)
 	}
 }
 
