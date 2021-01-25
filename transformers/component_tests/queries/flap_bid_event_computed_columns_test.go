@@ -26,7 +26,7 @@ var _ = Describe("flap_bid_event computed columns", func() {
 		flapKickLog            core.EventLog
 		headerRepo             datastore.HeaderRepository
 		flapKickEvent          event.InsertionModel
-		contractAddress        = fakes.RandomString(42)
+		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              = rand.Int()
 	)
 
@@ -56,11 +56,11 @@ var _ = Describe("flap_bid_event computed columns", func() {
 			flapStorageValues := test_helpers.GetFlapStorageValues(1, fakeBidId)
 			test_helpers.CreateFlap(db, headerOne, flapStorageValues, test_helpers.GetFlapMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flapStorageValues)
+			expectedBid := test_helpers.FlapBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, contractAddress, flapStorageValues)
 
 			var actualBid test_helpers.FlapBid
 			err := db.Get(&actualBid, `
-				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
+				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flap_address
 				FROM api.flap_bid_event_bid(
 					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flap_bid_event
 					FROM api.all_flap_bid_events())

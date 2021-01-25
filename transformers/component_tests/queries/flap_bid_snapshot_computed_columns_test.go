@@ -63,7 +63,7 @@ var _ = Describe("Flap computed columns", func() {
 			var actualBidEvents test_helpers.BidEvent
 			queryErr := db.Get(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flap_bid_snapshot
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flap_address)::api.flap_bid_snapshot
     					FROM api.all_flaps()))`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(Equal(expectedBidEvents))
@@ -111,7 +111,7 @@ var _ = Describe("Flap computed columns", func() {
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flap_bid_snapshot
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flap_address)::api.flap_bid_snapshot
     					FROM api.all_flaps() WHERE bid_id = $1))`, fakeBidId)
 
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -170,7 +170,7 @@ var _ = Describe("Flap computed columns", func() {
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
 					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flap_bid_snapshot
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flap_address)::api.flap_bid_snapshot
     					FROM api.all_flaps() WHERE bid_id = $1), $2)`, fakeBidId, maxResults)
 
 				Expect(queryErr).NotTo(HaveOccurred())
@@ -191,7 +191,7 @@ var _ = Describe("Flap computed columns", func() {
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
 					`SELECT bid_id, bid_amount, lot, act, contract_address FROM api.flap_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flap_bid_snapshot
+    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flap_address)::api.flap_bid_snapshot
     					FROM api.all_flaps() WHERE bid_id = $1), $2, $3)`, fakeBidId, maxResults, resultOffset)
 
 				Expect(queryErr).NotTo(HaveOccurred())
