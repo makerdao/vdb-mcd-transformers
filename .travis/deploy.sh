@@ -117,13 +117,13 @@ aws ecs run-task \
   --region $REGION
 
 if [ "$ENVIRONMENT" == "prod" ]; then
-    EXECUTE_NAME = vdb-mcd-execute
-    EXTRACT_DIFFS_NAME = vdb-extract-diffs-eu
-    EXTRACT_DIFFS_US_NAME = vdb-extract-diffs-us
+    EXECUTE_NAME=vdb-mcd-execute
+    EXTRACT_DIFFS_NAME=vdb-extract-diffs-eu
+    EXTRACT_DIFFS_US_NAME=vdb-extract-diffs-us
 elif [ "$ENVIRONMENT" == "staging" ]; then
     EXECUTE_NAME=vdb-execute
-    EXTRACT_DIFFS_NAME = vdb-extract-diffs
-    EXTRACT_DIFFS_US_NAME = vdb-extract-diffs2
+    EXTRACT_DIFFS_NAME=vdb-extract-diffs
+    EXTRACT_DIFFS_US_NAME=vdb-extract-diffs2
 fi
 
 message DEPLOYING EXECUTE
