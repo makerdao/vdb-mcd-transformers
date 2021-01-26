@@ -6,7 +6,6 @@
     transformerNames = [
         "flip_aave_a_v1_2_2",
         "flip_bal_a_v1_1_14",
-        "flip_eth_b_v1_1_3",
         "flip_gusd_a_v1_1_5",
         "flip_renbtc_a_v1_2_1",
         "flip_uni_a_v1_2_1",
@@ -27,12 +26,6 @@
   [exporter.flip_bal_a_v1_1_14]
     migrations = "db/migrations"
     path = "transformers/storage/flip/initializers/bal_a/v1_1_14"
-    rank = "0"
-    repository = "github.com/makerdao/vdb-mcd-transformers"
-    type = "eth_storage"
-  [exporter.flip_eth_b_v1_1_3]
-    migrations = "db/migrations"
-    path = "transformers/storage/flip/initializers/eth_b/v1_1_3"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
