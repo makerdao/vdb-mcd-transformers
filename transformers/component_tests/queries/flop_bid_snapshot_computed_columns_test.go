@@ -21,7 +21,7 @@ import (
 var _ = Describe("Flop computed columns", func() {
 	var (
 		headerRepo             datastore.HeaderRepository
-		contractAddress        = fakes.RandomString(42)
+		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              = rand.Int()
 		blockOne, timestampOne int
 		headerOne              core.Header
@@ -63,7 +63,7 @@ var _ = Describe("Flop computed columns", func() {
 			var actualBidEvents test_helpers.BidEvent
 			queryErr := db.Get(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_bid_snapshot 
+					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flop_address)::api.flop_bid_snapshot
     					FROM api.all_flops()))`)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualBidEvents).To(Equal(expectedBidEvents))
@@ -112,7 +112,7 @@ var _ = Describe("Flop computed columns", func() {
 			var actualBidEvents []test_helpers.BidEvent
 			queryErr := db.Select(&actualBidEvents,
 				`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_bid_snapshot
+					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flop_address)::api.flop_bid_snapshot
     					FROM api.all_flops() WHERE bid_id = $1))`, fakeBidId)
 
 			Expect(queryErr).NotTo(HaveOccurred())
@@ -172,7 +172,7 @@ var _ = Describe("Flop computed columns", func() {
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
 					`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_bid_snapshot
+					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flop_address)::api.flop_bid_snapshot
     					FROM api.all_flops() WHERE bid_id = $1), $2)`,
 					fakeBidId, maxResults)
 
@@ -193,7 +193,7 @@ var _ = Describe("Flop computed columns", func() {
 				var actualBidEvents []test_helpers.BidEvent
 				queryErr := db.Select(&actualBidEvents,
 					`SELECT bid_id, bid_amount, lot, act FROM api.flop_bid_snapshot_bid_events(
-    					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated)::api.flop_bid_snapshot
+					(SELECT (bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flop_address)::api.flop_bid_snapshot
     					FROM api.all_flops() WHERE bid_id = $1), $2, $3)`,
 					fakeBidId, maxResults, resultOffset)
 

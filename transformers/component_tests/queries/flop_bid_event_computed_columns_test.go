@@ -24,7 +24,7 @@ var _ = Describe("Flop bid event computed columns", func() {
 	var (
 		blockOne, timestampOne int
 		headerOne              core.Header
-		contractAddress        = fakes.RandomString(42)
+		contractAddress        = fakes.FakeAddress.Hex()
 		fakeBidId              = rand.Int()
 		flopKickGethLog        types.Log
 		flopKickEvent          event.InsertionModel
@@ -59,11 +59,11 @@ var _ = Describe("Flop bid event computed columns", func() {
 			flopStorageValues := test_helpers.GetFlopStorageValues(1, fakeBidId)
 			test_helpers.CreateFlop(db, headerOne, flopStorageValues, test_helpers.GetFlopMetadatas(strconv.Itoa(fakeBidId)), contractAddress)
 
-			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, flopStorageValues)
+			expectedBid := test_helpers.FlopBidFromValues(strconv.Itoa(fakeBidId), "false", headerOne.Timestamp, headerOne.Timestamp, contractAddress, flopStorageValues)
 
 			var actualBid test_helpers.FlopBid
 			err := db.Get(&actualBid, `
-				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated
+				SELECT bid_id, guy, tic, "end", lot, bid, dealt, created, updated, flop_address
 				FROM api.flop_bid_event_bid(
 					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flop_bid_event FROM api.all_flop_bid_events())
 				)`)

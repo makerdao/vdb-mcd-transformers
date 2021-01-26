@@ -474,9 +474,10 @@ func commonBidFromValues(bidId, dealt, updated, created string, bidValues map[st
 	}
 }
 
-func FlopBidFromValues(bidId, dealt, updated, created string, bidValues map[string]interface{}) FlopBid {
+func FlopBidFromValues(bidId, dealt, updated, created string, flopAddress string, bidValues map[string]interface{}) FlopBid {
 	return FlopBid{
-		commonBid: commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		commonBid:   commonBidFromValues(bidId, dealt, updated, created, bidValues),
+		FlopAddress: flopAddress,
 	}
 }
 
@@ -519,6 +520,7 @@ type commonBid struct {
 
 type FlopBid struct {
 	commonBid
+	FlopAddress string `db:"flop_address"`
 }
 
 type FlapBid struct {
