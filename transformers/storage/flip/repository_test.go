@@ -40,13 +40,12 @@ var _ = Describe("Flip storage repository", func() {
 		diffID = CreateFakeDiffRecord(db)
 	})
 
-	It("panics if the metadata name is not recognized", func() {
+	It("returns an error if the metadata name is not recognized", func() {
 		unrecognizedMetadata := types.ValueMetadata{Name: "unrecognized"}
-		flipCreate := func() {
-			_ = repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
-		}
 
-		Expect(flipCreate).Should(Panic())
+		err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
+
+		Expect(err).Should(HaveOccurred())
 	})
 
 	It("rolls back the record and address insertions if there's a failure", func() {
@@ -230,7 +229,7 @@ var _ = Describe("Flip storage repository", func() {
 				AssertVariable(tauResult, diffID, fakeHeaderID, fakeTau)
 			})
 
-			It("panics if the packed name is not recognized", func() {
+			It("returns an error if the packed name is not recognized", func() {
 				packedNames := make(map[int]string)
 				packedNames[0] = "notRecognized"
 
@@ -239,10 +238,9 @@ var _ = Describe("Flip storage repository", func() {
 					PackedNames: packedNames,
 				}
 
-				createFunc := func() {
-					_ = repo.Create(diffID, fakeHeaderID, badMetadata, values)
-				}
-				Expect(createFunc).To(Panic())
+				err := repo.Create(diffID, fakeHeaderID, badMetadata, values)
+
+				Expect(err).To(HaveOccurred())
 			})
 
 			It("returns an error if inserting fails", func() {

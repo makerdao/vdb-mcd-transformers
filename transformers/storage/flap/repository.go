@@ -52,7 +52,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case storage.Packed:
 		return repository.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	default:
-		panic(fmt.Sprintf("unrecognized flap contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized flap contract storage name: %s", metadata.Name)
 	}
 }
 
@@ -196,7 +196,7 @@ func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID in
 		case storage.BidEnd:
 			insertErr = repository.insertBidEnd(diffID, headerID, metadata, value)
 		default:
-			panic(fmt.Sprintf("unrecognized flap contract storage name in packed values: %s", metadata.Name))
+			return fmt.Errorf("unrecognized flap contract storage name in packed values: %s", metadata.Name)
 		}
 		if insertErr != nil {
 			return fmt.Errorf("error inserting flap packed value from diff ID %d: %w", diffID, insertErr)

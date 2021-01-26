@@ -59,7 +59,7 @@ func (repository *StorageRepository) Create(diffID, headerID int64, metadata typ
 	case storage.BidLot:
 		return repository.insertBidLot(diffID, headerID, metadata, value.(string))
 	default:
-		panic(fmt.Sprintf("unrecognized flop contract storage name: %s", metadata.Name))
+		return fmt.Errorf("unrecognized flop contract storage name: %s", metadata.Name)
 	}
 }
 
@@ -219,7 +219,7 @@ func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID in
 		case storage.BidEnd:
 			insertErr = repository.insertBidEnd(diffID, headerID, metadata, value)
 		default:
-			panic(fmt.Sprintf("unrecognized flop contract storage name in packed values: %s", metadata.Name))
+			return fmt.Errorf("unrecognized flop contract storage name in packed values: %s", metadata.Name)
 		}
 		if insertErr != nil {
 			return fmt.Errorf("error inserting flop packed value from diff ID %d: %w", diffID, insertErr)
