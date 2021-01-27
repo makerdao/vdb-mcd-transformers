@@ -17430,6 +17430,13 @@ CREATE INDEX flip_file_cat_address_id_index ON maker.flip_file_cat USING btree (
 
 
 --
+-- Name: flip_file_cat_data_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX flip_file_cat_data_index ON maker.flip_file_cat USING btree (data);
+
+
+--
 -- Name: flip_file_cat_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18323,6 +18330,13 @@ CREATE INDEX median_slot_header_id_index ON maker.median_slot USING btree (heade
 --
 
 CREATE INDEX median_slot_id_index ON maker.median_slot USING btree (slot_id);
+
+
+--
+-- Name: median_slot_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX median_slot_index ON maker.median_slot USING btree (slot);
 
 
 --
