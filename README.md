@@ -17,23 +17,7 @@ This repository is a collection of transformers to be used along with VDB as a p
 
 ### Docker Setup
 
-This repository provides a docker-compose setup to manage the multiple container-based deployment for you, if at all possible you should use that setup.
-
-#### Dependencies
- - Docker (the rest is handled by docker-compose)
-
-#### Database Initialization
-
-The database needs to be initialized once before bringing up the system. That can be by running, from the root directory, 
-
-```bash
-docker-compose -f dockerfiles/docker-compose.yml run execute ./run_migrations.sh
-```
-
-#### System Startup
-
-```bash
-docker-compose -f dockerfiles/docker-compose.yml up
+The [vdb-transformer-utilities](https://github.com/makerdao/vdb-transformer-utilities) repository provides a docker-compose setup to manage the multiple container-based deployment for you, if at all possible you should use that setup.
 ```
 
 ### Manual Setup
