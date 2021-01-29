@@ -152,7 +152,7 @@ WITH address_id AS (
          WHERE deal.bid_id = get_flap.bid_id
            AND deal.address_id = (SELECT * FROM address_id)
            AND headers.block_number <= block_height
-         ORDER BY bid_id, block_number DESC
+         ORDER BY block_number DESC
          LIMIT 1
      )
 
