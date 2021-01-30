@@ -11,17 +11,19 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Time Bite Totals query", func() {
 	var (
-		headerRepo   datastore.HeaderRepository
-		blockOne     int
-		timestampOne int64
-		fakeUrn      = test_data.RandomString(5)
-		headerOne    core.Header
+		headerRepo      datastore.HeaderRepository
+		blockOne        int
+		timestampOne    int64
+		fakeUrn         = test_data.RandomString(5)
+		fakeFlipAddress = fakes.FakeAddress.Hex()
+		headerOne       core.Header
 	)
 
 	BeforeEach(func() {
@@ -43,7 +45,7 @@ var _ = Describe("Time Bite Totals query", func() {
 			dateMiddle := time.Unix(oneHour, 0).UTC().Format(time.RFC3339)
 			dateEnd := time.Unix(twoHours, 0).UTC().Format(time.RFC3339)
 
-			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, headerOne.Id, biteLog.ID, db)
+			biteOne := generateBite(test_helpers.FakeIlk.Hex, fakeUrn, fakeFlipAddress, headerOne.Id, biteLog.ID, db)
 			createErr := event.PersistModels([]event.InsertionModel{biteOne}, db)
 			Expect(createErr).NotTo(HaveOccurred())
 

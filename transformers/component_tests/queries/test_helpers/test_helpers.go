@@ -270,6 +270,25 @@ type BucketedFrobTotals struct {
 	Wipe           string
 }
 
+type BucketedBiteTotals struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	Ink            string
+	Art            string
+	Tab            string
+}
+
+type BucketedBidTotals struct {
+	BucketStart    string `db:"bucket_start"`
+	BucketEnd      string `db:"bucket_end"`
+	BucketInterval string `db:"bucket_interval"`
+	LotStart       string `db:"lot_start"`
+	LotEnd         string `db:"lot_end"`
+	BidAmountStart string `db:"bid_amount_start"`
+	BidAmountEnd   string `db:"bid_amount_end"`
+}
+
 func CreateVatRecords(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata, repository vat.StorageRepository) {
 	InsertValues(db, &repository, header, valuesMap, metadatas)
 }

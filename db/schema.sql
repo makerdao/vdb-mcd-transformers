@@ -252,6 +252,83 @@ CREATE TYPE api.sin_queue_event AS (
 
 
 --
+-- Name: time_bid_total; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_bid_total AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	count bigint,
+	lot_start numeric,
+	lot_end numeric,
+	bid_amount_start numeric,
+	bid_amount_end numeric
+);
+
+
+--
+-- Name: time_bite_total; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_bite_total AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	count bigint,
+	ink numeric,
+	art numeric,
+	tab numeric
+);
+
+
+--
+-- Name: time_frob_total; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_frob_total AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	count bigint,
+	dink numeric,
+	dart numeric,
+	lock numeric,
+	free numeric,
+	draw numeric,
+	wipe numeric
+);
+
+
+--
+-- Name: time_ilk_snapshot; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.time_ilk_snapshot AS (
+	bucket_start timestamp without time zone,
+	bucket_end timestamp without time zone,
+	bucket_interval interval,
+	ilk_identifier text,
+	block_number bigint,
+	rate numeric,
+	art numeric,
+	spot numeric,
+	line numeric,
+	dust numeric,
+	chop numeric,
+	lump numeric,
+	dunk numeric,
+	flip text,
+	rho numeric,
+	duty numeric,
+	pip text,
+	mat numeric,
+	created timestamp without time zone,
+	updated timestamp without time zone
+);
+
+
+--
 -- Name: tx; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -1683,6 +1760,327 @@ CREATE FUNCTION api.sin_queue_event_tx(event api.sin_queue_event) RETURNS api.tx
     AS $$
 SELECT *
 FROM get_tx_data(event.block_height, event.log_id)
+$$;
+
+
+--
+-- Name: time_bite_totals(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_bite_totals(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_bite_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_bite_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN 
+        WITH buckets AS (
+            SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+            extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+            extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+        ),
+        bite_results AS (
+            SELECT *
+            FROM maker.bite
+            LEFT JOIN public.headers ON (headers.id = bite.header_id)
+            LEFT JOIN maker.urns ON (urns.id = bite.urn_id)
+            LEFT JOIN maker.ilks ON (ilks.id = urns.ilk_id)
+            WHERE ilks.identifier = time_bite_totals.ilk_identifier
+        )
+        SELECT buckets.bucket_start AS bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval AS bucket_interval,
+            COUNT(ink) AS count,
+            COALESCE(SUM(ink), 0) AS ink,
+            COALESCE(SUM(art), 0) AS art,
+            COALESCE(SUM(tab), 0) AS tab
+        FROM buckets
+            LEFT JOIN bite_results ON (
+                block_timestamp >= bucket_start_epoch AND
+                block_timestamp < bucket_end_epoch
+            )
+        GROUP BY bucket_start, bucket_end, bucket_interval
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_flap_bid_totals(timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_flap_bid_totals(range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_bid_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_bid_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN 
+        WITH buckets AS (
+            SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+            extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+            extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+        ),
+        flap_address AS (
+            SELECT DISTINCT(address)
+            FROM maker.flap_kick
+                JOIN addresses on addresses.id = flap_kick.address_id
+        ),
+        bid_results AS (
+            SELECT bid_id,
+                contract_address,
+                MIN(block_timestamp) AS block_timestamp,
+                MAX(lot) AS lot_start,
+                MIN(lot) AS lot_end,
+                MIN(bid_amount) AS bid_amount_start,
+                MAX(bid_amount) AS bid_amount_end
+            FROM maker.bid_event
+            LEFT JOIN public.headers ON (headers.block_number = block_height)
+            WHERE contract_address IN (SELECT * FROM flap_address)
+            GROUP BY contract_address, bid_id
+        )
+        SELECT buckets.bucket_start AS bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval AS bucket_interval,
+            COUNT(lot_start) AS count,
+            COALESCE(SUM(lot_start), 0) AS lot_start,
+            COALESCE(SUM(lot_end), 0) AS lot_end,
+            COALESCE(SUM(bid_amount_start), 0) AS bid_amount_start,
+            COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
+        FROM buckets
+            LEFT JOIN bid_results ON (
+                block_timestamp >= bucket_start_epoch AND
+                block_timestamp < bucket_end_epoch
+            )
+        GROUP BY bucket_start, bucket_end, bucket_interval
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_flip_bid_totals(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_flip_bid_totals(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_bid_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_bid_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN 
+        WITH buckets AS (
+            SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+            extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+            extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+        ),
+        bid_results AS (
+            SELECT bid_id,
+                contract_address,
+                MIN(block_timestamp) AS block_timestamp,
+                MAX(lot) AS lot_start,
+                MIN(lot) AS lot_end,
+                MIN(bid_amount) AS bid_amount_start,
+                MAX(bid_amount) AS bid_amount_end
+            FROM maker.bid_event
+            LEFT JOIN public.headers ON (headers.block_number = block_height)
+            WHERE bid_event.ilk_identifier = time_flip_bid_totals.ilk_identifier
+            GROUP BY contract_address, bid_id
+        )
+        SELECT buckets.bucket_start AS bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval AS bucket_interval,
+            COUNT(lot_start) AS count,
+            COALESCE(SUM(lot_start), 0) AS lot_start,
+            COALESCE(SUM(lot_end), 0) AS lot_end,
+            COALESCE(SUM(bid_amount_start), 0) AS bid_amount_start,
+            COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
+        FROM buckets
+            LEFT JOIN bid_results ON (
+                block_timestamp >= bucket_start_epoch AND
+                block_timestamp < bucket_end_epoch
+            )
+        GROUP BY bucket_start, bucket_end, bucket_interval
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_flop_bid_totals(timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_flop_bid_totals(range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_bid_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_bid_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN 
+        WITH buckets AS (
+            SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start,
+            extract(epoch FROM generate_series(range_start, range_end - bucket_interval, bucket_interval)) AS bucket_start_epoch,
+            extract(epoch FROM generate_series(range_start + bucket_interval, range_end, bucket_interval)) AS bucket_end_epoch
+        ),
+        flop_address AS (
+            SELECT DISTINCT(address)
+            FROM maker.flop_kick
+                JOIN addresses on addresses.id = flop_kick.address_id
+        ),
+        bid_results AS (
+            SELECT bid_id,
+                contract_address,
+                MIN(block_timestamp) AS block_timestamp,
+                MAX(lot) AS lot_start,
+                MIN(lot) AS lot_end,
+                MIN(bid_amount) AS bid_amount_start,
+                MAX(bid_amount) AS bid_amount_end
+            FROM maker.bid_event
+            LEFT JOIN public.headers ON (headers.block_number = block_height)
+            WHERE contract_address IN (SELECT * FROM flop_address)
+            GROUP BY contract_address, bid_id
+        )
+        SELECT buckets.bucket_start AS bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval AS bucket_interval,
+            COUNT(lot_start) AS count,
+            COALESCE(SUM(lot_start), 0) AS lot_start,
+            COALESCE(SUM(lot_end), 0) AS lot_end,
+            COALESCE(SUM(bid_amount_start), 0) AS bid_amount_start,
+            COALESCE(SUM(bid_amount_end), 0) AS bid_amount_end
+        FROM buckets
+            LEFT JOIN bid_results ON (
+                block_timestamp >= bucket_start_epoch AND
+                block_timestamp < bucket_end_epoch
+            )
+        GROUP BY bucket_start, bucket_end, bucket_interval
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_frob_totals(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_frob_totals(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_frob_total
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_frob_total%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN
+        WITH buckets AS (
+            SELECT TO_TIMESTAMP(EXTRACT(EPOCH FROM range_start) + ROUND((headers.block_timestamp - EXTRACT(EPOCH FROM range_start)) / EXTRACT(EPOCH FROM bucket_interval)) * EXTRACT(EPOCH FROM bucket_interval)) AS bucket_start,
+                COUNT(dink) AS count,
+                COALESCE(SUM(dink), 0) AS dink,
+                COALESCE(SUM(dart), 0) AS dart,
+                COALESCE(SUM(GREATEST(dink, 0)), 0) AS lock,
+                COALESCE(SUM(GREATEST(-dink, 0)), 0) AS free,
+                COALESCE(SUM(GREATEST(dart, 0)), 0) AS draw,
+                COALESCE(SUM(GREATEST(-dart, 0)), 0) AS wipe
+            FROM maker.vat_frob
+                LEFT JOIN public.headers ON (vat_frob.header_id = headers.id)
+                LEFT JOIN maker.urns ON (urns.id = urn_id)
+                LEFT JOIN maker.ilks ON (ilks.id = ilk_id)
+                WHERE ilks.identifier = time_frob_totals.ilk_identifier AND
+                    headers.block_timestamp >= EXTRACT(EPOCH FROM range_start) and
+                    headers.block_timestamp < EXTRACT(EPOCH FROM range_end)
+            GROUP BY bucket_start
+            ORDER BY bucket_start
+        )
+        SELECT
+            bucket_start AT TIME ZONE 'UTC' AS bucket_start,
+            (bucket_start + bucket_interval) AT TIME ZONE 'UTC' AS bucket_end,
+            bucket_interval,
+            count,
+            dink,
+            dart,
+            lock,
+            free,
+            draw,
+            wipe
+        FROM buckets
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
+$$;
+
+
+--
+-- Name: time_ilk_snapshots(text, timestamp without time zone, timestamp without time zone, interval); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.time_ilk_snapshots(ilk_identifier text, range_start timestamp without time zone, range_end timestamp without time zone, bucket_interval interval DEFAULT '1 day'::interval) RETURNS SETOF api.time_ilk_snapshot
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+DECLARE
+    r api.time_ilk_snapshot%rowtype;
+BEGIN
+    ASSERT EXTRACT(EPOCH FROM (range_end - range_start)) / EXTRACT(EPOCH FROM bucket_interval) <= 1000, 'Please limit requests to at most 1000 buckets.';
+    FOR r IN 
+        WITH buckets AS (SELECT generate_series(range_start, range_end - bucket_interval, bucket_interval) AS bucket_start)
+        SELECT buckets.bucket_start,
+            buckets.bucket_start + bucket_interval AS bucket_end,
+            bucket_interval,
+            time_ilk_snapshots.ilk_identifier,
+            block_number,
+            rate,
+            art,
+            spot,
+            line,
+            dust,
+            chop,
+            lump,
+            dunk,
+            flip,
+            rho,
+            duty,
+            pip,
+            mat,
+            created,
+            updated
+        FROM buckets
+            LEFT JOIN api.ilk_snapshot ON
+            (
+                ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND
+                block_number = (
+                    SELECT block_number
+                    FROM api.ilk_snapshot
+                    WHERE ilk_snapshot.ilk_identifier = time_ilk_snapshots.ilk_identifier AND updated < buckets.bucket_start + bucket_interval
+                    ORDER BY updated DESC
+                    LIMIT 1
+                )
+            )
+        ORDER BY bucket_start
+    LOOP
+        return next r;
+    END LOOP;
+    return;
+END;
 $$;
 
 
@@ -16391,6 +16789,13 @@ ALTER TABLE ONLY maker.yank
 
 ALTER TABLE ONLY maker.yank
     ADD CONSTRAINT yank_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ilk_snapshot_ilk_identifier_updated_idx; Type: INDEX; Schema: api; Owner: -
+--
+
+CREATE INDEX ilk_snapshot_ilk_identifier_updated_idx ON api.ilk_snapshot USING btree (ilk_identifier, updated);
 
 
 --
