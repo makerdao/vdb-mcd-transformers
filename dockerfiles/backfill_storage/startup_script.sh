@@ -29,5 +29,5 @@ fi
 
 # TODO: update starting/ending block number to match extract diffs deploy block
 # Run getStorageValue
-echo "Running backfillStorage from block 0 to 0"
-./vulcanizedb backfillStorage -s=0 -e=0 --config config.toml
+echo "Running backfillStorage from block 11584150 to 11679900"
+./vulcanizedb backfillStorage -s=11584150 -e=11679900 --config config.toml
