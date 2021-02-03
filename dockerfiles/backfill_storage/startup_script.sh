@@ -27,7 +27,6 @@ if test -z "$VDB_PG_CONNECT"; then
   VDB_PG_CONNECT=postgresql://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOSTNAME:$DATABASE_PORT/$DATABASE_NAME?sslmode=disable
 fi
 
-# TODO: update starting/ending block number to match extract diffs deploy block
-# Run getStorageValue
-echo "Running backfillStorage from block 11584150 to 11679900"
-./vulcanizedb backfillStorage -s=11584150 -e=11679900 --config config.toml
+# Run backfillStorage
+echo "Running backfillStorage from block 11700504 to 11734500"
+./vulcanizedb backfillStorage -s=11700504 -e=11734500 --config config.toml
