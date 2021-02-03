@@ -129,6 +129,24 @@ When a new collateral is added to the MCD system, it also needs to be added to t
             ```
         - Note: The median transformer name should be omitted if it is not included/necessary for this collateral.
 
+## <a name="restarting-backfill"></a>Restarting A Backfill Process
+If a backfill process stops either due to a failure, or an intentional pause, it may need to be restarted. 
+1. Take a look at the logs from the last container that was running the backfill - this should give you information about the last block that was being processed when the process stopped.
+1. Create a PR re-configuring the backfill including the startup script, the transformerExporter.go and the toml config file.
+1. For the backfillStorage process, the starting block number will need to be updated in the startup script. It can now be set to the last block that the previous process was working on - to be sure that no blocks are missed, it may be a good idea to add in a small buffer of a couple of blocks before the block number from step 1.
+
+## Gotchas:
+- The `backfillStorage` process uses `getStorageAt` to get the storage values for all storage keys for the contract we're watching over the range of blocks. As it's inserting the backfilled diffs, it also checks that they are in fact new/updated values before inserting them. This process is not very performant, and we have seen it take about 24 hours to process 50,000 diffs - but please note that this is very dependent on how many contracts are being backfilled, and how many storage value changes have occurred on the given contracts. This particular benchmark is from a process backfilling seven contracts.
+- `backfillEvents` and `backfillStorage` processes are both auto-deployed on merge to the vdb-mcd-transformers and vdb-oasis-transformers repositories. The implication of this is that every time a PR is merged into either of these repositories, it's associated backfill processes are restarted with the current configuration in the startup script, transformerExporter and config files. A few things to do/keep in mind:
+    - You will not be able to merge another PR until the current backfill process is finished, otherwise it will be restarted.
+    - Once the current backfill process successfully completes, it's a good idea clean up the backfill configuration so that a duplicate backfill process isn't kicked off on the next merge to the repository.. This means removing:
+        - the starting and ending block number from the startup script
+        - the transformer initializers from the transformerExporter.go file
+        - the transformerNames and transformerExporters from the toml config file
+    - The backfillStorage process is rather time consuming, and there is a chance that you may need to pause and restart the process, if another PR needs to be merged. To do this:
+        - clean up the existing config (as mention in the previous bullet point) and merge it in to stop the backfill process
+        - [restart the backfill process](#restarting-backfill) when all of the pressing PRs are merged in
+
 ---
 
 ## Event Transformer Exporter Examples:
