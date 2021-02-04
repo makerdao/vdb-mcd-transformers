@@ -4,22 +4,7 @@
     save     = true
     schema   = "maker"
     transformerNames = [
-        "flip_univ2usdceth_a_v1_2_4",
-        "flip_univ2wbtceth_a_v1_2_4",
     ]
-
-  [exporter.flip_univ2usdceth_a_v1_2_4]
-    migrations = "db/migrations"
-    path = "transformers/storage/flip/initializers/univ2usdceth_a/v1_2_4"
-    rank = "0"
-    repository = "github.com/makerdao/vdb-mcd-transformers"
-    type = "eth_storage"
-  [exporter.flip_univ2wbtceth_a_v1_2_4]
-    migrations = "db/migrations"
-    path = "transformers/storage/flip/initializers/univ2wbtceth_a/v1_2_4"
-    rank = "0"
-    repository = "github.com/makerdao/vdb-mcd-transformers"
-    type = "eth_storage"
 
 [contract]
     [contract.CDP_MANAGER]
