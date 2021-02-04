@@ -24,6 +24,11 @@ if [ "$ENVIRONMENT" == "prod" ]; then
     TAG=latest
     REGION=$PROD_REGION
     ECS_NETWORK_CONFIG=$PROD_NETWORK_CONFIG
+elif [ "$ENVIRONMENT" == "private-prod" ]; then
+    ENVIRONMENT="prod"
+    TAG=latest
+    REGION=$PRIVATE_PROD_REGION
+    ECS_NETWORK_CONFIG=$PRIVATE_PROD_NETWORK_CONFIG
 elif [ "$ENVIRONMENT" == "staging" ]; then
     TAG=staging
     REGION=$STAGING_REGION
