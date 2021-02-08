@@ -19263,6 +19263,13 @@ CREATE INDEX urn_ilk_index ON maker.urns USING btree (ilk_id);
 
 
 --
+-- Name: vat_dai_guy_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX vat_dai_guy_index ON maker.vat_dai USING btree (guy);
+
+
+--
 -- Name: vat_dai_header_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
