@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const getMinMaxTransformedDiffsQuery = `SELECT * FROM api.get_storage_transformations_for_status($1)`
+const getMinMaxTransformedDiffsQuery = `SELECT * FROM api.get_min_and_max_diff_by_status($1)`
 
 var _ = Describe("api.storage_transformations_for_status($1)", func() {
 

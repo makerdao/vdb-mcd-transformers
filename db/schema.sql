@@ -262,10 +262,10 @@ CREATE TYPE api.sin_queue_event AS (
 
 
 --
--- Name: storage_transformations; Type: TYPE; Schema: api; Owner: -
+-- Name: storage_diff; Type: TYPE; Schema: api; Owner: -
 --
 
-CREATE TYPE api.storage_transformations AS (
+CREATE TYPE api.storage_diff AS (
 	min_or_max api.min_or_max,
 	address bytea,
 	block_hash bytea,
@@ -1545,6 +1545,27 @@ $$;
 
 
 --
+-- Name: get_min_and_max_diff_by_status(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_min_and_max_diff_by_status(status text) RETURNS SETOF api.storage_diff
+    LANGUAGE sql STABLE
+    AS $$
+(SELECT 'max'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
+		FROM public.storage_diff
+ 		WHERE status = LOWER(get_min_and_max_diff_by_status.status)::public.diff_status
+		ORDER BY block_height DESC
+		LIMIT 1)
+UNION
+(SELECT 'min'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
+		FROM public.storage_diff
+ 		WHERE status = LOWER(get_min_and_max_diff_by_status.status)::public.diff_status
+ 		ORDER BY block_height ASC
+		LIMIT 1)
+$$;
+
+
+--
 -- Name: get_queued_sin(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1574,27 +1595,6 @@ FROM maker.vow_sin_mapping
          LEFT JOIN public.headers ON headers.id = vow_sin_mapping.header_id
 WHERE vow_sin_mapping.era = get_queued_sin.era
 ORDER BY headers.block_number DESC
-$$;
-
-
---
--- Name: get_storage_transformations_for_status(text); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.get_storage_transformations_for_status(status text) RETURNS SETOF api.storage_transformations
-    LANGUAGE sql STABLE
-    AS $$
-(SELECT 'max'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
-		FROM public.storage_diff
- 		WHERE status = LOWER(get_storage_transformations_for_status.status)::public.diff_status
-		ORDER BY block_height DESC
-		LIMIT 1)
-UNION
-(SELECT 'min'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
-		FROM public.storage_diff
- 		WHERE status = LOWER(get_storage_transformations_for_status.status)::public.diff_status
- 		ORDER BY block_height ASC
-		LIMIT 1)
 $$;
 
 
