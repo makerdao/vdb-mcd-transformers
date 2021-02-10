@@ -80,23 +80,28 @@ echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdi
 message PUSH DOCKER IMAGES TO DOCKERHUB
 
 message PUSHING BACKFILL-STORAGE DOCKER IMAGE
-docker image push --all-tags makerdao/vdb-backfill-storage
+docker push makerdao/vdb-backfill-storage:$TAG
+docker push makerdao/vdb-backfill-storage:$IMMUTABLE_TAG
 
 message PUSHING BACKFILL-EVENTS DOCKER IMAGE
-docker image push --all-tags makerdao/vdb-backfill-events
+docker push makerdao/vdb-backfill-events:$TAG
+docker push makerdao/vdb-backfill-events:$IMMUTABLE_TAG
 
 message PUSHING EXTRACT-DIFFS DOCKER IMAGE
-docker image push --all-tags makerdao/vdb-extract-diffs
+docker push makerdao/vdb-extract-diffs:$TAG
+docker push makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
 
 if [ "$ENVIRONMENT" == "prod" ]; then
 
     message PUSHING EXECUTE DOCKER IMAGE
-    docker image push --all-tags makerdao/vdb-mcd-execute
+    docker push makerdao/vdb-mcd-execute:$TAG
+    docker push makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 
 elif [ "$ENVIRONMENT" == "staging" ]; then
 
     message PUSHING EXECUTE DOCKER IMAGE
-    docker image push --all-tags makerdao/vdb-execute
+    docker push makerdao/vdb-execute:$TAG
+    docker push makerdao/vdb-execute:$IMMUTABLE_TAG
 
 else
     message UNKNOWN ENVIRONMENT
