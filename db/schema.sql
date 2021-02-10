@@ -204,6 +204,16 @@ CREATE TYPE api.ilk_file_event AS (
 
 
 --
+-- Name: min_or_max; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.min_or_max AS ENUM (
+    'min',
+    'max'
+);
+
+
+--
 -- Name: poke_event; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -248,6 +258,24 @@ CREATE TYPE api.sin_queue_event AS (
 	act api.sin_act,
 	block_height bigint,
 	log_id bigint
+);
+
+
+--
+-- Name: storage_diff; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.storage_diff AS (
+	min_or_max api.min_or_max,
+	address bytea,
+	block_hash bytea,
+	block_height bigint,
+	from_backfill boolean,
+	status public.diff_status,
+	storage_key bytea,
+	storage_value bytea,
+	created timestamp without time zone,
+	updated timestamp without time zone
 );
 
 
@@ -1513,6 +1541,27 @@ FROM public.event_logs
 WHERE transformed = true
 ORDER BY h.block_number DESC
 LIMIT 1
+$$;
+
+
+--
+-- Name: get_min_and_max_diff_by_status(text); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_min_and_max_diff_by_status(status text) RETURNS SETOF api.storage_diff
+    LANGUAGE sql STABLE
+    AS $$
+(SELECT 'max'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
+		FROM public.storage_diff
+ 		WHERE status = LOWER(get_min_and_max_diff_by_status.status)::public.diff_status
+		ORDER BY block_height DESC
+		LIMIT 1)
+UNION
+(SELECT 'min'::api.min_or_max as min_or_max, address, block_hash, block_height, from_backfill, status, storage_key, storage_value, created, updated
+		FROM public.storage_diff
+ 		WHERE status = LOWER(get_min_and_max_diff_by_status.status)::public.diff_status
+ 		ORDER BY block_height ASC
+		LIMIT 1)
 $$;
 
 
