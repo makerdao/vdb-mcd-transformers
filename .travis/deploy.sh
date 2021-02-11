@@ -42,24 +42,27 @@ fi
 #--------------------------
 message BUILD DOCKER IMAGES
 
+COMMIT_HASH=${TRAVIS_COMMIT::7}
+IMMUTABLE_TAG=$TRAVIS_BUILD_NUMBER-$COMMIT_HASH
+
 message BUILDING EXTRACT-DIFFS DOCKER IMAGE
-docker build -f dockerfiles/extract_diffs/Dockerfile . -t makerdao/vdb-extract-diffs:$TAG
+docker build -f dockerfiles/extract_diffs/Dockerfile . -t makerdao/vdb-extract-diffs:$TAG -t makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
 
 message BUILDING BACKFILL-STORAGE DOCKER IMAGE
-docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG
+docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG -t makerdao/vdb-backfill-storage:$IMMUTABLE_TAG
 
 message BUILDING BACKFILL-EVENTS DOCKER IMAGE
-docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG
+docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG -t makerdao/vdb-backfill-events:$IMMUTABLE_TAG
 
 if [ "$ENVIRONMENT" == "prod" ]; then
 
     message BUILDING EXECUTE DOCKER IMAGE
-    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG
+    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG -t makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 
 elif [ "$ENVIRONMENT" == "staging" ]; then
 
     message BUILDING EXECUTE DOCKER IMAGE
-    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG
+    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG -t makerdao/vdb-execute:$IMMUTABLE_TAG
 
 else
     message UNKNOWN ENVIRONMENT
@@ -78,22 +81,27 @@ message PUSH DOCKER IMAGES TO DOCKERHUB
 
 message PUSHING BACKFILL-STORAGE DOCKER IMAGE
 docker push makerdao/vdb-backfill-storage:$TAG
+docker push makerdao/vdb-backfill-storage:$IMMUTABLE_TAG
 
 message PUSHING BACKFILL-EVENTS DOCKER IMAGE
 docker push makerdao/vdb-backfill-events:$TAG
+docker push makerdao/vdb-backfill-events:$IMMUTABLE_TAG
 
 message PUSHING EXTRACT-DIFFS DOCKER IMAGE
 docker push makerdao/vdb-extract-diffs:$TAG
+docker push makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
 
 if [ "$ENVIRONMENT" == "prod" ]; then
 
     message PUSHING EXECUTE DOCKER IMAGE
     docker push makerdao/vdb-mcd-execute:$TAG
+    docker push makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 
 elif [ "$ENVIRONMENT" == "staging" ]; then
 
     message PUSHING EXECUTE DOCKER IMAGE
     docker push makerdao/vdb-execute:$TAG
+    docker push makerdao/vdb-execute:$IMMUTABLE_TAG
 
 else
     message UNKNOWN ENVIRONMENT
