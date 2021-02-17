@@ -59,10 +59,12 @@ func FlipV110Addresses() []string {
 		"MCD_FLIP_TUSD_A_1_1_0",
 		"MCD_FLIP_UNI_A_1_2_1",
 		"MCD_FLIP_UNIV2DAIETH_A_1_2_2",
-		"MCD_FLIP_UNIV2USDCETH_A_1_2_4",
-		"MCD_FLIP_UNIV2WBTCETH_A_1_2_4",
 		"MCD_FLIP_UNIV2DAIUSDC_A_1_2_5",
 		"MCD_FLIP_UNIV2ETHUSDT_A_1_2_5",
+		"MCD_FLIP_UNIV2UNIETH_A_1_2_6",
+		"MCD_FLIP_UNIV2LINKETH_A_1_2_6",
+		"MCD_FLIP_UNIV2USDCETH_A_1_2_4",
+		"MCD_FLIP_UNIV2WBTCETH_A_1_2_4",
 		"MCD_FLIP_USDC_A_1_1_0",
 		"MCD_FLIP_USDC_B_1_1_0",
 		"MCD_FLIP_USDT_A_1_1_1",
@@ -147,6 +149,12 @@ func FlipUniV2DaiUsdcAddress() string {
 }
 func FlipUniV2EthUsdtAddress() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_UNIV2ETHUSDT_A_1_2_5"))
+}
+func FlipUniV2UniEthAddress() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_UNIV2UNIETH_A_1_2_6"))
+}
+func FlipUniV2LinkEthAddress() string {
+	return checksum(constants.GetContractAddress("MCD_FLIP_UNIV2LINKETH_A_1_2_6"))
 }
 func FlipUniV2UsdcEthAddress() string {
 	return checksum(constants.GetContractAddress("MCD_FLIP_UNIV2USDCETH_A_1_2_4"))
