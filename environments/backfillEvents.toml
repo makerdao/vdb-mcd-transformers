@@ -32,18 +32,21 @@
         path = "transformers/events/flip_file/cat/initializer"
         rank = "0"
         repository = "github.com/makerdao/vdb-mcd-transformers"
+        type = "eth_event"
     [exporter.flip_kick]
         contracts = ["MCD_FLIP_UNIV2DAIUSDC_A_1_2_5", "MCD_FLIP_UNIV2ETHUSDT_A_1_2_5, MCD_FLIP_UNIV2UNIETH_A_1_2_6, MCD_FLIP_UNIV2LINKETH_A_1_2_6"]
         migrations = "db/migrations"
         path = "transformers/events/flip_kick/initializer"
         rank = "0"
         repository = "github.com/makerdao/vdb-mcd-transformers"
+        type = "eth_event"
     [exporter.tend]
         contracts = ["MCD_FLIP_UNIV2DAIUSDC_A_1_2_5", "MCD_FLIP_UNIV2ETHUSDT_A_1_2_5, MCD_FLIP_UNIV2UNIETH_A_1_2_6, MCD_FLIP_UNIV2LINKETH_A_1_2_6"]
         migrations = "db/migrations"
         path = "transformers/events/tend/initializer"
         rank = "0"
         repository = "github.com/makerdao/vdb-mcd-transformers"
+        type = "eth_event"
     [exporter.tick]
         contracts = ["MCD_FLIP_UNIV2DAIUSDC_A_1_2_5", "MCD_FLIP_UNIV2ETHUSDT_A_1_2_5, MCD_FLIP_UNIV2UNIETH_A_1_2_6, MCD_FLIP_UNIV2LINKETH_A_1_2_6"]
         migrations = "db/migrations"
@@ -57,6 +60,7 @@
         path = "transformers/events/yank/initializer"
         rank = "0"
         repository = "github.com/makerdao/vdb-mcd-transformers"
+        type = "eth_event"
     [exporter.deny]
         contracts = ["MCD_FLIP_UNIV2DAIUSDC_A_1_2_5", "MCD_FLIP_UNIV2ETHUSDT_A_1_2_5, MCD_FLIP_UNIV2UNIETH_A_1_2_6, MCD_FLIP_UNIV2LINKETH_A_1_2_6"]
         migrations = "db/migrations"
