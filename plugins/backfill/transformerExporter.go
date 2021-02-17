@@ -35,8 +35,6 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			tick.EventTransformerInitializer,
 			yank.EventTransformerInitializer,
 		},
-		[]storage.TransformerInitializer{
-
-		},
+		[]storage.TransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
 }
