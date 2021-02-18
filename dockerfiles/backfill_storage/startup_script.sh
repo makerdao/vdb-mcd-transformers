@@ -29,4 +29,4 @@ fi
 
 # Run backfillStorage
 echo "Running backfillStorage from block 0 to 0"
-./vulcanizedb backfillStorage -s=0 -e=0 --config config.toml
+./vulcanizedb backfillStorage -s=11791147 -e=11877178 --config config.toml
