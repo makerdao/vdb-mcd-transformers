@@ -97,12 +97,14 @@ import (
 	flip_tusd_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_0_9"
 	flip_tusd_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_1_0"
 	flip_uni_a_v1_2_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/uni_a/v1_2_1"
+	flip_univ2aaveeth_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2aaveeth_a/v1_2_7"
 	flip_univ2daieth_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daieth_a/v1_2_2"
 	flip_univ2daiusdc_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daiusdc_a/v1_2_5"
 	flip_univ2ethusdt_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2ethusdt_a/v1_2_5"
 	flip_univ2linketh_a_v1_2_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2linketh_a/v1_2_6"
 	flip_univ2unieth_a_v1_2_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2unieth_a/v1_2_6"
 	flip_univ2usdceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2usdceth_a/v1_2_4"
+	flip_univ2wbtcdai_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtcdai_a/v1_2_7"
 	flip_univ2wbtceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtceth_a/v1_2_4"
 	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
 	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
@@ -246,12 +248,14 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_tusd_a_v1_0_9.StorageTransformerInitializer,
 			flip_tusd_a_v1_1_0.StorageTransformerInitializer,
 			flip_uni_a_v1_2_1.StorageTransformerInitializer,
+			flip_univ2aaveeth_a_v1_2_7.StorageTransformerInitializer,
 			flip_univ2daieth_a_v1_2_2.StorageTransformerInitializer,
 			flip_univ2daiusdc_a_v1_2_5.StorageTransformerInitializer,
 			flip_univ2ethusdt_a_v1_2_5.StorageTransformerInitializer,
 			flip_univ2linketh_a_v1_2_6.StorageTransformerInitializer,
 			flip_univ2unieth_a_v1_2_6.StorageTransformerInitializer,
 			flip_univ2usdceth_a_v1_2_4.StorageTransformerInitializer,
+			flip_univ2wbtcdai_a_v1_2_7.StorageTransformerInitializer,
 			flip_univ2wbtceth_a_v1_2_4.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_4.StorageTransformerInitializer,
 			flip_usdc_a_v1_0_9.StorageTransformerInitializer,

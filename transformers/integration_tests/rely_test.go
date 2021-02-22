@@ -144,6 +144,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(10510886, test_data.FlipTusdAV109Address(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip UNIV2AAVEETH v1.2.7 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
+		relyIntegrationTest(11882283, test_data.FlipUniV2AaveEthAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip UNIV2DAIETH v1.2.2 rely events", func() {
 		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
@@ -174,13 +180,19 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(11836943, test_data.FlipUniV2UniEthAddress(), msgSenderAddress, usrAddress)
 	})
 
-	XContext("Flip UNIV2LINKETH_A v1.2.6 rely events", func() {
-		usrAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
-		msgSenderAddress := "0x4acdbe9dd0d00b36ec2050e805012b8fc9974f2b"
-		relyIntegrationTest(11836943, test_data.FlipUniV2LinkEthAddress(), msgSenderAddress, usrAddress)
+	Context("Flip UNIV2LINKETH_A v1.2.6 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
+		relyIntegrationTest(11837043, test_data.FlipUniV2LinkEthAddress(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip UNIV2WBTCETH_A deny events", func() {
+	Context("Flip UNIV2WBTCDAI_A rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
+		relyIntegrationTest(11882322, test_data.FlipUniV2WbtcDaiAddress(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip UNIV2WBTCETH_A rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xda0fab060e6cc7b1C0AA105d29Bd50D71f036711"
 		relyIntegrationTest(11700516, test_data.FlipUniV2WbtcEthAddress(), msgSenderAddress, usrAddress)
