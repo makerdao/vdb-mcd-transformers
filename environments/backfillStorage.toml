@@ -3,36 +3,7 @@
     name     = "transformerExporter"
     save     = true
     schema   = "maker"
-    transformerNames = [
-        "flip_univ2daiusdc_a_v1_2_5",
-        "flip_univ2ethusdt_a_v1_2_5",
-        "flip_univ2linketh_a_v1_2_6",
-        "flip_univ2unieth_a_v1_2_6"
-    ]
-    [exporter.flip_univ2daiusdc_a_v1_2_5]
-        migrations = "db/migrations"
-        path = "transformers/storage/flip/initializers/univ2daiusdc_a/v1_2_5"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_storage"
-    [exporter.flip_univ2ethusdt_a_v1_2_5]
-        migrations = "db/migrations"
-        path = "transformers/storage/flip/initializers/univ2ethusdt_a/v1_2_5"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_storage"
-    [exporter.flip_univ2linketh_a_v1_2_6]
-        migrations = "db/migrations"
-        path = "transformers/storage/flip/initializers/univ2linketh_a/v1_2_6"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_storage"
-    [exporter.flip_univ2unieth_a_v1_2_6]
-        migrations = "db/migrations"
-        path = "transformers/storage/flip/initializers/univ2unieth_a/v1_2_6"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_storage"
+    transformerNames = []
 [contract]
     [contract.CDP_MANAGER]
         address  = "0x5ef30b9986345249bc32d8928b7ee64de9435e39"
