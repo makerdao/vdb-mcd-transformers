@@ -3,7 +3,7 @@
     name     = "transformerExporter"
     save     = true
     schema   = "maker"
-    transformerNames = ["MCD_FLIP_UNIV2AAVEETH_A_1_2_7", "MCD_FLIP_UNIV2WBTCDAI_A_1_2_7"]
+    transformerNames = ["flip_univ2aaveeth_a_v1_2_7", "flip_univ2wbtcdai_a_v1_2_7"]
 
     [exporter.flip_univ2aaveeth_a_v1_2_7]
         migrations = "db/migrations"
