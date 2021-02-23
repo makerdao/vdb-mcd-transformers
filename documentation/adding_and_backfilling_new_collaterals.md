@@ -16,9 +16,15 @@ When a new collateral is added to the MCD system, it also needs to be added to t
 ## 2. Backfill Collateral Events
 - There will likely be a gap between when the new collateral's Flip and Price Feed (OSM, Median, LPOracle) contracts are deployed and when `vdb-mcd-transformers` begins watching for their new events. So, in order to ensure that no events are missed, a `backfillEvents` process needs to be started.
 - The `backfillEvents` process needs to be started **after** the new collaterals have been added to the `execute` process, step 1.
-- Several components need to be added to the `backfillEvents.toml` config file. These components can all be copied and pasted from the `mcdTransformers.toml` file which was updated in the previous step with the collateral generator script.
+- Once the backfill code changes have been merged in, the backfill process will be deployed and started automatically.
+- Example Pull Request for configuring `backfillEvents`: [https://github.com/makerdao/vdb-mcd-transformers/pull/453/files](https://github.com/makerdao/vdb-mcd-transformers/pull/453/files).
+- Once the `backfillEvents` process has completed, make sure to clear out the changes to `./environments/backfillEvents.toml`, `./plugins/backfill/transformerExporter.go` and
+`./dockerfiles/backfill_events/startup_script.sh` so that the process isn't restarted when new changes are merged to the repository.
+
+### Changes Required for `backfillEvents` command:
+1. Add the following components the `backfillEvents.toml` config file. These components can all be copied and pasted from the `mcdTransformers.toml` file which was updated in the previous step with the collateral generator script.
     1. Contract Details
-        - The Flip contract details are required. The Price Feed contract details are required as well if they're relevant for the given collateral. See the note above to determine if an OSM or Median contracts are relevant for the new collateral.
+        - The Flip contract details are required. The Price Feed contracts details are required as well if they're relevant for the given collateral. See the note above to determine if an OSM or Median contracts are relevant for the new collateral.
         - contract details format:
             ```toml
             [contract.CONTRACT-NAME]
@@ -54,8 +60,8 @@ When a new collateral is added to the MCD system, it also needs to be added to t
             ]
             ```
         - Note: The Median and OSM transformer names should be omitted if those transformers are not included/necessary for this collateral.
-- Add transformer initializers to the backfill event transformerExporter file: `./plugins/backfill/transformerExporter.go`.
-    - A transformer initializer needs to be added for each of the transformer exporters that was added to `backfillEvents.toml`.
+1. Add transformer initializers to the backfill event transformerExporter file: `./plugins/backfill/transformerExporter.go`.
+    - A transformer initializer needs to be added for each of the transformer exporters that were added to `backfillEvents.toml`.
     - The initializers can be found in the `execute` transformerExporter file: `./plugins/execute/transformerExporter.go`. It is important to make sure to only include the transformers for the new collateral. Also, the following example can be used:
         ```go
             []event.TransformerInitializer{
@@ -80,21 +86,36 @@ When a new collateral is added to the MCD system, it also needs to be added to t
                     yank.EventTransformerInitializer,
                 },
         ```
-- Update `./dockerfiles/backfill_events/startup_script.sh`:
+1. Update `./dockerfiles/backfill_events/startup_script.sh`:
     - The `backfillEvents` command allows for an ending block configuration which is set in the dockerfile startup script. The command will start at the earliest deployment block from all contracts that are configured in `backfillEvents.toml`.
     - The ending block number should be close to the block when the new collaterals have been added to the `execute` command in step 1.
-- Once the backfill code changes have been merged in, the backfill process will be deployed and started automatically.
 
 ## 3. Extract Storage Diffs From Collateral Contracts
 - Once the `backfillEvents` process finishes the `extractDiffs` process can be restarted to include diffs from the new collateral contracts.
-- It's preferred to wait until `backfillEvents` completes so that we have all of the events necessary to generate hashed storage keys in order to be able to transform storage diffs. If `extractDiffs` is started before `backfillEvents` completes, the new diffs would be marked as `pending` if we didn't receive it's corresponding event, and would end up getting transformed later.
-- `extractDiffs.toml` will need to be updated with the new collateral's contract details, and when the process is restarted any contract addresses in that file will be used in creating the geth diff subscription.
-    
+- It's preferred to wait until `backfillEvents` completes so that we have all of the events necessary to generate hashed storage keys in order to be able to transform storage diffs. If `extractDiffs` is started before `backfillEvents` completes, the new diff's keys would likely not be recognized, because their corresponding events (which allow us to decode the storage keys) may not be backfilled yet. In this case, the diffs would be marked as `unrecognized`  and would end up getting transformed later.
+- Once the code changes are merged, the `extractDiffs` process is restarted and any contract addresses in the `extractDiffs.toml` file will be used in creating the geth diff subscription.
+### Changes required for `extractDiffs` command:
+Update `extractDiffs.toml` with the new collateral's contract details. E.g.:
+
+    ```toml
+    [contract.CONTRACT-NAME]
+          address = "contract address"
+          abi = "contract-abi"
+          deployed = 0 # contract deployment block
+    ```
+
 ## 4. Backfill Collateral Storage
-- Once storage diffs for the new contracts are being tracked going forward, the `backfillStorage` process can be started.
-- Similar to how `backfillEvents` is updated, several components need to be added to the `backfillStorage.toml` config file as well. These components can all be copied and pasted from the `mcdTransformers.toml` file which was updated in the previous step with the collateral generator script.
+- Like the `extractDiffs` storage process above, it's preferred to wait until `backfillEvents` completes so that we have all of the events necessary to generate hashed storage keys in order to be able to transform storage diffs. 
+- Similar to how `backfillEvents` is updated, several components need to be added to the `backfillStorage.toml` config file as well. These components can all be copied and pasted from the `mcdTransformers.toml` file which was updated with the collateral generator script.
+- Example Pull Request configuring `backfillStorage`: [https://github.com/makerdao/vdb-mcd-transformers/pull/455](https://github.com/makerdao/vdb-mcd-transformers/pull/455).
+- Once the `backfillStorage` process has completed, make sure to clear out the changes to `./environments/backfillStorage.toml`, `./plugins/execute/storage/transformerExporter.go` and
+`./dockerfiles/backfill_storage/startup_script.sh` so that the process isn't restarted when new changes are merged to the repository.
+
+### Changes Required for `backfillStorage` command:
+
+1. Add the following components the `backfillStorage.toml` config file.
     1. Contract Details
-        - The Flip contract details are required. The Price Feed contract details are required as well if they're relevant for the given collateral. See the note above to determine if an OSM or Median contracts are relevant for the new collateral.
+        - The Flip contract details are required. The Price Feed contracts details are required as well if they're relevant for the given collateral. See the note above to determine if an OSM or Median contracts are relevant for the new collateral.
         - contract details format:
             ```toml
             [contract.CONTRACT-NAME]
@@ -128,6 +149,18 @@ When a new collateral is added to the MCD system, it also needs to be added to t
             ]
             ```
         - Note: The median transformer name should be omitted if it is not included/necessary for this collateral.
+1. Add transformer initializers to the backfill storage transformerExporter file: `./plugins/backfill/storage/transformerExporter.go`.
+    - A transformer initializer needs to be added for each of the transformer exporters that were added to `backfillStorage.toml`.
+    - The initializers can be found in the `execute` transformerExporter file: `./plugins/execute/transformerExporter.go`. It is important to make sure to only include the transformers for the new collateral.
+        ```go
+            []storage.TransformerInitializer{
+                    flip_univ2daiusdc_a_v1_2_5.StorageTransformerInitializer,
+                },
+        ```
+1. Update `./dockerfiles/backfill_storage/startup_script.sh`:
+    - The `backfillStorage` command allows for configuring starting and ending blocks which are set in the dockerfile startup script.
+    - The starting block number should be the earliest deployment block of the transformers that are being backfilled.
+    - The ending block number should be close to the block when the new collaterals were added to `extractDiffs`.
 
 ## <a name="restarting-backfill"></a>Restarting A Backfill Process
 If a backfill process stops either due to a failure, or an intentional pause, it may need to be restarted. 
