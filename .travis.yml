@@ -12,7 +12,7 @@ before_install:
 - make installtools
 - bash ./scripts/install-postgres-11.sh
 - sudo apt-get update && sudo apt-get install python3-pip -y
-- sudo pip3 install awscli
+- sudo pip3 install awscli==1.18.223
 script:
 - set -e
 - scripts/check_config.sh
