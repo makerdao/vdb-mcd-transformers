@@ -144,3 +144,17 @@ func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db 
 	Expect(addressIDErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[event.AddressFK] = addressID
 }
+
+func AssignUrnID(insertionModel event.InsertionModel, db *postgres.DB) {
+	var urnID int64
+	urnErr := db.Get(&urnID, `SELECT id FROM maker.urns`)
+	Expect(urnErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UrnColumn] = urnID
+}
+
+func AssignIlkID(insertionModel event.InsertionModel, db *postgres.DB) {
+	var ilkID int64
+	ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks`)
+	Expect(ilkErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.IlkColumn] = ilkID
+}
