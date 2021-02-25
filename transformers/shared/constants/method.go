@@ -26,6 +26,7 @@ import (
 func Cat100ABI() string     { return constants.GetContractABI("MCD_CAT_1_0_0") }
 func Cat110ABI() string     { return constants.GetContractABI("MCD_CAT_1_1_0") }
 func CdpManagerABI() string { return constants.GetContractABI("CDP_MANAGER") }
+func DogABI() string        { return constants.GetContractABI("MCD_DOG_1_x_x") }
 func FlapABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLAP_1_0_0",
@@ -159,6 +160,7 @@ func catFileVowMethod() string {
 func dealMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "deal") }
 func dentMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "dent") }
 func denyMethod() string     { return constants.GetSolidityFunctionSignature(Cat100ABI(), "deny") }
+func dogBarkMethod() string  { return constants.GetSolidityFunctionSignature(DogABI(), "Bark") }
 func flapKickMethod() string { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
