@@ -9,17 +9,17 @@ import (
 )
 
 const (
-	Hole    = "Hole"
-	Dirt    = "Dirt"
-	Live    = "live"
-	Vat     = "vat"
-	Vow     = "vow"
+	Hole = "Hole"
+	Dirt = "Dirt"
+	Live = "live"
+	Vat  = "vat"
+	Vow  = "vow"
 
 	insertDogDirtQuery = `INSERT INTO maker.dog_dirt (diff_id, header_id, address_id, dirt) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertDogHoleQuery = `INSERT INTO maker.dog_hole (diff_id, header_id, address_id, hole) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertDogLiveQuery = `INSERT INTO maker.dog_live (diff_id, header_id, address_id, live) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertDogVatQuery = `INSERT INTO maker.dog_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertDogVowQuery = `INSERT INTO maker.dog_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertDogVatQuery  = `INSERT INTO maker.dog_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertDogVowQuery  = `INSERT INTO maker.dog_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {

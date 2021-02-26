@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Dog storage keys loader" ,func() {
+var _ = Describe("Dog storage keys loader", func() {
 	var (
 		storageRepository *test_helpers.MockMakerStorageRepository
 		storageKeysLoader storage.KeysLoader
