@@ -99,7 +99,7 @@ var _ = Describe("Dog storage repository", func() {
 		Describe("vat", func() {
 			var (
 				diffID, headerID int64
-				vatMetadata = types.GetValueMetadata(dog.Vat, nil, types.Address)
+				vatMetadata      = types.GetValueMetadata(dog.Vat, nil, types.Address)
 			)
 
 			BeforeEach(func() {
@@ -149,7 +149,7 @@ var _ = Describe("Dog storage repository", func() {
 	Describe("vow", func() {
 		var (
 			diffID, headerID int64
-			vowMetadata = types.GetValueMetadata(dog.Vow, nil, types.Address)
+			vowMetadata      = types.GetValueMetadata(dog.Vow, nil, types.Address)
 		)
 
 		BeforeEach(func() {

@@ -15,4 +15,3 @@ var StorageTransformerInitializer storage.TransformerInitializer = storage.Trans
 	StorageKeysLookup: storage.NewKeysLookup(dog.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, dogAddress)),
 	Repository:        &cat.StorageRepository{ContractAddress: dogAddress},
 }.NewTransformer
-
