@@ -7,7 +7,7 @@ import (
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
 	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
-	flip_aave_a_v1_2_2"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/aave_a/v1_2_2"
+	flip_aave_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/aave_a/v1_2_2"
 	flip_bal_a_v1_1_14 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bal_a/v1_1_14"
 	flip_bat_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_0"
 	flip_bat_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_9"
@@ -33,7 +33,6 @@ import (
 	flip_tusd_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/tusd_a/v1_1_0"
 	flip_uni_a_v1_2_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/uni_a/v1_2_1"
 	flip_univ2aaveeth_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2aaveeth_a/v1_2_7"
-
 	flip_univ2daieth_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daieth_a/v1_2_2"
 	flip_univ2daiusdc_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daiusdc_a/v1_2_5"
 	flip_univ2ethusdt_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2ethusdt_a/v1_2_5"
@@ -42,7 +41,6 @@ import (
 	flip_univ2usdceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2usdceth_a/v1_2_4"
 	flip_univ2wbtcdai_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtcdai_a/v1_2_7"
 	flip_univ2wbtceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtceth_a/v1_2_4"
-
 	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
 	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
 	flip_usdc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_1_0"
@@ -337,7 +335,6 @@ var _ = Describe("Storage transformer initializers", func() {
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
-
 
 	It("configures the v1_0_4 flip usdc_a", func() {
 		address := "0xE6ed1d09a19Bd335f051d78D5d22dF3bfF2c28B1"
