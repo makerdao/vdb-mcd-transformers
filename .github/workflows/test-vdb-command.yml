@@ -79,12 +79,22 @@ jobs:
     name: Test Postgraphile Image
     steps:
       -
-        name: Checkout Postgraphile repo
-        uses: actions/checkout@v2
+        name: Build the postgraphile image
+        uses: docker/build-push-action@v2
         with:
-          repository: makerdao/vdb-postgraphile
-          token: ${{ secrets.MY_PAT }}
-
+          context: https://github.com/makerdao/vdb-postgraphile.git#prod
+          file: ./Dockerfile
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.MY_PAT }}
+          push: false
+          tags: makerdao/postgraphile:gh_actions_test_version
+      -
+        name: Run the postgraphile container
+        env:
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        run: |
+          ./.github/workflows/check_postgraphile makerdao/postgraphile:gh_actions_test_version --database_user $DATABASE_USER --database_name $DATABASE_NAME --schemas maker,public,api
 
     services:
       postgres:
