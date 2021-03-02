@@ -72,7 +72,7 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates dog file ilk clip signature", func() {
-		Expect(constants.DogFileIlkClipSignature()).To(Equal("0x0000000000000000000000000000000000000000000000000000000000000000"))
+		Expect(constants.DogFileIlkClipSignature()).To(Equal("0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"))
 	})
 
 	It("generates flap kick signature", func() {

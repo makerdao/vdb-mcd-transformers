@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
 var _ = Describe("Dog file ilk clip transformer", func() {
 	var (
 		transformer = ilk_clip.Transformer{}
@@ -38,7 +39,7 @@ var _ = Describe("Dog file ilk clip transformer", func() {
 		expectedModel := test_data.DogFileIlkClipModel()
 		test_data.AssignIlkID(expectedModel, db)
 		test_data.AssignAddressID(test_data.DogFileIlkClipEventLog, expectedModel, db)
-		assignClipAddressID(test_data.ClipAddress, expectedModel, db)
+		test_data.AssignClipAddressID(test_data.ClipAddress, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

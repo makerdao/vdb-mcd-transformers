@@ -1,4 +1,5 @@
 package initializer
+
 import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"

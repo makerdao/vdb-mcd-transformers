@@ -13,7 +13,6 @@ import (
 var (
 	ClipAddress     = "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 	testBlockNumber = uint64(4)
-	what = string(4)
 
 	RawDogFileIlkClipLog = types.Log{
 		Address: common.HexToAddress(Dog1xxAddress()),
@@ -45,7 +44,7 @@ var (
 
 	dogFileIlkClipModel = event.InsertionModel{
 		SchemaName: constants.MakerSchema,
-		TableName: constants.DogFileIlkClipTable,
+		TableName:  constants.DogFileIlkClipTable,
 		OrderedColumns: []event.ColumnName{
 			event.HeaderFK,
 			event.LogFK,
@@ -56,13 +55,13 @@ var (
 		},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK: DogFileIlkClipEventLog.HeaderID,
-			event.LogFK: DogFileIlkClipEventLog.ID,
+			event.LogFK:    DogFileIlkClipEventLog.ID,
 			//event.AddressFK,
 			//constants.IlkColumn
-			constants.WhatColumn: what,
+			constants.WhatColumn: DogFileIlkClipEventLog.Log.Topics[2],
 			//constants.ClipColumn,
 		},
 	}
 )
 
-func DogFileIlkClipModel() event.InsertionModel { return CopyModel(dogFileIlkClipModel)}
+func DogFileIlkClipModel() event.InsertionModel { return CopyModel(dogFileIlkClipModel) }
