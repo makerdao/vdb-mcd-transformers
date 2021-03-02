@@ -41,6 +41,7 @@ import (
 	flip_univ2usdceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2usdceth_a/v1_2_4"
 	flip_univ2wbtcdai_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtcdai_a/v1_2_7"
 	flip_univ2wbtceth_a_v1_2_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2wbtceth_a/v1_2_4"
+	flip_univ2daiusdt_a_v1_2_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daiusdt_a/v1_2_8"
 	flip_usdc_a_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_4"
 	flip_usdc_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_0_9"
 	flip_usdc_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/usdc_a/v1_1_0"
@@ -332,6 +333,13 @@ var _ = Describe("Storage transformer initializers", func() {
 	It("configures the v1_2_4 flip univ2wbtceth_a", func() {
 		address := test_data.FlipUniV2WbtcEthAddress()
 		transformer := flip_univ2wbtceth_a_v1_2_4.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_2_8 flip univ2daiusdt_a", func() {
+		address := test_data.FlipUniV2DaiUsdtAddress()
+		transformer := flip_univ2daiusdt_a_v1_2_8.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})

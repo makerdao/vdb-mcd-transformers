@@ -162,6 +162,12 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(11791219, test_data.FlipUniV2DaiUsdcAddress(), msgSenderAddress, usrAddress)
 	})
 
+	Context("Flip UNIV2DAIUSDT-A v1.2.8 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
+		relyIntegrationTest(11927179, test_data.FlipUniV2DaiUsdtAddress(), msgSenderAddress, usrAddress)
+	})
+
 	Context("Flip UNIV2ETHUSDT_A v1.2.5 rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xda0fab0700a4389f6e6679abab1692b4601ce9bf"
