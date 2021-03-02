@@ -2,17 +2,34 @@ When a new collateral is added to the MCD system, it also needs to be added to t
 
 ## 1. Tracking New Collateral Events and Storage Changes
 - New collateral(s) transformers need to be added to the `execute` command in order to track events and storage changes for the new collateral's Flip, Median and OSM contract. 
-- Use the collateral generator by running `./vdb-mcd-transformers addNewCollateral` from the `vdb-mcd-transformers` directory.
-- The collateral generator adds the following components to the `mcdTransformers.toml` config file for each new collateral:
-    - contract details
-    - event transformer exporters
-    - storage transformer exporters
-    - transformer names
-- Note: There will be a new Flip contract for each new collateral, but the price feed contract(s) to be watched depends on the collateral type.
-    - **Standard Crypto Currencies**: Standard crypto currency collaterals will have an OSM and a Median contract to track. The [changelog](https://changelog.makerdao.com/) should have a PIP contract address, which will be the OSM contract. To get the associated Median contract, look at the `src` value on the OSM contract, this will be the Median contract's address. An easy place to find this value is to look at the [Read Contract tab on Etherscan.](https://etherscan.io/address/0x8Df8f06DC2dE0434db40dcBb32a82A104218754c#readContract)
-    - **Stable Coins**: In general, stable coin collateral prices are assumed to be $1, so there isn't an Oracle contract to track - so, OSM and Median contracts are unnecessary for stable coin collaterals.
-    - **Liquidity Provider Tokens**: Oracle contracts for LP tokens are still in development, and vdb-mcd-transformers does not yet have event or storage transformers for these contracts.
-    
+- Use the collateral generator to add new collateral config to vdb-mcd-transformers:
+    1. After building the vdb-mcd-transformers project, run `./vdb-mcd-transformers addNewCollateral` from the `vdb-mcd-transformers` directory.
+    1. The generator will prompt you to enter the following information about the new collateral:
+        - Collateral Name: this can be found at [https://changelog.makerdao.com/](https://changelog.makerdao.com/).
+        - Collateral Version: this can be found at [https://changelog.makerdao.com/](https://changelog.makerdao.com/), and can be formatted with underscore or period delimiters (e.g. 1_2_3 or 1.2.3).
+        - Flip Address: this can be found at [https://changelog.makerdao.com/](https://changelog.makerdao.com/).
+        - Flip Address ABI: this can be found at [https://changelog.makerdao.com/](https://changelog.makerdao.com/) or on [Etherscan](https://etherscan.io/).
+        - Flip Address Deployment Block: this be can be found by looking at the creation transaction on [Etherscan](https://etherscan.io/).
+    1. It will then ask if Median and OSM contracts are required, and prompt for the address, ABI and deployment block for each of those contract types if required.
+        - There will be a new Flip contract for each new collateral, but the price feed contract(s) to be watched depends on the collateral type.
+        - **Standard Crypto Currencies**: Standard crypto currency collaterals will have an OSM and a Median contract to track. The [changelog](https://changelog.makerdao.com/) should have a PIP contract address, which will be the OSM contract. To get the associated Median contract, look at the `src` value on the OSM contract, this will be the Median contract's address. An easy place to find this value is to look at the [Read Contract tab on Etherscan.](https://etherscan.io/address/0x8Df8f06DC2dE0434db40dcBb32a82A104218754c#readContract)
+        - **Stable Coins**: In general, stable coin collateral prices are assumed to be $1, so there isn't an Oracle contract to track - so, OSM and Median contracts are unnecessary for stable coin collaterals.
+        - **Liquidity Provider Tokens**: Oracle contracts for LP tokens are still in development, and vdb-mcd-transformers does not yet have event or storage transformers for these contracts.
+     1. Once completed, the generator will have added the following components to the repo:
+        -  To `mcdTransformers.toml` config file:
+            - contract details
+            - added the new contract to the appropriate event transformer exporters
+            - storage transformer exporter
+            - new storage transformer name
+        - To ` plugins/execute/transformerExporter.go`: the new Flip StorageTransformerInitializer.
+        - To `transformers/storage/flip/initializers`: a new initializer directory for the new collateral, and an initializer.go file.
+    1. A couple of manual changes also need to be made.
+        1. Add the new collateral's contract name to the [FlipV110ABI() method](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/shared/constants/method.go#L57) - this will ensure that the new Flip contract has the same ABI as the existing contracts. If the ABI has changed, we will need to make sure to handle the new version. The `FlipV110ABI` method is for all Flip contracts from v1.1.0+.
+        1. Add an integration test for the [deny](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/integration_tests/deny_test.go) and [rely](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/integration_tests/rely_test.go) events to ensure that the transformers are wired up correctly.
+        1. The additions to the integration tests will also require a few changes in [transformers/test_data/config_values.go](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/test_data/config_values.go).
+            - Add the new contract to the [FlipV110Addresses() method](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/test_data/config_values.go#L43)..
+            - Add a helper method to get the new Flip contract's address, e.g. [https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/test_data/config_values.go#L83](https://github.com/makerdao/vdb-mcd-transformers/blob/prod/transformers/test_data/config_values.go#L83).
+         
 ## 2. Backfill Collateral Events
 - There will likely be a gap between when the new collateral's Flip and Price Feed (OSM, Median, LPOracle) contracts are deployed and when `vdb-mcd-transformers` begins watching for their new events. So, in order to ensure that no events are missed, a `backfillEvents` process needs to be started.
 - The `backfillEvents` process needs to be started **after** the new collaterals have been added to the `execute` process, step 1.
