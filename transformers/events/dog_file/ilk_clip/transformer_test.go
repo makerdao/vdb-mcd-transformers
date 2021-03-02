@@ -37,7 +37,7 @@ var _ = Describe("Dog file ilk clip transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.DogFileIlkClipModel()
 		test_data.AssignIlkID(expectedModel, db)
-		test_data.AssignAddressID(test_data.DogFileClipEventLog, expectedModel, db)
+		test_data.AssignAddressID(test_data.DogFileIlkClipEventLog, expectedModel, db)
 		assignClipAddressID(test_data.ClipAddress, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
