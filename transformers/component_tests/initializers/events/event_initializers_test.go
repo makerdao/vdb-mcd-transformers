@@ -15,6 +15,7 @@ import (
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
 	dog_bark "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark/initializer"
 	dog_digs "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_digs/initializer"
+	dog_file_ilk_clip "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip/initializer"
 	flap_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick/initializer"
 	flip_file_cat "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_file/cat/initializer"
 	flip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick/initializer"
@@ -159,6 +160,13 @@ var _ = Describe("Event transformer initializers", func() {
 		topic := "0x54f095dc7308776bf01e8580e4dd40fd959ea4bf50b069975768320ef8d77d8a"
 		addresses := []string{test_data.Dog1xxAddress()}
 		assertCorrectInit(transformer, "dog_digs", topic, 100000000000000, addresses)
+	})
+
+	It("configures dog_file_ilk_clip", func() {
+		transformer := dog_file_ilk_clip.EventTransformerInitializer(db)
+		topic := "0x0000000000000000000000000000000000000000000000000000000000000000"
+		addresses := []string{test_data.Dog1xxAddress()}
+		assertCorrectInit(transformer, "dog_file_ilk_clip", topic, 10000000000000, addresses)
 	})
 
 	It("configures flap kick", func() {

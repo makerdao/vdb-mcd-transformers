@@ -5,6 +5,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
@@ -27,7 +29,17 @@ var _ = Describe("Dog file ilk clip transformer", func() {
 			}}
 
 		_, err := transformer.ToModels(constants.DogABI(), []core.EventLog{badLog}, nil)
-
 		Expect(err).To(HaveOccurred())
 	})
+
+	It("converts a log to a model", func() {
+		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogFileIlkClipEventLog}, db)
+		Expect(err).NotTo(HaveOccurred())
+		expectedModel := test_data.DogFileIlkClipModel()
+		test_data.AssignIlkID(expectedModel, db)
+		test_data.AssignAddressID(test_data.DogFileClipEventLog, expectedModel, db)
+		assignClipAddressID(test_data.ClipAddress, expectedModel, db)
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
+	})
+
 })
