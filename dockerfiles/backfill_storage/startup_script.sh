@@ -28,5 +28,5 @@ if test -z "$VDB_PG_CONNECT"; then
 fi
 
 # Run backfillStorage
-echo "Running backfillStorage from block 11910524 to 11911724"
-./vulcanizedb backfillStorage -s=11910524 -e=11911724 --config config.toml
+echo "Running backfillStorage from block 11927165 to 11962050"
+./vulcanizedb backfillStorage -s=11927165 -e=11962050 --config config.toml
