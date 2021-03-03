@@ -5,6 +5,7 @@ import (
 	cat_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0/initializer"
 	cat_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_1_0/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
+	dog_v1_x_x "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_x_x"
 	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	flip_bat_a_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/bat_a/v1_0_0"
@@ -40,6 +41,7 @@ import (
 	flip_zrx_a_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_8"
 	flip_zrx_a_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_0_9"
 	flip_zrx_a_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/zrx_a/v1_1_0"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -64,6 +66,13 @@ var _ = Describe("Storage transformer initializers", func() {
 	It("configures the cdp_manager", func() {
 		address := "0x5ef30b9986345249bc32d8928B7ee64DE9435E39"
 		transformer := cdp_manager.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the dog v1_x_x", func() {
+		address := test_data.Dog1xxAddress()
+		transformer := dog_v1_x_x.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
