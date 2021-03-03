@@ -24,16 +24,16 @@ var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{
-			yank.EventTransformerInitializer,
-			tick.EventTransformerInitializer,
-			tend.EventTransformerInitializer,
-			rely.EventTransformerInitializer,
-			flip_kick.EventTransformerInitializer,
-			flip_file_cat.EventTransformerInitializer,
-			deny.EventTransformerInitializer,
-			dent.EventTransformerInitializer,
-			deal.EventTransformerInitializer,
 			auction_file.EventTransformerInitializer,
+			deal.EventTransformerInitializer,
+			dent.EventTransformerInitializer,
+			deny.EventTransformerInitializer,
+			flip_file_cat.EventTransformerInitializer,
+			flip_kick.EventTransformerInitializer,
+			rely.EventTransformerInitializer,
+			tend.EventTransformerInitializer,
+			tick.EventTransformerInitializer,
+			yank.EventTransformerInitializer,
 		},
 		[]storage.TransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
