@@ -8138,15 +8138,6 @@ CREATE TABLE maker.dog_bark (
     art numeric,
     due numeric,
     sales_id numeric
--- Name: dog_dirt; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.dog_dirt (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    dirt numeric NOT NULL,
-    header_id integer NOT NULL
 );
 
 
@@ -8155,10 +8146,6 @@ CREATE TABLE maker.dog_dirt (
 --
 
 CREATE SEQUENCE maker.dog_bark_id_seq
--- Name: dog_dirt_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.dog_dirt_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -8172,6 +8159,35 @@ CREATE SEQUENCE maker.dog_dirt_id_seq
 --
 
 ALTER SEQUENCE maker.dog_bark_id_seq OWNED BY maker.dog_bark.id;
+
+
+--
+-- Name: dog_dirt; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_dirt (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dirt numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_dirt_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_dirt_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: dog_dirt_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
@@ -13080,6 +13096,9 @@ ALTER TABLE ONLY maker.deny ALTER COLUMN id SET DEFAULT nextval('maker.deny_id_s
 --
 
 ALTER TABLE ONLY maker.dog_bark ALTER COLUMN id SET DEFAULT nextval('maker.dog_bark_id_seq'::regclass);
+
+
+--
 -- Name: dog_dirt id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14691,6 +14710,9 @@ ALTER TABLE ONLY maker.dog_bark
 
 ALTER TABLE ONLY maker.dog_bark
     ADD CONSTRAINT dog_bark_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: dog_dirt dog_dirt_diff_id_header_id_dirt_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -17813,6 +17835,9 @@ CREATE INDEX dog_bark_log_index ON maker.dog_bark USING btree (log_id);
 --
 
 CREATE INDEX dog_bark_urn_index ON maker.dog_bark USING btree (urn_id);
+
+
+--
 -- Name: dog_dirt_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -21672,6 +21697,9 @@ ALTER TABLE ONLY maker.dog_bark
 
 ALTER TABLE ONLY maker.dog_bark
     ADD CONSTRAINT dog_bark_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
+
+
+--
 -- Name: dog_dirt dog_dirt_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
