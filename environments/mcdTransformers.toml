@@ -99,6 +99,13 @@
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_event"
+  [exporter.dog_digs]
+    contracts = ["MCD_DOG_1_x_x"]
+    migrations = "db/migrations"
+    path = "transformers/events/dog_digs/initializer"
+    rank = "0"
+    repository = "github.com/makerdao/vdb-mcd-transformers"
+    type = "eth_event"
   [exporter.dog_v1_x_x]
     migrations = "db/migrations"
     path = "transformers/storage/dog/initializers/v1_x_x"
