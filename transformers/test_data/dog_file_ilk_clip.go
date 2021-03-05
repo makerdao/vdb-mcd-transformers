@@ -11,19 +11,15 @@ import (
 )
 
 var (
-	ClipAddress     = "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
-	testBlockNumber = uint64(4)
-
 	RawDogFileIlkClipLog = types.Log{
 		Address: common.HexToAddress(Dog1xxAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileIlkClipSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk
-			common.HexToHash("0x00000000000000000000000007fa9ef6609ca7921112231f8f195138ebba2977"), // what
-			common.HexToHash("0x000000000000000000000000be8e3e3618f7474f8cb1d074a26affef007e98fb"), // clip
+			common.HexToHash("0x00000000000000000000000000000000000000000000000000000000636c6970"), // what
 		},
 		Data: hexutil.MustDecode("0x" +
-			"0000000000000000000000000000000000000000000000000000000000000000" +
+			"000000000000000000000000BE8E3e3618f7474F8cB1d074A26afFef007E98FB" +
 			"0000000000000000000000000000000000000000000000000000000000000000" +
 			"0000000000000000000000000000000000000000000000000000000000000000" +
 			"0000000000000000000000000000000000000000000000000000000000000000"),
@@ -58,7 +54,7 @@ var (
 			event.LogFK:    DogFileIlkClipEventLog.ID,
 			//event.AddressFK,
 			//constants.IlkColumn
-			constants.WhatColumn: DogFileIlkClipEventLog.Log.Topics[2],
+			constants.WhatColumn: DogFileIlkClipEventLog.Log.Topics[2].String(),
 			//constants.ClipColumn,
 		},
 	}
