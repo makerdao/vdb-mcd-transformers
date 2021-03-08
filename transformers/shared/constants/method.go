@@ -163,6 +163,7 @@ func denyMethod() string           { return constants.GetSolidityFunctionSignatu
 func dogBarkMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "Bark") }
 func dogDigsMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "Digs") }
 func dogFileIlkClipMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "file") }
+func dogDenyMethod() string		   { return constants.GetSolidityFunctionSignature(DogABI(), "deny") }
 func flapKickMethod() string       { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string       { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
