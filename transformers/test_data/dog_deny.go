@@ -18,11 +18,7 @@ var (
 			common.HexToHash(constants.DogDenySignature()),
 			common.HexToHash("0x000000000000000000000000dDb108893104dE4E1C6d0E47c42237dB4E617ACc"), //usr
 		},
-		Data: hexutil.MustDecode("0x" +
-			"0000000000000000000000000000000000000000000000000000000000000000" +
-			"0000000000000000000000000000000000000000000000000000000000000000" +
-			"0000000000000000000000000000000000000000000000000000000000000000" +
-			"0000000000000000000000000000000000000000000000000000000000000000"),
+		Data:        hexutil.MustDecode("0x"),
 		BlockNumber: testBlockNumber,
 		TxHash:      common.Hash{},
 		TxIndex:     0,
@@ -45,14 +41,12 @@ var (
 			event.LogFK,
 			event.AddressFK,
 			constants.UsrColumn,
-			constants.MsgSenderColumn,
 		},
 		ColumnValues: event.ColumnValues{
-			event.HeaderFK: DogDigsEventLog.HeaderID,
-			event.LogFK:    DogDigsEventLog.ID,
+			event.HeaderFK: DogDenyEventLog.HeaderID,
+			event.LogFK:    DogDenyEventLog.ID,
 			//event.AddressFK,
 			//constants.UsrColumn,
-			//constants.MsgSenderColumn,
 		},
 	}
 )
