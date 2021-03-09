@@ -145,6 +145,12 @@ func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db 
 	insertionModel.ColumnValues[event.AddressFK] = addressID
 }
 
+func AssignUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	UsrID, UsrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[1].Hex())
+	Expect(UsrIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UsrColumn] = UsrID
+}
+
 func AssignUrnID(insertionModel event.InsertionModel, db *postgres.DB) {
 	var urnID int64
 	urnErr := db.Get(&urnID, `SELECT id FROM maker.urns`)

@@ -57,7 +57,7 @@ func (t Transformer) ToModels(contractAbi string, ethLog []core.EventLog, db *po
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.DogDigsTable,
+			TableName:  constants.DogDenyTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,

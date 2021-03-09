@@ -5,8 +5,7 @@ import (
 )
 
 type DogDenyEntity struct {
-	Usr       common.Address
-	MsgSender common.Address
+	Usr common.Address
 
 	HeaderID        int64
 	LogID           int64
