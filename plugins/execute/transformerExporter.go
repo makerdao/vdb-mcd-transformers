@@ -15,6 +15,7 @@ import (
 	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
 	dog_bark "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark/initializer"
+	dog_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_deny/initializer"
 	dog_digs "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_digs/initializer"
 	dog_file_ilk_clip "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip/initializer"
 	flap_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick/initializer"
@@ -169,6 +170,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			dent.EventTransformerInitializer,
 			deny.EventTransformerInitializer,
 			dog_bark.EventTransformerInitializer,
+			dog_deny.EventTransformerInitializer,
 			dog_digs.EventTransformerInitializer,
 			dog_file_ilk_clip.EventTransformerInitializer,
 			flap_kick.EventTransformerInitializer,
