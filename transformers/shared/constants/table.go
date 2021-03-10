@@ -39,6 +39,7 @@ const (
 	DenyTable                     = "deny"
 	DogDigsTable                  = "dog_digs"
 	DogFileIlkClipTable           = "dog_file_ilk_clip"
+	DogFileIlkUintTable           = "dog_file_ilk_uint"
 	FlapKickTable                 = "flap_kick"
 	FlipFileCatTable              = "flip_file_cat"
 	FlipKickTable                 = "flip_kick"
