@@ -8162,6 +8162,39 @@ ALTER SEQUENCE maker.dog_bark_id_seq OWNED BY maker.dog_bark.id;
 
 
 --
+-- Name: dog_deny; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_deny (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    usr bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_deny_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_deny_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_deny_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_deny_id_seq OWNED BY maker.dog_deny.id;
+
+
+--
 -- Name: dog_digs; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13133,6 +13166,13 @@ ALTER TABLE ONLY maker.dog_bark ALTER COLUMN id SET DEFAULT nextval('maker.dog_b
 
 
 --
+-- Name: dog_deny id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny ALTER COLUMN id SET DEFAULT nextval('maker.dog_deny_id_seq'::regclass);
+
+
+--
 -- Name: dog_digs id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14751,6 +14791,22 @@ ALTER TABLE ONLY maker.dog_bark
 
 ALTER TABLE ONLY maker.dog_bark
     ADD CONSTRAINT dog_bark_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_deny dog_deny_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: dog_deny dog_deny_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_pkey PRIMARY KEY (id);
 
 
 --
@@ -17892,6 +17948,34 @@ CREATE INDEX dog_bark_log_index ON maker.dog_bark USING btree (log_id);
 --
 
 CREATE INDEX dog_bark_urn_index ON maker.dog_bark USING btree (urn_id);
+
+
+--
+-- Name: dog_deny_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_deny_address_index ON maker.dog_deny USING btree (address_id);
+
+
+--
+-- Name: dog_deny_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_deny_header_index ON maker.dog_deny USING btree (header_id);
+
+
+--
+-- Name: dog_deny_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_deny_log_index ON maker.dog_deny USING btree (log_id);
+
+
+--
+-- Name: dog_deny_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_deny_usr_index ON maker.dog_deny USING btree (usr);
 
 
 --
@@ -21782,6 +21866,38 @@ ALTER TABLE ONLY maker.dog_bark
 
 ALTER TABLE ONLY maker.dog_bark
     ADD CONSTRAINT dog_bark_urn_id_fkey FOREIGN KEY (urn_id) REFERENCES maker.urns(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_deny dog_deny_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_deny dog_deny_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_deny dog_deny_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_deny dog_deny_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_deny
+    ADD CONSTRAINT dog_deny_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
