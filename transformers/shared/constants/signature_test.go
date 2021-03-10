@@ -79,6 +79,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.DogDenySignature()).To(Equal("0x9c52a7f1fa525c4063d456584f4b5939a57b269dace468175e052aa4c179ce7a"))
 	})
 
+	It("generates dog rely signature", func() {
+		Expect(constants.DogRelySignature()).To(Equal("0x65fae35ed06235c67d3076f28ca18323d5f077aaa8c2b759b78287ec32e69afd"))
+	})
+
 	It("generates flap kick signature", func() {
 		Expect(constants.FlapKickSignature()).To(Equal("0xe6dde59cbc017becba89714a037778d234a84ce7f0a137487142a007e580d609"))
 	})
