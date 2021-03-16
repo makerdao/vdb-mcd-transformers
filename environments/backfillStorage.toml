@@ -3,14 +3,8 @@
     name     = "transformerExporter"
     save     = true
     schema   = "maker"
-    transformerNames = ["flip_univ2daiusdt_a_v1_2_8"]
+    transformerNames = []
 
-    [exporter.flip_univ2daiusdt_a_v1_2_8]
-        migrations = "db/migrations"
-        path = "transformers/storage/flip/initializers/univ2daiusdt_a/v1_2_8"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_storage"
 [contract]
     [contract.CDP_MANAGER]
         address  = "0x5ef30b9986345249bc32d8928b7ee64de9435e39"
