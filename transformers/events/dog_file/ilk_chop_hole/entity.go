@@ -1,4 +1,4 @@
-package ilk_uint
+package ilk_chop_hole
 
 import (
 	"math/big"
@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type DogFileIlkUintEntity struct {
+type DogFileIlkChopHoleEntity struct {
 	Ilk  [32]byte
 	What [32]byte
 	Data *big.Int

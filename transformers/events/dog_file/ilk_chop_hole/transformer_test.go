@@ -1,9 +1,9 @@
-package ilk_uint_test
+package ilk_chop_hole_test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_uint"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_chop_hole"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -13,9 +13,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Dog file ilk uint transformer", func() {
+var _ = Describe("Dog file ilk chop hole transformer", func() {
 	var (
-		transformer = ilk_uint.Transformer{}
+		transformer = ilk_chop_hole.Transformer{}
 		db          = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
@@ -34,11 +34,11 @@ var _ = Describe("Dog file ilk uint transformer", func() {
 	})
 
 	It("converts a log to a model", func() {
-		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogFileIlkUintEventLog}, db)
+		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogFileIlkChopHoleEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
-		expectedModel := test_data.DogFileIlkUintModel()
+		expectedModel := test_data.DogFileIlkChopHoleModel()
 		test_data.AssignIlkID(expectedModel, db)
-		test_data.AssignAddressID(test_data.DogFileIlkUintEventLog, expectedModel, db)
+		test_data.AssignAddressID(test_data.DogFileIlkChopHoleEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 

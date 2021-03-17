@@ -1,4 +1,4 @@
-package ilk_uint
+package ilk_chop_hole
 
 import (
 	"fmt"
@@ -17,10 +17,10 @@ import (
 
 type Transformer struct{}
 
-func (t Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]DogFileIlkUintEntity, error) {
-	var entities []DogFileIlkUintEntity
+func (t Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]DogFileIlkChopHoleEntity, error) {
+	var entities []DogFileIlkChopHoleEntity
 	for _, log := range logs {
-		var entity DogFileIlkUintEntity
+		var entity DogFileIlkChopHoleEntity
 		address := log.Log.Address
 		abi, parseErr := eth.ParseAbi(contractAbi)
 		if parseErr != nil {
@@ -47,24 +47,24 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 	}
 
 	var models []event.InsertionModel
-	for _, dogFileIlkUintEntity := range entities {
-		addressId, addressErr := repository.GetOrCreateAddress(db, dogFileIlkUintEntity.ContractAddress.Hex())
+	for _, dogFileIlkChopHoleEntity := range entities {
+		addressId, addressErr := repository.GetOrCreateAddress(db, dogFileIlkChopHoleEntity.ContractAddress.Hex())
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
-		ilkHex := hexutil.Encode(dogFileIlkUintEntity.Ilk[:])
+		ilkHex := hexutil.Encode(dogFileIlkChopHoleEntity.Ilk[:])
 
 		ilkId, ilkErr := mcdShared.GetOrCreateIlk(ilkHex, db)
 		if ilkErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
-		what := hexutil.Encode(dogFileIlkUintEntity.What[:])
+		what := hexutil.Encode(dogFileIlkChopHoleEntity.What[:])
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
-			TableName:  constants.DogFileIlkUintTable,
+			TableName:  constants.DogFileIlkChopHoleTable,
 			OrderedColumns: []event.ColumnName{
 				event.HeaderFK,
 				event.LogFK,
@@ -74,12 +74,12 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 				constants.DataColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       dogFileIlkUintEntity.HeaderID,
-				event.LogFK:          dogFileIlkUintEntity.LogID,
+				event.HeaderFK:       dogFileIlkChopHoleEntity.HeaderID,
+				event.LogFK:          dogFileIlkChopHoleEntity.LogID,
 				event.AddressFK:      addressId,
 				constants.IlkColumn:  ilkId,
 				constants.WhatColumn: what,
-				constants.DataColumn: shared.BigIntToString(dogFileIlkUintEntity.Data),
+				constants.DataColumn: shared.BigIntToString(dogFileIlkChopHoleEntity.Data),
 			},
 		}
 		models = append(models, model)

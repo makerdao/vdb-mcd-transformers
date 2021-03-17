@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	RawDogFileIlkUintLog = types.Log{
+	RawDogFileIlkChopHoleLog = types.Log{
 		Address: common.HexToAddress(Dog1xxAddress()),
 		Topics: []common.Hash{
-			common.HexToHash(constants.DogFileIlkUintSignature()),
+			common.HexToHash(constants.DogFileIlkChopHoleSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk
 			common.HexToHash("0x00000000000000000000000000000000000000000000000000000000636c6970"), // what
 		},
@@ -29,16 +29,16 @@ var (
 		Removed:     false,
 	}
 
-	DogFileIlkUintEventLog = core.EventLog{
+	DogFileIlkChopHoleEventLog = core.EventLog{
 		ID:          int64(rand.Int31()),
 		HeaderID:    int64(rand.Int31()),
-		Log:         RawDogFileIlkUintLog,
+		Log:         RawDogFileIlkChopHoleLog,
 		Transformed: false,
 	}
 
-	dogFileIlkUintModel = event.InsertionModel{
+	dogFileIlkChopHoleModel = event.InsertionModel{
 		SchemaName: constants.MakerSchema,
-		TableName:  constants.DogFileIlkUintTable,
+		TableName:  constants.DogFileIlkChopHoleTable,
 		OrderedColumns: []event.ColumnName{
 			event.HeaderFK,
 			event.LogFK,
@@ -48,14 +48,14 @@ var (
 			constants.DataColumn,
 		},
 		ColumnValues: event.ColumnValues{
-			event.HeaderFK: DogFileIlkUintEventLog.HeaderID,
-			event.LogFK:    DogFileIlkUintEventLog.ID,
+			event.HeaderFK: DogFileIlkChopHoleEventLog.HeaderID,
+			event.LogFK:    DogFileIlkChopHoleEventLog.ID,
 			//event.AddressFK,
 			//constants.IlkColumn
-			constants.WhatColumn: DogFileIlkUintEventLog.Log.Topics[2].String(),
+			constants.WhatColumn: DogFileIlkChopHoleEventLog.Log.Topics[2].String(),
 			constants.DataColumn: "21423897648",
 		},
 	}
 )
 
-func DogFileIlkUintModel() event.InsertionModel { return CopyModel(dogFileIlkUintModel) }
+func DogFileIlkChopHoleModel() event.InsertionModel { return CopyModel(dogFileIlkChopHoleModel) }

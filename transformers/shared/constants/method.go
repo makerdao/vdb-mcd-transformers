@@ -165,9 +165,11 @@ func dogDigsMethod() string        { return constants.GetSolidityFunctionSignatu
 func dogFileIlkClipMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "file") }
 func dogDenyMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "deny") }
 func dogRelyMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "rely") }
-func dogFileIlkUintMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "file") }
-func flapKickMethod() string       { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
-func flipKickMethod() string       { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
+func dogFileIlkChopHoleMethod() string {
+	return constants.GetSolidityFunctionSignature(DogABI(), "file")
+}
+func flapKickMethod() string { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
+func flipKickMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
 	return constants.GetOverloadedFunctionSignature(FlipV110ABI(), "file", []string{"bytes32", "address"})
 }
