@@ -31,6 +31,7 @@ func DenySignature() string                { return getLogNoteTopicZero(denyMeth
 func DogBarkSignature() string             { return constants.GetEventTopicZero(dogBarkMethod()) }
 func DogDigsSignature() string             { return constants.GetEventTopicZero(dogDigsMethod()) }
 func DogFileIlkClipSignature() string      { return constants.GetEventTopicZero(dogFileIlkClipMethod()) }
+func DogDenySignature() string             { return constants.GetEventTopicZero(dogDenyMethod()) }
 func FlapKickSignature() string            { return constants.GetEventTopicZero(flapKickMethod()) }
 func FlipFileCatSignature() string         { return getLogNoteTopicZero(flipFileCatMethod()) }
 func FlipKickSignature() string            { return constants.GetEventTopicZero(flipKickMethod()) }
