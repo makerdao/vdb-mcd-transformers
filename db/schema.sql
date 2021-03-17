@@ -8328,6 +8328,39 @@ ALTER SEQUENCE maker.dog_live_id_seq OWNED BY maker.dog_live.id;
 
 
 --
+-- Name: dog_rely; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_rely (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    usr bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_rely_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_rely_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_rely_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_rely_id_seq OWNED BY maker.dog_rely.id;
+
+
+--
 -- Name: dog_vat; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13201,6 +13234,13 @@ ALTER TABLE ONLY maker.dog_live ALTER COLUMN id SET DEFAULT nextval('maker.dog_l
 
 
 --
+-- Name: dog_rely id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely ALTER COLUMN id SET DEFAULT nextval('maker.dog_rely_id_seq'::regclass);
+
+
+--
 -- Name: dog_vat id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14871,6 +14911,22 @@ ALTER TABLE ONLY maker.dog_live
 
 ALTER TABLE ONLY maker.dog_live
     ADD CONSTRAINT dog_live_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_rely dog_rely_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: dog_rely dog_rely_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_pkey PRIMARY KEY (id);
 
 
 --
@@ -18046,6 +18102,34 @@ CREATE INDEX dog_live_address_index ON maker.dog_live USING btree (address_id);
 --
 
 CREATE INDEX dog_live_header_index ON maker.dog_live USING btree (header_id);
+
+
+--
+-- Name: dog_rely_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_rely_address_index ON maker.dog_rely USING btree (address_id);
+
+
+--
+-- Name: dog_rely_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_rely_header_index ON maker.dog_rely USING btree (header_id);
+
+
+--
+-- Name: dog_rely_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_rely_log_index ON maker.dog_rely USING btree (log_id);
+
+
+--
+-- Name: dog_rely_usr_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_rely_usr_index ON maker.dog_rely USING btree (usr);
 
 
 --
@@ -22002,6 +22086,38 @@ ALTER TABLE ONLY maker.dog_live
 
 ALTER TABLE ONLY maker.dog_live
     ADD CONSTRAINT dog_live_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_rely dog_rely_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_rely dog_rely_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_rely dog_rely_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_rely dog_rely_usr_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_rely
+    ADD CONSTRAINT dog_rely_usr_fkey FOREIGN KEY (usr) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
