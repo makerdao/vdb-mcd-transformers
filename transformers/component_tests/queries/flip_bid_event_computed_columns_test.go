@@ -88,6 +88,43 @@ var _ = Describe("Flip bid event computed columns", func() {
 			Expect(actualBid).To(Equal(expectedBid))
 		})
 
+		It("returns a flip bid snapshot at the same block height as the flip_bid_event", func() {
+			flipStorageValues := test_helpers.GetFlipStorageValues(1, test_helpers.FakeIlk.Hex, bidId)
+			flipMetadatas := test_helpers.GetFlipMetadatas(strconv.Itoa(bidId))
+			test_helpers.CreateFlip(db, headerOne, flipStorageValues, flipMetadatas, contractAddress)
+
+			headerTwo := createHeader(blockOne+1, timestampOne+1, headerRepo)
+			flipStorageValuesTwo := test_helpers.GetFlipStorageValues(2, test_helpers.FakeIlk.Hex, bidId)
+			test_helpers.CreateFlip(db, headerTwo, flipStorageValuesTwo, flipMetadatas, contractAddress)
+
+			ilkId, urnId, err := test_helpers.SetUpFlipBidContext(test_helpers.FlipBidContextInput{
+				DealCreationInput: test_helpers.DealCreationInput{
+					DB:              db,
+					BidId:           bidId,
+					ContractAddress: contractAddress,
+					DealHeaderId:    headerTwo.Id,
+				},
+				Dealt:            true,
+				IlkHex:           test_helpers.FakeIlk.Hex,
+				UrnGuy:           test_data.FlipKickModel().ColumnValues["usr"].(string),
+				FlipKickHeaderId: headerOne.Id,
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			expectedBid := test_helpers.FlipBidFromValues(strconv.Itoa(bidId), strconv.FormatInt(ilkId, 10), strconv.FormatInt(urnId, 10), "false", headerOne.Timestamp, headerOne.Timestamp, contractAddress, flipStorageValues)
+			expectedBid.BlockHeight = strconv.FormatInt(headerOne.BlockNumber, 10)
+
+			var actualBid test_helpers.FlipBid
+			queryErr := db.Get(&actualBid, `
+				SELECT bid_id, ilk_id, urn_id, guy, tic, "end", lot, bid, gal, dealt, tab, flip_address, created, updated, block_height
+				FROM api.flip_bid_event_bid(
+					(SELECT (bid_id, lot, bid_amount, act, block_height, log_id, contract_address)::api.flip_bid_event FROM api.all_flip_bid_events() ORDER BY log_id ASC LIMIT 1)
+				)`)
+
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualBid).To(Equal(expectedBid))
+		})
+
 		It("gets the correct flipper for the event (using the contract address that matches the event)", func() {
 			irrelevantContractAddress := "different flipper"
 			irrelevantFlipStorageValues := test_helpers.GetFlipStorageValues(0, test_helpers.AnotherFakeIlk.Hex, bidId)

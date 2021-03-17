@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.6
--- Dumped by pg_dump version 11.6
+-- Dumped from database version 11.10
+-- Dumped by pg_dump version 13.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -902,8 +902,6 @@ $$;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
 -- Name: ilk_snapshot; Type: TABLE; Schema: api; Owner: -
 --
@@ -1183,7 +1181,7 @@ $$;
 CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.get_flip_with_address(event.bid_id, event.contract_address)
+SELECT * FROM api.get_flip_with_address(event.bid_id, event.contract_address, event.block_height)
 $$;
 
 
