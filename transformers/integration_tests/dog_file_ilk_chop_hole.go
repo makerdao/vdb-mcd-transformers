@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_uint"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_chop_hole"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func fetchDogFileIlkUintLogsFromChain(config event.TransformerConfig, header core.Header) []core.EventLog {
+func fetchDogFileIlkChopHoleLogsFromChain(config event.TransformerConfig, header core.Header) []core.EventLog {
 	//TODO: when there are real Dog File Uint events on chain, use the following code to fetch real events from the chain
 
 	//logFetcher := fetcher.NewLogFetcher(blockChain)
@@ -31,14 +31,14 @@ var _ = Describe("Dog File Ilk Uint Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	XIt("fetches and transforms a Dog File Ilk Uint event", func() {
-		blockNumber := int64(1) //TODO: update this when there are Dog File Ilk Uint events on the chain
+	XIt("fetches and transforms a Dog File Ilk Chop Hole event", func() {
+		blockNumber := int64(1) //TODO: update this when there are Dog File Ilk Chop Hole events on the chain
 
-		dogFileIlkUintConfig := event.TransformerConfig{
-			TransformerName:     constants.DogFileIlkUintTable,
+		dogFileIlkChopHoleConfig := event.TransformerConfig{
+			TransformerName:     constants.DogFileIlkChopHoleTable,
 			ContractAddresses:   []string{test_data.Dog1xxAddress()},
 			ContractAbi:         constants.DogABI(),
-			Topic:               constants.DogFileIlkUintSignature(),
+			Topic:               constants.DogFileIlkChopHoleSignature(),
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
 		}
@@ -47,12 +47,12 @@ var _ = Describe("Dog File Ilk Uint Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.ConfiguredTransformer{
-			Config:      dogFileIlkUintConfig,
-			Transformer: ilk_uint.Transformer{},
+			Config:      dogFileIlkChopHoleConfig,
+			Transformer: ilk_chop_hole.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 
-		eventLogs := fetchDogFileIlkUintLogsFromChain(dogFileIlkUintConfig, header)
+		eventLogs := fetchDogFileIlkChopHoleLogsFromChain(dogFileIlkChopHoleConfig, header)
 
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())
