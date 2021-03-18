@@ -170,3 +170,9 @@ func AssignClipAddressID(clipAddressHex string, insertionModel event.InsertionMo
 	Expect(clipAddressErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[constants.ClipColumn] = clipAddressID
 }
+
+func AssignDataAddressID(dataAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
+	dataAddressID, dataAddressErr := repository.GetOrCreateAddress(db, dataAddressHex)
+	Expect(dataAddressErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.DataColumn] = dataAddressID
+}
