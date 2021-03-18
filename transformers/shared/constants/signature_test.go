@@ -51,6 +51,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates clip kick signature", func() {
+		Expect(constants.ClipKickSignature()).To(Equal("0x898eb267e6ff99efebaf458079f659c812f378fe8cf2a33ab4028717672bd021"))
+	})
+
 	It("generates deal signature", func() {
 		Expect(constants.DealSignature()).To(Equal("0xc959c42b00000000000000000000000000000000000000000000000000000000"))
 	})
