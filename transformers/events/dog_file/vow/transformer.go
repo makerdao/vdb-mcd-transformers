@@ -65,7 +65,6 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 				event.HeaderFK,
 				event.LogFK,
 				event.AddressFK,
-				constants.IlkColumn,
 				constants.WhatColumn,
 				constants.DataColumn,
 			},

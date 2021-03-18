@@ -5,6 +5,8 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/vow"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 
 	. "github.com/onsi/ginkgo"
@@ -29,5 +31,14 @@ var _ = Describe("Dog file vow transformer", func() {
 
 		_, err := transformer.ToModels(constants.DogABI(), []core.EventLog{badLog}, nil)
 		Expect(err).To(HaveOccurred())
+	})
+
+	It("converts a log to a model", func() {
+		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogFileVowEventLog}, db)
+		Expect(err).NotTo(HaveOccurred())
+		expectedModel := test_data.DogFileVowModel()
+		test_data.AssignAddressID(test_data.DogFileVowEventLog, expectedModel, db)
+		test_data.AssignDataAddressID(test_data.DataAddress, expectedModel, db)
+		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })
