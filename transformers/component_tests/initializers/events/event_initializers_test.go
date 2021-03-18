@@ -174,7 +174,7 @@ var _ = Describe("Event transformer initializers", func() {
 
 	It("configures dog_file_ilk_clip", func() {
 		transformer := dog_file_ilk_clip.EventTransformerInitializer(db)
-		topic := "0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"
+		topic := "0xebecb39d70d49bd1a0cae5d2ec70ed687d58c46e0e6442572ed5ade6a7386c3d"
 		addresses := []string{test_data.Dog1xxAddress()}
 		assertCorrectInit(transformer, "dog_file_ilk_clip", topic, 100000000000000, addresses)
 	})

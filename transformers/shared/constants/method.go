@@ -170,6 +170,9 @@ func dogRelyMethod() string        { return constants.GetSolidityFunctionSignatu
 func dogFileIlkChopHoleMethod() string {
 	return constants.GetSolidityFunctionSignature(DogABI(), "file")
 }
+func dogFileVowMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "address"})
+}
 func flapKickMethod() string { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
