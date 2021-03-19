@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.10
--- Dumped by pg_dump version 13.2
+-- Dumped from database version 11.6
+-- Dumped by pg_dump version 11.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -901,6 +901,8 @@ $$;
 
 
 SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
 -- Name: ilk_snapshot; Type: TABLE; Schema: api; Owner: -
