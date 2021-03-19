@@ -9,8 +9,8 @@ CREATE TABLE maker.clip_kick
     top        NUMERIC,
     tab        NUMERIC,
     lot        NUMERIC,
-    usr        TEXT,
-    kpr        TEXT,
+    usr        BIGINT,
+    kpr        BIGINT,
     coin       NUMERIC,
     UNIQUE (header_id, log_id)
 );
