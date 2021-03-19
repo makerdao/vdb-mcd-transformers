@@ -25,7 +25,7 @@ func (t Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]Cli
 			return nil, parseErr
 		}
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		unpackErr := contract.UnpackLog(&entity, "kick", log.Log)
+		unpackErr := contract.UnpackLog(&entity, "Kick", log.Log)
 		if unpackErr != nil {
 			return nil, unpackErr
 		}
@@ -47,6 +47,16 @@ func (t Transformer) ToModels(contractAbi string, ethLog []core.EventLog, db *po
 		addressId, addressErr := repository.GetOrCreateAddress(db, clipKickEntity.ContractAddress.Hex())
 		if addressErr != nil {
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
+		}
+
+		usrId, usrErr := repository.GetOrCreateAddress(db, clipKickEntity.Usr.Hex())
+		if usrErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(usrErr)
+		}
+
+		kprId, kprErr := repository.GetOrCreateAddress(db, clipKickEntity.Kpr.Hex())
+		if kprErr != nil {
+			return nil, shared.ErrCouldNotCreateFK(kprErr)
 		}
 
 		model := event.InsertionModel{
@@ -72,8 +82,8 @@ func (t Transformer) ToModels(contractAbi string, ethLog []core.EventLog, db *po
 				constants.TopColumn:   shared.BigIntToString(clipKickEntity.Top),
 				constants.TabColumn:   shared.BigIntToString(clipKickEntity.Tab),
 				constants.LotColumn:   shared.BigIntToString(clipKickEntity.Lot),
-				constants.UsrColumn:   clipKickEntity.Usr.String(),
-				constants.KprColumn:   clipKickEntity.Kpr.String(),
+				constants.UsrColumn:   usrId,
+				constants.KprColumn:   kprId,
 				constants.CoinColumn:  shared.BigIntToString(clipKickEntity.Coin),
 			},
 		}
