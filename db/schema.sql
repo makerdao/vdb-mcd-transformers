@@ -8274,8 +8274,7 @@ CREATE TABLE maker.dog_file_vow (
     log_id bigint NOT NULL,
     address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    ilk_id integer NOT NULL,
-    what text,
+    what bigint,
     data numeric
 );
 
