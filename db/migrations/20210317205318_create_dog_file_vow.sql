@@ -5,7 +5,7 @@ CREATE TABLE maker.dog_file_vow
     log_id     BIGINT  NOT NULL REFERENCES public.event_logs (id) ON DELETE CASCADE,
     address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
     header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
-    what       TEXT,
+    what       BIGINT,
     data       NUMERIC,
     UNIQUE (header_id, log_id)
 );
