@@ -8031,8 +8031,8 @@ CREATE TABLE maker.clip_kick (
     top numeric,
     tab numeric,
     lot numeric,
-    usr text,
-    kpr text,
+    usr bigint,
+    kpr bigint,
     coin numeric
 );
 
