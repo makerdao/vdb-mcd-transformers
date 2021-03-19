@@ -46,19 +46,24 @@ var _ = Describe("Deny transformer", func() {
 		denyIntegrationTest(10950765, test_data.FlipCompV112Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip ETH_A v1.0.0 deny events", func() {
+	Context("Flip ETH-A v1.0.0 deny events", func() {
 		usrAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		denyIntegrationTest(8928180, test_data.FlipEthAV100Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip ETH_A v1.0.9 deny events", func() {
+	Context("Flip ETH-A v1.0.9 deny events", func() {
 		usrAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		denyIntegrationTest(10510886, test_data.FlipEthAV109Address(), usrAddress, usrAddress)
 	})
 
-	Context("Flip ETH_B v1.1.3 deny events", func() {
+	Context("Flip ETH-B v1.1.3 deny events", func() {
 		usrAddress := "0xDa0FaB05039809e63C5D068c897c3e602fA97457"
 		denyIntegrationTest(11049708, test_data.FlipEthBV113Address(), usrAddress, usrAddress)
+	})
+
+	Context("Flip ETH-C v1.2.10 deny events", func() {
+		usrAddress := "0xda0c0de01d90a5933692edf03c7ce946c7c50445"
+		denyIntegrationTest(12017625, test_data.FlipEthCV1210Address(), usrAddress, usrAddress)
 	})
 
 	Context("Flip GUSD-A v1.1.5 deny events", func() {
