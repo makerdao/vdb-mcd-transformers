@@ -145,10 +145,16 @@ func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db 
 	insertionModel.ColumnValues[event.AddressFK] = addressID
 }
 
-func AssignUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
-	UsrID, UsrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[1].Hex())
-	Expect(UsrIDErr).NotTo(HaveOccurred())
-	insertionModel.ColumnValues[constants.UsrColumn] = UsrID
+func AssignAuthUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	usrID, usrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[1].Hex())
+	Expect(usrIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UsrColumn] = usrID
+}
+
+func AssignClipUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	usrID, usrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[2].Hex())
+	Expect(usrIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UsrColumn] = usrID
 }
 
 func AssignUrnID(insertionModel event.InsertionModel, db *postgres.DB) {
@@ -175,4 +181,10 @@ func AssignDataAddressID(dataAddressHex string, insertionModel event.InsertionMo
 	dataAddressID, dataAddressErr := repository.GetOrCreateAddress(db, dataAddressHex)
 	Expect(dataAddressErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[constants.DataColumn] = dataAddressID
+}
+
+func AssignKprAddressID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	kprID, kprIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[3].Hex())
+	Expect(kprIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.KprColumn] = kprID
 }
