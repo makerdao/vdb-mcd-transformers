@@ -66,22 +66,28 @@ var _ = Describe("Rely transformer", func() {
 		relyIntegrationTest(10932692, test_data.FlipCompV112Address(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip ETH v1.0.0 rely events", func() {
+	Context("Flip ETH-A v1.0.0 rely events", func() {
 		usrAddress := "0xbaa65281c2FA2baAcb2cb550BA051525A480D3F4"
 		msgSenderAddress := "0xBAB4FbeA257ABBfe84F4588d4Eedc43656E46Fc5"
 		relyIntegrationTest(8928180, test_data.FlipEthAV100Address(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip ETH v1.0.9 rely events", func() {
+	Context("Flip ETH-A v1.0.9 rely events", func() {
 		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		msgSenderAddress := "0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc"
 		relyIntegrationTest(10510871, test_data.FlipEthAV109Address(), msgSenderAddress, usrAddress)
 	})
 
-	Context("Flip ETH_B v1.1.3 rely events", func() {
+	Context("Flip ETH-B v1.1.3 rely events", func() {
 		usrAddress := "0xc4bE7F74Ee3743bDEd8E0fA218ee5cf06397f472"
 		msgSenderAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 		relyIntegrationTest(11086830, test_data.FlipEthBV113Address(), msgSenderAddress, usrAddress)
+	})
+
+	Context("Flip ETH-C v1.2.10 rely events", func() {
+		usrAddress := "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
+		msgSenderAddress := "0xda0c0de01d90a5933692edf03c7ce946c7c50445"
+		relyIntegrationTest(12017623, test_data.FlipEthCV1210Address(), msgSenderAddress, usrAddress)
 	})
 
 	Context("Flip GUSD_A v1.1.5 rely events", func() {
