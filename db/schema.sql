@@ -1183,7 +1183,7 @@ $$;
 CREATE FUNCTION api.flip_bid_event_bid(event api.flip_bid_event) RETURNS api.flip_bid_snapshot
     LANGUAGE sql STABLE
     AS $$
-SELECT * FROM api.get_flip_with_address(event.bid_id, event.contract_address)
+SELECT * FROM api.get_flip_with_address(event.bid_id, event.contract_address, event.block_height)
 $$;
 
 
