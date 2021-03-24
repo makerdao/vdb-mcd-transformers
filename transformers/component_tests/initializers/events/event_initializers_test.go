@@ -16,6 +16,7 @@ import (
 	dog_bark "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark/initializer"
 	dog_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_deny/initializer"
 	dog_digs "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_digs/initializer"
+	dog_file_ilk_chop_hole "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_chop_hole/initializer"
 	dog_file_ilk_clip "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip/initializer"
 	dog_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_rely/initializer"
 	flap_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick/initializer"
@@ -183,6 +184,13 @@ var _ = Describe("Event transformer initializers", func() {
 		topic := "0x65fae35ed06235c67d3076f28ca18323d5f077aaa8c2b759b78287ec32e69afd"
 		addresses := []string{test_data.Dog1xxAddress()}
 		assertCorrectInit(transformer, "dog_rely", topic, 100000000000000, addresses)
+	})
+
+	It("configures dog_file_ilk_chop_hole", func() {
+		transformer := dog_file_ilk_chop_hole.EventTransformerInitializer(db)
+		topic := "0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"
+		addresses := []string{test_data.Dog1xxAddress()}
+		assertCorrectInit(transformer, "dog_file_ilk_chop_hole", topic, 100000000000000, addresses)
 	})
 
 	It("configures flap kick", func() {
