@@ -87,7 +87,7 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.DogRelySignature()).To(Equal("0x65fae35ed06235c67d3076f28ca18323d5f077aaa8c2b759b78287ec32e69afd"))
 	})
 
-	It("generates dog file ilk Uint signature", func() {
+	It("generates dog file ilk chop hole signature", func() {
 		Expect(constants.DogFileIlkChopHoleSignature()).To(Equal("0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"))
 	})
 
