@@ -159,16 +159,18 @@ func catFileFlipMethod() string {
 func catFileVowMethod() string {
 	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "address"})
 }
-func dealMethod() string           { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "deal") }
-func dentMethod() string           { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "dent") }
-func denyMethod() string           { return constants.GetSolidityFunctionSignature(Cat100ABI(), "deny") }
-func dogBarkMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "Bark") }
-func dogDigsMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "Digs") }
-func dogFileIlkClipMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "file") }
-func dogDenyMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "deny") }
-func dogRelyMethod() string        { return constants.GetSolidityFunctionSignature(DogABI(), "rely") }
+func dealMethod() string    { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "deal") }
+func dentMethod() string    { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "dent") }
+func denyMethod() string    { return constants.GetSolidityFunctionSignature(Cat100ABI(), "deny") }
+func dogBarkMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "Bark") }
+func dogDigsMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "Digs") }
+func dogFileIlkClipMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "bytes32", "address"})
+}
+func dogDenyMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "deny") }
+func dogRelyMethod() string { return constants.GetSolidityFunctionSignature(DogABI(), "rely") }
 func dogFileIlkChopHoleMethod() string {
-	return constants.GetSolidityFunctionSignature(DogABI(), "file")
+	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "bytes32", "uint256"})
 }
 func dogFileVowMethod() string {
 	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "address"})
