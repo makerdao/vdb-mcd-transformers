@@ -8297,6 +8297,40 @@ ALTER SEQUENCE maker.dog_file_ilk_chop_hole_id_seq OWNED BY maker.dog_file_ilk_c
 
 
 --
+-- Name: dog_file_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_file_vow (
+    id integer NOT NULL,
+    log_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    what bigint,
+    data numeric
+);
+
+
+--
+-- Name: dog_file_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_file_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_file_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_file_vow_id_seq OWNED BY maker.dog_file_vow.id;
+
+
+--
 -- Name: dog_hole; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13262,6 +13296,13 @@ ALTER TABLE ONLY maker.dog_file_ilk_chop_hole ALTER COLUMN id SET DEFAULT nextva
 
 
 --
+-- Name: dog_file_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.dog_file_vow_id_seq'::regclass);
+
+
+--
 -- Name: dog_hole id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -14937,6 +14978,22 @@ ALTER TABLE ONLY maker.dog_file_ilk_chop_hole
 
 ALTER TABLE ONLY maker.dog_file_ilk_chop_hole
     ADD CONSTRAINT dog_file_ilk_chop_hole_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_file_vow dog_file_vow_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow
+    ADD CONSTRAINT dog_file_vow_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: dog_file_vow dog_file_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow
+    ADD CONSTRAINT dog_file_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -18160,6 +18217,34 @@ CREATE INDEX dog_file_ilk_chop_hole_ilk_index ON maker.dog_file_ilk_chop_hole US
 --
 
 CREATE INDEX dog_file_ilk_chop_hole_log_index ON maker.dog_file_ilk_chop_hole USING btree (log_id);
+
+
+--
+-- Name: dog_file_vow_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_file_vow_address_index ON maker.dog_file_vow USING btree (address_id);
+
+
+--
+-- Name: dog_file_vow_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_file_vow_header_index ON maker.dog_file_vow USING btree (header_id);
+
+
+--
+-- Name: dog_file_vow_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_file_vow_log_index ON maker.dog_file_vow USING btree (log_id);
+
+
+--
+-- Name: dog_file_vow_what_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_file_vow_what_index ON maker.dog_file_vow USING btree (what);
 
 
 --
@@ -22156,6 +22241,30 @@ ALTER TABLE ONLY maker.dog_file_ilk_chop_hole
 
 ALTER TABLE ONLY maker.dog_file_ilk_chop_hole
     ADD CONSTRAINT dog_file_ilk_chop_hole_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_file_vow dog_file_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow
+    ADD CONSTRAINT dog_file_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_file_vow dog_file_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow
+    ADD CONSTRAINT dog_file_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_file_vow dog_file_vow_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_file_vow
+    ADD CONSTRAINT dog_file_vow_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --

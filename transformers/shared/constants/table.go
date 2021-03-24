@@ -40,6 +40,7 @@ const (
 	DogDigsTable                  = "dog_digs"
 	DogFileIlkClipTable           = "dog_file_ilk_clip"
 	DogFileIlkChopHoleTable       = "dog_file_ilk_chop_hole"
+	DogFileVowTable               = "dog_file_vow"
 	FlapKickTable                 = "flap_kick"
 	FlipFileCatTable              = "flip_file_cat"
 	FlipKickTable                 = "flip_kick"
