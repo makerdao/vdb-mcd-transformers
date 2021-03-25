@@ -27,7 +27,7 @@ var _ = Describe("DogDeny transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.DogDenyModel()
 		test_data.AssignAddressID(test_data.DogDenyEventLog, expectedModel, db)
-		test_data.AssignUsrID(test_data.DogDenyEventLog, expectedModel, db)
+		test_data.AssignAuthUsrID(test_data.DogDenyEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 })

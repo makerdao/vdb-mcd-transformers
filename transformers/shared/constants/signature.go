@@ -25,6 +25,7 @@ func CatFileBoxSignature() string          { return getLogNoteTopicZero(catFileB
 func CatFileChopLumpDunkSignature() string { return getLogNoteTopicZero(catFileChopLumpDunkMethod()) }
 func CatFileFlipSignature() string         { return getLogNoteTopicZero(catFileFlipMethod()) }
 func CatFileVowSignature() string          { return getLogNoteTopicZero(catFileVowMethod()) }
+func ClipKickSignature() string            { return constants.GetEventTopicZero(clipKickMethod()) }
 func DealSignature() string                { return getLogNoteTopicZero(dealMethod()) }
 func DentSignature() string                { return getLogNoteTopicZero(dentMethod()) }
 func DenySignature() string                { return getLogNoteTopicZero(denyMethod()) }
