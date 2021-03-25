@@ -161,6 +161,7 @@ func catFileVowMethod() string {
 	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "address"})
 }
 func clipKickMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "kick") }
+func clipTakeMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "take") }
 func dogFileIlkClipMethod() string {
 	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
