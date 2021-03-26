@@ -32,6 +32,7 @@ const (
 	CatFileFlipTable              = "cat_file_flip"
 	CatFileVowTable               = "cat_file_vow"
 	ClipKickTable                 = "clip_kick"
+	ClipTakeTable                 = "clip_take"
 	DogBarkTable                  = "dog_bark"
 	DogDenyTable                  = "dog_deny"
 	DogRelyTable                  = "dog_rely"
