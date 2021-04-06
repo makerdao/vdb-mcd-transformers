@@ -160,6 +160,7 @@ func catFileVowMethod() string {
 }
 func clipKickMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "kick") }
 func clipTakeMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "take") }
+func clipRedoMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "redo") }
 func dogFileIlkClipMethod() string {
 	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
