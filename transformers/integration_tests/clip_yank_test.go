@@ -31,7 +31,7 @@ var _ = Describe("Clip Yank Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("fetches and transforms a Clip Yank event", func() {
+	XIt("fetches and transforms a Clip Yank event", func() {
 		blockNumber := int64(1) //TODO: update this when there are Clip Yank events on the chain
 
 		clipYankConfig := event.TransformerConfig{
