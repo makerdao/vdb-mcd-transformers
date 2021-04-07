@@ -17,11 +17,13 @@ fi
 ENVIRONMENT=$1
 if [ "$ENVIRONMENT" == "prod" ]; then
 TAG=latest
+if [ "$ENVIRONMENT" == "qa" ]; then
+TAG=develop
 elif [ "$ENVIRONMENT" == "staging" ]; then
 TAG=staging
 else
    message UNKNOWN ENVIRONMENT
-   echo 'Allowed values for environment are "staging" or "prod"'
+   echo 'Allowed values for environment are "staging", "qa", or "prod"'
    exit 1
 fi
 
