@@ -12,6 +12,7 @@ import (
 	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
 	cat_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow/initializer"
 	clip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_kick/initializer"
+	clip_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_take/initializer"
 	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
 	dog_bark "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark/initializer"
@@ -138,6 +139,14 @@ var _ = Describe("Event transformer initializers", func() {
 		transformer := clip_kick.EventTransformerInitializer(db)
 		name := "clip_kick"
 		topic := "0x898eb267e6ff99efebaf458079f659c812f378fe8cf2a33ab4028717672bd021"
+		address := []string{test_data.Clip1xxAddress()}
+		assertCorrectInit(transformer, name, topic, 200000000000000, address)
+	})
+
+	It("configures clip take", func() {
+		transformer := clip_take.EventTransformerInitializer(db)
+		name := "clip_take"
+		topic := "0x81a794cb06a5236e70f12de71cfb43ee851068eee3a0c969cc725d99bc5c4083"
 		address := []string{test_data.Clip1xxAddress()}
 		assertCorrectInit(transformer, name, topic, 200000000000000, address)
 	})
