@@ -54,7 +54,7 @@ var clipTakeModel = event.InsertionModel{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
-		constants.ClipIDColumn,
+		constants.SaleIDColumn,
 		constants.MaxColumn,
 		constants.PriceColumn,
 		constants.OweColumn,
@@ -66,7 +66,7 @@ var clipTakeModel = event.InsertionModel{
 		event.HeaderFK: ClipTakeEventLog.HeaderID,
 		event.LogFK:    ClipTakeEventLog.ID,
 		// event.AddressFK
-		constants.ClipIDColumn: clipID.String(),
+		constants.SaleIDColumn: saleID.String(),
 		constants.MaxColumn:    max.String(),
 		constants.PriceColumn:  price.String(),
 		constants.OweColumn:    owe.String(),

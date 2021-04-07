@@ -8066,7 +8066,7 @@ CREATE TABLE maker.clip_take (
     header_id integer NOT NULL,
     address_id bigint NOT NULL,
     log_id bigint NOT NULL,
-    clip_id numeric,
+    sale_id numeric,
     max numeric,
     price numeric,
     owe numeric,
@@ -18141,13 +18141,6 @@ CREATE INDEX clip_take_address_index ON maker.clip_take USING btree (address_id)
 
 
 --
--- Name: clip_take_clip_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_take_clip_id_index ON maker.clip_take USING btree (clip_id);
-
-
---
 -- Name: clip_take_header_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18159,6 +18152,13 @@ CREATE INDEX clip_take_header_index ON maker.clip_take USING btree (header_id);
 --
 
 CREATE INDEX clip_take_log_index ON maker.clip_take USING btree (log_id);
+
+
+--
+-- Name: clip_take_sale_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_take_sale_id_index ON maker.clip_take USING btree (sale_id);
 
 
 --
