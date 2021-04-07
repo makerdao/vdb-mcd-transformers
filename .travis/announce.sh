@@ -17,7 +17,7 @@ fi
 ENVIRONMENT=$1
 if [ "$ENVIRONMENT" == "prod" ]; then
 TAG=latest
-if [ "$ENVIRONMENT" == "qa" ]; then
+elif [ "$ENVIRONMENT" == "qa" ]; then
 TAG=develop
 elif [ "$ENVIRONMENT" == "staging" ]; then
 TAG=staging
@@ -38,6 +38,6 @@ export SENTRY_ORG=makerdao-k0
 export SENTRY_LOG_LEVEL=info
 SENTRY_PROJECT=vulcanize
 SENTRY_RELEASE=$PROCESS-$(sentry-cli releases propose-version)
-sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
-sentry-cli releases finalize $SENTRY_RELEASE
-sentry-cli releases deploys $SENTRY_RELEASE new -e $ENVIRONMENT
+sentry-cli releases new -p "$SENTRY_PROJECT" "$SENTRY_RELEASE"
+sentry-cli releases finalize "$SENTRY_RELEASE"
+sentry-cli releases deploys "$SENTRY_RELEASE" new -e "$ENVIRONMENT"
