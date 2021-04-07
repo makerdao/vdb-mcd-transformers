@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	clipID = big.NewInt(1234567)
+	saleID = big.NewInt(1234567)
 	top    = big.NewInt(456)
 	coin   = big.NewInt(11234)
 )
@@ -66,7 +66,7 @@ var clipKickModel = event.InsertionModel{
 		event.HeaderFK: ClipKickEventLog.HeaderID,
 		event.LogFK:    ClipKickEventLog.ID,
 		// event.AddressFK
-		constants.BidIDColumn: clipID.String(),
+		constants.BidIDColumn: saleID.String(),
 		constants.TopColumn:   top.String(),
 		constants.TabColumn:   tab.String(),
 		constants.LotColumn:   lot.String(),
