@@ -13,6 +13,7 @@ import (
 	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
 	cat_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow/initializer"
 	clip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_kick/initializer"
+	clip_redo "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_redo/initializer"
 	clip_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_take/initializer"
 	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
@@ -173,6 +174,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			cat_file_vow.EventTransformerInitializer,
 			clip_kick.EventTransformerInitializer,
 			clip_take.EventTransformerInitializer,
+			clip_redo.EventTransformerInitializer,
 			deal.EventTransformerInitializer,
 			dent.EventTransformerInitializer,
 			deny.EventTransformerInitializer,

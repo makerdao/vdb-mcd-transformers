@@ -12,7 +12,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
 )
 
-var rawClipRedoLog = types.Log{
+var RawClipRedoLog = types.Log{
 	Address: common.HexToAddress(Clip1xxAddress()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.ClipKickSignature()),
@@ -36,7 +36,7 @@ var rawClipRedoLog = types.Log{
 var ClipRedoEventLog = core.EventLog{
 	ID:          int64(rand.Int31()),
 	HeaderID:    int64(rand.Int31()),
-	Log:         rawClipRedoLog,
+	Log:         RawClipRedoLog,
 	Transformed: false,
 }
 
