@@ -61,6 +61,10 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates clip redo signature", func() {
 		Expect(constants.ClipRedoSignature()).To(Equal("0xd843416d5566a8553374fa6b0a7512971ed4094b86144cd2beecc635a7b1c66a"))
+	}
+)
+	It("generates clip yank signature", func() {
+		Expect(constants.ClipYankSignature()).To(Equal("0x26e027f1d6e357433803c0a4f750e685500b1e57291dc9f6d0d5ea503eaee1e0"))
 	})
 
 	It("generates deal signature", func() {
