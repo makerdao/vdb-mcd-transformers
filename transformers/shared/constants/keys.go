@@ -72,7 +72,6 @@ const (
 	RadColumn       event.ColumnName = "rad"
 	RateColumn      event.ColumnName = "rate"
 	SaleIDColumn    event.ColumnName = "sale_id"
-	SalesIDColumn   event.ColumnName = "sales_id"
 	SpotColumn      event.ColumnName = "spot"
 	SrcColumn       event.ColumnName = "src"
 	TabColumn       event.ColumnName = "tab"

@@ -8234,7 +8234,7 @@ CREATE TABLE maker.dog_bark (
     ink numeric,
     art numeric,
     due numeric,
-    sales_id numeric
+    sale_id numeric
 );
 
 
