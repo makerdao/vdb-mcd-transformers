@@ -1,14 +1,16 @@
 package test_data
 
 import (
+	"math/big"
+	"math/rand"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"math/big"
-	"math/rand"
 )
 
 var holeData = big.NewInt(1234)
@@ -18,7 +20,7 @@ var (
 		Address: common.HexToAddress(Dog1xxAddress()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileHoleSignature()),
-			common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000766f77"), // what
+			common.HexToHash("0x486f6c6500000000000000000000000000000000000000000000000000000000"), // what
 		},
 		Data: hexutil.MustDecode("0x" +
 			"00000000000000000000000000000000000000000000000000000000000004D2" + //data
@@ -54,7 +56,7 @@ var (
 			event.HeaderFK: DogFileHoleEventLog.HeaderID,
 			event.LogFK:    DogFileHoleEventLog.ID,
 			//event.AddressFK,
-			constants.WhatColumn: DogFileHoleEventLog.Log.Topics[1].String(),
+			constants.WhatColumn: shared.DecodeHexToText(DogFileHoleEventLog.Log.Topics[1].Hex()),
 			constants.DataColumn: holeData.String(),
 		},
 	}
