@@ -59,7 +59,7 @@ var clipRedoModel = event.InsertionModel{
 		event.HeaderFK: ClipRedoEventLog.HeaderID,
 		event.LogFK:    ClipRedoEventLog.ID,
 		// event.AddressFK
-		constants.SaleIDColumn: saleID.String(),
+		constants.SaleIDColumn: ClipRedoEventLog.Log.Topics[1].Big().String(),
 		constants.TopColumn:    top.String(),
 		constants.TabColumn:    tab.String(),
 		constants.LotColumn:    lot.String(),
