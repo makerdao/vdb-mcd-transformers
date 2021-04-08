@@ -11,7 +11,7 @@ CREATE TABLE maker.dog_bark
     ink        NUMERIC,
     art        NUMERIC,
     due        NUMERIC,
-    sales_id   NUMERIC,
+    sale_id    NUMERIC,
     UNIQUE (header_id, log_id)
 );
 

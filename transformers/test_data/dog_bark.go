@@ -61,7 +61,7 @@ var (
 			constants.ArtColumn,
 			constants.DueColumn,
 			constants.ClipColumn,
-			constants.SalesIDColumn,
+			constants.SaleIDColumn,
 		},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK: DogBarkEventLog.HeaderID,
@@ -73,7 +73,7 @@ var (
 			constants.ArtColumn: art.String(),
 			constants.DueColumn: due.String(),
 			//constants.ClipColumn,
-			constants.SalesIDColumn: id.String(),
+			constants.SaleIDColumn: id.String(),
 		},
 	}
 )

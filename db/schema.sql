@@ -8058,10 +8058,6 @@ ALTER SEQUENCE maker.clip_kick_id_seq OWNED BY maker.clip_kick.id;
 
 
 --
--- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_take (
 -- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8070,13 +8066,6 @@ CREATE TABLE maker.clip_redo (
     header_id integer NOT NULL,
     address_id bigint NOT NULL,
     log_id bigint NOT NULL,
-    sale_id numeric,
-    max numeric,
-    price numeric,
-    owe numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint
     sale_id numeric NOT NULL,
     top numeric,
     tab numeric,
@@ -8088,10 +8077,6 @@ CREATE TABLE maker.clip_redo (
 
 
 --
--- Name: clip_take_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.clip_take_id_seq
 -- Name: clip_redo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8105,14 +8090,49 @@ CREATE SEQUENCE maker.clip_redo_id_seq
 
 
 --
--- Name: clip_take_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
 -- Name: clip_redo_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
 --
 
 ALTER SEQUENCE maker.clip_redo_id_seq OWNED BY maker.clip_redo.id;
+
+
+--
+-- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_take (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric,
+    max numeric,
+    price numeric,
+    owe numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint
+);
+
+
+--
+-- Name: clip_take_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_take_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_take_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
 
 
 --
@@ -8234,7 +8254,7 @@ CREATE TABLE maker.dog_bark (
     ink numeric,
     art numeric,
     due numeric,
-    sales_id numeric
+    sale_id numeric
 );
 
 
@@ -13344,14 +13364,17 @@ ALTER TABLE ONLY maker.clip_kick ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
--- Name: clip_take id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip_take_id_seq'::regclass);
 -- Name: clip_redo id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.clip_redo ALTER COLUMN id SET DEFAULT nextval('maker.clip_redo_id_seq'::regclass);
+
+
+--
+-- Name: clip_take id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip_take_id_seq'::regclass);
 
 
 --
@@ -14984,19 +15007,6 @@ ALTER TABLE ONLY maker.clip_kick
 
 
 --
--- Name: clip_take clip_take_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take
-    ADD CONSTRAINT clip_take_header_id_log_id_key UNIQUE (header_id, log_id);
-
-
---
--- Name: clip_take clip_take_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take
-    ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
 -- Name: clip_redo clip_redo_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15010,6 +15020,22 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_take clip_take_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take
+    ADD CONSTRAINT clip_take_header_id_log_id_key UNIQUE (header_id, log_id);
+
+
+--
+-- Name: clip_take clip_take_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take
+    ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
 
 
 --
@@ -18170,31 +18196,6 @@ CREATE INDEX clip_kick_log_index ON maker.clip_kick USING btree (log_id);
 
 
 --
--- Name: clip_take_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_take_address_index ON maker.clip_take USING btree (address_id);
-
-
---
--- Name: clip_take_header_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_take_header_index ON maker.clip_take USING btree (header_id);
-
-
---
--- Name: clip_take_log_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_take_log_index ON maker.clip_take USING btree (log_id);
-
-
---
--- Name: clip_take_sale_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_take_sale_id_index ON maker.clip_take USING btree (sale_id);
 -- Name: clip_redo_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18220,6 +18221,34 @@ CREATE INDEX clip_redo_log_index ON maker.clip_redo USING btree (log_id);
 --
 
 CREATE INDEX clip_redo_sale_id_index ON maker.clip_redo USING btree (sale_id);
+
+
+--
+-- Name: clip_take_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_take_address_index ON maker.clip_take USING btree (address_id);
+
+
+--
+-- Name: clip_take_header_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_take_header_index ON maker.clip_take USING btree (header_id);
+
+
+--
+-- Name: clip_take_log_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_take_log_index ON maker.clip_take USING btree (log_id);
+
+
+--
+-- Name: clip_take_sale_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_take_sale_id_index ON maker.clip_take USING btree (sale_id);
 
 
 --
@@ -22237,27 +22266,6 @@ ALTER TABLE ONLY maker.clip_kick
 
 
 --
--- Name: clip_take clip_take_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take
-    ADD CONSTRAINT clip_take_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_take clip_take_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take
-    ADD CONSTRAINT clip_take_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_take clip_take_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_take
-    ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 -- Name: clip_redo clip_redo_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22279,6 +22287,30 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_take clip_take_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take
+    ADD CONSTRAINT clip_take_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_take clip_take_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take
+    ADD CONSTRAINT clip_take_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_take clip_take_log_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_take
+    ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
 
 
 --
