@@ -42,6 +42,7 @@ const (
 	DentTable                     = "dent"
 	DenyTable                     = "deny"
 	DogDigsTable                  = "dog_digs"
+	DogFileHoleTable          	  = "dog_file_hole"
 	DogFileIlkClipTable           = "dog_file_ilk_clip"
 	DogFileIlkChopHoleTable       = "dog_file_ilk_chop_hole"
 	DogFileVowTable               = "dog_file_vow"
