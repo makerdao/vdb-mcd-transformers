@@ -52,7 +52,7 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
-		what := hexutil.Encode(DogFileHoleEntity.What[:])
+		what := shared.DecodeHexToText(hexutil.Encode(DogFileHoleEntity.What[:]))
 
 		model := event.InsertionModel{
 			SchemaName: constants.MakerSchema,
