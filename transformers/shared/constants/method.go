@@ -164,6 +164,9 @@ func clipKickMethod() string { return constants.GetSolidityFunctionSignature(Cli
 func clipTakeMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "take") }
 func clipRedoMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "redo") }
 func clipYankMethod() string { return constants.GetSolidityFunctionSignature(ClipABI(), "yank") }
+func dogFileHoleMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "uint256"})
+}
 func dogFileIlkClipMethod() string {
 	return constants.GetOverloadedFunctionSignature(DogABI(), "file", []string{"bytes32", "bytes32", "address"})
 }
