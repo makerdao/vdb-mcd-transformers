@@ -14,9 +14,8 @@ import (
 )
 
 var (
-	saleID = big.NewInt(1234567)
-	top    = big.NewInt(456)
-	coin   = big.NewInt(11234)
+	top  = big.NewInt(456)
+	coin = big.NewInt(11234)
 )
 
 var rawClipKickLog = types.Log{
@@ -66,7 +65,7 @@ var clipKickModel = event.InsertionModel{
 		event.HeaderFK: ClipKickEventLog.HeaderID,
 		event.LogFK:    ClipKickEventLog.ID,
 		// event.AddressFK
-		constants.BidIDColumn: saleID.String(),
+		constants.BidIDColumn: ClipKickEventLog.Log.Topics[1].Big().String(),
 		constants.TopColumn:   top.String(),
 		constants.TabColumn:   tab.String(),
 		constants.LotColumn:   lot.String(),
