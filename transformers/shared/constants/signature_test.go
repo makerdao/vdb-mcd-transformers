@@ -87,6 +87,10 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.DogDigsSignature()).To(Equal("0x54f095dc7308776bf01e8580e4dd40fd959ea4bf50b069975768320ef8d77d8a"))
 	})
 
+	It("generates dog file hole signature", func() {
+		Expect(constants.DogFileHoleSignature()).To(Equal("0x29ae81148191011c38566e55c1fa1b7fe8ab9c6a19c80456e157de5a28453916"))
+	})
+
 	It("generates dog file ilk clip signature", func() {
 		Expect(constants.DogFileIlkClipSignature()).To(Equal("0xebecb39d70d49bd1a0cae5d2ec70ed687d58c46e0e6442572ed5ade6a7386c3d"))
 	})

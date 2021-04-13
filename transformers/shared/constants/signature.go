@@ -34,6 +34,7 @@ func DentSignature() string                { return getLogNoteTopicZero(dentMeth
 func DenySignature() string                { return getLogNoteTopicZero(denyMethod()) }
 func DogBarkSignature() string             { return constants.GetEventTopicZero(dogBarkMethod()) }
 func DogDigsSignature() string             { return constants.GetEventTopicZero(dogDigsMethod()) }
+func DogFileHoleSignature() string         { return constants.GetEventTopicZero(dogFileHoleMethod()) }
 func DogFileIlkClipSignature() string      { return constants.GetEventTopicZero(dogFileIlkClipMethod()) }
 func DogFileVowSignature() string          { return constants.GetEventTopicZero(dogFileVowMethod()) }
 func DogDenySignature() string             { return constants.GetEventTopicZero(dogDenyMethod()) }
