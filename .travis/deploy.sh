@@ -11,12 +11,6 @@ function message() {
 }
 
 ENVIRONMENT=$1
-if [ -z "$ENVIRONMENT" ]; then
-    echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
-    echo 'Allowed values are "staging" or "prod"'
-    exit 1
-fi
-
 #--------------------------
 # INIT
 #--------------------------
@@ -33,8 +27,15 @@ elif [ "$ENVIRONMENT" == "staging" ]; then
     TAG=staging
     REGION=$STAGING_REGION
     ECS_NETWORK_CONFIG=$STAGING_NETWORK_CONFIG
+elif [ "$ENVIRONMENT" == "qa" ]; then
+    TAG=develop
+    REGION=$QA_REGION
+    ECS_NETWORK_CONFIG=$QA_NETWORK_CONFIG
 else
     message UNKNOWN ENVIRONMENT
+    echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
+    echo 'Allowed values are "staging", "qa", "private-prod" or "prod"'
+    exit 1
 fi
 
 #--------------------------
@@ -54,18 +55,12 @@ docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfi
 message BUILDING BACKFILL-EVENTS DOCKER IMAGE
 docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG -t makerdao/vdb-backfill-events:$IMMUTABLE_TAG
 
-if [ "$ENVIRONMENT" == "prod" ]; then
-
-    message BUILDING EXECUTE DOCKER IMAGE
-    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG -t makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
-
-elif [ "$ENVIRONMENT" == "staging" ]; then
-
-    message BUILDING EXECUTE DOCKER IMAGE
-    docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG -t makerdao/vdb-execute:$IMMUTABLE_TAG
-
+if [ "$ENVIRONMENT" == "staging" ]; then
+  message BUILDING EXECUTE DOCKER IMAGE
+  docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG -t makerdao/vdb-execute:$IMMUTABLE_TAG
 else
-    message UNKNOWN ENVIRONMENT
+  message BUILDING EXECUTE DOCKER IMAGE
+  docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG -t makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 fi
 
 #--------------------------
@@ -91,21 +86,14 @@ message PUSHING EXTRACT-DIFFS DOCKER IMAGE
 docker push makerdao/vdb-extract-diffs:$TAG
 docker push makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
 
-if [ "$ENVIRONMENT" == "prod" ]; then
-
-    message PUSHING EXECUTE DOCKER IMAGE
-    docker push makerdao/vdb-mcd-execute:$TAG
-    docker push makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
-
-elif [ "$ENVIRONMENT" == "staging" ]; then
-
-    message PUSHING EXECUTE DOCKER IMAGE
-    docker push makerdao/vdb-execute:$TAG
-    docker push makerdao/vdb-execute:$IMMUTABLE_TAG
-
+if [ "$ENVIRONMENT" == "staging" ]; then
+  message PUSHING EXECUTE DOCKER IMAGE
+  docker push makerdao/vdb-execute:$TAG
+  docker push makerdao/vdb-execute:$IMMUTABLE_TAG
 else
-    message UNKNOWN ENVIRONMENT
-    exit 1 # don't continue
+  message PUSHING EXECUTE DOCKER IMAGE
+  docker push makerdao/vdb-mcd-execute:$TAG
+  docker push makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 fi
 
 #--------------------------
@@ -113,7 +101,7 @@ fi
 #--------------------------
 message DEPLOY TO $ENVIRONMENT
 
-message DEPLOYING BACKFILL-EVENTS
+message DEPLOYING BACKFILL-EVENTS TO $ENVIRONMENT in $REGION
 aws ecs run-task \
   --cluster vdb-cluster-$ENVIRONMENT \
   --launch-type FARGATE \
@@ -121,7 +109,7 @@ aws ecs run-task \
   --network-configuration $ECS_NETWORK_CONFIG \
   --region $REGION
 
-message DEPLOYING BACKFILL-STORAGE
+message DEPLOYING BACKFILL-STORAGE TO $ENVIRONMENT in $REGION
 aws ecs run-task \
   --cluster vdb-cluster-$ENVIRONMENT \
   --launch-type FARGATE \
@@ -129,14 +117,14 @@ aws ecs run-task \
   --network-configuration $ECS_NETWORK_CONFIG \
   --region $REGION
 
-if [ "$ENVIRONMENT" == "prod" ]; then
-    EXECUTE_NAME=vdb-mcd-execute
-    EXTRACT_DIFFS_NAME=vdb-extract-diffs-eu
-    EXTRACT_DIFFS_US_NAME=vdb-extract-diffs-us
-elif [ "$ENVIRONMENT" == "staging" ]; then
-    EXECUTE_NAME=vdb-execute
-    EXTRACT_DIFFS_NAME=vdb-extract-diffs
-    EXTRACT_DIFFS_US_NAME=vdb-extract-diffs2
+if [ "$ENVIRONMENT" == "staging" ]; then
+  EXECUTE_NAME=vdb-execute
+  EXTRACT_DIFFS_NAME=vdb-extract-diffs
+  EXTRACT_DIFFS_US_NAME=vdb-extract-diffs2
+else
+  EXECUTE_NAME=vdb-mcd-execute
+  EXTRACT_DIFFS_NAME=vdb-extract-diffs-eu
+  EXTRACT_DIFFS_US_NAME=vdb-extract-diffs-us
 fi
 
 message DEPLOYING EXECUTE
