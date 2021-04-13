@@ -144,3 +144,47 @@ func AssignAddressID(log core.EventLog, insertionModel event.InsertionModel, db 
 	Expect(addressIDErr).NotTo(HaveOccurred())
 	insertionModel.ColumnValues[event.AddressFK] = addressID
 }
+
+func AssignAuthUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	usrID, usrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[1].Hex())
+	Expect(usrIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UsrColumn] = usrID
+}
+
+func AssignClipUsrID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	usrID, usrIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[2].Hex())
+	Expect(usrIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UsrColumn] = usrID
+}
+
+func AssignUrnID(insertionModel event.InsertionModel, db *postgres.DB) {
+	var urnID int64
+	urnErr := db.Get(&urnID, `SELECT id FROM maker.urns`)
+	Expect(urnErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.UrnColumn] = urnID
+}
+
+func AssignIlkID(insertionModel event.InsertionModel, db *postgres.DB) {
+	var ilkID int64
+	ilkErr := db.Get(&ilkID, `SELECT id FROM maker.ilks`)
+	Expect(ilkErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.IlkColumn] = ilkID
+}
+
+func AssignClipAddressID(clipAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
+	clipAddressID, clipAddressErr := repository.GetOrCreateAddress(db, clipAddressHex)
+	Expect(clipAddressErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.ClipColumn] = clipAddressID
+}
+
+func AssignDataAddressID(dataAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
+	dataAddressID, dataAddressErr := repository.GetOrCreateAddress(db, dataAddressHex)
+	Expect(dataAddressErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.DataColumn] = dataAddressID
+}
+
+func AssignKprAddressID(log core.EventLog, insertionModel event.InsertionModel, db *postgres.DB) {
+	kprID, kprIDErr := repository.GetOrCreateAddress(db, log.Log.Topics[3].Hex())
+	Expect(kprIDErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.KprColumn] = kprID
+}

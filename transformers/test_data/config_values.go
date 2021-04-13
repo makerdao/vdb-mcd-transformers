@@ -9,6 +9,8 @@ import (
 
 func Cat100Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_0_0")) }
 func Cat110Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_1_0")) }
+func Clip1xxAddress() string  { return checksum(constants.GetContractAddress("MCD_CLIP_1_x_x")) }
+func Dog1xxAddress() string   { return checksum(constants.GetContractAddress("MCD_DOG_1_x_x")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_0")) }
 func FlapV109Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_9")) }
 func FlipV100Addresses() []string {
