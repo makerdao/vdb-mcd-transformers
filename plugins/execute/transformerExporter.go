@@ -113,6 +113,7 @@ import (
 	flip_univ2aaveeth_a_v1_2_7 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2aaveeth_a/v1_2_7"
 	flip_univ2daieth_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daieth_a/v1_2_2"
 	flip_univ2daiusdc_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daiusdc_a/v1_2_5"
+	flip_univ2daiusdt_a_v1_2_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2daiusdt_a/v1_2_8"
 	flip_univ2ethusdt_a_v1_2_5 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2ethusdt_a/v1_2_5"
 	flip_univ2linketh_a_v1_2_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2linketh_a/v1_2_6"
 	flip_univ2unieth_a_v1_2_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/univ2unieth_a/v1_2_6"
