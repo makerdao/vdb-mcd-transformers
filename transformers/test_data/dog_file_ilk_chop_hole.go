@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 )
@@ -17,7 +18,7 @@ var (
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileIlkChopHoleSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk
-			common.HexToHash("0x00000000000000000000000000000000000000000000000000000000636c6970"), // what
+			common.HexToHash("0x636c697000000000000000000000000000000000000000000000000000000000"), // what
 		},
 		Data: hexutil.MustDecode("0x" +
 			"00000000000000000000000000000000000000000000000000000004FCF6BC30"),
@@ -52,7 +53,7 @@ var (
 			event.LogFK:    DogFileIlkChopHoleEventLog.ID,
 			//event.AddressFK,
 			//constants.IlkColumn
-			constants.WhatColumn: DogFileIlkChopHoleEventLog.Log.Topics[2].String(),
+			constants.WhatColumn: shared.DecodeHexToText(DogFileIlkChopHoleEventLog.Log.Topics[2].Hex()),
 			constants.DataColumn: "21423897648",
 		},
 	}
