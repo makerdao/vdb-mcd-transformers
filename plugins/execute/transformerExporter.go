@@ -276,6 +276,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			flip_tusd_a_v1_1_0.StorageTransformerInitializer,
 			flip_uni_a_v1_2_1.StorageTransformerInitializer,
 			flip_univ2aaveeth_a_v1_2_7.StorageTransformerInitializer,
+			flip_univ2daiusdt_a_v1_2_8.StorageTransformerInitializer,
 			flip_univ2daieth_a_v1_2_2.StorageTransformerInitializer,
 			flip_univ2daiusdc_a_v1_2_5.StorageTransformerInitializer,
 			flip_univ2ethusdt_a_v1_2_5.StorageTransformerInitializer,
