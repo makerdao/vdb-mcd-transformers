@@ -193,56 +193,56 @@ var _ = Describe("Event transformer initializers", func() {
 		transformer := dog_bark.EventTransformerInitializer(db)
 		topic := "0x85258d09e1e4ef299ff3fc11e74af99563f022d21f3f940db982229dc2a3358c"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_bark", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_bark", topic, 12246358, addresses)
 	})
 
 	It("configures dog deny", func() {
 		transformer := dog_deny.EventTransformerInitializer(db)
 		topic := "0x9c52a7f1fa525c4063d456584f4b5939a57b269dace468175e052aa4c179ce7a"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_deny", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_deny", topic, 12246358, addresses)
 	})
 
 	It("configures dog dig", func() {
 		transformer := dog_digs.EventTransformerInitializer(db)
 		topic := "0x54f095dc7308776bf01e8580e4dd40fd959ea4bf50b069975768320ef8d77d8a"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_digs", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_digs", topic, 12246358, addresses)
 	})
 
 	It("configures dog_file_ilk_clip", func() {
 		transformer := dog_file_ilk_clip.EventTransformerInitializer(db)
 		topic := "0xebecb39d70d49bd1a0cae5d2ec70ed687d58c46e0e6442572ed5ade6a7386c3d"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_file_ilk_clip", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_file_ilk_clip", topic, 12246358, addresses)
 	})
 
 	It("configures dog_file_vow", func() {
 		transformer := dog_file_vow.EventTransformerInitializer(db)
 		topic := "0xd4e8be83c1157aa9a898b4b2665e7d31820308d74f3a60999496af58f6e22625"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_file_vow", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_file_vow", topic, 12246358, addresses)
 	})
 
 	It("configures dog_file_hole", func() {
 		transformer := dog_file_hole.EventTransformerInitializer(db)
 		topic := "0x29ae81148191011c38566e55c1fa1b7fe8ab9c6a19c80456e157de5a28453916"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_file_hole", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_file_hole", topic, 12246358, addresses)
 	})
 
 	It("configures dog rely", func() {
 		transformer := dog_rely.EventTransformerInitializer(db)
 		topic := "0x65fae35ed06235c67d3076f28ca18323d5f077aaa8c2b759b78287ec32e69afd"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_rely", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_rely", topic, 12246358, addresses)
 	})
 
 	It("configures dog_file_ilk_chop_hole", func() {
 		transformer := dog_file_ilk_chop_hole.EventTransformerInitializer(db)
 		topic := "0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"
 		addresses := []string{test_data.Dog1xxAddress()}
-		assertCorrectInit(transformer, "dog_file_ilk_chop_hole", topic, 100000000000000, addresses)
+		assertCorrectInit(transformer, "dog_file_ilk_chop_hole", topic, 12246358, addresses)
 	})
 
 	It("configures flap kick", func() {
