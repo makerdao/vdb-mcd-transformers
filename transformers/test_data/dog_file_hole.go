@@ -17,7 +17,7 @@ var holeData = big.NewInt(1234)
 
 var (
 	RawDogFileHoleLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileHoleSignature()),
 			common.HexToHash("0x486f6c6500000000000000000000000000000000000000000000000000000000"), // what

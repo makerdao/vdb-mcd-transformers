@@ -16,7 +16,7 @@ var (
 	rad = big.NewInt(456)
 
 	RawDogDigsLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogDigsSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk

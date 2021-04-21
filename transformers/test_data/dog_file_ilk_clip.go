@@ -12,7 +12,7 @@ import (
 
 var (
 	RawDogFileIlkClipLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileIlkClipSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk

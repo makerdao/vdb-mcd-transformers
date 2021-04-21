@@ -36,7 +36,7 @@ var _ = Describe("Dog File Ilk Uint Transformer", func() {
 
 		dogFileIlkChopHoleConfig := event.TransformerConfig{
 			TransformerName:     constants.DogFileIlkChopHoleTable,
-			ContractAddresses:   []string{test_data.Dog1xxAddress()},
+			ContractAddresses:   []string{test_data.Dog130Address()},
 			ContractAbi:         constants.DogABI(),
 			Topic:               constants.DogFileIlkChopHoleSignature(),
 			StartingBlockNumber: blockNumber,

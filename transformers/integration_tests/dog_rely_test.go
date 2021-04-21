@@ -34,7 +34,7 @@ var _ = Describe("Dog Rely Transformer", func() {
 
 		dogRelyConfig := event.TransformerConfig{
 			TransformerName:     constants.DogRelyTable,
-			ContractAddresses:   []string{test_data.Dog1xxAddress()},
+			ContractAddresses:   []string{test_data.Dog130Address()},
 			ContractAbi:         constants.DogABI(),
 			Topic:               constants.DogRelySignature(),
 			StartingBlockNumber: blockNumber,
