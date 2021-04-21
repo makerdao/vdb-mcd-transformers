@@ -18,7 +18,7 @@ var _ = Describe("Dog storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = dog.NewKeysLoader(storageRepository, test_data.Dog1xxAddress())
+		storageKeysLoader = dog.NewKeysLoader(storageRepository, test_data.Dog130Address())
 	})
 
 	It("returns storage value metadata for static keys", func() {

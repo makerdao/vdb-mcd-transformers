@@ -9,7 +9,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 )
 
-var dogAddress = constants.GetContractAddress("MCD_Dog_1_x_x")
+var dogAddress = constants.GetContractAddress("MCD_DOG_1_3_0")
 var StorageTransformerInitializer storage.TransformerInitializer = storage.Transformer{
 	Address:           common.HexToAddress(dogAddress),
 	StorageKeysLookup: storage.NewKeysLookup(dog.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, dogAddress)),

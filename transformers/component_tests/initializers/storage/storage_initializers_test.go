@@ -87,7 +87,7 @@ var _ = Describe("Storage transformer initializers", func() {
 	})
 
 	It("configures the dog v1_x_x", func() {
-		address := test_data.Dog1xxAddress()
+		address := test_data.Dog130Address()
 		transformer := dog_v1_x_x.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))

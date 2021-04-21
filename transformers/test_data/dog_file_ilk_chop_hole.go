@@ -14,7 +14,7 @@ import (
 
 var (
 	RawDogFileIlkChopHoleLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileIlkChopHoleSignature()),
 			common.HexToHash("0x4554482d41000000000000000000000000000000000000000000000000000000"), // ilk

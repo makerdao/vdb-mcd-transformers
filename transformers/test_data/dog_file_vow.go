@@ -13,7 +13,7 @@ import (
 var (
 	DataAddress      = "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB"
 	RawDogFileVowLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogFileVowSignature()),
 			common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000766f77"), // what

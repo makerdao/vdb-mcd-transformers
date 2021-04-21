@@ -19,7 +19,7 @@ var (
 )
 
 var rawClipKickLog = types.Log{
-	Address: common.HexToAddress(Clip1xxAddress()),
+	Address: common.HexToAddress(Clip130Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.ClipKickSignature()),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000012D687"), //id
