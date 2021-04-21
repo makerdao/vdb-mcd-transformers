@@ -9,7 +9,7 @@ import (
 
 func Cat100Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_0_0")) }
 func Cat110Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_1_0")) }
-func Clip130Address() string  { return checksum(constants.GetContractAddress("MCD_CLIP_1_3_0")) }
+func Clip130Address() string  { return checksum(constants.GetContractAddress("MCD_CLIP_LINK_A_1_3_0")) }
 func Dog130Address() string   { return checksum(constants.GetContractAddress("MCD_DOG_1_3_0")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_0")) }
 func FlapV109Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_9")) }
