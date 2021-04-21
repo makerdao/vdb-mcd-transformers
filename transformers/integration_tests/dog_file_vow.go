@@ -37,7 +37,7 @@ var _ = Describe("Dog File Vow Transformer", func() {
 
 		dogFileVowConfig := event.TransformerConfig{
 			TransformerName:     constants.DogFileVowTable,
-			ContractAddresses:   []string{test_data.Dog1xxAddress()},
+			ContractAddresses:   []string{test_data.Dog130Address()},
 			ContractAbi:         constants.DogABI(),
 			Topic:               constants.DogFileVowSignature(),
 			StartingBlockNumber: blockNumber,

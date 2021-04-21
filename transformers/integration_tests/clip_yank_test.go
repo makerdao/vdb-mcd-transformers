@@ -36,7 +36,7 @@ var _ = Describe("Clip Yank Transformer", func() {
 
 		clipYankConfig := event.TransformerConfig{
 			TransformerName:     constants.ClipYankTable,
-			ContractAddresses:   []string{test_data.Clip1xxAddress()},
+			ContractAddresses:   []string{test_data.Clip130Address()},
 			ContractAbi:         constants.ClipABI(),
 			Topic:               constants.ClipYankSignature(),
 			StartingBlockNumber: blockNumber,

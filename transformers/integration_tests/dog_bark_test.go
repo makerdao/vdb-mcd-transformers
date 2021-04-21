@@ -36,7 +36,7 @@ var _ = Describe("Dog Bark Transformer", func() {
 
 		dogBarkConfig := event.TransformerConfig{
 			TransformerName:     constants.DogBarkTable,
-			ContractAddresses:   []string{test_data.Dog1xxAddress()},
+			ContractAddresses:   []string{test_data.Dog130Address()},
 			ContractAbi:         constants.DogABI(),
 			Topic:               constants.DogBarkSignature(),
 			StartingBlockNumber: blockNumber,

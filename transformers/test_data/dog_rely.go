@@ -13,7 +13,7 @@ import (
 
 var (
 	RawDogRelyLog = types.Log{
-		Address: common.HexToAddress(Dog1xxAddress()),
+		Address: common.HexToAddress(Dog130Address()),
 		Topics: []common.Hash{
 			common.HexToHash(constants.DogRelySignature()),
 			common.HexToHash("0x000000000000000000000000dDb108893104dE4E1C6d0E47c42237dB4E617ACc"), //usr

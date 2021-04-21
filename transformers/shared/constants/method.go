@@ -26,8 +26,8 @@ import (
 func Cat100ABI() string     { return constants.GetContractABI("MCD_CAT_1_0_0") }
 func Cat110ABI() string     { return constants.GetContractABI("MCD_CAT_1_1_0") }
 func CdpManagerABI() string { return constants.GetContractABI("CDP_MANAGER") }
-func ClipABI() string       { return constants.GetContractABI("MCD_CLIP_1_x_x") }
-func DogABI() string        { return constants.GetContractABI("MCD_DOG_1_x_x") }
+func ClipABI() string       { return constants.GetContractABI("MCD_CLIP_LINK_A_1_3_0") }
+func DogABI() string        { return constants.GetContractABI("MCD_DOG_1_3_0") }
 func FlapABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLAP_1_0_0",

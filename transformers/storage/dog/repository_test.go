@@ -30,7 +30,7 @@ var _ = Describe("Dog storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = dog.StorageRepository{ContractAddress: test_data.Dog1xxAddress()}
+		repo = dog.StorageRepository{ContractAddress: test_data.Dog130Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -55,7 +55,7 @@ var _ = Describe("Dog storage repository", func() {
 				Value:           fakeUint256,
 				Schema:          constants.MakerSchema,
 				TableName:       constants.DogDirtTable,
-				ContractAddress: test_data.Dog1xxAddress(),
+				ContractAddress: test_data.Dog130Address(),
 				Repository:      &repo,
 				Metadata:        metadata,
 				IsAMapping:      false,
@@ -71,7 +71,7 @@ var _ = Describe("Dog storage repository", func() {
 				Value:           fakeUint256,
 				Schema:          constants.MakerSchema,
 				TableName:       constants.DogHoleTable,
-				ContractAddress: test_data.Dog1xxAddress(),
+				ContractAddress: test_data.Dog130Address(),
 				Repository:      &repo,
 				Metadata:        metadata,
 				IsAMapping:      false,
@@ -87,7 +87,7 @@ var _ = Describe("Dog storage repository", func() {
 				Value:           fakeUint256,
 				Schema:          constants.MakerSchema,
 				TableName:       constants.DogLiveTable,
-				ContractAddress: test_data.Dog1xxAddress(),
+				ContractAddress: test_data.Dog130Address(),
 				Repository:      &repo,
 				Metadata:        metadata,
 				IsAMapping:      false,
@@ -115,7 +115,7 @@ var _ = Describe("Dog storage repository", func() {
 				err := repo.Create(diffID, headerID, vatMetadata, fakeAddress)
 				Expect(err).NotTo(HaveOccurred())
 
-				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, test_data.Dog1xxAddress())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, test_data.Dog130Address())
 				Expect(contractAddressErr).NotTo(HaveOccurred())
 
 				vatAddressID, vatAddressErr := repository.GetOrCreateAddress(db, fakeAddress)
@@ -165,7 +165,7 @@ var _ = Describe("Dog storage repository", func() {
 			err := repo.Create(diffID, headerID, vowMetadata, fakeAddress)
 			Expect(err).NotTo(HaveOccurred())
 
-			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, test_data.Dog1xxAddress())
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, test_data.Dog130Address())
 			Expect(contractAddressErr).NotTo(HaveOccurred())
 
 			vowAddressID, vowAddressErr := repository.GetOrCreateAddress(db, fakeAddress)

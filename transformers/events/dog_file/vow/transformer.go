@@ -25,7 +25,7 @@ func (t Transformer) toEntities(contractAbi string, logs []core.EventLog) ([]Dog
 			return nil, parseErr
 		}
 		contract := bind.NewBoundContract(address, abi, nil, nil, nil)
-		unpackErr := contract.UnpackLog(&entity, "FileAddress", log.Log)
+		unpackErr := contract.UnpackLog(&entity, "File0", log.Log)
 		if unpackErr != nil {
 			return nil, unpackErr
 		}

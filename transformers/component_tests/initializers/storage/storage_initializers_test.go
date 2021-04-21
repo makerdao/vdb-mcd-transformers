@@ -5,7 +5,7 @@ import (
 	cat_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0/initializer"
 	cat_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_1_0/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	dog_v1_x_x "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_x_x"
+	dog_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_3_0"
 	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	flip_aave_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/aave_a/v1_2_2"
@@ -86,9 +86,9 @@ var _ = Describe("Storage transformer initializers", func() {
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
 
-	It("configures the dog v1_x_x", func() {
-		address := test_data.Dog1xxAddress()
-		transformer := dog_v1_x_x.StorageTransformerInitializer(db)
+	It("configures the dog v1_3_0", func() {
+		address := test_data.Dog130Address()
+		transformer := dog_v1_3_0.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
