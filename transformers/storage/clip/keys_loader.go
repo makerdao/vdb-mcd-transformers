@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	//wards at index0
 	IlkKey      = common.HexToHash(vdbStorage.IndexOne)
 	IlkMetadata = types.GetValueMetadata(mcdStorage.Ilk, nil, types.Bytes32)
 
@@ -82,5 +83,9 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[CalcKey] = CalcMetadata
 	mappings[BufKey] = BufMetadata
 	mappings[TailKey] = TailMetadata
+	mappings[CuspKey] = CuspMetadata
+	mappings[ChipAndTipStorageKey] = ChipAndTipMetadata
+	mappings[ChostKey] = ChostMetadata
+	mappings[KicksKey] = KicksMetadata
 	return mappings
 }
