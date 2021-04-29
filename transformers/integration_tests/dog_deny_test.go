@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_rely"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_deny"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -24,12 +24,12 @@ func fetchDogDenyLogsFromChain(config event.TransformerConfig, header core.Heade
 	return test_data.CreateLogs(header.Id, logs, db)
 }
 
-var _ = Describe("Dog Rely Transformer", func() {
+var _ = Describe("Dog Deny Transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("fetches and transforms a Dog Rely event", func() {
+	It("fetches and transforms a Dog Deny event", func() {
 		blockNumber := int64(12246358)
 
 		dogDenyConfig := event.TransformerConfig{
@@ -46,7 +46,7 @@ var _ = Describe("Dog Rely Transformer", func() {
 
 		initializer := event.ConfiguredTransformer{
 			Config:      dogDenyConfig,
-			Transformer: dog_rely.Transformer{},
+			Transformer: dog_deny.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 
