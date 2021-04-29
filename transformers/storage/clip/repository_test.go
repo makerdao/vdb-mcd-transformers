@@ -1,11 +1,17 @@
 package clip_test
 
 import (
-	"math/rand"
+	"fmt"
+	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
 	"github.com/makerdao/vulcanizedb/pkg/fakes"
@@ -30,7 +36,7 @@ var _ = Describe("Clip storage repository", func() {
 		var insertHeaderErr error
 		fakeHeaderID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
-		diffID = rand.Int63()
+		diffID = test_helpers.CreateFakeDiffRecord(db)
 	})
 
 	Describe("Static Storage Variables", func() {
@@ -40,6 +46,24 @@ var _ = Describe("Clip storage repository", func() {
 			err := repo.Create(diffID, fakeHeaderID, unrecognizedMetadata, "")
 
 			Expect(err).Should(HaveOccurred())
+		})
+
+		Describe("ilk", func() {
+			It("writes a row", func() {
+				ilkMetadata := types.ValueMetadata{Name: storage.Ilk}
+				insertErr := repo.Create(diffID, fakeHeaderID, ilkMetadata, test_helpers.FakeIlk)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				var result test_helpers.VariableRes
+				query := fmt.Sprintf(`SELECT diff_id, header_id, ilk_id AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipIlkTable))
+				getErr := db.Get(&result, query)
+				Expect(getErr).NotTo(HaveOccurred())
+				ilkID, ilkErr := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk, db)
+				Expect(ilkErr).NotTo(HaveOccurred())
+
+				test_helpers.AssertVariable(result, diffID, fakeHeaderID, strconv.FormatInt(ilkID, 10))
+			})
+
 		})
 	})
 })

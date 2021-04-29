@@ -31,6 +31,7 @@ const (
 	CatFileChopLumpDunkTable      = "cat_file_chop_lump_dunk"
 	CatFileFlipTable              = "cat_file_flip"
 	CatFileVowTable               = "cat_file_vow"
+	ClipIlkTable                  = "clip_ilk"
 	ClipKickTable                 = "clip_kick"
 	ClipTakeTable                 = "clip_take"
 	ClipRedoTable                 = "clip_redo"
