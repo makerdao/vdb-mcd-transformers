@@ -40,15 +40,15 @@ var (
 
 	// TODO: Add actual types to vulcanizedb (uint64 and uint192)
 
-	ChipAndTipStorageKey      = common.HexToHash(vdbStorage.IndexTen)
-	chipAndTipTypes			= map[int]types.ValueType{0: types.Uint32, 1: types.Uint48}
-	chipAndTipNames			= map[int]string{0: mcdStorage.Chip, 1: mcdStorage.Tip}
-	ChipAndTipMetadata = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, chipAndTipNames, chipAndTipTypes)
+	ChipAndTipStorageKey = common.HexToHash(vdbStorage.IndexTen)
+	chipAndTipTypes      = map[int]types.ValueType{0: types.Uint32, 1: types.Uint48}
+	chipAndTipNames      = map[int]string{0: mcdStorage.Chip, 1: mcdStorage.Tip}
+	ChipAndTipMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, chipAndTipNames, chipAndTipTypes)
 
 	ChostKey      = common.HexToHash(vdbStorage.IndexEleven)
 	ChostMetadata = types.GetValueMetadata(mcdStorage.Chost, nil, types.Uint256)
 
-	KicksKey  = common.HexToHash(vdbStorage.IndexTwelve)
+	KicksKey      = common.HexToHash(vdbStorage.IndexTwelve)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
 )
 
