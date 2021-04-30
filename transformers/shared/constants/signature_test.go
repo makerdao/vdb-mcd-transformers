@@ -52,19 +52,19 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates clip kick signature", func() {
-		Expect(constants.ClipKickSignature()).To(Equal("0x898eb267e6ff99efebaf458079f659c812f378fe8cf2a33ab4028717672bd021"))
+		Expect(constants.ClipKickSignature()).To(Equal("0x7c5bfdc0a5e8192f6cd4972f382cec69116862fb62e6abff8003874c58e064b8"))
 	})
 
 	It("generates clip take signature", func() {
-		Expect(constants.ClipTakeSignature()).To(Equal("0x81a794cb06a5236e70f12de71cfb43ee851068eee3a0c969cc725d99bc5c4083"))
+		Expect(constants.ClipTakeSignature()).To(Equal("0x05e309fd6ce72f2ab888a20056bb4210df08daed86f21f95053deb19964d86b1"))
 	})
 
 	It("generates clip redo signature", func() {
-		Expect(constants.ClipRedoSignature()).To(Equal("0xd843416d5566a8553374fa6b0a7512971ed4094b86144cd2beecc635a7b1c66a"))
+		Expect(constants.ClipRedoSignature()).To(Equal("0x275de7ecdd375b5e8049319f8b350686131c219dd4dc450a08e9cf83b03c865f"))
 	})
 
 	It("generates clip yank signature", func() {
-		Expect(constants.ClipYankSignature()).To(Equal("0x26e027f1d6e357433803c0a4f750e685500b1e57291dc9f6d0d5ea503eaee1e0"))
+		Expect(constants.ClipYankSignature()).To(Equal("0x2c5d2826eb5903b8fc201cf48094b858f42f61c7eaac9aaf43ebed490138144e"))
 	})
 
 	It("generates deal signature", func() {
@@ -88,27 +88,27 @@ var _ = Describe("Signature constants", func() {
 	})
 
 	It("generates dog file hole signature", func() {
-		Expect(constants.DogFileHoleSignature()).To(Equal("0x29ae81148191011c38566e55c1fa1b7fe8ab9c6a19c80456e157de5a28453916"))
+		Expect(constants.DogFileHoleSignature()).To(Equal("0xe986e40cc8c151830d4f61050f4fb2e4add8567caad2d5f5496f9158e91fe4c7"))
 	})
 
 	It("generates dog file ilk clip signature", func() {
-		Expect(constants.DogFileIlkClipSignature()).To(Equal("0xebecb39d70d49bd1a0cae5d2ec70ed687d58c46e0e6442572ed5ade6a7386c3d"))
+		Expect(constants.DogFileIlkClipSignature()).To(Equal("0x4ff2caaa972a7c6629ea01fae9c93d73cc307d13ea4c369f9bbbb7f9b7e9461d"))
 	})
 
 	It("generates dog file vow signature", func() {
-		Expect(constants.DogFileVowSignature()).To(Equal("0xd4e8be83c1157aa9a898b4b2665e7d31820308d74f3a60999496af58f6e22625"))
+		Expect(constants.DogFileVowSignature()).To(Equal("0x8fef588b5fc1afbf5b2f06c1a435d513f208da2e6704c3d8f0e0ec91167066ba"))
 	})
 
 	It("generates dog deny signature", func() {
-		Expect(constants.DogDenySignature()).To(Equal("0x9c52a7f1fa525c4063d456584f4b5939a57b269dace468175e052aa4c179ce7a"))
+		Expect(constants.DogDenySignature()).To(Equal("0x184450df2e323acec0ed3b5c7531b81f9b4cdef7914dfd4c0a4317416bb5251b"))
 	})
 
 	It("generates dog rely signature", func() {
-		Expect(constants.DogRelySignature()).To(Equal("0x65fae35ed06235c67d3076f28ca18323d5f077aaa8c2b759b78287ec32e69afd"))
+		Expect(constants.DogRelySignature()).To(Equal("0xdd0e34038ac38b2a1ce960229778ac48a8719bc900b6c4f8d0475c6e8b385a60"))
 	})
 
 	It("generates dog file ilk chop hole signature", func() {
-		Expect(constants.DogFileIlkChopHoleSignature()).To(Equal("0x1a0b287e7eb69c42f52dc88cb0bc5f2ecb5122b0b35c2c4b755d0eaf811ae0f8"))
+		Expect(constants.DogFileIlkChopHoleSignature()).To(Equal("0x851aa1caf4888170ad8875449d18f0f512fd6deb2a6571ea1a41fb9f95acbcd1"))
 	})
 
 	It("generates flap kick signature", func() {
