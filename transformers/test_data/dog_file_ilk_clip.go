@@ -47,7 +47,7 @@ var (
 			event.AddressFK,
 			constants.IlkColumn,
 			constants.WhatColumn,
-			constants.ClipColumn,
+			constants.ClipIDColumn,
 		},
 		ColumnValues: event.ColumnValues{
 			event.HeaderFK: DogFileIlkClipEventLog.HeaderID,
@@ -55,7 +55,7 @@ var (
 			//event.AddressFK,
 			//constants.IlkColumn
 			constants.WhatColumn: DogFileIlkClipEventLog.Log.Topics[2].String(),
-			//constants.ClipColumn,
+			//constants.ClipIDColumn,
 		},
 	}
 )
