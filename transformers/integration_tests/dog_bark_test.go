@@ -1,28 +1,26 @@
 package integration_tests
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/fetcher"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 func fetchDogBarkLogsFromChain(config event.TransformerConfig, header core.Header) []core.EventLog {
-	//TODO: when there are real Dog Bark events on chain, use the following code to fetch real events from the chain
+	logFetcher := fetcher.NewLogFetcher(blockChain)
+	logs, err := logFetcher.FetchLogs(
+		[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
+		[]common.Hash{common.HexToHash(config.Topic)},
+		header)
+	Expect(err).NotTo(HaveOccurred())
 
-	//logFetcher := fetcher.NewLogFetcher(blockChain)
-	//logs, err := logFetcher.FetchLogs(
-	//	[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
-	//	[]common.Hash{common.HexToHash(config.Topic)},
-	//	header)
-	//Expect(err).NotTo(HaveOccurred())
-
-	logs := []types.Log{test_data.RawDogBarkLog}
 	return test_data.CreateLogs(header.Id, logs, db)
 }
 
@@ -32,7 +30,7 @@ var _ = Describe("Dog Bark Transformer", func() {
 	})
 
 	It("fetches and transforms a Dog Bark event", func() {
-		blockNumber := int64(1) //TODO: update this when there are Dog Bark events on the chain
+		blockNumber := int64(12317310)
 
 		dogBarkConfig := event.TransformerConfig{
 			TransformerName:     constants.DogBarkTable,
