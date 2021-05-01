@@ -30,7 +30,7 @@ var _ = Describe("Dog File Vow Transformer", func() {
 	})
 
 	XIt("fetches and transforms a Dog File Vow event", func() {
-		blockNumber := int64(1)
+		blockNumber := int64(12316360)
 
 		dogFileVowConfig := event.TransformerConfig{
 			TransformerName:     constants.DogFileVowTable,
