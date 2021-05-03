@@ -29,7 +29,7 @@ var _ = Describe("Dog File Vow Transformer", func() {
 		test_config.CleanTestDB(db)
 	})
 
-	XIt("fetches and transforms a Dog File Vow event", func() {
+	It("fetches and transforms a Dog File Vow event", func() {
 		blockNumber := int64(12316360)
 
 		dogFileVowConfig := event.TransformerConfig{

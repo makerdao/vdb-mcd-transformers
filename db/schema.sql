@@ -8524,7 +8524,7 @@ CREATE TABLE maker.dog_file_vow (
     log_id bigint NOT NULL,
     address_id bigint NOT NULL,
     header_id integer NOT NULL,
-    what bigint,
+    what text,
     data numeric
 );
 
@@ -18777,13 +18777,6 @@ CREATE INDEX dog_file_vow_header_index ON maker.dog_file_vow USING btree (header
 --
 
 CREATE INDEX dog_file_vow_log_index ON maker.dog_file_vow USING btree (log_id);
-
-
---
--- Name: dog_file_vow_what_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX dog_file_vow_what_index ON maker.dog_file_vow USING btree (what);
 
 
 --
