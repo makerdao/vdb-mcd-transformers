@@ -8421,7 +8421,7 @@ CREATE TABLE maker.dog_file_hole (
     address_id bigint NOT NULL,
     header_id integer NOT NULL,
     what text,
-    data bigint
+    data numeric
 );
 
 
