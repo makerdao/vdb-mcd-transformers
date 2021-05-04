@@ -59,7 +59,7 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 			return nil, shared.ErrCouldNotCreateFK(ilkErr)
 		}
 
-		what := hexutil.Encode(dogFileIlkClipEntity.What[:])
+		what := shared.DecodeHexToText(hexutil.Encode(dogFileIlkClipEntity.What[:]))
 
 		clipAddressId, clipAddressErr := repository.GetOrCreateAddress(db, dogFileIlkClipEntity.Clip.Hex())
 		if clipAddressErr != nil {

@@ -51,7 +51,7 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 			return nil, shared.ErrCouldNotCreateFK(addressErr)
 		}
 
-		what := hexutil.Encode(dogFileVowEntity.What[:])
+		what := shared.DecodeHexToText(hexutil.Encode(dogFileVowEntity.What[:]))
 
 		dataAddressId, dataAddressErr := repository.GetOrCreateAddress(db, dogFileVowEntity.Data.Hex())
 		if dataAddressErr != nil {
