@@ -3,7 +3,7 @@ package integration_tests
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_deny"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_digs"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func fetchDogDenyLogsFromChain(config event.TransformerConfig, header core.Header) []core.EventLog {
+func fetchDogDigsLogsFromChain(config event.TransformerConfig, header core.Header) []core.EventLog {
 	logFetcher := fetcher.NewLogFetcher(blockChain)
 	logs, err := logFetcher.FetchLogs(
 		[]common.Address{common.HexToAddress(config.ContractAddresses[0])},
@@ -24,19 +24,19 @@ func fetchDogDenyLogsFromChain(config event.TransformerConfig, header core.Heade
 	return test_data.CreateLogs(header.Id, logs, db)
 }
 
-var _ = Describe("Dog Deny Transformer", func() {
+var _ = Describe("Dog Digs Transformer", func() {
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
 	})
 
-	It("fetches and transforms a Dog Deny event", func() {
-		blockNumber := int64(12246358)
+	It("fetches and transforms a Dog Digs event", func() {
+		blockNumber := int64(12317535)
 
-		dogDenyConfig := event.TransformerConfig{
-			TransformerName:     constants.DogDenyTable,
+		DogDigsConfig := event.TransformerConfig{
+			TransformerName:     constants.DogDigsTable,
 			ContractAddresses:   []string{test_data.Dog130Address()},
 			ContractAbi:         constants.DogABI(),
-			Topic:               constants.DogDenySignature(),
+			Topic:               constants.DogDigsSignature(),
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
 		}
@@ -45,12 +45,12 @@ var _ = Describe("Dog Deny Transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		initializer := event.ConfiguredTransformer{
-			Config:      dogDenyConfig,
-			Transformer: dog_deny.Transformer{},
+			Config:      DogDigsConfig,
+			Transformer: dog_digs.Transformer{},
 		}
 		transformer := initializer.NewTransformer(db)
 
-		eventLogs := fetchDogDenyLogsFromChain(dogDenyConfig, header)
+		eventLogs := fetchDogDigsLogsFromChain(DogDigsConfig, header)
 
 		err = transformer.Execute(eventLogs)
 		Expect(err).NotTo(HaveOccurred())

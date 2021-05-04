@@ -75,15 +75,15 @@ func (t Transformer) ToModels(contractAbi string, logs []core.EventLog, db *post
 				event.AddressFK,
 				constants.IlkColumn,
 				constants.WhatColumn,
-				constants.ClipColumn,
+				constants.ClipIDColumn,
 			},
 			ColumnValues: event.ColumnValues{
-				event.HeaderFK:       dogFileIlkClipEntity.HeaderID,
-				event.LogFK:          dogFileIlkClipEntity.LogID,
-				event.AddressFK:      addressId,
-				constants.IlkColumn:  ilkId,
-				constants.WhatColumn: what,
-				constants.ClipColumn: clipAddressId,
+				event.HeaderFK:         dogFileIlkClipEntity.HeaderID,
+				event.LogFK:            dogFileIlkClipEntity.LogID,
+				event.AddressFK:        addressId,
+				constants.IlkColumn:    ilkId,
+				constants.WhatColumn:   what,
+				constants.ClipIDColumn: clipAddressId,
 			},
 		}
 		models = append(models, model)
