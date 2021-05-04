@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"math/rand"
@@ -54,7 +55,7 @@ var (
 			event.LogFK:    DogFileIlkClipEventLog.ID,
 			//event.AddressFK,
 			//constants.IlkColumn
-			constants.WhatColumn: DogFileIlkClipEventLog.Log.Topics[2].String(),
+			constants.WhatColumn: shared.DecodeHexToText(DogFileIlkClipEventLog.Log.Topics[2].Hex()),
 			//constants.ClipIDColumn,
 		},
 	}
