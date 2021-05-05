@@ -7,9 +7,27 @@ import (
 
 // This file contains "shortcuts" to some configuration values useful for testing
 
-func Cat100Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_0_0")) }
-func Cat110Address() string   { return checksum(constants.GetContractAddress("MCD_CAT_1_1_0")) }
-func Clip130Address() string  { return checksum(constants.GetContractAddress("MCD_CLIP_LINK_A_1_3_0")) }
+func Cat100Address() string { return checksum(constants.GetContractAddress("MCD_CAT_1_0_0")) }
+func Cat110Address() string { return checksum(constants.GetContractAddress("MCD_CAT_1_1_0")) }
+func ClipLinkAV130Address() string {
+	return checksum(constants.GetContractAddress("MCD_CLIP_LINK_A_1_3_0"))
+}
+func Clip130Addresses() []string {
+	var addressesResult []string
+	clipAddresses := constants.GetContractAddresses([]string{
+		"MCD_CLIP_LINK_A_1_3_0",
+		"MCD_CLIP_ETH_A_1_5_0",
+		"MCD_CLIP_ETH_B_1_5_0",
+		"MCD_CLIP_ETH_C_1_5_0",
+		"MCD_CLIP_WBTC_A_1_5_0",
+		"MCD_CLIP_YFI_A_1_5_0",
+	})
+
+	for _, address := range clipAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+}
 func Dog130Address() string   { return checksum(constants.GetContractAddress("MCD_DOG_1_3_0")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_0")) }
 func FlapV109Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_9")) }

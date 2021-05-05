@@ -20,7 +20,7 @@ var (
 )
 
 var rawClipTakeLog = types.Log{
-	Address: common.HexToAddress(Clip130Address()),
+	Address: common.HexToAddress(ClipLinkAV130Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.ClipTakeSignature()),
 		common.HexToHash("0x000000000000000000000000000000000000000000000000000000000012D687"), //id
