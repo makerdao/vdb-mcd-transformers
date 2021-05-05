@@ -36,8 +36,8 @@ var _ = Describe("Clip Redo Transformer", func() {
 
 		clipRedoConfig := event.TransformerConfig{
 			TransformerName:     constants.ClipRedoTable,
-			ContractAddresses:   []string{test_data.Clip130Address()},
-			ContractAbi:         constants.ClipABI(),
+			ContractAddresses:   []string{test_data.ClipLinkAV130Address()},
+			ContractAbi:         constants.ClipV150ABI(),
 			Topic:               constants.ClipRedoSignature(),
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

@@ -34,8 +34,8 @@ var _ = Describe("Clip Kick Transformer", func() {
 
 		clipKickConfig := event.TransformerConfig{
 			TransformerName:     constants.ClipKickTable,
-			ContractAddresses:   []string{test_data.Clip130Address()},
-			ContractAbi:         constants.ClipABI(),
+			ContractAddresses:   []string{test_data.ClipLinkAV130Address()},
+			ContractAbi:         constants.ClipV150ABI(),
 			Topic:               constants.ClipKickSignature(),
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,

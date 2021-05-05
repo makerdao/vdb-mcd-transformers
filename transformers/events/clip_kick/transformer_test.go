@@ -23,7 +23,7 @@ var _ = Describe("ClipKick transformer", func() {
 	})
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.ClipABI(), []core.EventLog{test_data.ClipKickEventLog}, db)
+		models, err := transformer.ToModels(constants.ClipV150ABI(), []core.EventLog{test_data.ClipKickEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.ClipKickModel()
 		test_data.AssignAddressID(test_data.ClipKickEventLog, expectedModel, db)

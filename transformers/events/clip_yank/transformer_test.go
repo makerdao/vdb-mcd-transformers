@@ -23,7 +23,7 @@ var _ = Describe("ClipYank transformer", func() {
 	})
 
 	It("converts a log to a Model", func() {
-		models, err := transformer.ToModels(constants.ClipABI(), []core.EventLog{test_data.ClipYankEventLog}, db)
+		models, err := transformer.ToModels(constants.ClipV150ABI(), []core.EventLog{test_data.ClipYankEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.ClipYankModel()
 		test_data.AssignAddressID(test_data.ClipYankEventLog, expectedModel, db)
