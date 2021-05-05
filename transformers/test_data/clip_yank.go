@@ -16,7 +16,7 @@ import (
 var saleID = big.NewInt(456)
 
 var RawClipYankLog = types.Log{
-	Address: common.HexToAddress(Clip130Address()),
+	Address: common.HexToAddress(ClipLinkAV130Address()),
 	Topics: []common.Hash{
 		common.HexToHash(constants.ClipYankSignature()),
 	},

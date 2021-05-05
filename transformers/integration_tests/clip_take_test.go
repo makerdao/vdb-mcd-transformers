@@ -34,8 +34,8 @@ var _ = Describe("Clip Take Transformer", func() {
 
 		clipTakeConfig := event.TransformerConfig{
 			TransformerName:     constants.ClipTakeTable,
-			ContractAddresses:   []string{test_data.Clip130Address()},
-			ContractAbi:         constants.ClipABI(),
+			ContractAddresses:   []string{test_data.ClipLinkAV130Address()},
+			ContractAbi:         constants.ClipV150ABI(),
 			Topic:               constants.ClipTakeSignature(),
 			StartingBlockNumber: blockNumber,
 			EndingBlockNumber:   blockNumber,
