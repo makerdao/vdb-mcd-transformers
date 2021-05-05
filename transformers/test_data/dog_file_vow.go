@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"math/rand"
@@ -52,7 +53,7 @@ var (
 			event.HeaderFK: DogFileVowEventLog.HeaderID,
 			event.LogFK:    DogFileVowEventLog.ID,
 			//event.AddressFK,
-			constants.WhatColumn: DogFileVowEventLog.Log.Topics[1].String(),
+			constants.WhatColumn: shared.DecodeHexToText(DogFileVowEventLog.Log.Topics[1].Hex()),
 			//constants.DataColumn,
 		},
 	}
