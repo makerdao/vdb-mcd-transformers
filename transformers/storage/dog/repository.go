@@ -2,6 +2,8 @@ package dog
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -15,6 +17,13 @@ const (
 	Live = "live"
 	Vat  = "vat"
 	Vow  = "vow"
+
+	IlkClip = "clip"
+	IlkChop = "chop"
+	IlkHole = "hole"
+	IlkDirt = "dirt"
+
+	InsertDogIlkClipQuery = `INSERT INTO maker.dog_ilk_clip (diff_id, header_id, address_id, ilk_id, clip) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 
 	insertDogDirtQuery = `INSERT INTO maker.dog_dirt (diff_id, header_id, address_id, dirt) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertDogHoleQuery = `INSERT INTO maker.dog_hole (diff_id, header_id, address_id, hole) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -43,6 +52,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertVow(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
+	case IlkClip:
+		return repo.insertIlkClip(diffID, headerID, metadata, value.(string))
 	default:
 		return fmt.Errorf("unrecognized dog contract storage name: %s", metadata.Name)
 	}
@@ -127,6 +138,23 @@ func (repo *StorageRepository) insertVow(diffID, headerID int64, vow string) err
 	return nil
 }
 
+func (repo *StorageRepository) insertIlkClip(diffID, headerID int64, metadata types.ValueMetadata, clip string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting ilk for ilk flip: %w", err)
+	}
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkClip, InsertDogIlkClipQuery, clip, repo.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s clip %s from diff ID %d: %w", insertErr, clip, diffID, insertErr)
+	}
+	return nil
+}
+
 func (repo *StorageRepository) ContractAddressID() (int64, error) {
 	if repo.contractAddressID == 0 {
 		addressID, addressErr := repository.GetOrCreateAddress(repo.db, repo.ContractAddress)
@@ -134,4 +162,12 @@ func (repo *StorageRepository) ContractAddressID() (int64, error) {
 		return repo.contractAddressID, addressErr
 	}
 	return repo.contractAddressID, nil
+}
+
+func getIlk(keys map[types.Key]string) (string, error) {
+	ilk, ok := keys[constants.Ilk]
+	if !ok {
+		return "", types.ErrMetadataMalformed{MissingData: constants.Ilk}
+	}
+	return ilk, nil
 }
