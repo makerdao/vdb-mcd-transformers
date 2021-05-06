@@ -57,6 +57,43 @@ var _ = Describe("Dog storage keys loader", func() {
 		})
 	})
 
+	Describe("ilks", func() {
+		Describe("when getting ilks fails", func() {
+			It("returns error", func() {
+				storageRepository.GetIlksError = fakes.FakeError
+
+				_, err := storageKeysLoader.LoadMappings()
+
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(fakes.FakeError))
+			})
+		})
+
+		Describe("when getting ilks succeeds", func() {
+			var (
+				ilkClipKey = common.BytesToHash(crypto.Keccak256(common.FromHex(test_helpers.FakeIlk + dog.IlksMappingIndex)))
+				mappings   map[common.Hash]types.ValueMetadata
+			)
+
+			BeforeEach(func() {
+				storageRepository.Ilks = []string{test_helpers.FakeIlk}
+				var err error
+				mappings, err = storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns value metadata for ilk clip", func() {
+				expectedMetadata := types.ValueMetadata{
+					Name: dog.IlkClip,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Address,
+				}
+
+				Expect(mappings[ilkClipKey]).To(Equal(expectedMetadata))
+			})
+		})
+	})
+
 	It("returns storage value metadata for static keys", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 		Expect(err).NotTo(HaveOccurred())
