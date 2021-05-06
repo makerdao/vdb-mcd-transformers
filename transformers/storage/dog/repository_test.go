@@ -2,12 +2,15 @@ package dog_test
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
+
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	mcdShared "github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
-	"math/rand"
-	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
@@ -247,6 +250,35 @@ var _ = Describe("Dog storage repository", func() {
 
 			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
 			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
+		})
+	})
+
+	Describe("Ilks", func() {
+		BeforeEach(func() {
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Address{}, common.Hash{}, common.Hash{})
+			storageDiffRepo := storage.NewDiffRepository(db)
+			var insertDiffErr error
+			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
+			Expect(insertDiffErr).NotTo(HaveOccurred())
+		})
+
+		Describe("Clip", func() {
+			It("writes a row", func() {
+				ilkClipMetadata := types.GetValueMetadata(dog.IlkClip, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Address)
+
+				err := repo.Create(diffID, fakeHeaderID, ilkClipMetadata, fakeAddress)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, ilk_id AS key, clip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.DogIlkClipTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(ilkID, 10), fakeAddress)
+			})
 		})
 	})
 })

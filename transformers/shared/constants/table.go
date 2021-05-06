@@ -125,6 +125,7 @@ const (
 	CdpManagerVatTable      = "cdp_manager_vat"
 	DogDirtTable            = "dog_dirt"
 	DogHoleTable            = "dog_hole"
+	DogIlkClipTable         = "dog_ilk_clip"
 	DogLiveTable            = "dog_live"
 	DogVatTable             = "dog_vat"
 	DogVowTable             = "dog_vow"
