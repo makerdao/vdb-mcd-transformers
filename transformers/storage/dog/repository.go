@@ -2,6 +2,7 @@ package dog
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -40,8 +41,10 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertVat(diffID, headerID, value.(string))
 	case Vow:
 		return repo.insertVow(diffID, headerID, value.(string))
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
-		return fmt.Errorf("unrecognized cat contract storage name: %s", metadata.Name)
+		return fmt.Errorf("unrecognized dog contract storage name: %s", metadata.Name)
 	}
 }
 

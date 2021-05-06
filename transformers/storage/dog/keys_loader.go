@@ -1,8 +1,10 @@
 package dog
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -43,11 +45,17 @@ func (loader *keysLoader) SetDB(db *postgres.DB) {
 	loader.storageRepository.SetDB(db)
 }
 
-func (keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
-	return loadStaticKeys(), nil
+func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, error) {
+	mappings := loadStaticMappings()
+	mappings, wardsErr := addWardsKeys(mappings, loader.contractAddress, loader.storageRepository)
+	if wardsErr != nil {
+		return nil, fmt.Errorf("error adding wards keys to cat keys loader: %w", wardsErr)
+	}
+
+	return mappings, nil
 }
 
-func loadStaticKeys() map[common.Hash]types.ValueMetadata {
+func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings := make(map[common.Hash]types.ValueMetadata)
 	mappings[VatStorageKey] = VatMetadata
 	mappings[VowStorageKey] = VowMetadata
@@ -55,4 +63,12 @@ func loadStaticKeys() map[common.Hash]types.ValueMetadata {
 	mappings[HoleStorageKey] = HoleMetadata
 	mappings[DirtStorageKey] = DirtMetadata
 	return mappings
+}
+
+func addWardsKeys(mappings map[common.Hash]types.ValueMetadata, address string, repository mcdStorage.IMakerStorageRepository) (map[common.Hash]types.ValueMetadata, error) {
+	addresses, err := repository.GetWardsAddresses(address)
+	if err != nil {
+		return nil, fmt.Errorf("error getting wards addresses: %w", err)
+	}
+	return wards.AddWardsKeys(mappings, addresses)
 }

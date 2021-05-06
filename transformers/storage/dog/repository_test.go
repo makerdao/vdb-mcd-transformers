@@ -2,13 +2,17 @@ package dog_test
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
+	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"math/rand"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
+	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -108,7 +112,7 @@ var _ = Describe("Dog storage repository", func() {
 				headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 				Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-				diffID = test_helpers.CreateFakeDiffRecord(db)
+				diffID = CreateFakeDiffRecord(db)
 			})
 
 			It("persists a record", func() {
@@ -122,12 +126,12 @@ var _ = Describe("Dog storage repository", func() {
 				Expect(vatAddressErr).NotTo(HaveOccurred())
 				vatAddressIDString := strconv.FormatInt(vatAddressID, 10)
 
-				var result test_helpers.VariableResWithAddress
+				var result VariableResWithAddress
 				query := fmt.Sprintf("SELECT diff_id, header_id, address_id, %s AS value FROM %s", "vat", "maker.dog_vat")
 				err = db.Get(&result, query)
 				Expect(err).NotTo(HaveOccurred())
 
-				test_helpers.AssertVariableWithAddress(result, diffID, headerID, contractAddressID, vatAddressIDString)
+				AssertVariableWithAddress(result, diffID, headerID, contractAddressID, vatAddressIDString)
 			})
 
 			It("doesn't duplicate a record", func() {
@@ -158,7 +162,7 @@ var _ = Describe("Dog storage repository", func() {
 			headerID, insertHeaderErr = headerRepository.CreateOrUpdateHeader(fakes.FakeHeader)
 			Expect(insertHeaderErr).NotTo(HaveOccurred())
 
-			diffID = test_helpers.CreateFakeDiffRecord(db)
+			diffID = CreateFakeDiffRecord(db)
 		})
 
 		It("persists a record", func() {
@@ -172,12 +176,12 @@ var _ = Describe("Dog storage repository", func() {
 			Expect(vowAddressErr).NotTo(HaveOccurred())
 			vatAddressIDString := strconv.FormatInt(vowAddressID, 10)
 
-			var result test_helpers.VariableResWithAddress
+			var result VariableResWithAddress
 			query := fmt.Sprintf("SELECT diff_id, header_id, address_id, %s AS value FROM %s", "vow", "maker.dog_vow")
 			err = db.Get(&result, query)
 			Expect(err).NotTo(HaveOccurred())
 
-			test_helpers.AssertVariableWithAddress(result, diffID, headerID, contractAddressID, vatAddressIDString)
+			AssertVariableWithAddress(result, diffID, headerID, contractAddressID, vatAddressIDString)
 		})
 
 		It("doesn't duplicate a record", func() {
@@ -192,6 +196,57 @@ var _ = Describe("Dog storage repository", func() {
 			countErr := db.Get(&count, query)
 			Expect(countErr).NotTo(HaveOccurred())
 			Expect(count).To(Equal(1))
+		})
+	})
+
+	Describe("Wards mapping", func() {
+		BeforeEach(func() {
+			fakeRawDiff := GetFakeStorageDiffForHeader(fakes.FakeHeader, common.Address{}, common.Hash{}, common.Hash{})
+			storageDiffRepo := storage.NewDiffRepository(db)
+			var insertDiffErr error
+			diffID, insertDiffErr = storageDiffRepo.CreateStorageDiff(fakeRawDiff)
+			Expect(insertDiffErr).NotTo(HaveOccurred())
+		})
+
+		It("writes a row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
+
+			setupErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(setupErr).NotTo(HaveOccurred())
+
+			var result MappingResWithAddress
+			query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, usr AS key, wards AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			err := db.Get(&result, query)
+			Expect(err).NotTo(HaveOccurred())
+			contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+			Expect(contractAddressErr).NotTo(HaveOccurred())
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, fakeUserAddress)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+			AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(userAddressID, 10), fakeUint256)
+		})
+
+		It("does not duplicate row", func() {
+			fakeUserAddress := "0x" + fakes.RandomString(40)
+			wardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{constants.User: fakeUserAddress}, types.Uint256)
+			insertOneErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+			Expect(insertOneErr).NotTo(HaveOccurred())
+
+			insertTwoErr := repo.Create(diffID, fakeHeaderID, wardsMetadata, fakeUint256)
+
+			Expect(insertTwoErr).NotTo(HaveOccurred())
+			var count int
+			query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.WardsTable))
+			getCountErr := db.Get(&count, query)
+			Expect(getCountErr).NotTo(HaveOccurred())
+			Expect(count).To(Equal(1))
+		})
+
+		It("returns an error if metadata missing user", func() {
+			malformedWardsMetadata := types.GetValueMetadata(wards.Wards, map[types.Key]string{}, types.Uint256)
+
+			err := repo.Create(diffID, fakeHeaderID, malformedWardsMetadata, fakeUint256)
+			Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.User}))
 		})
 	})
 })
