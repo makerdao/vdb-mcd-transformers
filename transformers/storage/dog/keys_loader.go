@@ -87,6 +87,7 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]types.ValueMetadat
 	}
 	for _, ilk := range ilks {
 		mappings[GetIlkClipKey(ilk)] = GetIlkClipMetadata(ilk)
+		mappings[GetIlkChopKey(ilk)] = GetIlkChopMetadata(ilk)
 	}
 	return mappings, nil
 }
@@ -98,4 +99,13 @@ func GetIlkClipKey(ilk string) common.Hash {
 func GetIlkClipMetadata(ilk string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.Ilk: ilk}
 	return types.GetValueMetadata(IlkClip, keys, types.Address)
+}
+
+func GetIlkChopKey(ilk string) common.Hash {
+	return vdbStorage.GetIncrementedKey(GetIlkClipKey(ilk), 1)
+}
+
+func GetIlkChopMetadata(ilk string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.Ilk: ilk}
+	return types.GetValueMetadata(IlkChop, keys, types.Uint256)
 }
