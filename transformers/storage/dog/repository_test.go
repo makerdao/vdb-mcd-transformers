@@ -279,6 +279,81 @@ var _ = Describe("Dog storage repository", func() {
 				Expect(contractAddressErr).NotTo(HaveOccurred())
 				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(ilkID, 10), fakeAddress)
 			})
+
+			It("does not duplicate row", func() {
+				ilkClipMetadata := types.GetValueMetadata(dog.IlkClip, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkClipMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkClipMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.DogIlkClipTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing ilk", func() {
+				malformedIlkClipMetadata := types.GetValueMetadata(dog.IlkClip, map[types.Key]string{}, types.Address)
+
+				err := repo.Create(diffID, fakeHeaderID, malformedIlkClipMetadata, fakeAddress)
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.Ilk}))
+			})
+			//TODO: Add trigger table tests when refactoring snapshots
+			//shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
+			//	Repository:    &repo,
+			//	Metadata:      types.GetValueMetadata(dog.IlkClip, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Address),
+			//	PropertyName:  "Clip",
+			//	PropertyValue: fakeAddress,
+			//	Schema:        constants.MakerSchema,
+			//	TableName:     constants.DogIlkClipTable,
+			//})
+		})
+
+		Describe("Chop", func() {
+			It("writes a row", func() {
+				ilkChopMetadata := types.GetValueMetadata(dog.IlkChop, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, ilkChopMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, ilk_id AS key, chop AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.DogIlkChopTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(ilkID, 10), fakeUint256)
+			})
+
+			It("does not duplicate row", func() {
+				ilkChopMetadata := types.GetValueMetadata(dog.IlkChop, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, ilkChopMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, ilkChopMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.DogIlkChopTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			//TODO: Add trigger table tests when refactoring snapshots
+			//shared_behaviors.SharedIlkTriggerTests(shared_behaviors.IlkTriggerTestInput{
+			//	Repository:    &repo,
+			//	Metadata:      types.GetValueMetadata(dog.IlkChop, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256),
+			//	PropertyName:  "Chop",
+			//	PropertyValue: fakeAddress,
+			//	Schema:        constants.MakerSchema,
+			//	TableName:     constants.DogIlkChopTable,
+			//})
 		})
 	})
 })
