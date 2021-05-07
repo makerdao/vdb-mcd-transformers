@@ -25,6 +25,7 @@ const (
 
 	InsertDogIlkClipQuery = `INSERT INTO maker.dog_ilk_clip (diff_id, header_id, address_id, ilk_id, clip) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertDogIlkChopQuery = `INSERT INTO maker.dog_ilk_chop (diff_id, header_id, address_id, ilk_id, chop) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertDogIlkHoleQuery = `INSERT INTO maker.dog_ilk_hole (diff_id, header_id, address_id, ilk_id, hole) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 
 	insertDogDirtQuery = `INSERT INTO maker.dog_dirt (diff_id, header_id, address_id, dirt) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertDogHoleQuery = `INSERT INTO maker.dog_hole (diff_id, header_id, address_id, hole) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -57,6 +58,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertIlkClip(diffID, headerID, metadata, value.(string))
 	case IlkChop:
 		return repo.insertIlkChop(diffID, headerID, metadata, value.(string))
+	case IlkHole:
+		return repo.insertIlkHole(diffID, headerID, metadata, value.(string))
 	default:
 		return fmt.Errorf("unrecognized dog contract storage name: %s", metadata.Name)
 	}
@@ -136,7 +139,7 @@ func (repo *StorageRepository) insertVow(diffID, headerID int64, vow string) err
 
 	_, err := repo.db.Exec(insertDogVowQuery, diffID, headerID, addressID, vowAddressID)
 	if err != nil {
-		return fmt.Errorf("error inserting dog vat %s from diff ID %d: %w", vow, diffID, err)
+		return fmt.Errorf("error inserting dog vow %s from diff ID %d: %w", vow, diffID, err)
 	}
 	return nil
 }
@@ -149,7 +152,7 @@ func (repo *StorageRepository) insertIlkClip(diffID, headerID int64, metadata ty
 
 	ilk, err := getIlk(metadata.Keys)
 	if err != nil {
-		return fmt.Errorf("error getting ilk for ilk flip: %w", err)
+		return fmt.Errorf("error getting ilk for ilk clip: %w", err)
 	}
 	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkClip, InsertDogIlkClipQuery, clip, repo.db)
 	if insertErr != nil {
@@ -171,6 +174,23 @@ func (repo *StorageRepository) insertIlkChop(diffID, headerID int64, metadata ty
 	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkChop, InsertDogIlkChopQuery, chop, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s chop %s from diff ID %d: %w", insertErr, chop, diffID, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertIlkHole(diffID, headerID int64, metadata types.ValueMetadata, hole string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting ilk for ilk hole: %w", err)
+	}
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkHole, InsertDogIlkHoleQuery, hole, repo.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s hole %s from diff ID %d: %w", insertErr, hole, diffID, insertErr)
 	}
 	return nil
 }
