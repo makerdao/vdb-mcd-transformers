@@ -88,6 +88,8 @@ func (loader *keysLoader) addIlkKeys(mappings map[common.Hash]types.ValueMetadat
 	for _, ilk := range ilks {
 		mappings[GetIlkClipKey(ilk)] = GetIlkClipMetadata(ilk)
 		mappings[GetIlkChopKey(ilk)] = GetIlkChopMetadata(ilk)
+		mappings[GetIlkHoleKey(ilk)] = GetIlkHoleMetadata(ilk)
+		mappings[GetIlkDirtKey(ilk)] = GetIlkDirtMetadata(ilk)
 	}
 	return mappings, nil
 }
@@ -108,4 +110,22 @@ func GetIlkChopKey(ilk string) common.Hash {
 func GetIlkChopMetadata(ilk string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.Ilk: ilk}
 	return types.GetValueMetadata(IlkChop, keys, types.Uint256)
+}
+
+func GetIlkHoleKey(ilk string) common.Hash {
+	return vdbStorage.GetIncrementedKey(GetIlkClipKey(ilk), 2)
+}
+
+func GetIlkHoleMetadata(ilk string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.Ilk: ilk}
+	return types.GetValueMetadata(IlkHole, keys, types.Uint256)
+}
+
+func GetIlkDirtKey(ilk string) common.Hash {
+	return vdbStorage.GetIncrementedKey(GetIlkClipKey(ilk), 3)
+}
+
+func GetIlkDirtMetadata(ilk string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.Ilk: ilk}
+	return types.GetValueMetadata(IlkDirt, keys, types.Uint256)
 }

@@ -103,6 +103,28 @@ var _ = Describe("Dog storage keys loader", func() {
 
 				Expect(mappings[ilkChopKey]).To(Equal(expectedMetadata))
 			})
+
+			It("returns value metadata for ilk hole", func() {
+				ilkHoleKey := vdbStorage.GetIncrementedKey(ilkClipKey, 2)
+				expectedMetadata := types.ValueMetadata{
+					Name: dog.IlkHole,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Uint256,
+				}
+
+				Expect(mappings[ilkHoleKey]).To(Equal(expectedMetadata))
+			})
+
+			It("returns value metadata for ilk dirt", func() {
+				ilkDirtKey := vdbStorage.GetIncrementedKey(ilkClipKey, 3)
+				expectedMetadata := types.ValueMetadata{
+					Name: dog.IlkDirt,
+					Keys: map[types.Key]string{constants.Ilk: test_helpers.FakeIlk},
+					Type: types.Uint256,
+				}
+
+				Expect(mappings[ilkDirtKey]).To(Equal(expectedMetadata))
+			})
 		})
 	})
 

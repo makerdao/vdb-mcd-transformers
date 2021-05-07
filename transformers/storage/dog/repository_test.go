@@ -355,5 +355,23 @@ var _ = Describe("Dog storage repository", func() {
 			//	TableName:     constants.DogIlkChopTable,
 			//})
 		})
+		Describe("Hole", func() {
+			It("writes a row", func() {
+				ilkHoleMetadata := types.GetValueMetadata(dog.IlkHole, map[types.Key]string{constants.Ilk: test_helpers.FakeIlk.Hex}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, ilkHoleMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, ilk_id AS key, hole AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.DogIlkHoleTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				ilkID, err := mcdShared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, strconv.FormatInt(ilkID, 10), fakeUint256)
+			})
+		})
 	})
 })
