@@ -26,6 +26,7 @@ const (
 	InsertDogIlkClipQuery = `INSERT INTO maker.dog_ilk_clip (diff_id, header_id, address_id, ilk_id, clip) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertDogIlkChopQuery = `INSERT INTO maker.dog_ilk_chop (diff_id, header_id, address_id, ilk_id, chop) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	InsertDogIlkHoleQuery = `INSERT INTO maker.dog_ilk_hole (diff_id, header_id, address_id, ilk_id, hole) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	InsertDogIlkDirtQuery = `INSERT INTO maker.dog_ilk_dirt (diff_id, header_id, address_id, ilk_id, dirt) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 
 	insertDogDirtQuery = `INSERT INTO maker.dog_dirt (diff_id, header_id, address_id, dirt) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertDogHoleQuery = `INSERT INTO maker.dog_hole (diff_id, header_id, address_id, hole) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -60,6 +61,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertIlkChop(diffID, headerID, metadata, value.(string))
 	case IlkHole:
 		return repo.insertIlkHole(diffID, headerID, metadata, value.(string))
+	case IlkDirt:
+		return repo.insertIlkDirt(diffID, headerID, metadata, value.(string))
 	default:
 		return fmt.Errorf("unrecognized dog contract storage name: %s", metadata.Name)
 	}
@@ -191,6 +194,23 @@ func (repo *StorageRepository) insertIlkHole(diffID, headerID int64, metadata ty
 	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkHole, InsertDogIlkHoleQuery, hole, repo.db)
 	if insertErr != nil {
 		return fmt.Errorf("error inserting ilk %s hole %s from diff ID %d: %w", insertErr, hole, diffID, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertIlkDirt(diffID, headerID int64, metadata types.ValueMetadata, dirt string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	ilk, err := getIlk(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting ilk for ilk dirt: %w", err)
+	}
+	insertErr := shared.InsertFieldWithIlkAndAddress(diffID, headerID, addressID, ilk, IlkDirt, InsertDogIlkDirtQuery, dirt, repo.db)
+	if insertErr != nil {
+		return fmt.Errorf("error inserting ilk %s dirt %s from diff ID %d: %w", insertErr, dirt, diffID, insertErr)
 	}
 	return nil
 }

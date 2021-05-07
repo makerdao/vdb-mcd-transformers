@@ -127,6 +127,7 @@ const (
 	DogHoleTable            = "dog_hole"
 	DogIlkChopTable         = "dog_ilk_chop"
 	DogIlkClipTable         = "dog_ilk_clip"
+	DogIlkDirtTable         = "dog_ilk_dirt"
 	DogIlkHoleTable         = "dog_ilk_hole"
 	DogLiveTable            = "dog_live"
 	DogVatTable             = "dog_vat"
