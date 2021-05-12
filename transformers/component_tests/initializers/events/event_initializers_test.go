@@ -11,8 +11,20 @@ import (
 	cat_file_chop_lump_dunk "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/chop_lump_dunk/initializer"
 	cat_file_flip "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/flip/initializer"
 	cat_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/cat_file/vow/initializer"
+	clip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_kick/initializer"
+	clip_redo "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_redo/initializer"
+	clip_take "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_take/initializer"
+	clip_yank "github.com/makerdao/vdb-mcd-transformers/transformers/events/clip_yank/initializer"
 	deal "github.com/makerdao/vdb-mcd-transformers/transformers/events/deal/initializer"
 	dent "github.com/makerdao/vdb-mcd-transformers/transformers/events/dent/initializer"
+	dog_bark "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_bark/initializer"
+	dog_deny "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_deny/initializer"
+	dog_digs "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_digs/initializer"
+	dog_file_hole "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/hole/initializer"
+	dog_file_ilk_chop_hole "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_chop_hole/initializer"
+	dog_file_ilk_clip "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/ilk_clip/initializer"
+	dog_file_vow "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_file/vow/initializer"
+	dog_rely "github.com/makerdao/vdb-mcd-transformers/transformers/events/dog_rely/initializer"
 	flap_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flap_kick/initializer"
 	flip_file_cat "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_file/cat/initializer"
 	flip_kick "github.com/makerdao/vdb-mcd-transformers/transformers/events/flip_kick/initializer"
@@ -126,6 +138,34 @@ var _ = Describe("Event transformer initializers", func() {
 		assertCorrectInit(transformer, name, topic, 8928165, catContracts())
 	})
 
+	It("configures clip kick", func() {
+		transformer := clip_kick.EventTransformerInitializer(db)
+		name := "clip_kick"
+		topic := "0x7c5bfdc0a5e8192f6cd4972f382cec69116862fb62e6abff8003874c58e064b8"
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
+	})
+
+	It("configures clip take", func() {
+		transformer := clip_take.EventTransformerInitializer(db)
+		name := "clip_take"
+		topic := "0x05e309fd6ce72f2ab888a20056bb4210df08daed86f21f95053deb19964d86b1"
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
+	})
+
+	It("configures clip redo", func() {
+		transformer := clip_redo.EventTransformerInitializer(db)
+		name := "clip_redo"
+		topic := "0x275de7ecdd375b5e8049319f8b350686131c219dd4dc450a08e9cf83b03c865f"
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
+	})
+
+	It("configures clip yank", func() {
+		transformer := clip_yank.EventTransformerInitializer(db)
+		name := "clip_yank"
+		topic := "0x2c5d2826eb5903b8fc201cf48094b858f42f61c7eaac9aaf43ebed490138144e"
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
+	})
+
 	It("configures deal", func() {
 		transformer := deal.EventTransformerInitializer(db)
 		topic := "0xc959c42b00000000000000000000000000000000000000000000000000000000"
@@ -143,6 +183,62 @@ var _ = Describe("Event transformer initializers", func() {
 		topic := "0x5ff3a38200000000000000000000000000000000000000000000000000000000"
 		addresses := append(flipContracts(), flopContracts()...)
 		assertCorrectInit(transformer, "dent", topic, 8928180, addresses)
+	})
+
+	It("configures dog bark", func() {
+		transformer := dog_bark.EventTransformerInitializer(db)
+		topic := "0x85258d09e1e4ef299ff3fc11e74af99563f022d21f3f940db982229dc2a3358c"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_bark", topic, 12246358, addresses)
+	})
+
+	It("configures dog deny", func() {
+		transformer := dog_deny.EventTransformerInitializer(db)
+		topic := "0x184450df2e323acec0ed3b5c7531b81f9b4cdef7914dfd4c0a4317416bb5251b"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_deny", topic, 12246358, addresses)
+	})
+
+	It("configures dog dig", func() {
+		transformer := dog_digs.EventTransformerInitializer(db)
+		topic := "0x54f095dc7308776bf01e8580e4dd40fd959ea4bf50b069975768320ef8d77d8a"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_digs", topic, 12246358, addresses)
+	})
+
+	It("configures dog_file_ilk_clip", func() {
+		transformer := dog_file_ilk_clip.EventTransformerInitializer(db)
+		topic := "0x4ff2caaa972a7c6629ea01fae9c93d73cc307d13ea4c369f9bbbb7f9b7e9461d"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_file_ilk_clip", topic, 12246358, addresses)
+	})
+
+	It("configures dog_file_vow", func() {
+		transformer := dog_file_vow.EventTransformerInitializer(db)
+		topic := "0x8fef588b5fc1afbf5b2f06c1a435d513f208da2e6704c3d8f0e0ec91167066ba"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_file_vow", topic, 12246358, addresses)
+	})
+
+	It("configures dog_file_hole", func() {
+		transformer := dog_file_hole.EventTransformerInitializer(db)
+		topic := "0xe986e40cc8c151830d4f61050f4fb2e4add8567caad2d5f5496f9158e91fe4c7"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_file_hole", topic, 12246358, addresses)
+	})
+
+	It("configures dog rely", func() {
+		transformer := dog_rely.EventTransformerInitializer(db)
+		topic := "0xdd0e34038ac38b2a1ce960229778ac48a8719bc900b6c4f8d0475c6e8b385a60"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_rely", topic, 12246358, addresses)
+	})
+
+	It("configures dog_file_ilk_chop_hole", func() {
+		transformer := dog_file_ilk_chop_hole.EventTransformerInitializer(db)
+		topic := "0x851aa1caf4888170ad8875449d18f0f512fd6deb2a6571ea1a41fb9f95acbcd1"
+		addresses := []string{test_data.Dog130Address()}
+		assertCorrectInit(transformer, "dog_file_ilk_chop_hole", topic, 12246358, addresses)
 	})
 
 	It("configures flap kick", func() {
@@ -552,6 +648,10 @@ func authContracts() []string {
 
 func catContracts() []string {
 	return []string{test_data.Cat100Address(), test_data.Cat110Address()}
+}
+
+func clipContracts() []string {
+	return append(test_data.Clip130Addresses(), test_data.Clip160Addresses()...)
 }
 
 func flapContracts() []string {

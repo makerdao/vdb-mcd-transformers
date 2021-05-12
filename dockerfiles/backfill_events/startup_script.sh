@@ -2,6 +2,6 @@
 
 # The ending block number needs to be set to around the block number where VDB began tracking the collateral(s) events.
 # In other words, just after the block number where the new collateral(s) was added to execute.
-echo "Starting event backfill to block [12095760]"
+echo "Starting event backfill to block [12422500]"
 # Fire up execute
-./vulcanizedb backfillEvents --config config.toml -e 12095760
+./vulcanizedb backfillEvents --config config.toml -e 12422500

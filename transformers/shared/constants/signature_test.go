@@ -51,6 +51,22 @@ var _ = Describe("Signature constants", func() {
 		Expect(constants.CatFileVowSignature()).To(Equal("0xd4e8be8300000000000000000000000000000000000000000000000000000000"))
 	})
 
+	It("generates clip kick signature", func() {
+		Expect(constants.ClipKickSignature()).To(Equal("0x7c5bfdc0a5e8192f6cd4972f382cec69116862fb62e6abff8003874c58e064b8"))
+	})
+
+	It("generates clip take signature", func() {
+		Expect(constants.ClipTakeSignature()).To(Equal("0x05e309fd6ce72f2ab888a20056bb4210df08daed86f21f95053deb19964d86b1"))
+	})
+
+	It("generates clip redo signature", func() {
+		Expect(constants.ClipRedoSignature()).To(Equal("0x275de7ecdd375b5e8049319f8b350686131c219dd4dc450a08e9cf83b03c865f"))
+	})
+
+	It("generates clip yank signature", func() {
+		Expect(constants.ClipYankSignature()).To(Equal("0x2c5d2826eb5903b8fc201cf48094b858f42f61c7eaac9aaf43ebed490138144e"))
+	})
+
 	It("generates deal signature", func() {
 		Expect(constants.DealSignature()).To(Equal("0xc959c42b00000000000000000000000000000000000000000000000000000000"))
 	})
@@ -61,6 +77,38 @@ var _ = Describe("Signature constants", func() {
 
 	It("generates deny signature", func() {
 		Expect(constants.DenySignature()).To(Equal("0x9c52a7f100000000000000000000000000000000000000000000000000000000"))
+	})
+
+	It("generates dog bark signature", func() {
+		Expect(constants.DogBarkSignature()).To(Equal("0x85258d09e1e4ef299ff3fc11e74af99563f022d21f3f940db982229dc2a3358c"))
+	})
+
+	It("generates dog digs signature", func() {
+		Expect(constants.DogDigsSignature()).To(Equal("0x54f095dc7308776bf01e8580e4dd40fd959ea4bf50b069975768320ef8d77d8a"))
+	})
+
+	It("generates dog file hole signature", func() {
+		Expect(constants.DogFileHoleSignature()).To(Equal("0xe986e40cc8c151830d4f61050f4fb2e4add8567caad2d5f5496f9158e91fe4c7"))
+	})
+
+	It("generates dog file ilk clip signature", func() {
+		Expect(constants.DogFileIlkClipSignature()).To(Equal("0x4ff2caaa972a7c6629ea01fae9c93d73cc307d13ea4c369f9bbbb7f9b7e9461d"))
+	})
+
+	It("generates dog file vow signature", func() {
+		Expect(constants.DogFileVowSignature()).To(Equal("0x8fef588b5fc1afbf5b2f06c1a435d513f208da2e6704c3d8f0e0ec91167066ba"))
+	})
+
+	It("generates dog deny signature", func() {
+		Expect(constants.DogDenySignature()).To(Equal("0x184450df2e323acec0ed3b5c7531b81f9b4cdef7914dfd4c0a4317416bb5251b"))
+	})
+
+	It("generates dog rely signature", func() {
+		Expect(constants.DogRelySignature()).To(Equal("0xdd0e34038ac38b2a1ce960229778ac48a8719bc900b6c4f8d0475c6e8b385a60"))
+	})
+
+	It("generates dog file ilk chop hole signature", func() {
+		Expect(constants.DogFileIlkChopHoleSignature()).To(Equal("0x851aa1caf4888170ad8875449d18f0f512fd6deb2a6571ea1a41fb9f95acbcd1"))
 	})
 
 	It("generates flap kick signature", func() {

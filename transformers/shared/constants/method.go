@@ -26,6 +26,17 @@ import (
 func Cat100ABI() string     { return constants.GetContractABI("MCD_CAT_1_0_0") }
 func Cat110ABI() string     { return constants.GetContractABI("MCD_CAT_1_1_0") }
 func CdpManagerABI() string { return constants.GetContractABI("CDP_MANAGER") }
+func ClipV150ABI() string {
+	return constants.GetABIFromContractsWithMatchingABI([]string{
+		"MCD_CLIP_LINK_A_1_3_0",
+		"MCD_CLIP_ETH_A_1_5_0",
+		"MCD_CLIP_ETH_B_1_5_0",
+		"MCD_CLIP_ETH_C_1_5_0",
+		"MCD_CLIP_WBTC_A_1_5_0",
+		"MCD_CLIP_YFI_A_1_5_0",
+	})
+}
+func DogABI() string { return constants.GetContractABI("MCD_DOG_1_3_0") }
 func FlapABI() string {
 	return constants.GetABIFromContractsWithMatchingABI([]string{
 		"MCD_FLAP_1_0_0",
@@ -158,9 +169,29 @@ func catFileFlipMethod() string {
 func catFileVowMethod() string {
 	return constants.GetOverloadedFunctionSignature(Cat110ABI(), "file", []string{"bytes32", "address"})
 }
+func clipKickMethod() string { return constants.GetSolidityFunctionSignature(ClipV150ABI(), "Kick") }
+func clipTakeMethod() string { return constants.GetSolidityFunctionSignature(ClipV150ABI(), "Take") }
+func clipRedoMethod() string { return constants.GetSolidityFunctionSignature(ClipV150ABI(), "Redo") }
+func clipYankMethod() string { return constants.GetSolidityFunctionSignature(ClipV150ABI(), "Yank") }
+func dogFileHoleMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "File", []string{"bytes32", "uint256"})
+}
+func dogFileIlkClipMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "File", []string{"bytes32", "bytes32", "address"})
+}
+func dogFileIlkChopHoleMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "File", []string{"bytes32", "bytes32", "uint256"})
+}
+func dogFileVowMethod() string {
+	return constants.GetOverloadedFunctionSignature(DogABI(), "File", []string{"bytes32", "address"})
+}
 func dealMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "deal") }
 func dentMethod() string     { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "dent") }
 func denyMethod() string     { return constants.GetSolidityFunctionSignature(Cat100ABI(), "deny") }
+func dogBarkMethod() string  { return constants.GetSolidityFunctionSignature(DogABI(), "Bark") }
+func dogDigsMethod() string  { return constants.GetSolidityFunctionSignature(DogABI(), "Digs") }
+func dogDenyMethod() string  { return constants.GetSolidityFunctionSignature(DogABI(), "Deny") }
+func dogRelyMethod() string  { return constants.GetSolidityFunctionSignature(DogABI(), "Rely") }
 func flapKickMethod() string { return constants.GetSolidityFunctionSignature(FlapABI(), "Kick") }
 func flipKickMethod() string { return constants.GetSolidityFunctionSignature(FlipV100ABI(), "Kick") }
 func flipFileCatMethod() string {
