@@ -142,28 +142,28 @@ var _ = Describe("Event transformer initializers", func() {
 		transformer := clip_kick.EventTransformerInitializer(db)
 		name := "clip_kick"
 		topic := "0x7c5bfdc0a5e8192f6cd4972f382cec69116862fb62e6abff8003874c58e064b8"
-		assertCorrectInit(transformer, name, topic, 12246210, test_data.Clip130Addresses())
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
 	})
 
 	It("configures clip take", func() {
 		transformer := clip_take.EventTransformerInitializer(db)
 		name := "clip_take"
 		topic := "0x05e309fd6ce72f2ab888a20056bb4210df08daed86f21f95053deb19964d86b1"
-		assertCorrectInit(transformer, name, topic, 12246210, test_data.Clip130Addresses())
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
 	})
 
 	It("configures clip redo", func() {
 		transformer := clip_redo.EventTransformerInitializer(db)
 		name := "clip_redo"
 		topic := "0x275de7ecdd375b5e8049319f8b350686131c219dd4dc450a08e9cf83b03c865f"
-		assertCorrectInit(transformer, name, topic, 12246210, test_data.Clip130Addresses())
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
 	})
 
 	It("configures clip yank", func() {
 		transformer := clip_yank.EventTransformerInitializer(db)
 		name := "clip_yank"
 		topic := "0x2c5d2826eb5903b8fc201cf48094b858f42f61c7eaac9aaf43ebed490138144e"
-		assertCorrectInit(transformer, name, topic, 12246210, test_data.Clip130Addresses())
+		assertCorrectInit(transformer, name, topic, 12246210, clipContracts())
 	})
 
 	It("configures deal", func() {
@@ -648,6 +648,10 @@ func authContracts() []string {
 
 func catContracts() []string {
 	return []string{test_data.Cat100Address(), test_data.Cat110Address()}
+}
+
+func clipContracts() []string {
+	return append(test_data.Clip130Addresses(), test_data.Clip160Addresses()...)
 }
 
 func flapContracts() []string {
