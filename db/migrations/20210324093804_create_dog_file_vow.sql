@@ -20,9 +20,4 @@ CREATE INDEX dog_file_vow_what_index
     ON maker.dog_file_vow (what);
 
 -- +goose Down
-DROP INDEX maker.dog_file_vow_header_index;
-DROP INDEX maker.dog_file_vow_log_index;
-DROP INDEX maker.dog_file_vow_address_index;
-DROP INDEX maker.dog_file_vow_what_index;
-
 DROP TABLE maker.dog_file_vow;
