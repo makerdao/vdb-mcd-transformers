@@ -3,81 +3,11 @@
     name     = "transformerExporter"
     save     = true
     schema   = "maker"
-    transformerNames = ["clip_kick", "clip_take", "clip_redo", "clip_yank", "dog_deny", "dog_digs", "dog_rely", "dog_file_ilk_clip", "dog_file_hole", "dog_file_ilk_chop_hole", "dog_file_vow"]
-    [exporter.clip_kick]
-        contracts = ["MCD_CLIP_AAVE_A_1_6_0", "MCD_CLIP_BAL_A_1_6_0", "MCD_CLIP_BAT_A_1_6_0", "MCD_CLIP_COMP_A_1_6_0", "MCD_CLIP_ETH_A_1_5_0", "MCD_CLIP_ETH_B_1_5_0", "MCD_CLIP_ETH_C_1_5_0", "MCD_CLIP_KNC_A_1_6_0", "MCD_CLIP_LRC_A_1_6_0", "MCD_CLIP_LINK_A_1_3_0", "MCD_CLIP_MANA_A_1_6_0", "MCD_CLIP_RENBTC_A_1_6_0", "MCD_CLIP_UNI_A_1_6_0", "MCD_CLIP_WBTC_A_1_5_0", "MCD_CLIP_YFI_A_1_5_0", "MCD_CLIP_ZRX_A_1_6_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/clip_kick/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.clip_take]
-        contracts = ["MCD_CLIP_AAVE_A_1_6_0", "MCD_CLIP_BAL_A_1_6_0", "MCD_CLIP_BAT_A_1_6_0", "MCD_CLIP_COMP_A_1_6_0", "MCD_CLIP_ETH_A_1_5_0", "MCD_CLIP_ETH_B_1_5_0", "MCD_CLIP_ETH_C_1_5_0", "MCD_CLIP_KNC_A_1_6_0", "MCD_CLIP_LRC_A_1_6_0", "MCD_CLIP_LINK_A_1_3_0", "MCD_CLIP_MANA_A_1_6_0", "MCD_CLIP_RENBTC_A_1_6_0", "MCD_CLIP_UNI_A_1_6_0", "MCD_CLIP_WBTC_A_1_5_0", "MCD_CLIP_YFI_A_1_5_0", "MCD_CLIP_ZRX_A_1_6_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/clip_take/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.clip_redo]
-        contracts = ["MCD_CLIP_AAVE_A_1_6_0", "MCD_CLIP_BAL_A_1_6_0", "MCD_CLIP_BAT_A_1_6_0", "MCD_CLIP_COMP_A_1_6_0", "MCD_CLIP_ETH_A_1_5_0", "MCD_CLIP_ETH_B_1_5_0", "MCD_CLIP_ETH_C_1_5_0", "MCD_CLIP_KNC_A_1_6_0", "MCD_CLIP_LRC_A_1_6_0", "MCD_CLIP_LINK_A_1_3_0", "MCD_CLIP_MANA_A_1_6_0", "MCD_CLIP_RENBTC_A_1_6_0", "MCD_CLIP_UNI_A_1_6_0", "MCD_CLIP_WBTC_A_1_5_0", "MCD_CLIP_YFI_A_1_5_0", "MCD_CLIP_ZRX_A_1_6_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/clip_redo/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.clip_yank]
-        contracts = ["MCD_CLIP_AAVE_A_1_6_0", "MCD_CLIP_BAL_A_1_6_0", "MCD_CLIP_BAT_A_1_6_0", "MCD_CLIP_COMP_A_1_6_0", "MCD_CLIP_ETH_A_1_5_0", "MCD_CLIP_ETH_B_1_5_0", "MCD_CLIP_ETH_C_1_5_0", "MCD_CLIP_KNC_A_1_6_0", "MCD_CLIP_LRC_A_1_6_0", "MCD_CLIP_LINK_A_1_3_0", "MCD_CLIP_MANA_A_1_6_0", "MCD_CLIP_RENBTC_A_1_6_0", "MCD_CLIP_UNI_A_1_6_0", "MCD_CLIP_WBTC_A_1_5_0", "MCD_CLIP_YFI_A_1_5_0", "MCD_CLIP_ZRX_A_1_6_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/clip_yank/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_deny]
+    transformerNames = ["dog_bark"]
+    [exporter.dog_bark]
         contracts = ["MCD_DOG_1_3_0"]
         migrations = "db/migrations"
-        path = "transformers/events/dog_deny/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_digs]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_digs/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_rely]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_rely/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_file_ilk_clip]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_file/ilk_clip/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_file_hole]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_file/hole/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_file_ilk_chop_hole]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_file/ilk_chop_hole/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
-    [exporter.dog_file_vow]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_file/vow/initializer"
+        path = "transformers/events/dog_bark/initializer"
         rank = "0"
         repository = "github.com/makerdao/vdb-mcd-transformers"
         type = "eth_event"
