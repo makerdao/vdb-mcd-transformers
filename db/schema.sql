@@ -8583,6 +8583,142 @@ ALTER SEQUENCE maker.dog_hole_id_seq OWNED BY maker.dog_hole.id;
 
 
 --
+-- Name: dog_ilk_chop; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_chop (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    chop numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_chop_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_chop_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_chop_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_chop_id_seq OWNED BY maker.dog_ilk_chop.id;
+
+
+--
+-- Name: dog_ilk_clip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_clip (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    clip text,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_clip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_clip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_clip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_clip_id_seq OWNED BY maker.dog_ilk_clip.id;
+
+
+--
+-- Name: dog_ilk_dirt; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_dirt (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dirt numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_dirt_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_dirt_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_dirt_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_dirt_id_seq OWNED BY maker.dog_ilk_dirt.id;
+
+
+--
+-- Name: dog_ilk_hole; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_hole (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    hole numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_hole_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_hole_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_hole_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_hole_id_seq OWNED BY maker.dog_ilk_hole.id;
+
+
+--
 -- Name: dog_live; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13571,6 +13707,34 @@ ALTER TABLE ONLY maker.dog_hole ALTER COLUMN id SET DEFAULT nextval('maker.dog_h
 
 
 --
+-- Name: dog_ilk_chop id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_chop_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_clip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_clip_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_dirt id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_dirt_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_hole id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_hole_id_seq'::regclass);
+
+
+--
 -- Name: dog_live id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15367,6 +15531,70 @@ ALTER TABLE ONLY maker.dog_hole
 
 ALTER TABLE ONLY maker.dog_hole
     ADD CONSTRAINT dog_hole_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_diff_id_header_id_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_diff_id_header_id_ilk_id_chop_key UNIQUE (diff_id, header_id, ilk_id, chop);
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_diff_id_header_id_ilk_id_clip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_diff_id_header_id_ilk_id_clip_key UNIQUE (diff_id, header_id, ilk_id, clip);
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_diff_id_header_id_ilk_id_dirt_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_diff_id_header_id_ilk_id_dirt_key UNIQUE (diff_id, header_id, ilk_id, dirt);
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_diff_id_header_id_ilk_id_hole_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_diff_id_header_id_ilk_id_hole_key UNIQUE (diff_id, header_id, ilk_id, hole);
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_pkey PRIMARY KEY (id);
 
 
 --
@@ -18791,6 +19019,90 @@ CREATE INDEX dog_hole_address_index ON maker.dog_hole USING btree (address_id);
 --
 
 CREATE INDEX dog_hole_header_index ON maker.dog_hole USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_chop_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_address_id_index ON maker.dog_ilk_chop USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_chop_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_header_id_index ON maker.dog_ilk_chop USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_chop_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_ilk_index ON maker.dog_ilk_chop USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_clip_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_address_id_index ON maker.dog_ilk_clip USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_clip_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_header_id_index ON maker.dog_ilk_clip USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_clip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_ilk_index ON maker.dog_ilk_clip USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_dirt_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_address_id_index ON maker.dog_ilk_dirt USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_dirt_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_header_id_index ON maker.dog_ilk_dirt USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_dirt_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_ilk_index ON maker.dog_ilk_dirt USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_hole_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_address_id_index ON maker.dog_ilk_hole USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_hole_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_header_id_index ON maker.dog_ilk_hole USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_hole_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_ilk_index ON maker.dog_ilk_hole USING btree (ilk_id);
 
 
 --
@@ -22973,6 +23285,134 @@ ALTER TABLE ONLY maker.dog_hole
 
 ALTER TABLE ONLY maker.dog_hole
     ADD CONSTRAINT dog_hole_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
