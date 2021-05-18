@@ -17,7 +17,7 @@ var _ = Describe("Clip storage keys loader", func() {
 
 	BeforeEach(func() {
 		storageRepository = &test_helpers.MockMakerStorageRepository{}
-		storageKeysLoader = clip.NewKeysLoader(storageRepository, test_data.Clip130Address())
+		storageKeysLoader = clip.NewKeysLoader(storageRepository, test_data.ClipLinkAV130Address())
 	})
 
 	It("returns value metadata for static keys", func() {

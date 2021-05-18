@@ -88,7 +88,7 @@ var _ = Describe("Storage transformer initializers", func() {
 	})
 
 	It("configures the v1_3_0 clip link_a", func() {
-		address := test_data.Clip130Address()
+		address := test_data.ClipLinkAV130Address()
 		transformer := clip_link_a_v1_0_3.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))

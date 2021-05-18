@@ -30,7 +30,7 @@ var _ = Describe("Clip storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = clip.StorageRepository{ContractAddress: test_data.Clip130Address()}
+		repo = clip.StorageRepository{ContractAddress: test_data.ClipLinkAV130Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error

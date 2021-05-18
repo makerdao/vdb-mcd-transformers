@@ -1,5 +1,4 @@
 -- +goose Up
-
 CREATE TABLE maker.clip_ilk
 (
     id         SERIAL PRIMARY KEY,
@@ -18,8 +17,4 @@ CREATE INDEX clip_ilk_address_index
     ON maker.clip_ilk (address_id);
 
 -- +goose Down
-DROP INDEX maker.clip_ilk_header_id_index;
-DROP INDEX maker.clip_ilk_ilk_id_index;
-DROP INDEX maker.clip_ilk_address_index;
-
 DROP TABLE maker.clip_ilk;
