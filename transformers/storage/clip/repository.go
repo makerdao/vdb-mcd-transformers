@@ -12,6 +12,7 @@ import (
 
 const (
 	insertClipIlkQuery = `INSERT INTO maker.clip_ilk (diff_id, header_id, address_id, ilk_id) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipVatQuery = `INSERT INTO maker.clip_vat (diff_id, header_id, address_id, vat) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -23,6 +24,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 	switch metadata.Name {
 	case storage.Ilk:
 		return repo.insertIlk(diffID, headerID, value.(string))
+	case storage.Vat:
+		return repo.insertVat(diffID, headerID, value.(string))
 	default:
 		return fmt.Errorf("unrecognized clip contract storage name: %s", metadata.Name)
 	}
@@ -48,6 +51,22 @@ func (repo *StorageRepository) insertIlk(diffID, headerID int64, ilk string) err
 		msgToFormat := "error inserting clip %s ilk %s from diff ID %d"
 		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, ilk, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertVat(diffID, headerID int64, vat string) error {
+	err := shared.InsertRecordWithAddress(
+		diffID,
+		headerID,
+		insertClipVatQuery,
+		vat,
+		repo.ContractAddress,
+		repo.db)
+	if err != nil {
+		msgToFormat := "error inserting clip %s vat %s from diff ID %d"
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, vat, diffID)
+		return fmt.Errorf("%s: %w", msg, err)
 	}
 	return nil
 }

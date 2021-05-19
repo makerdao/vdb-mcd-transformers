@@ -16,5 +16,20 @@ CREATE INDEX clip_ilk_ilk_id_index
 CREATE INDEX clip_ilk_address_index
     ON maker.clip_ilk (address_id);
 
+CREATE TABLE maker.clip_vat
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    vat        TEXT,
+    UNIQUE (diff_id, header_id, address_id, vat)
+);
+
+CREATE INDEX clip_vat_header_id_index
+    ON maker.clip_vat (header_id);
+CREATE INDEX clip_vat_address_index
+    ON maker.clip_vat (address_id);
+
 -- +goose Down
 DROP TABLE maker.clip_ilk;

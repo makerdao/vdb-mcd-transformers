@@ -8169,6 +8169,39 @@ ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
 
 
 --
+-- Name: clip_vat; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_vat (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    vat text
+);
+
+
+--
+-- Name: clip_vat_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_vat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_vat_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_vat_id_seq OWNED BY maker.clip_vat.id;
+
+
+--
 -- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13656,6 +13689,13 @@ ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_vat id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat ALTER COLUMN id SET DEFAULT nextval('maker.clip_vat_id_seq'::regclass);
+
+
+--
 -- Name: clip_yank id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15379,6 +15419,22 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_vat clip_vat_diff_id_header_id_address_id_vat_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat
+    ADD CONSTRAINT clip_vat_diff_id_header_id_address_id_vat_key UNIQUE (diff_id, header_id, address_id, vat);
+
+
+--
+-- Name: clip_vat clip_vat_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat
+    ADD CONSTRAINT clip_vat_pkey PRIMARY KEY (id);
 
 
 --
@@ -18725,6 +18781,20 @@ CREATE INDEX clip_take_log_index ON maker.clip_take USING btree (log_id);
 --
 
 CREATE INDEX clip_take_sale_id_index ON maker.clip_take USING btree (sale_id);
+
+
+--
+-- Name: clip_vat_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_vat_address_index ON maker.clip_vat USING btree (address_id);
+
+
+--
+-- Name: clip_vat_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_vat_header_id_index ON maker.clip_vat USING btree (header_id);
 
 
 --
@@ -22994,6 +23064,30 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vat clip_vat_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat
+    ADD CONSTRAINT clip_vat_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vat clip_vat_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat
+    ADD CONSTRAINT clip_vat_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vat clip_vat_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vat
+    ADD CONSTRAINT clip_vat_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

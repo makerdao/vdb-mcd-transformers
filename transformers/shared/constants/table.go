@@ -35,6 +35,7 @@ const (
 	ClipKickTable                 = "clip_kick"
 	ClipTakeTable                 = "clip_take"
 	ClipRedoTable                 = "clip_redo"
+	ClipVatTable                  = "clip_vat"
 	ClipYankTable                 = "clip_yank"
 	DogBarkTable                  = "dog_bark"
 	DogDenyTable                  = "dog_deny"
