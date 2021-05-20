@@ -3,14 +3,7 @@
     name     = "transformerExporter"
     save     = true
     schema   = "maker"
-    transformerNames = ["dog_bark"]
-    [exporter.dog_bark]
-        contracts = ["MCD_DOG_1_3_0"]
-        migrations = "db/migrations"
-        path = "transformers/events/dog_bark/initializer"
-        rank = "0"
-        repository = "github.com/makerdao/vdb-mcd-transformers"
-        type = "eth_event"
+    transformerNames = []
 [contract]
     [contract.CDP_MANAGER]
       address = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39"
