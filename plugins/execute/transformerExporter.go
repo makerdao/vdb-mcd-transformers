@@ -82,7 +82,7 @@ import (
 	cat_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_0_0/initializer"
 	cat_v1_1_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat/v1_1_0/initializer"
 	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
-	dog_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_3_0"
+	dog_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/v1_3_0/initializer"
 	flap_v1_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_0"
 	flap_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap/initializers/v1_0_9"
 	flip_aave_a_v1_2_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip/initializers/aave_a/v1_2_2"

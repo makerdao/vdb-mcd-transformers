@@ -151,7 +151,7 @@
   [exporter.dog_v1_3_0]
     contracts = ["MCD_DOG_1_3_0"]
     migrations = "db/migrations"
-    path = "transformers/storage/dog/initializers/v1_3_0"
+    path = "transformers/storage/dog/v1_3_0/initializer"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"

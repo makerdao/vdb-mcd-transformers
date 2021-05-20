@@ -2,6 +2,7 @@ package dog
 
 import (
 	"fmt"
+
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
