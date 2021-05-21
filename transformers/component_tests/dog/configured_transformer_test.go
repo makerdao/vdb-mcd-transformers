@@ -80,4 +80,21 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariableWithAddress(vowResult, dogVowDiff.ID, header.Id, contractAddressID, strconv.FormatInt(diffAddressID, 10))
 	})
+
+	It("reads in a Dog Live storage diff row and persists it", func() {
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		dogLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
+		err := transformer.Execute(dogLiveDiff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var liveResult test_helpers.VariableResWithAddress
+		err = db.Get(&liveResult, `SELECT diff_id, header_id, address_id, live AS value FROM maker.dog_live`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariableWithAddress(liveResult, dogLiveDiff.ID, header.Id, contractAddressID, "1")
+	})
 })
