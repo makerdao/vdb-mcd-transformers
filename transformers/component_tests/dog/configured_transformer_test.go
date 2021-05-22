@@ -5,10 +5,12 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -97,4 +99,40 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariableWithAddress(liveResult, dogLiveDiff.ID, header.Id, contractAddressID, "1")
 	})
+
+	It("reads in a Dog Hole storage diff row and persists it", func() {
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		dogHoleDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
+		err := transformer.Execute(dogHoleDiff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var holeResult test_helpers.VariableResWithAddress
+		err = db.Get(&holeResult, `SELECT diff_id, header_id, address_id, hole AS value FROM maker.dog_hole`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariableWithAddress(holeResult, dogHoleDiff.ID, header.Id, contractAddressID, "3")
+	})
+
+	It("reads in a Dog Dirt storage diff row and persists it", func() {
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000015")
+		dogHoleDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
+		Expect(contractAddressErr).NotTo(HaveOccurred())
+
+		err := transformer.Execute(dogHoleDiff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var dirtResult test_helpers.VariableResWithAddress
+		err = db.Get(&dirtResult, `SELECT diff_id, header_id, address_id, dirt AS value FROM maker.dog_dirt`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariableWithAddress(dirtResult, dogHoleDiff.ID, header.Id, contractAddressID, "15")
+	})
+
+	
 })
