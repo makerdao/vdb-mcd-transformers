@@ -131,8 +131,44 @@ var _ = Describe("Executing the transformer", func() {
 		var dirtResult test_helpers.VariableResWithAddress
 		err = db.Get(&dirtResult, `SELECT diff_id, header_id, address_id, dirt AS value FROM maker.dog_dirt`)
 		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariableWithAddress(dirtResult, dogHoleDiff.ID, header.Id, contractAddressID, "15")
+		test_helpers.AssertVariableWithAddress(dirtResult, dogHoleDiff.ID, header.Id, contractAddressID, "21")
 	})
 
-	
+	Describe("wards", func() {
+		It("reads in a wards storage diff row and persists it", func() {
+			denyLog := test_data.CreateTestLog(header.Id, db)
+			denyModel := test_data.DenyModel()
+
+			dogAddressID, dogAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
+			Expect(dogAddressErr).NotTo(HaveOccurred())
+
+			userAddress := "0x39ad5d336a4c08fac74879f796e1ea0af26c1521"
+			userAddressID, userAddressErr := repository.GetOrCreateAddress(db, userAddress)
+			Expect(userAddressErr).NotTo(HaveOccurred())
+
+			msgSenderAddress := "0x" + fakes.RandomString(40)
+			msgSenderAddressID, msgSenderAddressErr := repository.GetOrCreateAddress(db, msgSenderAddress)
+			Expect(msgSenderAddressErr).NotTo(HaveOccurred())
+
+			denyModel.ColumnValues[event.HeaderFK] = header.Id
+			denyModel.ColumnValues[event.LogFK] = denyLog.ID
+			denyModel.ColumnValues[event.AddressFK] = dogAddressID
+			denyModel.ColumnValues[constants.MsgSenderColumn] = msgSenderAddressID
+			denyModel.ColumnValues[constants.UsrColumn] = userAddressID
+			insertErr := event.PersistModels([]event.InsertionModel{denyModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			key := common.HexToHash("b6d2a4300cc4010859f67ce7c804312ce9cc8f1032cdeb24e96d4b5562a4d01b")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			wardsDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+			transformErr := transformer.Execute(wardsDiff)
+			Expect(transformErr).NotTo(HaveOccurred())
+
+			var wardsResult test_helpers.MappingResWithAddress
+			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
+			Expect(err).NotTo(HaveOccurred())
+			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, dogAddressID, strconv.FormatInt(userAddressID, 10), "1")
+		})
+	})
 })
