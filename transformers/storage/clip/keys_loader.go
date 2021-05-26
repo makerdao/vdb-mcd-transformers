@@ -50,6 +50,9 @@ var (
 
 	KicksKey      = common.HexToHash(vdbStorage.IndexTwelve)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
+
+	ActiveKey	  = common.HexToHash(vdbStorage.IndexThirteen)
+	ActiveMetadata = types.GetValueMetadata(mcdStorage.Active, nil, types.Uint256)
 )
 
 type keysLoader struct {
