@@ -5,6 +5,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog"
@@ -149,6 +150,78 @@ var _ = Describe("Executing the transformer", func() {
 			err := db.Get(&wardsResult, `SELECT diff_id, header_id, address_id, usr AS key, wards.wards AS value FROM maker.wards`)
 			Expect(err).NotTo(HaveOccurred())
 			test_helpers.AssertMappingWithAddress(wardsResult, wardsDiff.ID, header.Id, dogAddressID, strconv.FormatInt(userAddressID, 10), "1")
+		})
+
+		Describe("ilk", func() {
+			var (
+				ilkId             int64
+				contractAddressId int64
+			)
+
+			BeforeEach(func() {
+				var ilkErr, contractAddressErr error
+				ilk := "0x4554482d41000000000000000000000000000000000000000000000000000000"
+				ilkId, ilkErr = shared.GetOrCreateIlk(ilk, db)
+				Expect(ilkErr).NotTo(HaveOccurred())
+				contractAddressId, contractAddressErr = repository.GetOrCreateAddress(db, contractAddress.Hex())
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+			})
+
+			It("reads in a Dog Ilk Clip storage diff row and persists it", func() {
+				key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947015")
+				value := common.HexToHash("000000000000000000000000c67963a226eddd77B91aD8c421630A1b0AdFF270")
+				dogIlkClipDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+				err := transformer.Execute(dogIlkClipDiff)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkClipResult test_helpers.MappingResWithAddress
+				err = db.Get(&ilkClipResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, clip AS value FROM maker.dog_ilk_clip`)
+				Expect(err).NotTo(HaveOccurred())
+				test_helpers.AssertMappingWithAddress(ilkClipResult, dogIlkClipDiff.ID, header.Id, contractAddressId, strconv.FormatInt(ilkId, 10), "0xc67963a226eddd77B91aD8c421630A1b0AdFF270")
+			})
+
+			It("reads a Dog Ilk Chop storage diff row and persists it", func() {
+				key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947016")
+				value := common.HexToHash("0000000000000000000000000000000000000000000000000FAE910354310000")
+				dogIlkChopDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+				err := transformer.Execute(dogIlkChopDiff)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkChopResult test_helpers.MappingResWithAddress
+				err = db.Get(&ilkChopResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, chop AS value FROM maker.dog_ilk_chop`)
+				Expect(err).NotTo(HaveOccurred())
+				test_helpers.AssertMappingWithAddress(ilkChopResult, dogIlkChopDiff.ID, header.Id, contractAddressId, strconv.FormatInt(ilkId, 10), "1130000000000000000")
+			})
+
+			It("reads in a Dog Ilk Hole storage diff row and persists it", func() {
+				key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947017")
+				value := common.HexToHash("000000000000000000003ACD02C6E279D01CB92074798A07E1F0000000000000")
+				dogIlkHoleDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+				err := transformer.Execute(dogIlkHoleDiff)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkHoleResult test_helpers.MappingResWithAddress
+				err = db.Get(&ilkHoleResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, hole AS value FROM maker.dog_ilk_hole`)
+				Expect(err).NotTo(HaveOccurred())
+				test_helpers.AssertMappingWithAddress(ilkHoleResult, dogIlkHoleDiff.ID, header.Id, contractAddressId, strconv.FormatInt(ilkId, 10), "22000000000000000000000000000000000000000000000000000")
+			})
+
+			It("reads in a Dog Ilk Dirt storage diff row and persists it", func() {
+				key := common.HexToHash("ddedd75666d350fcd985cb35e3b9f2d4f288318d97268199e03d4405df947018")
+				value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000")
+				dogIlkDirtDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+				err := transformer.Execute(dogIlkDirtDiff)
+				Expect(err).NotTo(HaveOccurred())
+
+				var ilkDirtResult test_helpers.MappingResWithAddress
+				err = db.Get(&ilkDirtResult, `SELECT diff_id, header_id, address_id, ilk_id AS key, dirt AS value FROM maker.dog_ilk_dirt`)
+				Expect(err).NotTo(HaveOccurred())
+				test_helpers.AssertMappingWithAddress(ilkDirtResult, dogIlkDirtDiff.ID, header.Id, contractAddressId, strconv.FormatInt(ilkId, 10), "0")
+			})
 		})
 	})
 })
