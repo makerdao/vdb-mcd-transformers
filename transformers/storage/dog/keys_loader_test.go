@@ -132,12 +132,6 @@ var _ = Describe("Dog storage keys loader", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(mappings[dog.VatStorageKey]).To(Equal(types.ValueMetadata{
-			Name: dog.Vat,
-			Keys: nil,
-			Type: types.Address,
-		}))
-
 		Expect(mappings[dog.VowStorageKey]).To(Equal(types.ValueMetadata{
 			Name: dog.Vow,
 			Keys: nil,

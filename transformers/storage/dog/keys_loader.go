@@ -15,21 +15,18 @@ import (
 
 var (
 	//wards at index0
-	VatStorageKey = common.HexToHash(vdbStorage.IndexOne)
-	VatMetadata   = types.GetValueMetadata(Vat, nil, types.Address)
+	IlksMappingIndex = vdbStorage.IndexOne // bytes32 => clip address; chop (wad), hole (rad), dirt (rad) uint256
 
-	IlksMappingIndex = vdbStorage.IndexTwo // bytes32 => clip address; chop (wad), hole (rad), dirt (rad) uint256
-
-	VowStorageKey = common.HexToHash(vdbStorage.IndexThree)
+	VowStorageKey = common.HexToHash(vdbStorage.IndexTwo)
 	VowMetadata   = types.GetValueMetadata(Vow, nil, types.Address)
 
-	LiveStorageKey = common.HexToHash(vdbStorage.IndexFour)
+	LiveStorageKey = common.HexToHash(vdbStorage.IndexThree)
 	LiveMetadata   = types.GetValueMetadata(Live, nil, types.Uint256)
 
-	HoleStorageKey = common.HexToHash(vdbStorage.IndexFive)
+	HoleStorageKey = common.HexToHash(vdbStorage.IndexFour)
 	HoleMetadata   = types.GetValueMetadata(Hole, nil, types.Uint256)
 
-	DirtStorageKey = common.HexToHash(vdbStorage.IndexSix)
+	DirtStorageKey = common.HexToHash(vdbStorage.IndexFive)
 	DirtMetadata   = types.GetValueMetadata(Dirt, nil, types.Uint256)
 )
 
@@ -64,7 +61,6 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 
 func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings := make(map[common.Hash]types.ValueMetadata)
-	mappings[VatStorageKey] = VatMetadata
 	mappings[VowStorageKey] = VowMetadata
 	mappings[LiveStorageKey] = LiveMetadata
 	mappings[HoleStorageKey] = HoleMetadata
