@@ -43,28 +43,8 @@ var _ = Describe("Executing the transformer", func() {
 		Expect(insertHeaderErr).NotTo(HaveOccurred())
 	})
 
-	It("reads in a Dog Vat storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
-		value := common.HexToHash("000000000000000000000000acdd1ee0f74954ed8f0ac581b081b7b86bd6aad9")
-		dogVatDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
-
-		contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, contractAddress.Hex())
-		Expect(contractAddressErr).NotTo(HaveOccurred())
-
-		err := transformer.Execute(dogVatDiff)
-		Expect(err).NotTo(HaveOccurred())
-
-		diffAddressID, diffAddressErr := repository.GetOrCreateAddress(db, "0xaCdd1ee0F74954Ed8F0aC581b081B7b86bD6aad9")
-		Expect(diffAddressErr).NotTo(HaveOccurred())
-
-		var vatResult test_helpers.VariableResWithAddress
-		err = db.Get(&vatResult, `SELECT diff_id, header_id, address_id, vat AS value FROM maker.dog_vat`)
-		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariableWithAddress(vatResult, dogVatDiff.ID, header.Id, contractAddressID, strconv.FormatInt(diffAddressID, 10))
-	})
-
 	It("reads in a Dog Vow storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000002")
 		value := common.HexToHash("00000000000000000000000021444ac712ccd21ce82af24ea1aec64cf07361d2")
 		dogVowDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
@@ -84,7 +64,7 @@ var _ = Describe("Executing the transformer", func() {
 	})
 
 	It("reads in a Dog Live storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 		dogLiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
@@ -101,7 +81,7 @@ var _ = Describe("Executing the transformer", func() {
 	})
 
 	It("reads in a Dog Hole storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000004")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000003")
 		dogHoleDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
@@ -118,7 +98,7 @@ var _ = Describe("Executing the transformer", func() {
 	})
 
 	It("reads in a Dog Dirt storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000006")
+		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000005")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000015")
 		dogHoleDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
 
