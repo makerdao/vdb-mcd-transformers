@@ -17,6 +17,7 @@
 package storage
 
 var (
+	Active  = "active"
 	Beg     = "beg"
 	Buf     = "buf"
 	Calc    = "calc"
