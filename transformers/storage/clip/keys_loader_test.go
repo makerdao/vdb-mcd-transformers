@@ -24,8 +24,6 @@ var _ = Describe("Clip storage keys loader", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 
 		Expect(err).NotTo(HaveOccurred())
-		Expect(mappings[clip.IlkKey]).To(Equal(clip.IlkMetadata))
-		Expect(mappings[clip.VatKey]).To(Equal(clip.VatMetadata))
 		Expect(mappings[clip.DogKey]).To(Equal(clip.DogMetadata))
 		Expect(mappings[clip.VowKey]).To(Equal(clip.VowMetadata))
 		Expect(mappings[clip.SpotterKey]).To(Equal(clip.SpotterMetadata))
@@ -41,7 +39,7 @@ var _ = Describe("Clip storage keys loader", func() {
 	It("returns value for dynamic array keys", func() {
 		mappings, err := storageKeysLoader.LoadMappings()
 
-
 		Expect(err).NotTo(HaveOccurred())
 		Expect(mappings[clip.ActiveKey]).To(Equal(clip.ActiveMetadata))
+	})
 })
