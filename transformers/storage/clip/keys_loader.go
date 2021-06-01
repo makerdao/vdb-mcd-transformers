@@ -32,10 +32,8 @@ var (
 	CuspKey      = common.HexToHash(vdbStorage.IndexSeven)
 	CuspMetadata = types.GetValueMetadata(Cusp, nil, types.Uint256)
 
-	// TODO: Add actual types to vulcanizedb (uint64 and uint192)
-
 	ChipAndTipStorageKey = common.HexToHash(vdbStorage.IndexEight)
-	chipAndTipTypes      = map[int]types.ValueType{0: types.Uint32, 1: types.Uint48}
+	chipAndTipTypes      = map[int]types.ValueType{0: types.Uint64, 1: types.Uint192}
 	chipAndTipNames      = map[int]string{0: Chip, 1: Tip}
 	ChipAndTipMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, chipAndTipNames, chipAndTipTypes)
 
