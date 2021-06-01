@@ -8019,6 +8019,39 @@ ALTER SEQUENCE maker.checked_headers_id_seq OWNED BY maker.checked_headers.id;
 
 
 --
+-- Name: clip_dog; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_dog (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dog bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_dog_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_dog_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_dog_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_dog_id_seq OWNED BY maker.clip_dog.id;
+
+
+--
 -- Name: clip_ilk; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13628,6 +13661,13 @@ ALTER TABLE ONLY maker.checked_headers ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: clip_dog id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog ALTER COLUMN id SET DEFAULT nextval('maker.clip_dog_id_seq'::regclass);
+
+
+--
 -- Name: clip_ilk id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15315,6 +15355,22 @@ ALTER TABLE ONLY maker.checked_headers
 
 ALTER TABLE ONLY maker.checked_headers
     ADD CONSTRAINT checked_headers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_dog clip_dog_diff_id_header_id_dog_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_diff_id_header_id_dog_key UNIQUE (diff_id, header_id, dog);
+
+
+--
+-- Name: clip_dog clip_dog_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_pkey PRIMARY KEY (id);
 
 
 --
@@ -22890,6 +22946,38 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 ALTER TABLE ONLY maker.checked_headers
     ADD CONSTRAINT checked_headers_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_dog_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_dog_fkey FOREIGN KEY (dog) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

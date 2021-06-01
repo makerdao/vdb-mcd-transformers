@@ -12,41 +12,41 @@ import (
 var (
 	//wards at index0
 	DogKey      = common.HexToHash(vdbStorage.IndexOne)
-	DogMetadata = types.GetValueMetadata(mcdStorage.Dog, nil, types.Address)
+	DogMetadata = types.GetValueMetadata(Dog, nil, types.Address)
 
 	VowKey      = common.HexToHash(vdbStorage.IndexTwo)
 	VowMetadata = types.GetValueMetadata(mcdStorage.Vow, nil, types.Address)
 
 	SpotterKey      = common.HexToHash(vdbStorage.IndexThree)
-	SpotterMetadata = types.GetValueMetadata(mcdStorage.Spotter, nil, types.Address)
+	SpotterMetadata = types.GetValueMetadata(Spotter, nil, types.Address)
 
 	CalcKey      = common.HexToHash(vdbStorage.IndexFour)
-	CalcMetadata = types.GetValueMetadata(mcdStorage.Calc, nil, types.Address)
+	CalcMetadata = types.GetValueMetadata(Calc, nil, types.Address)
 
 	BufKey      = common.HexToHash(vdbStorage.IndexFive)
-	BufMetadata = types.GetValueMetadata(mcdStorage.Buf, nil, types.Uint256)
+	BufMetadata = types.GetValueMetadata(Buf, nil, types.Uint256)
 
 	TailKey      = common.HexToHash(vdbStorage.IndexSix)
-	TailMetadata = types.GetValueMetadata(mcdStorage.Tail, nil, types.Uint256)
+	TailMetadata = types.GetValueMetadata(Tail, nil, types.Uint256)
 
 	CuspKey      = common.HexToHash(vdbStorage.IndexSeven)
-	CuspMetadata = types.GetValueMetadata(mcdStorage.Cusp, nil, types.Uint256)
+	CuspMetadata = types.GetValueMetadata(Cusp, nil, types.Uint256)
 
 	// TODO: Add actual types to vulcanizedb (uint64 and uint192)
 
 	ChipAndTipStorageKey = common.HexToHash(vdbStorage.IndexEight)
 	chipAndTipTypes      = map[int]types.ValueType{0: types.Uint32, 1: types.Uint48}
-	chipAndTipNames      = map[int]string{0: mcdStorage.Chip, 1: mcdStorage.Tip}
+	chipAndTipNames      = map[int]string{0: Chip, 1: Tip}
 	ChipAndTipMetadata   = types.GetValueMetadataForPackedSlot(mcdStorage.Packed, nil, types.PackedSlot, chipAndTipNames, chipAndTipTypes)
 
 	ChostKey      = common.HexToHash(vdbStorage.IndexNine)
-	ChostMetadata = types.GetValueMetadata(mcdStorage.Chost, nil, types.Uint256)
+	ChostMetadata = types.GetValueMetadata(Chost, nil, types.Uint256)
 
 	KicksKey      = common.HexToHash(vdbStorage.IndexTen)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
 
 	ActiveKey      = common.HexToHash(vdbStorage.IndexEleven)
-	ActiveMetadata = types.GetValueMetadata(mcdStorage.Active, nil, types.Uint256)
+	ActiveMetadata = types.GetValueMetadata(Active, nil, types.Uint256)
 )
 
 type keysLoader struct {
@@ -82,5 +82,6 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[ChipAndTipStorageKey] = ChipAndTipMetadata
 	mappings[ChostKey] = ChostMetadata
 	mappings[KicksKey] = KicksMetadata
+	mappings[ActiveKey] = ActiveMetadata
 	return mappings
 }

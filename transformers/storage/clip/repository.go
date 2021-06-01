@@ -5,13 +5,23 @@ import (
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 )
 
 const (
+	Dog     = "dog"
+	Spotter = "spotter"
+	Calc    = "calc"
+	Buf     = "buf"
+	Tail    = "tail"
+	Cusp    = "cusp"
+	Chip    = "chip"
+	Tip     = "tip"
+	Chost   = "chost"
+	Active  = "active"
+
 	insertClipDogQuery = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
@@ -22,7 +32,7 @@ type StorageRepository struct {
 
 func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
 	switch metadata.Name {
-	case storage.Dog:
+	case Dog:
 		return repo.insertDog(diffID, headerID, value.(string))
 	default:
 		return fmt.Errorf("unrecognized clip contract storage name: %s", metadata.Name)

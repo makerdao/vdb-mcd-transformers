@@ -6,7 +6,6 @@ import (
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
@@ -30,7 +29,7 @@ var _ = Describe("Clip storage repository", func() {
 
 	BeforeEach(func() {
 		test_config.CleanTestDB(db)
-		repo = clip.StorageRepository{ContractAddress: test_data.Clip130Address()}
+		repo = clip.StorageRepository{ContractAddress: test_data.ClipLinkAV130Address()}
 		repo.SetDB(db)
 		headerRepository := repositories.NewHeaderRepository(db)
 		var insertHeaderErr error
@@ -50,7 +49,7 @@ var _ = Describe("Clip storage repository", func() {
 
 		Describe("clip dog", func() {
 			It("writes a row", func() {
-				dogMetadata := types.ValueMetadata{Name: storage.Dog}
+				dogMetadata := types.ValueMetadata{Name: clip.Dog}
 				insertErr := repo.Create(diffID, fakeHeaderID, dogMetadata, FakeAddress)
 				Expect(insertErr).NotTo(HaveOccurred())
 
