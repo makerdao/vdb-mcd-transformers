@@ -171,5 +171,40 @@ var _ = Describe("Clip storage repository", func() {
 
 			})
 		})
+
+		Describe("clip spotter", func() {
+			BeforeEach(func() {
+				diffID = CreateFakeDiffRecord(db)
+			})
+
+			It("writes a row", func() {
+				spotterMetadata := types.ValueMetadata{Name: clip.Spotter}
+				insertErr := repo.Create(diffID, fakeHeaderID, spotterMetadata, FakeAddress)
+				Expect(insertErr).NotTo(HaveOccurred())
+
+				var result VariableRes
+				query := fmt.Sprintf(`SELECT diff_id, header_id, spotter AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSpotterTable))
+				getErr := db.Get(&result, query)
+				Expect(getErr).NotTo(HaveOccurred())
+				addressID, addressErr := repository.GetOrCreateAddress(db, FakeAddress)
+				Expect(addressErr).NotTo(HaveOccurred())
+				AssertVariable(result, diffID, fakeHeaderID, strconv.FormatInt(addressID, 10))
+			})
+
+			It("does not duplicate a row", func() {
+				spotterMetadata := types.ValueMetadata{Name: clip.Spotter}
+				insertOneErr := repo.Create(diffID, fakeHeaderID, spotterMetadata, FakeAddress)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, spotterMetadata, FakeAddress)
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSpotterTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+
+			})
+		})
 	})
 })

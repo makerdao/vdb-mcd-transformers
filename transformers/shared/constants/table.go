@@ -33,6 +33,7 @@ const (
 	CatFileVowTable               = "cat_file_vow"
 	ClipDogTable                  = "clip_dog"
 	ClipVowTable                  = "clip_vow"
+	ClipSpotterTable              = "clip_spotter"
 	ClipKickTable                 = "clip_kick"
 	ClipTakeTable                 = "clip_take"
 	ClipRedoTable                 = "clip_redo"

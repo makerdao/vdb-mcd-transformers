@@ -24,8 +24,9 @@ const (
 	Chost   = "chost"
 	Active  = "active"
 
-	insertClipDogQuery = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipVowQuery = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipDogQuery     = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -39,6 +40,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertDog(diffID, headerID, value.(string))
 	case Vow:
 		return repo.insertVow(diffID, headerID, value.(string))
+	case Spotter:
+		return repo.insertSpotter(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -85,6 +88,26 @@ func (repo *StorageRepository) insertVow(diffID, headerID int64, vow string) err
 	if insertErr != nil {
 		msgToFormat := "error inserting clip %s vow %s from diff ID %d"
 		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, vow, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSpotter(diffID, headerID int64, spotter string) error {
+	spotterAddressID, addressErr := repository.GetOrCreateAddress(repo.db, spotter)
+	if addressErr != nil {
+		return fmt.Errorf("error inserting clip spotter: %w", addressErr)
+	}
+	insertErr := shared.InsertRecordWithAddress(
+		diffID,
+		headerID,
+		insertClipSpotterQuery,
+		strconv.FormatInt(spotterAddressID, 10),
+		repo.ContractAddress,
+		repo.db)
+	if insertErr != nil {
+		msgToFormat := "error inserting clip %s spotter %s from diff ID %d"
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, spotter, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
