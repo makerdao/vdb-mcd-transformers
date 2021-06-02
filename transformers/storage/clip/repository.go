@@ -28,11 +28,13 @@ const (
 	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipCalcQuery    = `INSERT INTO maker.clip_calc (diff_id, header_id, address_id, calc) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipBufQuery     = `INSERT INTO maker.clip_buf (diff_id, header_id, address_id, buf) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
-	ContractAddress string
-	db              *postgres.DB
+	ContractAddress   string
+	contractAddressID int64
+	db                *postgres.DB
 }
 
 func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.ValueMetadata, value interface{}) error {
@@ -45,6 +47,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertSpotter(diffID, headerID, value.(string))
 	case Calc:
 		return repo.insertCalc(diffID, headerID, value.(string))
+	case Buf:
+		return repo.insertBuf(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -134,4 +138,26 @@ func (repo *StorageRepository) insertCalc(diffID, headerID int64, calc string) e
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
+}
+
+func (repo *StorageRepository) insertBuf(diffID, headerID int64, buf string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipBufQuery, diffID, headerID, addressID, buf)
+	if err != nil {
+		return fmt.Errorf("error inserting clip buf %s from diff ID %d: %w", buf, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) ContractAddressID() (int64, error) {
+	if repo.contractAddressID == 0 {
+		addressID, addressErr := repository.GetOrCreateAddress(repo.db, repo.ContractAddress)
+		repo.contractAddressID = addressID
+		return repo.contractAddressID, addressErr
+	}
+	return repo.contractAddressID, nil
 }

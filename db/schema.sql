@@ -8019,6 +8019,39 @@ ALTER SEQUENCE maker.checked_headers_id_seq OWNED BY maker.checked_headers.id;
 
 
 --
+-- Name: clip_buf; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_buf (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    buf numeric NOT NULL
+);
+
+
+--
+-- Name: clip_buf_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_buf_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_buf_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_buf_id_seq OWNED BY maker.clip_buf.id;
+
+
+--
 -- Name: clip_calc; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13760,6 +13793,13 @@ ALTER TABLE ONLY maker.checked_headers ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: clip_buf id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf ALTER COLUMN id SET DEFAULT nextval('maker.clip_buf_id_seq'::regclass);
+
+
+--
 -- Name: clip_calc id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15475,6 +15515,22 @@ ALTER TABLE ONLY maker.checked_headers
 
 ALTER TABLE ONLY maker.checked_headers
     ADD CONSTRAINT checked_headers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_buf clip_buf_diff_id_header_id_buf_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_diff_id_header_id_buf_key UNIQUE (diff_id, header_id, buf);
+
+
+--
+-- Name: clip_buf clip_buf_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_pkey PRIMARY KEY (id);
 
 
 --
@@ -23114,6 +23170,30 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 ALTER TABLE ONLY maker.checked_headers
     ADD CONSTRAINT checked_headers_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

@@ -39,8 +39,19 @@ CREATE TABLE maker.clip_calc
     UNIQUE (diff_id, header_id, calc)
 );
 
+CREATE TABLE maker.clip_buf
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    buf        NUMERIC NOT NULL,
+    UNIQUE (diff_id, header_id, buf)
+);
+
 -- +goose Down
 DROP TABLE maker.clip_dog;
 DROP TABLE maker.clip_vow;
 DROP TABLE maker.clip_spotter;
 DROP TABLE maker.clip_calc;
+DROP TABLE maker.clip_buf;

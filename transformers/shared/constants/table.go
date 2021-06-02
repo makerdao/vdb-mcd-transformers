@@ -35,6 +35,7 @@ const (
 	ClipVowTable                  = "clip_vow"
 	ClipSpotterTable              = "clip_spotter"
 	ClipCalcTable                 = "clip_calc"
+	ClipBufTable                  = "clip_buf"
 	ClipKickTable                 = "clip_kick"
 	ClipTakeTable                 = "clip_take"
 	ClipRedoTable                 = "clip_redo"

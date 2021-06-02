@@ -12,6 +12,7 @@ import (
 	. "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data/shared_behaviors"
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage"
@@ -240,6 +241,22 @@ var _ = Describe("Clip storage repository", func() {
 				Expect(count).To(Equal(1))
 
 			})
+		})
+
+		Describe("buf", func() {
+			metadata := types.GetValueMetadata(clip.Buf, nil, types.Uint256)
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  clip.Buf,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.ClipBufTable,
+				ContractAddress: test_data.ClipLinkAV130Address(),
+				Repository:      &repo,
+				Metadata:        metadata,
+				IsAMapping:      false,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 	})
 })
