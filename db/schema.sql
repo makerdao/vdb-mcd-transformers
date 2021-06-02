@@ -8118,6 +8118,39 @@ ALTER SEQUENCE maker.clip_chip_id_seq OWNED BY maker.clip_chip.id;
 
 
 --
+-- Name: clip_chost; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_chost (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    chost numeric NOT NULL
+);
+
+
+--
+-- Name: clip_chost_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_chost_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_chost_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_chost_id_seq OWNED BY maker.clip_chost.id;
+
+
+--
 -- Name: clip_cusp; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13946,6 +13979,13 @@ ALTER TABLE ONLY maker.clip_chip ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_chost id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost ALTER COLUMN id SET DEFAULT nextval('maker.clip_chost_id_seq'::regclass);
+
+
+--
 -- Name: clip_cusp id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15723,6 +15763,22 @@ ALTER TABLE ONLY maker.clip_chip
 
 ALTER TABLE ONLY maker.clip_chip
     ADD CONSTRAINT clip_chip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_chost clip_chost_diff_id_header_id_chost_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_diff_id_header_id_chost_key UNIQUE (diff_id, header_id, chost);
+
+
+--
+-- Name: clip_chost clip_chost_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_pkey PRIMARY KEY (id);
 
 
 --
@@ -23474,6 +23530,30 @@ ALTER TABLE ONLY maker.clip_chip
 
 ALTER TABLE ONLY maker.clip_chip
     ADD CONSTRAINT clip_chip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

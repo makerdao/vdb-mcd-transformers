@@ -349,5 +349,21 @@ var _ = Describe("Clip storage repository", func() {
 				Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
 			})
 		})
+
+		Describe("clip chost", func() {
+			metadata := types.GetValueMetadata(clip.Chost, nil, types.Uint256)
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  clip.Chost,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.ClipChostTable,
+				ContractAddress: test_data.ClipLinkAV130Address(),
+				Repository:      &repo,
+				Metadata:        metadata,
+				IsAMapping:      false,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
 	})
 })
