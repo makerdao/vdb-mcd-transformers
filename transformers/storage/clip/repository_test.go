@@ -243,7 +243,7 @@ var _ = Describe("Clip storage repository", func() {
 			})
 		})
 
-		Describe("buf", func() {
+		Describe("clip buf", func() {
 			metadata := types.GetValueMetadata(clip.Buf, nil, types.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:  clip.Buf,
@@ -259,7 +259,7 @@ var _ = Describe("Clip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
-		Describe("tail", func() {
+		Describe("clip tail", func() {
 			metadata := types.GetValueMetadata(clip.Tail, nil, types.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:  clip.Tail,
@@ -275,7 +275,7 @@ var _ = Describe("Clip storage repository", func() {
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
 
-		Describe("cusp", func() {
+		Describe("clip cusp", func() {
 			metadata := types.GetValueMetadata(clip.Cusp, nil, types.Uint256)
 			inputs := shared_behaviors.StorageBehaviorInputs{
 				ValueFieldName:  clip.Cusp,
@@ -289,6 +289,65 @@ var _ = Describe("Clip storage repository", func() {
 			}
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
+
+		Describe("clip chip and tip", func() {
+			BeforeEach(func() {
+				diffID = CreateFakeDiffRecord(db)
+			})
+
+			packedNames := make(map[int]string)
+			packedNames[0] = clip.Chip
+			packedNames[1] = clip.Tip
+			var chipAndTipMetadata = types.ValueMetadata{
+				Name:        clip.Packed,
+				PackedNames: packedNames,
+			}
+
+			var fakeChip = strconv.Itoa(rand.Intn(100))
+			var fakeTip = strconv.Itoa(rand.Intn(100))
+			values := make(map[int]string)
+			values[0] = fakeChip
+			values[1] = fakeTip
+
+			It("persists chip and tip records", func() {
+				err := repo.Create(diffID, fakeHeaderID, chipAndTipMetadata, values)
+				Expect(err).NotTo(HaveOccurred())
+
+				var chipResult VariableRes
+				chipQuery := fmt.Sprintf(`SELECT diff_id, header_id, chip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipChipTable))
+				err = db.Get(&chipResult, chipQuery)
+				Expect(err).NotTo(HaveOccurred())
+				AssertVariable(chipResult, diffID, fakeHeaderID, fakeChip)
+
+				var tipResult VariableRes
+				tipQuery := fmt.Sprintf(`SELECT diff_id, header_id, tip AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipTipTable))
+				err = db.Get(&tipResult, tipQuery)
+				Expect(err).NotTo(HaveOccurred())
+				AssertVariable(tipResult, diffID, fakeHeaderID, fakeTip)
+
+			})
+
+			It("panics if the packed name is not recognized", func() {
+				packedNames := make(map[int]string)
+				packedNames[0] = "notRecognized"
+
+				var badMetadata = types.ValueMetadata{
+					Name:        clip.Packed,
+					PackedNames: packedNames,
+				}
+
+				err := repo.Create(diffID, fakeHeaderID, badMetadata, values)
+				Expect(err).Should(HaveOccurred())
+			})
+
+			It("returns an error if inserting fails", func() {
+				badValues := make(map[int]string)
+				badValues[0] = ""
+				err := repo.Create(diffID, fakeHeaderID, chipAndTipMetadata, badValues)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("pq: invalid input syntax"))
+			})
 		})
 	})
 })

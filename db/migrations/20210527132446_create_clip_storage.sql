@@ -69,6 +69,26 @@ CREATE TABLE maker.clip_cusp
     UNIQUE (diff_id, header_id, cusp)
 );
 
+CREATE TABLE maker.clip_chip
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    chip       NUMERIC NOT NULL,
+    UNIQUE (diff_id, header_id, chip)
+);
+
+CREATE TABLE maker.clip_tip
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    tip        NUMERIC NOT NULL,
+    UNIQUE (diff_id, header_id, tip)
+);
+
 -- +goose Down
 DROP TABLE maker.clip_dog;
 DROP TABLE maker.clip_vow;
@@ -77,3 +97,5 @@ DROP TABLE maker.clip_calc;
 DROP TABLE maker.clip_buf;
 DROP TABLE maker.clip_tail;
 DROP TABLE maker.clip_cusp;
+DROP TABLE maker.clip_chip;
+DROP TABLE maker.clip_tip;

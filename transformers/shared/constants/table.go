@@ -38,6 +38,8 @@ const (
 	ClipBufTable                  = "clip_buf"
 	ClipTailTable                 = "clip_tail"
 	ClipCuspTable                 = "clip_cusp"
+	ClipChipTable                 = "clip_chip"
+	ClipTipTable                  = "clip_tip"
 	ClipKickTable                 = "clip_kick"
 	ClipTakeTable                 = "clip_take"
 	ClipRedoTable                 = "clip_redo"

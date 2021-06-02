@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
@@ -37,7 +38,12 @@ var _ = Describe("Clip storage keys loader", func() {
 		Expect(mappings[clip.BufKey]).To(Equal(clip.BufMetadata))
 		Expect(mappings[clip.TailKey]).To(Equal(clip.TailMetadata))
 		Expect(mappings[clip.CuspKey]).To(Equal(clip.CuspMetadata))
-		Expect(mappings[clip.ChipAndTipStorageKey]).To(Equal(clip.ChipAndTipMetadata))
+		Expect(mappings[clip.ChipAndTipStorageKey]).To(Equal(types.ValueMetadata{
+			Name:        mcdStorage.Packed,
+			Type:        types.PackedSlot,
+			PackedTypes: map[int]types.ValueType{0: types.Uint64, 1: types.Uint192},
+			PackedNames: map[int]string{0: clip.Chip, 1: clip.Tip},
+		}))
 		Expect(mappings[clip.ChostKey]).To(Equal(clip.ChostMetadata))
 		Expect(mappings[clip.KicksKey]).To(Equal(clip.KicksMetadata))
 	})

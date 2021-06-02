@@ -8085,6 +8085,39 @@ ALTER SEQUENCE maker.clip_calc_id_seq OWNED BY maker.clip_calc.id;
 
 
 --
+-- Name: clip_chip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_chip (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    chip numeric NOT NULL
+);
+
+
+--
+-- Name: clip_chip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_chip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_chip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_chip_id_seq OWNED BY maker.clip_chip.id;
+
+
+--
 -- Name: clip_cusp; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8364,6 +8397,39 @@ CREATE SEQUENCE maker.clip_take_id_seq
 --
 
 ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
+
+
+--
+-- Name: clip_tip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_tip (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    tip numeric NOT NULL
+);
+
+
+--
+-- Name: clip_tip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_tip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_tip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_tip_id_seq OWNED BY maker.clip_tip.id;
 
 
 --
@@ -13873,6 +13939,13 @@ ALTER TABLE ONLY maker.clip_calc ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_chip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip ALTER COLUMN id SET DEFAULT nextval('maker.clip_chip_id_seq'::regclass);
+
+
+--
 -- Name: clip_cusp id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -13926,6 +13999,13 @@ ALTER TABLE ONLY maker.clip_tail ALTER COLUMN id SET DEFAULT nextval('maker.clip
 --
 
 ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip_take_id_seq'::regclass);
+
+
+--
+-- Name: clip_tip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip ALTER COLUMN id SET DEFAULT nextval('maker.clip_tip_id_seq'::regclass);
 
 
 --
@@ -15630,6 +15710,22 @@ ALTER TABLE ONLY maker.clip_calc
 
 
 --
+-- Name: clip_chip clip_chip_diff_id_header_id_chip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_diff_id_header_id_chip_key UNIQUE (diff_id, header_id, chip);
+
+
+--
+-- Name: clip_chip clip_chip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: clip_cusp clip_cusp_diff_id_header_id_cusp_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15755,6 +15851,22 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_tip clip_tip_diff_id_header_id_tip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_diff_id_header_id_tip_key UNIQUE (diff_id, header_id, tip);
+
+
+--
+-- Name: clip_tip clip_tip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_pkey PRIMARY KEY (id);
 
 
 --
@@ -23341,6 +23453,30 @@ ALTER TABLE ONLY maker.clip_calc
 
 
 --
+-- Name: clip_chip clip_chip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chip clip_chip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chip clip_chip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: clip_cusp clip_cusp_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -23554,6 +23690,30 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

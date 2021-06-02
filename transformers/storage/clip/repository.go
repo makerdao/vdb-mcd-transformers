@@ -24,6 +24,8 @@ const (
 	Chost   = "chost"
 	Active  = "active"
 
+	Packed = "packed_storage_values"
+
 	insertClipDogQuery     = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -31,6 +33,8 @@ const (
 	insertClipBufQuery     = `INSERT INTO maker.clip_buf (diff_id, header_id, address_id, buf) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipTailQuery    = `INSERT INTO maker.clip_tail (diff_id, header_id, address_id, tail) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipCuspQuery    = `INSERT INTO maker.clip_cusp (diff_id, header_id, address_id, cusp) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipChipQuery    = `INSERT INTO maker.clip_chip (diff_id, header_id, address_id, chip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipTipQuery     = `INSERT INTO maker.clip_tip (diff_id, header_id, address_id, tip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -55,6 +59,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertTail(diffID, headerID, value.(string))
 	case Cusp:
 		return repo.insertCusp(diffID, headerID, value.(string))
+	case Packed:
+		return repo.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -181,6 +187,50 @@ func (repo *StorageRepository) insertCusp(diffID, headerID int64, cusp string) e
 	_, err := repo.db.Exec(insertClipCuspQuery, diffID, headerID, addressID, cusp)
 	if err != nil {
 		return fmt.Errorf("error inserting clip cusp %s from diff ID %d: %w", cusp, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertChip(diffID, headerID int64, chip string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipChipQuery, diffID, headerID, addressID, chip)
+	if err != nil {
+		return fmt.Errorf("error inserting clip chip %s from diff ID %d: %w", chip, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertTip(diffID, headerID int64, tip string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipTipQuery, diffID, headerID, addressID, tip)
+	if err != nil {
+		return fmt.Errorf("error inserting clip tip %s from diff ID %d: %w", tip, diffID, err)
+	}
+	return nil
+}
+
+func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+	for order, value := range packedValues {
+		var insertErr error
+		switch metadata.PackedNames[order] {
+		case Chip:
+			insertErr = repository.insertChip(diffID, headerID, value)
+		case Tip:
+			insertErr = repository.insertTip(diffID, headerID, value)
+		default:
+			return fmt.Errorf("unrecognized clip contract storage name in packed values: %s", metadata.Name)
+		}
+		if insertErr != nil {
+			return fmt.Errorf("error inserting clip packed value from diff ID %d: %w", diffID, insertErr)
+		}
 	}
 	return nil
 }
