@@ -8262,6 +8262,39 @@ ALTER SEQUENCE maker.clip_spotter_id_seq OWNED BY maker.clip_spotter.id;
 
 
 --
+-- Name: clip_tail; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_tail (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    tail numeric NOT NULL
+);
+
+
+--
+-- Name: clip_tail_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_tail_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_tail_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_tail_id_seq OWNED BY maker.clip_tail.id;
+
+
+--
 -- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13842,6 +13875,13 @@ ALTER TABLE ONLY maker.clip_spotter ALTER COLUMN id SET DEFAULT nextval('maker.c
 
 
 --
+-- Name: clip_tail id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail ALTER COLUMN id SET DEFAULT nextval('maker.clip_tail_id_seq'::regclass);
+
+
+--
 -- Name: clip_take id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15627,6 +15667,22 @@ ALTER TABLE ONLY maker.clip_spotter
 
 ALTER TABLE ONLY maker.clip_spotter
     ADD CONSTRAINT clip_spotter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_tail clip_tail_diff_id_header_id_tail_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_diff_id_header_id_tail_key UNIQUE (diff_id, header_id, tail);
+
+
+--
+-- Name: clip_tail clip_tail_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_pkey PRIMARY KEY (id);
 
 
 --
@@ -23370,6 +23426,30 @@ ALTER TABLE ONLY maker.clip_spotter
 
 ALTER TABLE ONLY maker.clip_spotter
     ADD CONSTRAINT clip_spotter_spotter_fkey FOREIGN KEY (spotter) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
