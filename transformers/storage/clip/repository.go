@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
@@ -34,6 +35,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 	switch metadata.Name {
 	case Dog:
 		return repo.insertDog(diffID, headerID, value.(string))
+	case wards.Wards:
+		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
 		return fmt.Errorf("unrecognized clip contract storage name: %s", metadata.Name)
 	}
