@@ -13,6 +13,7 @@ import (
 
 const (
 	Dog     = "dog"
+	Vow     = "vow"
 	Spotter = "spotter"
 	Calc    = "calc"
 	Buf     = "buf"
@@ -24,6 +25,7 @@ const (
 	Active  = "active"
 
 	insertClipDogQuery = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipVowQuery = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -35,6 +37,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 	switch metadata.Name {
 	case Dog:
 		return repo.insertDog(diffID, headerID, value.(string))
+	case Vow:
+		return repo.insertVow(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -61,6 +65,26 @@ func (repo *StorageRepository) insertDog(diffID, headerID int64, dog string) err
 	if insertErr != nil {
 		msgToFormat := "error inserting clip %s dog %s from diff ID %d"
 		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, dog, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertVow(diffID, headerID int64, vow string) error {
+	vowAddressID, addressErr := repository.GetOrCreateAddress(repo.db, vow)
+	if addressErr != nil {
+		return fmt.Errorf("error inserting clip vow: %w", addressErr)
+	}
+	insertErr := shared.InsertRecordWithAddress(
+		diffID,
+		headerID,
+		insertClipVowQuery,
+		strconv.FormatInt(vowAddressID, 10),
+		repo.ContractAddress,
+		repo.db)
+	if insertErr != nil {
+		msgToFormat := "error inserting clip %s vow %s from diff ID %d"
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, vow, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil

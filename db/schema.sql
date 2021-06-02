@@ -8202,6 +8202,39 @@ ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
 
 
 --
+-- Name: clip_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_vow (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    vow bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_vow_id_seq OWNED BY maker.clip_vow.id;
+
+
+--
 -- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13696,6 +13729,13 @@ ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow ALTER COLUMN id SET DEFAULT nextval('maker.clip_vow_id_seq'::regclass);
+
+
+--
 -- Name: clip_yank id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15435,6 +15475,22 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_vow clip_vow_diff_id_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_diff_id_header_id_vow_key UNIQUE (diff_id, header_id, vow);
+
+
+--
+-- Name: clip_vow clip_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -23082,6 +23138,38 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_vow_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_vow_fkey FOREIGN KEY (vow) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
