@@ -365,5 +365,21 @@ var _ = Describe("Clip storage repository", func() {
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
+
+		Describe("clip kicks", func() {
+			metadata := types.GetValueMetadata(clip.Kicks, nil, types.Uint256)
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  clip.Kicks,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.ClipKicksTable,
+				ContractAddress: test_data.ClipLinkAV130Address(),
+				Repository:      &repo,
+				Metadata:        metadata,
+				IsAMapping:      false,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
 	})
 })

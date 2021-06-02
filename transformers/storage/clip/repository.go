@@ -22,6 +22,7 @@ const (
 	Chip    = "chip"
 	Tip     = "tip"
 	Chost   = "chost"
+	Kicks   = "kicks"
 	Active  = "active"
 
 	Packed = "packed_storage_values"
@@ -36,6 +37,7 @@ const (
 	insertClipChipQuery    = `INSERT INTO maker.clip_chip (diff_id, header_id, address_id, chip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipTipQuery     = `INSERT INTO maker.clip_tip (diff_id, header_id, address_id, tip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipChostQuery   = `INSERT INTO maker.clip_chost (diff_id, header_id, address_id, chost) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipKicksQuery   = `INSERT INTO maker.clip_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -64,6 +66,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertPackedValueRecord(diffID, headerID, metadata, value.(map[int]string))
 	case Chost:
 		return repo.insertChost(diffID, headerID, value.(string))
+	case Kicks:
+		return repo.insertKicks(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -229,6 +233,19 @@ func (repo *StorageRepository) insertChost(diffID, headerID int64, chost string)
 	_, err := repo.db.Exec(insertClipChostQuery, diffID, headerID, addressID, chost)
 	if err != nil {
 		return fmt.Errorf("error inserting clip chost %s from diff ID %d: %w", chost, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertKicks(diffID, headerID int64, kicks string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipKicksQuery, diffID, headerID, addressID, kicks)
+	if err != nil {
+		return fmt.Errorf("error inserting clip kicks %s from diff ID %d: %w", kicks, diffID, err)
 	}
 	return nil
 }

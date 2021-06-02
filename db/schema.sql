@@ -8289,6 +8289,39 @@ ALTER SEQUENCE maker.clip_kick_id_seq OWNED BY maker.clip_kick.id;
 
 
 --
+-- Name: clip_kicks; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_kicks (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    kicks numeric NOT NULL
+);
+
+
+--
+-- Name: clip_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_kicks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_kicks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_kicks_id_seq OWNED BY maker.clip_kicks.id;
+
+
+--
 -- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14014,6 +14047,13 @@ ALTER TABLE ONLY maker.clip_kick ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_kicks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks ALTER COLUMN id SET DEFAULT nextval('maker.clip_kicks_id_seq'::regclass);
+
+
+--
 -- Name: clip_redo id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15843,6 +15883,22 @@ ALTER TABLE ONLY maker.clip_kick
 
 ALTER TABLE ONLY maker.clip_kick
     ADD CONSTRAINT clip_kick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_kicks clip_kicks_diff_id_header_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_diff_id_header_id_kicks_key UNIQUE (diff_id, header_id, kicks);
+
+
+--
+-- Name: clip_kicks clip_kicks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_pkey PRIMARY KEY (id);
 
 
 --
@@ -23666,6 +23722,30 @@ ALTER TABLE ONLY maker.clip_kick
 
 ALTER TABLE ONLY maker.clip_kick
     ADD CONSTRAINT clip_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
