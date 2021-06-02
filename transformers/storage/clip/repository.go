@@ -30,6 +30,7 @@ const (
 	insertClipCalcQuery    = `INSERT INTO maker.clip_calc (diff_id, header_id, address_id, calc) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipBufQuery     = `INSERT INTO maker.clip_buf (diff_id, header_id, address_id, buf) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipTailQuery    = `INSERT INTO maker.clip_tail (diff_id, header_id, address_id, tail) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipCuspQuery    = `INSERT INTO maker.clip_cusp (diff_id, header_id, address_id, cusp) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -52,6 +53,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertBuf(diffID, headerID, value.(string))
 	case Tail:
 		return repo.insertTail(diffID, headerID, value.(string))
+	case Cusp:
+		return repo.insertCusp(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -165,6 +168,19 @@ func (repo *StorageRepository) insertTail(diffID, headerID int64, tail string) e
 	_, err := repo.db.Exec(insertClipTailQuery, diffID, headerID, addressID, tail)
 	if err != nil {
 		return fmt.Errorf("error inserting clip tail %s from diff ID %d: %w", tail, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertCusp(diffID, headerID int64, cusp string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipCuspQuery, diffID, headerID, addressID, cusp)
+	if err != nil {
+		return fmt.Errorf("error inserting clip cusp %s from diff ID %d: %w", cusp, diffID, err)
 	}
 	return nil
 }

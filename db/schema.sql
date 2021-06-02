@@ -8085,6 +8085,39 @@ ALTER SEQUENCE maker.clip_calc_id_seq OWNED BY maker.clip_calc.id;
 
 
 --
+-- Name: clip_cusp; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_cusp (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    cusp numeric NOT NULL
+);
+
+
+--
+-- Name: clip_cusp_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_cusp_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_cusp_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_cusp_id_seq OWNED BY maker.clip_cusp.id;
+
+
+--
 -- Name: clip_dog; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -13840,6 +13873,13 @@ ALTER TABLE ONLY maker.clip_calc ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_cusp id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp ALTER COLUMN id SET DEFAULT nextval('maker.clip_cusp_id_seq'::regclass);
+
+
+--
 -- Name: clip_dog id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15587,6 +15627,22 @@ ALTER TABLE ONLY maker.clip_calc
 
 ALTER TABLE ONLY maker.clip_calc
     ADD CONSTRAINT clip_calc_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_cusp clip_cusp_diff_id_header_id_cusp_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_diff_id_header_id_cusp_key UNIQUE (diff_id, header_id, cusp);
+
+
+--
+-- Name: clip_cusp clip_cusp_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_pkey PRIMARY KEY (id);
 
 
 --
@@ -23282,6 +23338,30 @@ ALTER TABLE ONLY maker.clip_calc
 
 ALTER TABLE ONLY maker.clip_calc
     ADD CONSTRAINT clip_calc_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
