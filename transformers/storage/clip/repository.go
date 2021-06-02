@@ -27,6 +27,7 @@ const (
 	insertClipDogQuery     = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipCalcQuery    = `INSERT INTO maker.clip_calc (diff_id, header_id, address_id, calc) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -42,6 +43,8 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertVow(diffID, headerID, value.(string))
 	case Spotter:
 		return repo.insertSpotter(diffID, headerID, value.(string))
+	case Calc:
+		return repo.insertCalc(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	default:
@@ -108,6 +111,26 @@ func (repo *StorageRepository) insertSpotter(diffID, headerID int64, spotter str
 	if insertErr != nil {
 		msgToFormat := "error inserting clip %s spotter %s from diff ID %d"
 		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, spotter, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertCalc(diffID, headerID int64, calc string) error {
+	calcAddressID, addressErr := repository.GetOrCreateAddress(repo.db, calc)
+	if addressErr != nil {
+		return fmt.Errorf("error inserting clip calc: %w", addressErr)
+	}
+	insertErr := shared.InsertRecordWithAddress(
+		diffID,
+		headerID,
+		insertClipCalcQuery,
+		strconv.FormatInt(calcAddressID, 10),
+		repo.ContractAddress,
+		repo.db)
+	if insertErr != nil {
+		msgToFormat := "error inserting clip %s calc %s from diff ID %d"
+		msg := fmt.Sprintf(msgToFormat, repo.ContractAddress, calc, diffID)
 		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
