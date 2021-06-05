@@ -8361,6 +8361,74 @@ ALTER SEQUENCE maker.clip_redo_id_seq OWNED BY maker.clip_redo.id;
 
 
 --
+-- Name: clip_sale_pos; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_pos (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    pos numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_sale_pos_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_pos_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_pos_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_pos_id_seq OWNED BY maker.clip_sale_pos.id;
+
+
+--
+-- Name: clip_sale_tab; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_tab (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    tab numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_sale_tab_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_tab_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_tab_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_tab_id_seq OWNED BY maker.clip_sale_tab.id;
+
+
+--
 -- Name: clip_spotter; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14061,6 +14129,20 @@ ALTER TABLE ONLY maker.clip_redo ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_sale_pos id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_pos_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_tab id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_tab_id_seq'::regclass);
+
+
+--
 -- Name: clip_spotter id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15915,6 +15997,38 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_diff_id_header_id_sale_id_address_id_pos_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_diff_id_header_id_sale_id_address_id_pos_key UNIQUE (diff_id, header_id, sale_id, address_id, pos);
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_diff_id_header_id_sale_id_address_id_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_diff_id_header_id_sale_id_address_id_tab_key UNIQUE (diff_id, header_id, sale_id, address_id, tab);
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_pkey PRIMARY KEY (id);
 
 
 --
@@ -23770,6 +23884,54 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --

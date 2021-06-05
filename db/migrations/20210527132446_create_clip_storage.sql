@@ -108,6 +108,29 @@ CREATE TABLE maker.clip_kicks
     kicks      NUMERIC NOT NULL,
     UNIQUE (diff_id, header_id, kicks)
 );
+
+CREATE TABLE maker.clip_sale_pos
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    sale_id     NUMERIC NOT NULL,
+    pos        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    UNIQUE (diff_id, header_id, sale_id, address_id, pos)
+);
+
+CREATE TABLE maker.clip_sale_tab
+(
+    id         SERIAL PRIMARY KEY,
+    diff_id    BIGINT  NOT NULL REFERENCES public.storage_diff (id) ON DELETE CASCADE,
+    address_id BIGINT  NOT NULL REFERENCES public.addresses (id) ON DELETE CASCADE,
+    sale_id     NUMERIC NOT NULL,
+    tab        NUMERIC NOT NULL,
+    header_id  INTEGER NOT NULL REFERENCES public.headers (id) ON DELETE CASCADE,
+    UNIQUE (diff_id, header_id, sale_id, address_id, tab)
+);
+
 -- +goose Down
 DROP TABLE maker.clip_dog;
 DROP TABLE maker.clip_vow;
@@ -120,3 +143,5 @@ DROP TABLE maker.clip_chip;
 DROP TABLE maker.clip_tip;
 DROP TABLE maker.clip_chost;
 DROP TABLE maker.clip_kicks;
+DROP TABLE maker.clip_sale_pos;
+DROP TABLE maker.clip_sale_tab;
