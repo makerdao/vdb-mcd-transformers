@@ -8361,6 +8361,40 @@ ALTER SEQUENCE maker.clip_redo_id_seq OWNED BY maker.clip_redo.id;
 
 
 --
+-- Name: clip_sale_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_lot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    lot numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_sale_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_lot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_lot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_lot_id_seq OWNED BY maker.clip_sale_lot.id;
+
+
+--
 -- Name: clip_sale_pos; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14129,6 +14163,13 @@ ALTER TABLE ONLY maker.clip_redo ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_sale_lot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_lot_id_seq'::regclass);
+
+
+--
 -- Name: clip_sale_pos id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -15997,6 +16038,22 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_diff_id_header_id_sale_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_diff_id_header_id_sale_id_address_id_lot_key UNIQUE (diff_id, header_id, sale_id, address_id, lot);
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_pkey PRIMARY KEY (id);
 
 
 --
@@ -23884,6 +23941,30 @@ ALTER TABLE ONLY maker.clip_redo
 
 ALTER TABLE ONLY maker.clip_redo
     ADD CONSTRAINT clip_redo_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
