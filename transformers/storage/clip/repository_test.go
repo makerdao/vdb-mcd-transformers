@@ -512,6 +512,82 @@ var _ = Describe("Clip storage repository", func() {
 			})
 		})
 
-		
+		Describe("Usr", func() {
+			It("writes a row", func() {
+				saleLotMetadata := types.GetValueMetadata(clip.SaleUsr, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Address)
+
+				err := repo.Create(diffID, fakeHeaderID, saleLotMetadata, FakeAddress)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, sale_id AS key, usr AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSaleUsrTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeSaleID, FakeAddress)
+			})
+
+			It("does not duplicate row", func() {
+				saleUsrMetadata := types.GetValueMetadata(clip.SaleUsr, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Address)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, saleUsrMetadata, FakeAddress)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, saleUsrMetadata, FakeAddress)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSaleUsrTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing saleID", func() {
+				malformedSaleUsrMetadata := types.GetValueMetadata(clip.SaleUsr, map[types.Key]string{}, types.Address)
+
+				err := repo.Create(diffID, fakeHeaderID, malformedSaleUsrMetadata, FakeAddress)
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.SaleId}))
+			})
+		})
+
+		Describe("Tic", func() {
+			It("writes a row", func() {
+				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+				Expect(err).NotTo(HaveOccurred())
+
+				var result MappingResWithAddress
+				query := fmt.Sprintf(`SELECT diff_id, header_id, address_id, sale_id AS key, tic AS value FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSaleTicTable))
+				err = db.Get(&result, query)
+				Expect(err).NotTo(HaveOccurred())
+				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
+				Expect(contractAddressErr).NotTo(HaveOccurred())
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeSaleID, fakeUint256)
+			})
+
+			It("does not duplicate row", func() {
+				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint256)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+				Expect(insertOneErr).NotTo(HaveOccurred())
+
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+
+				Expect(insertTwoErr).NotTo(HaveOccurred())
+				var count int
+				query := fmt.Sprintf(`SELECT count(*) FROM %s`, shared.GetFullTableName(constants.MakerSchema, constants.ClipSaleTicTable))
+				getCountErr := db.Get(&count, query)
+				Expect(getCountErr).NotTo(HaveOccurred())
+				Expect(count).To(Equal(1))
+			})
+
+			It("returns an error if metadata missing saleID", func() {
+				malformedSaleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{}, types.Uint256)
+
+				err := repo.Create(diffID, fakeHeaderID, malformedSaleTicMetadata, fakeUint256)
+				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.SaleId}))
+			})
+		})
 	})
 })
