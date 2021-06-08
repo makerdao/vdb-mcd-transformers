@@ -163,7 +163,7 @@ var _ = Describe("Clip storage keys loader", func() {
 				expectedMetadata := types.ValueMetadata{
 					Name: clip.SaleTic,
 					Keys: map[types.Key]string{constants.SaleId: fakeUint256},
-					Type: types.Uint256,
+					Type: types.Uint96,
 				}
 
 				Expect(mappings[salesTicKey]).To(Equal(expectedMetadata))

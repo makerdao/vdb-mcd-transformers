@@ -160,10 +160,9 @@ func getSaleTicKey(hexSaleID string) common.Hash {
 	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 4)
 }
 
-// TODO: Needs Uint96 for tic
 func getSaleTicMetadata(saleID string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.SaleId: saleID}
-	return types.GetValueMetadata(SaleTic, keys, types.Uint256)
+	return types.GetValueMetadata(SaleTic, keys, types.Uint96)
 }
 
 func getSaleTopKey(hexSaleID string) common.Hash {

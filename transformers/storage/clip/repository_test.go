@@ -385,6 +385,7 @@ var _ = Describe("Clip storage repository", func() {
 	Describe("Dynamic Sales storage field", func() {
 		var (
 			fakeUint256 = strconv.Itoa(rand.Intn(100))
+			fakeUint96  = strconv.Itoa(rand.Intn(100))
 			fakeSaleID  = strconv.Itoa(rand.Intn(100))
 		)
 		BeforeEach(func() {
@@ -553,9 +554,9 @@ var _ = Describe("Clip storage repository", func() {
 
 		Describe("Tic", func() {
 			It("writes a row", func() {
-				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint256)
+				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint96)
 
-				err := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint96)
 				Expect(err).NotTo(HaveOccurred())
 
 				var result MappingResWithAddress
@@ -564,15 +565,15 @@ var _ = Describe("Clip storage repository", func() {
 				Expect(err).NotTo(HaveOccurred())
 				contractAddressID, contractAddressErr := repository.GetOrCreateAddress(db, repo.ContractAddress)
 				Expect(contractAddressErr).NotTo(HaveOccurred())
-				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeSaleID, fakeUint256)
+				AssertMappingWithAddress(result, diffID, fakeHeaderID, contractAddressID, fakeSaleID, fakeUint96)
 			})
 
 			It("does not duplicate row", func() {
-				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint256)
-				insertOneErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+				saleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{constants.SaleId: fakeSaleID}, types.Uint96)
+				insertOneErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint96)
 				Expect(insertOneErr).NotTo(HaveOccurred())
 
-				insertTwoErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint256)
+				insertTwoErr := repo.Create(diffID, fakeHeaderID, saleTicMetadata, fakeUint96)
 
 				Expect(insertTwoErr).NotTo(HaveOccurred())
 				var count int
@@ -583,9 +584,9 @@ var _ = Describe("Clip storage repository", func() {
 			})
 
 			It("returns an error if metadata missing saleID", func() {
-				malformedSaleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{}, types.Uint256)
+				malformedSaleTicMetadata := types.GetValueMetadata(clip.SaleTic, map[types.Key]string{}, types.Uint96)
 
-				err := repo.Create(diffID, fakeHeaderID, malformedSaleTicMetadata, fakeUint256)
+				err := repo.Create(diffID, fakeHeaderID, malformedSaleTicMetadata, fakeUint96)
 				Expect(err).To(MatchError(types.ErrMetadataMalformed{MissingData: constants.SaleId}))
 			})
 		})
