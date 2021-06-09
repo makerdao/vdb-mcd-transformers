@@ -9,9 +9,22 @@ import (
 
 func Cat100Address() string { return checksum(constants.GetContractAddress("MCD_CAT_1_0_0")) }
 func Cat110Address() string { return checksum(constants.GetContractAddress("MCD_CAT_1_1_0")) }
-func ClipLinkAV130Address() string {
-	return checksum(constants.GetContractAddress("MCD_CLIP_LINK_A_1_3_0"))
-}
+func ClipAaveAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_AAVE_A_1_6_0")) }
+func ClipBalAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_BAL_A_1_6_0")) }
+func ClipBatAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_BAT_A_1_6_0")) }
+func ClipCompAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_COMP_A_1_6_0")) }
+func ClipEthAV150Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_ETH_A_1_5_0")) }
+func ClipEthBV150Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_ETH_B_1_5_0")) }
+func ClipEthCV150Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_ETH_C_1_5_0")) }
+func ClipKncAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_KNC_A_1_6_0")) }
+func ClipLinkAV130Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_LINK_A_1_3_0")) }
+func ClipLrcAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_LRC_A_1_6_0")) }
+func ClipManaAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_MANA_A_1_6_0")) }
+func ClipRenbtcAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_RENBTC_A_1_6_0")) }
+func ClipUniAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_UNI_A_1_6_0")) }
+func ClipWbtcAV150Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_WBTC_A_1_5_0")) }
+func ClipYfiAV150Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_YFI_A_1_5_0")) }
+func ClipZrxAV160Address() string { return checksum(constants.GetContractAddress("MCD_CLIP_ZRX_A_1_6_0")) }
 func Clip130Addresses() []string {
 	var addressesResult []string
 	clipAddresses := constants.GetContractAddresses([]string{
