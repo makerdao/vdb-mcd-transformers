@@ -32,6 +32,7 @@ const (
 	Ilk       types.Key = "ilk"
 	MsgSender types.Key = "msg_sender"
 	Owner     types.Key = "owner"
+	SaleId    types.Key = "sale_id"
 	SlotId    types.Key = "slot_id"
 	Timestamp types.Key = "timestamp"
 	User      types.Key = "usr"

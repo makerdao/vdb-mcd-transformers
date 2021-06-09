@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
+	"github.com/makerdao/vdb-transformer-utilities/pkg/shared"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	vdbStorage "github.com/makerdao/vulcanizedb/libraries/shared/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -13,6 +15,7 @@ import (
 )
 
 var (
+
 	//wards at index0
 	DogKey      = common.HexToHash(vdbStorage.IndexOne)
 	DogMetadata = types.GetValueMetadata(Dog, nil, types.Address)
@@ -48,6 +51,8 @@ var (
 
 	ActiveKey      = common.HexToHash(vdbStorage.IndexEleven)
 	ActiveMetadata = types.GetValueMetadata(Active, nil, types.Uint256)
+
+	SalesMappingIndex = vdbStorage.IndexTwelve
 )
 
 type keysLoader struct {
@@ -70,7 +75,11 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	mappings := loadStaticMappings()
 	mappings, wardsErr := addWardsKeys(mappings, loader.contractAddress, loader.storageRepository)
 	if wardsErr != nil {
-		return nil, fmt.Errorf("error adding wards keys to dog keys loader: %w", wardsErr)
+		return nil, fmt.Errorf("error adding wards keys to clip keys loader: %w", wardsErr)
+	}
+	mappings, salesErr := loader.loadSalesKeys(mappings)
+	if salesErr != nil {
+		return nil, fmt.Errorf("error adding sales keys to clip keys loader: %w", salesErr)
 	}
 	return mappings, nil
 }
@@ -89,6 +98,80 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[KicksKey] = KicksMetadata
 	mappings[ActiveKey] = ActiveMetadata
 	return mappings
+}
+
+func (loader *keysLoader) loadSalesKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+	saleIDs, saleErr := loader.storageRepository.GetClipSalesIDs(loader.contractAddress)
+	if saleErr != nil {
+		return nil, fmt.Errorf("error getting clip sale IDs: %w", saleErr)
+	}
+	for _, saleID := range saleIDs {
+		hexSaleID, convertErr := shared.ConvertIntStringToHex(saleID)
+		if convertErr != nil {
+			return nil, fmt.Errorf("error converting int string to hex: %w", convertErr)
+		}
+		mappings[getSalePosKey(hexSaleID)] = getSalePosMetadata(saleID)
+		mappings[getSaleTabKey(hexSaleID)] = getSaleTabMetadata(saleID)
+		mappings[getSaleLotKey(hexSaleID)] = getSaleLotMetadata(saleID)
+		mappings[getSaleUsrKey(hexSaleID)] = getSaleUsrMetadata(saleID)
+		mappings[getSaleTicKey(hexSaleID)] = getSaleTicMetadata(saleID)
+		mappings[getSaleTopKey(hexSaleID)] = getSaleTopMetadata(saleID)
+	}
+	return mappings, nil
+}
+
+func getSalePosKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetKeyForMapping(SalesMappingIndex, hexSaleID)
+}
+
+func getSalePosMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SalePos, keys, types.Uint256)
+}
+
+func getSaleTabKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 1)
+}
+
+func getSaleTabMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SaleTab, keys, types.Uint256)
+}
+
+func getSaleLotKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 2)
+}
+
+func getSaleLotMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SaleLot, keys, types.Uint256)
+}
+
+func getSaleUsrKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 3)
+}
+
+func getSaleUsrMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SaleUsr, keys, types.Address)
+}
+
+func getSaleTicKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 4)
+}
+
+func getSaleTicMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SaleTic, keys, types.Uint96)
+}
+
+func getSaleTopKey(hexSaleID string) common.Hash {
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 5)
+}
+
+func getSaleTopMetadata(saleID string) types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleID}
+	return types.GetValueMetadata(SaleTop, keys, types.Uint256)
 }
 
 func addWardsKeys(mappings map[common.Hash]types.ValueMetadata, address string, repository mcdStorage.IMakerStorageRepository) (map[common.Hash]types.ValueMetadata, error) {

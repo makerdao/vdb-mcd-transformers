@@ -8,6 +8,7 @@ import (
 
 type MockMakerStorageRepository struct {
 	Cdpis                            []string
+	ClipSalesIDs                     []string
 	DaiKeys                          []string
 	FlapBidIDs                       []string
 	FlipBidIDs                       []string
@@ -25,6 +26,8 @@ type MockMakerStorageRepository struct {
 	WardsKeys                        []string
 	GetCdpisCalled                   bool
 	GetCdpisError                    error
+	GetClipSalesIDCalledWith         string
+	GetClipSalesError                error
 	GetDaiKeysCalled                 bool
 	GetDaiKeysError                  error
 	GetFlapBidIDsCalled              bool
@@ -117,6 +120,11 @@ func (repository *MockMakerStorageRepository) GetOwners() ([]string, error) {
 func (repository *MockMakerStorageRepository) GetPotPieUsers() ([]string, error) {
 	repository.GetPotPieUsersCalled = true
 	return repository.PotPieUsers, repository.GetPotPieUsersError
+}
+
+func (repository *MockMakerStorageRepository) GetClipSalesIDs(contractAddress string) ([]string, error) {
+	repository.GetClipSalesIDCalledWith = contractAddress
+	return repository.ClipSalesIDs, repository.GetClipSalesError
 }
 
 func (repository *MockMakerStorageRepository) GetVatSinKeys() ([]string, error) {

@@ -2,6 +2,7 @@ package clip
 
 import (
 	"fmt"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"strconv"
 
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -27,6 +28,13 @@ const (
 
 	Packed = "packed_storage_values"
 
+	SalePos = "sale_pos"
+	SaleTab = "sale_tab"
+	SaleLot = "sale_lot"
+	SaleUsr = "sale_usr"
+	SaleTic = "sale_tic"
+	SaleTop = "sale_top"
+
 	insertClipDogQuery     = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
@@ -38,6 +46,13 @@ const (
 	insertClipTipQuery     = `INSERT INTO maker.clip_tip (diff_id, header_id, address_id, tip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipChostQuery   = `INSERT INTO maker.clip_chost (diff_id, header_id, address_id, chost) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 	insertClipKicksQuery   = `INSERT INTO maker.clip_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+
+	insertSalePosQuery = `INSERT INTO maker.clip_sale_pos (diff_id, header_id, address_id, sale_id, pos) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertSaleTabQuery = `INSERT INTO maker.clip_sale_tab (diff_id, header_id, address_id, sale_id, tab) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertSaleLotQuery = `INSERT INTO maker.clip_sale_lot (diff_id, header_id, address_id, sale_id, lot) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertSaleUsrQuery = `INSERT INTO maker.clip_sale_usr (diff_id, header_id, address_id, sale_id, usr) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertSaleTicQuery = `INSERT INTO maker.clip_sale_tic (diff_id, header_id, address_id, sale_id, tic) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
+	insertSaleTopQuery = `INSERT INTO maker.clip_sale_top (diff_id, header_id, address_id, sale_id, top) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 )
 
 type StorageRepository struct {
@@ -70,6 +85,18 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertKicks(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
+	case SalePos:
+		return repo.insertSalePos(diffID, headerID, metadata, value.(string))
+	case SaleTab:
+		return repo.insertSaleTab(diffID, headerID, metadata, value.(string))
+	case SaleLot:
+		return repo.insertSaleLot(diffID, headerID, metadata, value.(string))
+	case SaleUsr:
+		return repo.insertSaleUsr(diffID, headerID, metadata, value.(string))
+	case SaleTic:
+		return repo.insertSaleTic(diffID, headerID, metadata, value.(string))
+	case SaleTop:
+		return repo.insertSaleTop(diffID, headerID, metadata, value.(string))
 	default:
 		return fmt.Errorf("unrecognized clip contract storage name: %s", metadata.Name)
 	}
@@ -250,20 +277,98 @@ func (repo *StorageRepository) insertKicks(diffID, headerID int64, kicks string)
 	return nil
 }
 
-func (repository *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
+func (repo *StorageRepository) insertPackedValueRecord(diffID, headerID int64, metadata types.ValueMetadata, packedValues map[int]string) error {
 	for order, value := range packedValues {
 		var insertErr error
 		switch metadata.PackedNames[order] {
 		case Chip:
-			insertErr = repository.insertChip(diffID, headerID, value)
+			insertErr = repo.insertChip(diffID, headerID, value)
 		case Tip:
-			insertErr = repository.insertTip(diffID, headerID, value)
+			insertErr = repo.insertTip(diffID, headerID, value)
 		default:
 			return fmt.Errorf("unrecognized clip contract storage name in packed values: %s", metadata.Name)
 		}
 		if insertErr != nil {
 			return fmt.Errorf("error inserting clip packed value from diff ID %d: %w", diffID, insertErr)
 		}
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSalePos(diffID, headerID int64, metadata types.ValueMetadata, pos string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale pos: %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSalePosQuery, saleID, pos, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s pos %s from diff ID %d", saleID, pos, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSaleTab(diffID, headerID int64, metadata types.ValueMetadata, tab string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale tab : %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSaleTabQuery, saleID, tab, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s tab %s from diff ID %d", saleID, tab, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSaleLot(diffID, headerID int64, metadata types.ValueMetadata, lot string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale lot : %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSaleLotQuery, saleID, lot, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s lot %s from diff ID %d", saleID, lot, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSaleUsr(diffID, headerID int64, metadata types.ValueMetadata, usr string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale usr : %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSaleUsrQuery, saleID, usr, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s usr %s from diff ID %d", saleID, usr, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSaleTic(diffID, headerID int64, metadata types.ValueMetadata, tic string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale tic : %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSaleTicQuery, saleID, tic, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s tic %s from diff ID %d", saleID, tic, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertSaleTop(diffID, headerID int64, metadata types.ValueMetadata, top string) error {
+	saleID, err := getSaleID(metadata.Keys)
+	if err != nil {
+		return fmt.Errorf("error getting saleID for clip sale top : %w", err)
+	}
+	insertErr := shared.InsertRecordWithAddressAndBidID(diffID, headerID, insertSaleTopQuery, saleID, top, repo.ContractAddress, repo.db)
+	if insertErr != nil {
+		msg := fmt.Sprintf("error inserting saleID %s top %s from diff ID %d", saleID, top, diffID)
+		return fmt.Errorf("%s: %w", msg, insertErr)
 	}
 	return nil
 }
@@ -275,4 +380,12 @@ func (repo *StorageRepository) ContractAddressID() (int64, error) {
 		return repo.contractAddressID, addressErr
 	}
 	return repo.contractAddressID, nil
+}
+
+func getSaleID(keys map[types.Key]string) (string, error) {
+	sale, ok := keys[constants.SaleId]
+	if !ok {
+		return "", types.ErrMetadataMalformed{MissingData: constants.SaleId}
+	}
+	return sale, nil
 }
