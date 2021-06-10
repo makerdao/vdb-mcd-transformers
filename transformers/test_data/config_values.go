@@ -132,6 +132,26 @@ func Clip160Addresses() []string {
 	return addressesResult
 }
 
+func Clip180Addresses() []string {
+	var addressesResult []string
+	clipAddresses := constants.GetContractAddresses([]string{
+		"MCD_CLIP_UNIV2DAIETH_A_1_8_0",
+		"MCD_CLIP_UNIV2USDCETH_A_1_8_0",
+		"MCD_CLIP_UNIV2ETHUSDT_A_1_8_0",
+		"MCD_CLIP_UNIV2WBTCDAI_A_1_8_0",
+		"MCD_CLIP_UNIV2WBTCETH_A_1_8_0",
+		"MCD_CLIP_UNIV2LINKETH_A_1_8_0",
+		"MCD_CLIP_UNIV2UNIETH_A_1_8_0",
+		"MCD_CLIP_UNIV2AAVEETH_A_1_8_0",
+		"MCD_CLIP_UNIV2DAIUSDT_A_1_8_0",
+	})
+
+	for _, address := range clipAddresses {
+		addressesResult = append(addressesResult, checksum(address))
+	}
+	return addressesResult
+}
+
 func Dog130Address() string   { return checksum(constants.GetContractAddress("MCD_DOG_1_3_0")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_0")) }
 func FlapV109Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_9")) }

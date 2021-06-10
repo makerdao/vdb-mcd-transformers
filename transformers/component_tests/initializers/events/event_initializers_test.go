@@ -651,7 +651,10 @@ func catContracts() []string {
 }
 
 func clipContracts() []string {
-	return append(test_data.Clip130Addresses(), test_data.Clip160Addresses()...)
+	var allClipAddresses []string
+	allClipAddresses = append(test_data.Clip130Addresses(), test_data.Clip160Addresses()...)
+
+	return append(allClipAddresses, test_data.Clip180Addresses()...)
 }
 
 func flapContracts() []string {
