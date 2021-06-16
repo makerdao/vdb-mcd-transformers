@@ -18,10 +18,10 @@ var Exporter exporter
 
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{
-		clip_kick.EventTransformerInitializer,
-		clip_take.EventTransformerInitializer,
-		clip_redo.EventTransformerInitializer,
-		clip_yank.EventTransformerInitializer,
+			clip_kick.EventTransformerInitializer,
+			clip_take.EventTransformerInitializer,
+			clip_redo.EventTransformerInitializer,
+			clip_yank.EventTransformerInitializer,
 		},
 		[]storage.TransformerInitializer{},
 		[]interface1.ContractTransformerInitializer{}
