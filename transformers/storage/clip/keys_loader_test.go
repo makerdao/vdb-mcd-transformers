@@ -73,13 +73,6 @@ var _ = Describe("Clip storage keys loader", func() {
 		})
 	})
 
-	It("returns value for dynamic size array keys", func() {
-		mappings, err := storageKeysLoader.LoadMappings()
-
-		Expect(err).NotTo(HaveOccurred())
-		Expect(mappings[clip.ActiveKey]).To(Equal(clip.ActiveMetadata))
-	})
-
 	Describe("sales", func() {
 		var (
 			storageRepository *test_helpers.MockMakerStorageRepository

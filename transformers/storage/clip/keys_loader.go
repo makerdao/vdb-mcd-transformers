@@ -49,9 +49,6 @@ var (
 	KicksKey      = common.HexToHash(vdbStorage.IndexTen)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
 
-	ActiveKey      = common.HexToHash(vdbStorage.IndexEleven)
-	ActiveMetadata = types.GetValueMetadata(Active, nil, types.Uint256)
-
 	SalesMappingIndex = vdbStorage.IndexTwelve
 )
 
@@ -96,7 +93,6 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[ChipAndTipStorageKey] = ChipAndTipMetadata
 	mappings[ChostKey] = ChostMetadata
 	mappings[KicksKey] = KicksMetadata
-	mappings[ActiveKey] = ActiveMetadata
 	return mappings
 }
 
