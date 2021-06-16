@@ -32,6 +32,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/ClickHouse/clickhouse-go v1.4.3 h1:iAFMa2UrQdR5bHJ2/yaSLffZkxpcOYQMCUuKeNXGdqc=
 github.com/ClickHouse/clickhouse-go v1.4.3/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
+github.com/ClickHouse/clickhouse-go v1.4.5 h1:FfhyEnv6/BaWldyjgT2k4gDDmeNwJ9C4NbY/MXxJlXk=
+github.com/ClickHouse/clickhouse-go v1.4.5/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
 github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53/go.mod h1:+3IMCy2vIlbG1XG/0ggNQv0SvxCAIpPM5b1nCz56Xno=
 github.com/CloudyKit/jet/v3 v3.0.0/go.mod h1:HKQPgSJmdK8hdoAbKUUWajkHyHo4RaU5rMdUywE7VMo=
 github.com/Joker/hpp v1.0.0/go.mod h1:8x5n+M1Hp5hC0g8okX3sR3vFQwynaX/UgSOM9MeBKzY=
@@ -283,6 +285,8 @@ github.com/makerdao/vulcanizedb v0.1.0 h1:CPNLVGaw6R3+tHnUlBiDULr3lsKziFa0UM8Nc/
 github.com/makerdao/vulcanizedb v0.1.0/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=
 github.com/makerdao/vulcanizedb v0.1.1-0.20210120155730-fed8d6aead03 h1:Ncbq5MXX78N4sFMx1UT8LsmEPGOaP6RwFM5fnq7zBiw=
 github.com/makerdao/vulcanizedb v0.1.1-0.20210120155730-fed8d6aead03/go.mod h1:NrrsyBLaIYExHOD4Hs8ZJjGoOP+EkYRcSmEcY/Sr0oA=
+github.com/makerdao/vulcanizedb v0.1.1-0.20210609154034-d0e56f2e9b14 h1:lbiN+IXV8nxGEE2DcSwQ0KDOGkWWGWet96DN2Qj2Z/M=
+github.com/makerdao/vulcanizedb v0.1.1-0.20210609154034-d0e56f2e9b14/go.mod h1:jE16Li6Ubfb9G6btUn0D0klGHnMyW93TaioP0rchNWg=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.0/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.2 h1:/bC9yWikZXAL9uJdulbSfyVNIR3n3trXl+v8+1sx8mU=

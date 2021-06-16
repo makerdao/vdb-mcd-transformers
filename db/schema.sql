@@ -8217,39 +8217,6 @@ ALTER SEQUENCE maker.clip_dog_id_seq OWNED BY maker.clip_dog.id;
 
 
 --
--- Name: clip_ilk; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_ilk (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    header_id integer NOT NULL,
-    ilk_id integer NOT NULL
-);
-
-
---
--- Name: clip_ilk_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
---
-
-CREATE SEQUENCE maker.clip_ilk_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: clip_ilk_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
---
-
-ALTER SEQUENCE maker.clip_ilk_id_seq OWNED BY maker.clip_ilk.id;
-
-
---
 -- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -14237,13 +14204,6 @@ ALTER TABLE ONLY maker.clip_dog ALTER COLUMN id SET DEFAULT nextval('maker.clip_
 
 
 --
--- Name: clip_ilk id; Type: DEFAULT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk ALTER COLUMN id SET DEFAULT nextval('maker.clip_ilk_id_seq'::regclass);
-
-
---
 -- Name: clip_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
@@ -16097,22 +16057,6 @@ ALTER TABLE ONLY maker.clip_dog
 
 ALTER TABLE ONLY maker.clip_dog
     ADD CONSTRAINT clip_dog_pkey PRIMARY KEY (id);
-
-
---
--- Name: clip_ilk clip_ilk_diff_id_header_id_address_id_ilk_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_diff_id_header_id_address_id_ilk_id_key UNIQUE (diff_id, header_id, address_id, ilk_id);
-
-
---
--- Name: clip_ilk clip_ilk_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_pkey PRIMARY KEY (id);
 
 
 --
@@ -19578,27 +19522,6 @@ CREATE INDEX checked_headers_check_count ON maker.checked_headers USING btree (c
 --
 
 CREATE INDEX checked_headers_header_index ON maker.checked_headers USING btree (header_id);
-
-
---
--- Name: clip_ilk_address_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_ilk_address_index ON maker.clip_ilk USING btree (address_id);
-
-
---
--- Name: clip_ilk_header_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_ilk_header_id_index ON maker.clip_ilk USING btree (header_id);
-
-
---
--- Name: clip_ilk_ilk_id_index; Type: INDEX; Schema: maker; Owner: -
---
-
-CREATE INDEX clip_ilk_ilk_id_index ON maker.clip_ilk USING btree (ilk_id);
 
 
 --
@@ -24008,38 +23931,6 @@ ALTER TABLE ONLY maker.clip_dog
 
 ALTER TABLE ONLY maker.clip_dog
     ADD CONSTRAINT clip_dog_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_ilk clip_ilk_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_ilk clip_ilk_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_ilk clip_ilk_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
-
-
---
--- Name: clip_ilk clip_ilk_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
---
-
-ALTER TABLE ONLY maker.clip_ilk
-    ADD CONSTRAINT clip_ilk_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --
