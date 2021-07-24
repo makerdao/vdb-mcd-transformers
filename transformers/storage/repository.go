@@ -62,7 +62,7 @@ func (repository *MakerStorageRepository) GetClipSalesIDs(contractAddress string
 		return []string{}, addressErr
 	}
 	err := repository.db.Select(&saleIDs, `
-		SELECT bid_id from maker.clip_kick WHERE address_id = $1`, addressID)
+		SELECT sale_id from maker.clip_kick WHERE address_id = $1`, addressID)
 	return saleIDs, err
 }
 

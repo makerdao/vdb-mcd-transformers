@@ -8225,7 +8225,7 @@ CREATE TABLE maker.clip_kick (
     header_id integer NOT NULL,
     address_id bigint NOT NULL,
     log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
+    sale_id numeric NOT NULL,
     top numeric,
     tab numeric,
     lot numeric,
@@ -19535,7 +19535,7 @@ CREATE INDEX clip_kick_address_index ON maker.clip_kick USING btree (address_id)
 -- Name: clip_kick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX clip_kick_bid_id_index ON maker.clip_kick USING btree (bid_id);
+CREATE INDEX clip_kick_bid_id_index ON maker.clip_kick USING btree (sale_id);
 
 
 --

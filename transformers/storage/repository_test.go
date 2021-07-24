@@ -54,7 +54,7 @@ const (
 		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
 
 	insertClipKickQuery = `INSERT into maker.clip_kick
-		(header_id, address_id, log_id, bid_id, top, tab, lot, usr, kpr, coin )
+		(header_id, address_id, log_id, sale_id, top, tab, lot, usr, kpr, coin )
 		VALUES($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC, $8, $9, $10::NUMERIC)
 		ON CONFLICT (header_id, log_id)
 		DO NOTHING;`
