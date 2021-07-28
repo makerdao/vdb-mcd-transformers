@@ -9,7 +9,7 @@ CREATE TABLE maker.clip
     lot          NUMERIC   DEFAULT NULL,
     usr          TEXT      DEFAULT NULL,
     tic          NUMERIC   DEFAULT NULL,
-    top          NUMERIC   DEFAULT NULL,
+    "top"          NUMERIC   DEFAULT NULL,
     created      TIMESTAMP DEFAULT NULL,
     updated      TIMESTAMP NOT NULL,
     PRIMARY KEY (address_id, sale_id, block_number)
@@ -66,20 +66,20 @@ $$
 COMMENT ON FUNCTION clip_sale_lot_before_block
     IS E'@omit';
 
-CREATE FUNCTION clip_sale_top_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+CREATE FUNCTION clip_sale_usr_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
 $$
-SELECT top
-FROM maker.clip_sale_top
-         LEFT JOIN public.headers ON clip_sale_top.header_id = headers.id
-WHERE clip_sale_top.sale_id = clip_sale_top_before_block.sale_id
-  AND clip_sale_top.address_id = clip_sale_top_before_block.address_id
-  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_top_before_block.header_id)
+SELECT usr
+FROM maker.clip_sale_usr
+         LEFT JOIN public.headers ON clip_sale_usr.header_id = headers.id
+WHERE clip_sale_usr.sale_id = clip_sale_usr_before_block.sale_id
+  AND clip_sale_usr.address_id = clip_sale_usr_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_usr_before_block.header_id)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION clip_sale_top_before_block
+COMMENT ON FUNCTION clip_sale_usr_before_block
     IS E'@omit';
 
 CREATE FUNCTION clip_sale_tic_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
@@ -98,20 +98,20 @@ $$
 COMMENT ON FUNCTION clip_sale_tic_before_block
     IS E'@omit';
 
-CREATE FUNCTION clip_sale_usr_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
+CREATE FUNCTION clip_sale_top_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
 $$
-SELECT usr
-FROM maker.clip_sale_usr
-         LEFT JOIN public.headers ON clip_sale_usr.header_id = headers.id
-WHERE clip_sale_usr.sale_id = clip_sale_usr_before_block.sale_id
-  AND clip_sale_usr.address_id = clip_sale_usr_before_block.address_id
-  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_usr_before_block.header_id)
+SELECT top
+FROM maker.clip_sale_top
+         LEFT JOIN public.headers ON clip_sale_top.header_id = headers.id
+WHERE clip_sale_top.sale_id = clip_sale_top_before_block.sale_id
+  AND clip_sale_top.address_id = clip_sale_top_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_top_before_block.header_id)
 ORDER BY block_number DESC
 LIMIT 1
 $$
     LANGUAGE sql;
 
-COMMENT ON FUNCTION clip_sale_usr_before_block
+COMMENT ON FUNCTION clip_sale_top_before_block
     IS E'@omit';
 
 CREATE FUNCTION clip_sale_time_created(address_id BIGINT, sale_id NUMERIC) RETURNS TIMESTAMP AS
@@ -125,6 +125,48 @@ $$
     LANGUAGE sql;
 
 COMMENT ON FUNCTION clip_sale_time_created
+    IS E'@omit';
+
+-- +goose StatementBegin
+CREATE OR REPLACE FUNCTION maker.delete_obsolete_clip(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS VOID AS
+$$
+DECLARE
+    clip_block      BIGINT     := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);
+    clip_state      maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number = clip_block);
+    prev_clip_state maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number < clip_block
+        ORDER BY clip.block_number DESC
+        LIMIT 1);
+BEGIN
+    DELETE
+    FROM maker.clip
+    WHERE clip.sale_id = delete_obsolete_clip.sale_id
+      AND clip.address_id = delete_obsolete_clip.address_id
+      AND clip.block_number = clip_block
+      AND (clip_state.pos IS NULL OR clip_state.pos = prev_clip_state.pos)
+      AND (clip_state.tab IS NULL OR clip_state.tab = prev_clip_state.tab)
+      AND (clip_state.lot IS NULL OR clip_state.lot = prev_clip_state.lot)
+      AND (clip_state.usr IS NULL OR clip_state.usr = prev_clip_state.usr)
+      AND (clip_state.tic IS NULL OR clip_state.tic = prev_clip_state.tic)
+      AND (clip_state."top" IS NULL OR clip_state."top" = prev_clip_state."top");
+END
+$$
+    LANGUAGE plpgsql;
+-- +goose StatementEnd
+
+COMMENT ON FUNCTION maker.delete_obsolete_clip
     IS E'@omit';
 
 CREATE OR REPLACE FUNCTION maker.insert_clip_created(new_event maker.clip_kick) RETURNS VOID
