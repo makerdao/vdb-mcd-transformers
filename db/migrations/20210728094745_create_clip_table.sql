@@ -18,6 +18,102 @@ CREATE TABLE maker.clip
 CREATE INDEX clip_address_index
     ON maker.clip (address_id);
 
+CREATE FUNCTION clip_sale_pos_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+$$
+SELECT pos
+FROM maker.clip_sale_pos
+         LEFT JOIN public.headers ON clip_sale_pos.header_id = headers.id
+WHERE clip_sale_pos.sale_id = clip_sale_pos_before_block.sale_id
+  AND clip_sale_pos.address_id = clip_sale_pos_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_pos_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_pos_before_block
+    IS E'@omit';
+
+CREATE FUNCTION clip_sale_tab_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+$$
+SELECT tab
+FROM maker.clip_sale_tab
+         LEFT JOIN public.headers ON clip_sale_tab.header_id = headers.id
+WHERE clip_sale_tab.sale_id = clip_sale_tab_before_block.sale_id
+  AND clip_sale_tab.address_id = clip_sale_tab_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_tab_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_tab_before_block
+    IS E'@omit';
+
+CREATE FUNCTION clip_sale_lot_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+$$
+SELECT lot
+FROM maker.clip_sale_lot
+         LEFT JOIN public.headers ON clip_sale_lot.header_id = headers.id
+WHERE clip_sale_lot.sale_id = clip_sale_lot_before_block.sale_id
+  AND clip_sale_lot.address_id = clip_sale_lot_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_lot_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_lot_before_block
+    IS E'@omit';
+
+CREATE FUNCTION clip_sale_top_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+$$
+SELECT top
+FROM maker.clip_sale_top
+         LEFT JOIN public.headers ON clip_sale_top.header_id = headers.id
+WHERE clip_sale_top.sale_id = clip_sale_top_before_block.sale_id
+  AND clip_sale_top.address_id = clip_sale_top_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_top_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_top_before_block
+    IS E'@omit';
+
+CREATE FUNCTION clip_sale_tic_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS NUMERIC AS
+$$
+SELECT tic
+FROM maker.clip_sale_tic
+         LEFT JOIN public.headers ON clip_sale_tic.header_id = headers.id
+WHERE clip_sale_tic.sale_id = clip_sale_tic_before_block.sale_id
+  AND clip_sale_tic.address_id = clip_sale_tic_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_tic_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_tic_before_block
+    IS E'@omit';
+
+CREATE FUNCTION clip_sale_usr_before_block(sale_id NUMERIC, address_id BIGINT, header_id INTEGER) RETURNS TEXT AS
+$$
+SELECT usr
+FROM maker.clip_sale_usr
+         LEFT JOIN public.headers ON clip_sale_usr.header_id = headers.id
+WHERE clip_sale_usr.sale_id = clip_sale_usr_before_block.sale_id
+  AND clip_sale_usr.address_id = clip_sale_usr_before_block.address_id
+  AND headers.block_number < (SELECT block_number FROM public.headers WHERE id = clip_sale_usr_before_block.header_id)
+ORDER BY block_number DESC
+LIMIT 1
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION clip_sale_usr_before_block
+    IS E'@omit';
+
 CREATE FUNCTION clip_sale_time_created(address_id BIGINT, sale_id NUMERIC) RETURNS TIMESTAMP AS
 $$
 SELECT api.epoch_to_datetime(MIN(block_timestamp))
@@ -91,6 +187,13 @@ DROP TRIGGER clip_created_trigger ON maker.clip_kick;
 DROP FUNCTION maker.insert_clip_created(maker.clip_kick);
 DROP FUNCTION maker.clear_clip_created(maker.clip_kick);
 DROP FUNCTION maker.update_clip_created();
+DROP FUNCTION clip_sale_pos_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION clip_sale_tab_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION clip_sale_lot_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION clip_sale_usr_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION clip_sale_tic_before_block(NUMERIC, BIGINT, INTEGER);
+DROP FUNCTION clip_sale_top_before_block(NUMERIC, BIGINT, INTEGER);
+
 DROP FUNCTION clip_sale_time_created(BIGINT, NUMERIC);
 
 DROP INDEX maker.clip_address_index;
