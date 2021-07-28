@@ -32,7 +32,7 @@ func SharedSaleCreationTriggerTests(tableName, contractAddress string, kickModel
 			db                  = test_config.NewTestDB(test_config.NewTestNode())
 			getTimeCreatedQuery = fmt.Sprintf(`SELECT created FROM maker.%s ORDER BY block_number`, tableName)
 			insertEmptyRowQuery = fmt.Sprintf(`INSERT INTO maker.%s (block_number, sale_id, address_id, updated) VALUES ($1, $2, $3, $4)`, tableName)
-			//deleteRowQuery      = fmt.Sprintf(`DELETE FROM maker.%s_kick WHERE header_id = $1`, tableName)
+			deleteRowQuery      = fmt.Sprintf(`DELETE FROM maker.%s_kick WHERE header_id = $1`, tableName)
 		)
 
 		BeforeEach(func() {
@@ -65,11 +65,11 @@ func SharedSaleCreationTriggerTests(tableName, contractAddress string, kickModel
 			Expect(creationTimes[0]).To(Equal(expectedTimeCreated))
 		})
 
-		/*It("does not update records from a different contract", func() {
+		It("does not update records from a different contract", func() {
 			randomAddressID, addressErr := repository.GetOrCreateAddress(db, test_data.RandomString(40))
 			Expect(addressErr).NotTo(HaveOccurred())
 			_, setupErr := db.Exec(insertEmptyRowQuery, headerTwo.BlockNumber,
-				kickModel.ColumnValues[constants.BidIDColumn], randomAddressID, FormatTimestamp(rawTimestampTwo))
+				kickModel.ColumnValues[constants.SaleIDColumn], randomAddressID, FormatTimestamp(rawTimestampTwo))
 			Expect(setupErr).NotTo(HaveOccurred())
 
 			kickErr := event.PersistModels([]event.InsertionModel{*kickModel}, db)
@@ -82,9 +82,9 @@ func SharedSaleCreationTriggerTests(tableName, contractAddress string, kickModel
 			Expect(creationTimes[0].Valid).To(BeFalse())
 		})
 
-		It("does not update records with a different bid_id", func() {
-			randomBidID := strconv.Itoa(rand.Int())
-			_, setupErr := db.Exec(insertEmptyRowQuery, headerTwo.BlockNumber, randomBidID,
+		It("does not update records with a different sale_id", func() {
+			randomSaleID := strconv.Itoa(rand.Int())
+			_, setupErr := db.Exec(insertEmptyRowQuery, headerTwo.BlockNumber, randomSaleID,
 				kickModel.ColumnValues[event.AddressFK], FormatTimestamp(rawTimestampTwo))
 			Expect(setupErr).NotTo(HaveOccurred())
 
@@ -112,7 +112,7 @@ func SharedSaleCreationTriggerTests(tableName, contractAddress string, kickModel
 			queryErr := db.Select(&creationTimes, getTimeCreatedQuery)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(creationTimes[0].Valid).To(BeFalse())
-		}) */
+		})
 	})
 }
 
