@@ -245,4 +245,5 @@ const (
 	FlapTable = "flap"
 	FlipTable = "flip"
 	FlopTable = "flop"
+	ClipTable = "clip"
 )
