@@ -182,6 +182,34 @@ WHERE headers.id = new_event.header_id
 $$
     LANGUAGE sql;
 
+CREATE OR REPLACE FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos) RETURNS VOID AS
+$$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        new_diff.pos,
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET pos = new_diff.pos
+$$
+    LANGUAGE sql;
+
+COMMENT ON FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos)
+    IS E'@omit';
+
+
 COMMENT ON FUNCTION maker.insert_clip_created
     IS E'@omit';
 
