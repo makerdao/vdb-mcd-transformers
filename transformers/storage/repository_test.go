@@ -53,6 +53,12 @@ const (
 		ON CONFLICT (header_id, log_id)
 		DO UPDATE SET bid_id = $2, lot = $3, bid = $4, address_id = $5;`
 
+	insertClipKickQuery = `INSERT into maker.clip_kick
+		(header_id, address_id, log_id, sale_id, top, tab, lot, usr, kpr, coin )
+		VALUES($1, $2, $3, $4::NUMERIC, $5::NUMERIC, $6::NUMERIC, $7::NUMERIC, $8, $9, $10::NUMERIC)
+		ON CONFLICT (header_id, log_id)
+		DO NOTHING;`
+
 	insertFlipKickQuery = `INSERT into maker.flip_kick
 		(header_id, bid_id, lot, bid, tab, usr, gal, address_id, log_id)
 		VALUES($1, $2::NUMERIC, $3::NUMERIC, $4::NUMERIC, $5::NUMERIC, $6, $7, $8, $9)
@@ -507,6 +513,25 @@ var _ = Describe("Maker storage repository", func() {
 		})
 	})
 
+	Describe("getting clip sales ids", func() {
+		var (
+			saleID1 string
+		)
+
+		BeforeEach(func() {
+			saleID1 = strconv.FormatInt(rand.Int63(), 10)
+		})
+
+		It("fetches sale ids from a clip kick event", func() {
+			insertClipKick(1, saleID1, addressID, db)
+
+			saleIDs, err := repo.GetClipSalesIDs(address)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(saleIDs)).To(Equal(1))
+			Expect(saleIDs[0]).To(Equal(saleID1))
+		})
+	})
+
 	Describe("getting flip bid ids", func() {
 		var (
 			bidID1, bidID2, bidID3, bidID4, bidID5, bidID6, bidID7 string
@@ -761,6 +786,16 @@ func insertTick(blockNumber int64, bidID string, contractAddressID int64, db *po
 	_, insertErr := db.Exec(`INSERT INTO maker.tick (header_id, bid_id, address_id, log_id, msg_sender)
 				VALUES($1, $2::NUMERIC, $3, $4, $5)`,
 		headerID, bidID, contractAddressID, flapTickLog.ID, msgSenderID,
+	)
+	Expect(insertErr).NotTo(HaveOccurred())
+}
+
+func insertClipKick(blockNumber int64, saleID string, contractAddressID int64, db *postgres.DB) {
+	// flip kick event record
+	headerID := insertHeader(db, blockNumber)
+	log := test_data.CreateTestLog(headerID, db)
+	_, insertErr := db.Exec(insertClipKickQuery,
+		headerID, contractAddressID, log.ID, saleID, 0, 0, 0, 0, 0, 0,
 	)
 	Expect(insertErr).NotTo(HaveOccurred())
 }

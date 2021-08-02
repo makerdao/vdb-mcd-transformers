@@ -53,7 +53,7 @@ var clipKickModel = event.InsertionModel{
 		event.HeaderFK,
 		event.LogFK,
 		event.AddressFK,
-		constants.BidIDColumn,
+		constants.SaleIDColumn,
 		constants.TopColumn,
 		constants.TabColumn,
 		constants.LotColumn,
@@ -65,10 +65,10 @@ var clipKickModel = event.InsertionModel{
 		event.HeaderFK: ClipKickEventLog.HeaderID,
 		event.LogFK:    ClipKickEventLog.ID,
 		// event.AddressFK
-		constants.BidIDColumn: ClipKickEventLog.Log.Topics[1].Big().String(),
-		constants.TopColumn:   top.String(),
-		constants.TabColumn:   tab.String(),
-		constants.LotColumn:   lot.String(),
+		constants.SaleIDColumn: ClipKickEventLog.Log.Topics[1].Big().String(),
+		constants.TopColumn:    top.String(),
+		constants.TabColumn:    tab.String(),
+		constants.LotColumn:    lot.String(),
 		// constants.UsrColumn
 		// constants.KprColumn
 		constants.CoinColumn: coin.String(),
