@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.6
--- Dumped by pg_dump version 13.2
+-- Dumped from database version 11.6
+-- Dumped by pg_dump version 11.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -58,6 +58,31 @@ CREATE TYPE api.bite_event AS (
 	block_height bigint,
 	log_id bigint,
 	flip_address text
+);
+
+
+--
+-- Name: sale_act; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.sale_act AS ENUM (
+    'kick',
+    'take',
+    'redo',
+    'yank'
+);
+
+
+--
+-- Name: clip_sale_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.clip_sale_event AS (
+	sale_id numeric,
+	act api.sale_act,
+	block_height bigint,
+	log_id bigint,
+	contract_address text
 );
 
 
@@ -395,6 +420,58 @@ ORDER BY urn_identifier, block_number DESC
 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
     OFFSET
     all_bites.result_offset
+$$;
+
+
+--
+-- Name: all_clip_sale_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_clip_sale_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH address_ids AS (
+    SELECT distinct address_id
+    FROM maker.clip_kick
+)
+SELECT sale_id,
+       'kick'::api.sale_act AS                                          act,
+       block_number        AS                                          block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_kick.address_id)
+FROM maker.clip_kick
+         LEFT JOIN headers ON clip_kick.header_id = headers.id
+UNION
+SELECT sale_id,
+       'take'::api.sale_act AS act,
+       block_number        AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_take.address_id)
+FROM maker.clip_take
+         LEFT JOIN headers on clip_take.header_id = headers.id
+WHERE clip_take.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'redo'::api.sale_act AS                                          act,
+       block_number        AS                                          block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_redo.address_id)
+FROM maker.clip_redo
+         LEFT JOIN headers ON clip_redo.header_id = headers.id
+WHERE clip_redo.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'yank'::api.sale_act AS                                             act,
+       block_number        AS                                          block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_yank.address_id)
+FROM maker.clip_yank
+         LEFT JOIN headers ON clip_yank.header_id = headers.id
+WHERE clip_yank.address_id IN (SELECT * FROM address_ids)
+ORDER BY block_height DESC
+LIMIT all_clip_sale_events.max_results
+    OFFSET
+    all_clip_sale_events.result_offset
 $$;
 
 
@@ -902,7 +979,7 @@ $$;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+SET default_with_oids = false;
 
 --
 -- Name: ilk_snapshot; Type: TABLE; Schema: api; Owner: -
@@ -23477,406 +23554,406 @@ CREATE INDEX yank_msg_sender ON maker.yank USING btree (msg_sender);
 -- Name: clip_kick clip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_created_trigger AFTER INSERT OR DELETE ON maker.clip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_clip_created();
+CREATE TRIGGER clip_created_trigger AFTER INSERT OR DELETE ON maker.clip_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_created();
 
 
 --
 -- Name: clip_sale_lot clip_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_lot FOR EACH ROW EXECUTE FUNCTION maker.update_clip_lot();
+CREATE TRIGGER clip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_lot();
 
 
 --
 -- Name: clip_sale_pos clip_pos; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_pos AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_pos FOR EACH ROW EXECUTE FUNCTION maker.update_clip_pos();
+CREATE TRIGGER clip_pos AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_pos FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_pos();
 
 
 --
 -- Name: clip_sale_tab clip_tab; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tab FOR EACH ROW EXECUTE FUNCTION maker.update_clip_tab();
+CREATE TRIGGER clip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tab FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tab();
 
 
 --
 -- Name: clip_sale_tic clip_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tic FOR EACH ROW EXECUTE FUNCTION maker.update_clip_tic();
+CREATE TRIGGER clip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tic();
 
 
 --
 -- Name: clip_sale_top clip_top; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_top AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_top FOR EACH ROW EXECUTE FUNCTION maker.update_clip_top();
+CREATE TRIGGER clip_top AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_top FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_top();
 
 
 --
 -- Name: clip_sale_usr clip_usr; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER clip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_usr FOR EACH ROW EXECUTE FUNCTION maker.update_clip_usr();
+CREATE TRIGGER clip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_usr FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_usr();
 
 
 --
 -- Name: deal deal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER deal AFTER INSERT ON maker.deal FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('deal');
+CREATE TRIGGER deal AFTER INSERT ON maker.deal FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('deal');
 
 
 --
 -- Name: dent dent; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER dent AFTER INSERT ON maker.dent FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('dent');
+CREATE TRIGGER dent AFTER INSERT ON maker.dent FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('dent');
 
 
 --
 -- Name: flap_bid_bid flap_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.update_flap_bids();
+CREATE TRIGGER flap_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_bids();
 
 
 --
 -- Name: flap_kick flap_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_created_trigger AFTER INSERT OR DELETE ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.update_flap_created();
+CREATE TRIGGER flap_created_trigger AFTER INSERT OR DELETE ON maker.flap_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_created();
 
 
 --
 -- Name: flap_bid_end flap_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_end AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE FUNCTION maker.update_flap_ends();
+CREATE TRIGGER flap_end AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_ends();
 
 
 --
 -- Name: flap_bid_guy flap_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flap_guys();
+CREATE TRIGGER flap_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_guys();
 
 
 --
 -- Name: flap_kick flap_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_kick AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flap_kick AFTER INSERT ON maker.flap_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
 -- Name: flap_bid_lot flap_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.update_flap_lots();
+CREATE TRIGGER flap_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_lots();
 
 
 --
 -- Name: flap_bid_tic flap_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flap_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.update_flap_tics();
+CREATE TRIGGER flap_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flap_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_flap_tics();
 
 
 --
 -- Name: flip_bid_bid flip_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.update_flip_bids();
+CREATE TRIGGER flip_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_bids();
 
 
 --
 -- Name: flip_kick flip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_created_trigger AFTER INSERT OR DELETE ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_flip_created();
+CREATE TRIGGER flip_created_trigger AFTER INSERT OR DELETE ON maker.flip_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_created();
 
 
 --
 -- Name: flip_bid_end flip_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_end AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE FUNCTION maker.update_flip_ends();
+CREATE TRIGGER flip_end AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_ends();
 
 
 --
 -- Name: flip_bid_gal flip_gal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_gal AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE FUNCTION maker.update_flip_gals();
+CREATE TRIGGER flip_gal AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_gal FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_gals();
 
 
 --
 -- Name: flip_bid_guy flip_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flip_guys();
+CREATE TRIGGER flip_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_guys();
 
 
 --
 -- Name: flip_ilk flip_ilk; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_ilk AFTER INSERT OR DELETE ON maker.flip_ilk FOR EACH ROW EXECUTE FUNCTION maker.update_bid_event_ilk();
+CREATE TRIGGER flip_ilk AFTER INSERT OR DELETE ON maker.flip_ilk FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_event_ilk();
 
 
 --
 -- Name: flip_kick flip_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_kick AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flip_kick AFTER INSERT ON maker.flip_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
 -- Name: flip_bid_lot flip_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.update_flip_lots();
+CREATE TRIGGER flip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_lots();
 
 
 --
 -- Name: flip_bid_tab flip_tab; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE FUNCTION maker.update_flip_tabs();
+CREATE TRIGGER flip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tab FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_tabs();
 
 
 --
 -- Name: flip_bid_tic flip_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.update_flip_tics();
+CREATE TRIGGER flip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_tics();
 
 
 --
 -- Name: flip_bid_usr flip_urn; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_urn AFTER INSERT OR DELETE ON maker.flip_bid_usr FOR EACH ROW EXECUTE FUNCTION maker.update_bid_event_urn();
+CREATE TRIGGER flip_urn AFTER INSERT OR DELETE ON maker.flip_bid_usr FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_event_urn();
 
 
 --
 -- Name: flip_bid_usr flip_usr; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_usr FOR EACH ROW EXECUTE FUNCTION maker.update_flip_usrs();
+CREATE TRIGGER flip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.flip_bid_usr FOR EACH ROW EXECUTE PROCEDURE maker.update_flip_usrs();
 
 
 --
 -- Name: flop_bid_bid flop_bid; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE FUNCTION maker.update_flop_bids();
+CREATE TRIGGER flop_bid AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_bid FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_bids();
 
 
 --
 -- Name: flop_kick flop_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_created_trigger AFTER INSERT OR DELETE ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.update_flop_created();
+CREATE TRIGGER flop_created_trigger AFTER INSERT OR DELETE ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_created();
 
 
 --
 -- Name: flop_bid_end flop_end; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_end AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE FUNCTION maker.update_flop_ends();
+CREATE TRIGGER flop_end AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_end FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_ends();
 
 
 --
 -- Name: flop_bid_guy flop_guy; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE FUNCTION maker.update_flop_guys();
+CREATE TRIGGER flop_guy AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_guy FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_guys();
 
 
 --
 -- Name: flop_kick flop_kick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_kick AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('kick');
+CREATE TRIGGER flop_kick AFTER INSERT ON maker.flop_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('kick');
 
 
 --
 -- Name: flop_bid_lot flop_lot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE FUNCTION maker.update_flop_lots();
+CREATE TRIGGER flop_lot AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_lots();
 
 
 --
 -- Name: flop_bid_tic flop_tic; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER flop_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE FUNCTION maker.update_flop_tics();
+CREATE TRIGGER flop_tic AFTER INSERT OR DELETE OR UPDATE ON maker.flop_bid_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_flop_tics();
 
 
 --
 -- Name: vat_ilk_art ilk_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_arts();
+CREATE TRIGGER ilk_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_art FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_arts();
 
 
 --
 -- Name: cat_ilk_chop ilk_chop; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_chops();
+CREATE TRIGGER ilk_chop AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_chop FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_chops();
 
 
 --
 -- Name: cat_ilk_dunk ilk_dunk; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_dunk AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_dunk FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_dunks();
+CREATE TRIGGER ilk_dunk AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_dunk FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dunks();
 
 
 --
 -- Name: vat_ilk_dust ilk_dust; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_dusts();
+CREATE TRIGGER ilk_dust AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_dust FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_dusts();
 
 
 --
 -- Name: jug_ilk_duty ilk_duty; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_duties();
+CREATE TRIGGER ilk_duty AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_duty FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_duties();
 
 
 --
 -- Name: cat_ilk_flip ilk_flip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_flips();
+CREATE TRIGGER ilk_flip AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_flip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_flips();
 
 
 --
 -- Name: vat_init ilk_init; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE FUNCTION maker.update_time_created();
+CREATE TRIGGER ilk_init AFTER INSERT OR DELETE OR UPDATE ON maker.vat_init FOR EACH ROW EXECUTE PROCEDURE maker.update_time_created();
 
 
 --
 -- Name: vat_ilk_line ilk_line; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lines();
+CREATE TRIGGER ilk_line AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_line FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lines();
 
 
 --
 -- Name: cat_ilk_lump ilk_lump; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_lumps();
+CREATE TRIGGER ilk_lump AFTER INSERT OR DELETE OR UPDATE ON maker.cat_ilk_lump FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_lumps();
 
 
 --
 -- Name: spot_ilk_mat ilk_mat; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_mats();
+CREATE TRIGGER ilk_mat AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_mat FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_mats();
 
 
 --
 -- Name: spot_ilk_pip ilk_pip; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_pips();
+CREATE TRIGGER ilk_pip AFTER INSERT OR DELETE OR UPDATE ON maker.spot_ilk_pip FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_pips();
 
 
 --
 -- Name: vat_ilk_rate ilk_rate; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rates();
+CREATE TRIGGER ilk_rate AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_rate FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rates();
 
 
 --
 -- Name: jug_ilk_rho ilk_rho; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_rhos();
+CREATE TRIGGER ilk_rho AFTER INSERT OR DELETE OR UPDATE ON maker.jug_ilk_rho FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_rhos();
 
 
 --
 -- Name: vat_ilk_spot ilk_spot; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE FUNCTION maker.update_ilk_spots();
+CREATE TRIGGER ilk_spot AFTER INSERT OR DELETE OR UPDATE ON maker.vat_ilk_spot FOR EACH ROW EXECUTE PROCEDURE maker.update_ilk_spots();
 
 
 --
 -- Name: cdp_manager_cdpi managed_cdp_cdpi; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_created();
+CREATE TRIGGER managed_cdp_cdpi AFTER INSERT OR UPDATE ON maker.cdp_manager_cdpi FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_created();
 
 
 --
 -- Name: cdp_manager_ilks managed_cdp_ilk; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_ilk_identifier();
+CREATE TRIGGER managed_cdp_ilk AFTER INSERT OR UPDATE ON maker.cdp_manager_ilks FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_ilk_identifier();
 
 
 --
 -- Name: cdp_manager_urns managed_cdp_urn; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_urn_identifier();
+CREATE TRIGGER managed_cdp_urn AFTER INSERT OR UPDATE ON maker.cdp_manager_urns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_urn_identifier();
 
 
 --
 -- Name: cdp_manager_owns managed_cdp_usr; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE FUNCTION maker.insert_cdp_usr();
+CREATE TRIGGER managed_cdp_usr AFTER INSERT OR UPDATE ON maker.cdp_manager_owns FOR EACH ROW EXECUTE PROCEDURE maker.insert_cdp_usr();
 
 
 --
 -- Name: tend tend; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER tend AFTER INSERT ON maker.tend FOR EACH ROW EXECUTE FUNCTION maker.update_bid_kick_tend_dent_event('tend');
+CREATE TRIGGER tend AFTER INSERT ON maker.tend FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_kick_tend_dent_event('tend');
 
 
 --
 -- Name: tick tick; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER tick AFTER INSERT ON maker.tick FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('tick');
+CREATE TRIGGER tick AFTER INSERT ON maker.tick FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('tick');
 
 
 --
 -- Name: vat_urn_art urn_art; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE FUNCTION maker.update_urn_arts();
+CREATE TRIGGER urn_art AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_art FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_arts();
 
 
 --
 -- Name: vat_urn_ink urn_ink; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE FUNCTION maker.update_urn_inks();
+CREATE TRIGGER urn_ink AFTER INSERT OR DELETE OR UPDATE ON maker.vat_urn_ink FOR EACH ROW EXECUTE PROCEDURE maker.update_urn_inks();
 
 
 --
 -- Name: yank yank; Type: TRIGGER; Schema: maker; Owner: -
 --
 
-CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE FUNCTION maker.update_bid_tick_deal_yank_event('yank');
+CREATE TRIGGER yank AFTER INSERT ON maker.yank FOR EACH ROW EXECUTE PROCEDURE maker.update_bid_tick_deal_yank_event('yank');
 
 
 --
