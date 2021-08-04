@@ -92,6 +92,8 @@ LIMIT all_clip_sale_events.max_results
     all_clip_sale_events.result_offset
 $$;
 
+
+
 -- +goose Down
 DROP FUNCTION api.all_clip_sale_events(INTEGER, INTEGER);
 DROP TYPE api.sale_act CASCADE;
