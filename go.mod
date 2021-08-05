@@ -9,8 +9,8 @@ require (
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b
-	github.com/makerdao/vulcanizedb v0.1.1-0.20210120155730-fed8d6aead03
+	github.com/makerdao/vdb-transformer-utilities v0.0.0-20210805172636-589addc1f71b
+	github.com/makerdao/vulcanizedb v0.1.1-0.20210805161603-596acd52e7ee
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/onsi/ginkgo v1.14.1
 	github.com/onsi/gomega v1.10.2

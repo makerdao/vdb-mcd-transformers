@@ -391,6 +391,8 @@ github.com/makerdao/go-ethereum v1.10.6-vdb-go-ethereum h1:WBt5yvQVK9P29YUuM1EZU
 github.com/makerdao/go-ethereum v1.10.6-vdb-go-ethereum/go.mod h1:iY/t0vHSmaAOC+xlqvAAeHdGSWNFkfSnN0OhMTDYz90=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b h1:6T5wwMdq2UatMe5qqfMCOz+JiOK2swO309bBFRdDBLQ=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20201021185605-2af87288ff1b/go.mod h1:agx+X5G6Tn5P83IeP3rgPLPIk6PVYB1hPZ6U7pn8+Wc=
+github.com/makerdao/vdb-transformer-utilities v0.0.0-20210805172636-589addc1f71b h1:9Ogb5Fw0brWsE2uefCC4ZB5jWRQWxRoeqZUpMU4XBHo=
+github.com/makerdao/vdb-transformer-utilities v0.0.0-20210805172636-589addc1f71b/go.mod h1:EdAZfYZ6xFOuDUc90AO3xWvOAFWmVLkz0HzLYy3tY/I=
 github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200923220430-893edc1b439b/go.mod h1:1vWEtupceW2bhXe0/NpRmhEpoUWzdmk+44xLxBsDx80=
 github.com/makerdao/vulcanizedb v0.1.0 h1:CPNLVGaw6R3+tHnUlBiDULr3lsKziFa0UM8Nc/JsYnw=
 github.com/makerdao/vulcanizedb v0.1.0/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=
