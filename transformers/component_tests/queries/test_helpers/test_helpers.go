@@ -431,8 +431,12 @@ func GetFlipMetadatas(bidId string) []types.ValueMetadata {
 func GetClipMetadatas(saleId string) []types.ValueMetadata {
 	keys := map[types.Key]string{constants.SaleId: saleId}
 	return []types.ValueMetadata{
-		types.GetValueMetadata(storage.Ilk, nil, types.Bytes32),
+		types.GetValueMetadata(clip.SalePos, keys, types.Uint256),
+		types.GetValueMetadata(clip.SaleTab, keys, types.Uint256),
+		types.GetValueMetadata(clip.SaleLot, keys, types.Uint256),
 		types.GetValueMetadata(clip.SaleUsr, keys, types.Address),
+		types.GetValueMetadata(clip.SaleTic, keys, types.Uint96),
+		types.GetValueMetadata(clip.SaleTop, keys, types.Uint256),
 	}
 }
 
