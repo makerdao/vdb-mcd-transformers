@@ -21,9 +21,9 @@ import (
 
 var _ = Describe("All clip sale events query", func() {
 	var (
-		headerRepo      datastore.HeaderRepository
-		contractAddress = fakes.FakeAddress.Hex()
-		anotherClipAddress = common.HexToAddress("0xabcdef123456789").Hex()
+		headerRepo             datastore.HeaderRepository
+		contractAddress        = fakes.FakeAddress.Hex()
+		anotherClipAddress     = common.HexToAddress("0xabcdef123456789").Hex()
 		addressId              int64
 		saleId                 int
 		blockOne, timestampOne int
