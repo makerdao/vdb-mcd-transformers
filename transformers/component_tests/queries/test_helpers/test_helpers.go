@@ -655,6 +655,20 @@ type FlipBid struct {
 	BlockHeight string `db:"block_height"`
 }
 
+type ClipSale struct {
+	BlockHeight string `db:"block_height"`
+	SaleId      string `db:"sale_id"`
+	Pos         string
+	Tab         string
+	Lot         string
+	Usr         string
+	Tic         string
+	Top         string
+	Created     sql.NullString
+	Updated     sql.NullString
+	ClipAddress string `db:"clip_address"`
+}
+
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
 	ilkId, ilkErr := mcdShared.GetOrCreateIlk(setupData.IlkHex, setupData.DB)
 	if ilkErr != nil {

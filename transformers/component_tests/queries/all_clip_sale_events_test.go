@@ -193,7 +193,7 @@ var _ = Describe("All clip sale events query", func() {
 				))
 			})
 
-			XIt("offsets results if offset is provided", func() {
+			It("offsets results if offset is provided", func() {
 				maxResults := 1
 				resultOffset := 1
 				var actualClipEvents []test_helpers.SaleEvent
@@ -203,7 +203,7 @@ var _ = Describe("All clip sale events query", func() {
 				Expect(actualClipEvents).To(ConsistOf(
 					test_helpers.SaleEvent{
 						SaleId: strconv.Itoa(saleId),
-						Act:    "take",
+						Act:    "kick",
 					},
 				))
 			})

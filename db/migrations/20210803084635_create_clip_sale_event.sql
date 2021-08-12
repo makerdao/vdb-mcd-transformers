@@ -9,15 +9,6 @@ CREATE TYPE api.sale_act AS ENUM (
 CREATE TYPE api.clip_sale_event AS
 (
     sale_id          numeric,
---     top              numeric,
---     tab              numeric,
---     lot              numeric,
---     usr              bigint,
---     kpr              bigint,
---     coin             numeric,
---     max              numeric,
---     price            numeric,
---     owe              numeric,
     act              api.sale_act,
     block_height     bigint,
     log_id           bigint,
@@ -28,35 +19,24 @@ CREATE FUNCTION api.all_clip_sale_events(max_results integer DEFAULT NULL::integ
                                          result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
     LANGUAGE sql
     STABLE
-    AS $$
+AS
+$$
 WITH address_ids AS (
     SELECT distinct address_id
     FROM maker.clip_kick
 )
 
 SELECT sale_id,
---        top,
---        tab,
---        lot,
---        usr,
---        kpr,
---        coin,
-       'kick'::api.sale_act AS                                          act,
-       block_number        AS                                          block_height,
+       'kick'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_kick.address_id)
 FROM maker.clip_kick
          LEFT JOIN headers ON clip_kick.header_id = headers.id
 UNION
 SELECT sale_id,
---        max,
---        price,
---        owe,
---        tab,
---        lot,
---        usr,
        'take'::api.sale_act AS act,
-       block_number        AS block_height,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_take.address_id)
 FROM maker.clip_take
@@ -64,14 +44,8 @@ FROM maker.clip_take
 WHERE clip_take.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT sale_id,
---        top,
---        tab,
---        lot,
---        usr,
---        kpr,
---        coin,
-       'redo'::api.sale_act AS                                          act,
-       block_number        AS                                          block_height,
+       'redo'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_redo.address_id)
 FROM maker.clip_redo
@@ -79,20 +53,16 @@ FROM maker.clip_redo
 WHERE clip_redo.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT sale_id,
-       'yank'::api.sale_act AS                                             act,
-       block_number        AS                                          block_height,
+       'yank'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_yank.address_id)
 FROM maker.clip_yank
          LEFT JOIN headers ON clip_yank.header_id = headers.id
 WHERE clip_yank.address_id IN (SELECT * FROM address_ids)
 ORDER BY block_height DESC
-LIMIT all_clip_sale_events.max_results
-    OFFSET
-    all_clip_sale_events.result_offset
+LIMIT all_clip_sale_events.max_results OFFSET all_clip_sale_events.result_offset
 $$;
-
-
 
 -- +goose Down
 DROP FUNCTION api.all_clip_sale_events(INTEGER, INTEGER);
