@@ -454,8 +454,8 @@ WITH address_ids AS (
     FROM maker.clip_kick
 )
 SELECT sale_id,
-       'kick'::api.sale_act AS                                          act,
-       block_number        AS                                          block_height,
+       'kick'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_kick.address_id)
 FROM maker.clip_kick
@@ -463,7 +463,7 @@ FROM maker.clip_kick
 UNION
 SELECT sale_id,
        'take'::api.sale_act AS act,
-       block_number        AS block_height,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_take.address_id)
 FROM maker.clip_take
@@ -471,8 +471,8 @@ FROM maker.clip_take
 WHERE clip_take.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT sale_id,
-       'redo'::api.sale_act AS                                          act,
-       block_number        AS                                          block_height,
+       'redo'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_redo.address_id)
 FROM maker.clip_redo
@@ -480,17 +480,15 @@ FROM maker.clip_redo
 WHERE clip_redo.address_id IN (SELECT * FROM address_ids)
 UNION
 SELECT sale_id,
-       'yank'::api.sale_act AS                                             act,
-       block_number        AS                                          block_height,
+       'yank'::api.sale_act AS act,
+       block_number         AS block_height,
        log_id,
        (SELECT address FROM addresses WHERE id = clip_yank.address_id)
 FROM maker.clip_yank
          LEFT JOIN headers ON clip_yank.header_id = headers.id
 WHERE clip_yank.address_id IN (SELECT * FROM address_ids)
 ORDER BY block_height DESC
-LIMIT all_clip_sale_events.max_results
-    OFFSET
-    all_clip_sale_events.result_offset
+LIMIT all_clip_sale_events.max_results OFFSET all_clip_sale_events.result_offset
 $$;
 
 
@@ -498,24 +496,26 @@ $$;
 -- Name: all_clips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
-CREATE FUNCTION api.all_clips(clip_address text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_snapshot
+CREATE FUNCTION api.all_clips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_snapshot
     LANGUAGE plpgsql STABLE STRICT
     AS $$
 BEGIN
     RETURN QUERY (
-        WITH clip_address AS (
-            SELECT DISTINCT addresses.id
-            FROM addresses
-            WHERE all_clips.clip_address = addresses.address),
+        WITH ilk_ids AS (SELECT id
+                         FROM maker.ilks
+                         WHERE identifier = all_clips.ilk),
+            clip_id AS (
+            SELECT DISTINCT clip
+            FROM maker.dog_bark
+            WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
+            LIMIT 1),
              sales AS (
                  SELECT DISTINCT sale_id, address
                  FROM maker.clip
-                          JOIN addresses on addresses.id = maker.clip.address_id
-                 WHERE maker.clip.address_id = (SELECT id from clip_address)
+                 JOIN addresses on clip.address_id = addresses.id
+                 WHERE maker.clip.address_id = (SELECT id FROM clip_id)
                  ORDER BY sale_id DESC
-                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
-                     OFFSET
-                     all_clips.result_offset
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET all_clips.result_offset
              )
         SELECT f.*
         FROM sales,
@@ -1287,9 +1287,7 @@ FROM api.all_clip_sale_events() AS events
 WHERE sale_id = clip.sale_id
   AND contract_address = clip.clip_address
 ORDER BY block_height DESC
-LIMIT clip_sale_snapshot_sale_events.max_results
-    OFFSET
-    clip_sale_snapshot_sale_events.result_offset
+LIMIT clip_sale_snapshot_sale_events.max_results OFFSET clip_sale_snapshot_sale_events.result_offset
 $$;
 
 
@@ -1529,7 +1527,6 @@ CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text, bl
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
-   --  ilk_id as (SELECT DISTINCT ilk_id FROM maker.clip_ilk WHERE clip_ilk.address_id = (SELECT id FROM address_id)),
      storage_values AS (
          SELECT pos,
                 tab,

@@ -171,6 +171,12 @@ func AssignIlkID(insertionModel event.InsertionModel, db *postgres.DB) {
 	insertionModel.ColumnValues[constants.IlkColumn] = ilkID
 }
 
+func AssignClip(clipAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
+	clipAddressID, clipAddressErr := repository.GetOrCreateAddress(db, clipAddressHex)
+	Expect(clipAddressErr).NotTo(HaveOccurred())
+	insertionModel.ColumnValues[constants.ClipColumn] = clipAddressID
+}
+
 func AssignClipAddressID(clipAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
 	clipAddressID, clipAddressErr := repository.GetOrCreateAddress(db, clipAddressHex)
 	Expect(clipAddressErr).NotTo(HaveOccurred())

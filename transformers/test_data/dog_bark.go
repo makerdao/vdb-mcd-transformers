@@ -14,7 +14,7 @@ import (
 
 var (
 	ilkIdentifier   = "4554482d41"
-	urnAddress      = "0x7fa9ef6609ca7921112231f8f195138ebba2977"
+	UrnAddress      = "0x7fa9ef6609ca7921112231f8f195138ebba2977"
 	id              = big.NewInt(32)
 	ink             = big.NewInt(123)
 	art             = big.NewInt(456)

@@ -6,9 +6,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
-	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
-	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -26,7 +24,7 @@ var _ = Describe("DogBark transformer", func() {
 		test_data.AssignIlkID(expectedModel, db)
 		test_data.AssignUrnID(expectedModel, db)
 		test_data.AssignAddressID(test_data.DogBarkEventLog, expectedModel, db)
-		assignClipAddressID(test_data.ClipAddress, expectedModel, db)
+		test_data.AssignClip(test_data.ClipAddress, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
 
@@ -36,9 +34,3 @@ var _ = Describe("DogBark transformer", func() {
 		Expect(err).To(HaveOccurred())
 	})
 })
-
-func assignClipAddressID(clipAddressHex string, insertionModel event.InsertionModel, db *postgres.DB) {
-	clipAddressID, clipAddressErr := repository.GetOrCreateAddress(db, clipAddressHex)
-	Expect(clipAddressErr).NotTo(HaveOccurred())
-	insertionModel.ColumnValues[constants.ClipColumn] = clipAddressID
-}
