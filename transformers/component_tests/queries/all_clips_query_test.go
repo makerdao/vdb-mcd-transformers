@@ -22,15 +22,16 @@ import (
 
 var _ = Describe("All clips view", func() {
 	var (
-		headerRepo                   datastore.HeaderRepository
-		contractAddress              = fakes.FakeAddress.Hex()
-		anotherContractAddress       = fakes.AnotherFakeAddress.Hex()
-		ilkIdentifier                = "ETH-A"
-		hexIlk                       = "0x4554482d41"
-		blockOne, blockTwo           int
-		timestampOne, timestampTwo   int
-		headerOne                    core.Header
-		fakeSaleIdOne, fakeSaleIdTwo int
+		headerRepo                 datastore.HeaderRepository
+		anotherContractAddress     = fakes.AnotherFakeAddress.Hex()
+		ilkBatIdentifier           = "BAT-A"
+		hexBatIlk                  = "0x4241542d41"
+		ilkEthIdentifier           = "ETH-A"
+		hexEthIlk                  = "0x4554482d41"
+		blockOne, blockTwo         int
+		timestampOne, timestampTwo int
+		headerOne                  core.Header
+		fakeSaleIdOne              int
 	)
 
 	BeforeEach(func() {
@@ -42,14 +43,13 @@ var _ = Describe("All clips view", func() {
 		timestampOne = int(rand.Int31())
 		headerOne = createHeader(blockOne, timestampOne, headerRepo)
 		fakeSaleIdOne = rand.Int()
-		fakeSaleIdTwo = fakeSaleIdOne + 1
 
 		dogBarkLogOne := test_data.CreateTestLog(headerOne.Id, db)
-		shared.GetOrCreateUrn(test_data.UrnAddress, hexIlk, db)
+		_, _ = shared.GetOrCreateUrn(test_data.UrnAddress, hexEthIlk, db)
 		dogBarkEventOne := test_data.DogBarkModel()
 		dogBarkEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
 		dogBarkEventOne.ColumnValues[event.LogFK] = dogBarkLogOne.ID
-		test_data.AssignIlkID(dogBarkEventOne, db)
+		test_data.AssignIlkID(dogBarkEventOne, ilkEthIdentifier, db)
 		test_data.AssignUrnID(dogBarkEventOne, db)
 		test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventOne, db)
 		test_data.AssignClip(test_data.ClipAddress, dogBarkEventOne, db)
@@ -77,12 +77,12 @@ var _ = Describe("All clips view", func() {
 		test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), test_data.ClipAddress)
 
 		var saleCount int
-		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkIdentifier)
+		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkEthIdentifier)
 		Expect(countQueryErr).NotTo(HaveOccurred())
 		Expect(saleCount).To(Equal(1))
 	})
 
-	XIt("gets the state of multiple sales on the clipper", func() {
+	It("gets the latest state of multiple sales on the clipper", func() {
 		clipKickLogOne := test_data.CreateTestLog(headerOne.Id, db)
 
 		var addressErr error
@@ -114,13 +114,17 @@ var _ = Describe("All clips view", func() {
 		clipStorageValuesTwo := test_helpers.GetClipStorageValues(2, fakeSaleIdOne)
 		test_helpers.CreateClip(db, headerTwo, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), test_data.ClipAddress)
 
-		var saleCount int
-		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkIdentifier)
+		var saleCount, blockHeight int
+		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkEthIdentifier)
 		Expect(countQueryErr).NotTo(HaveOccurred())
-		Expect(saleCount).To(Equal(2))
+		Expect(saleCount).To(Equal(1))
+
+		blockHeightQueryErr := db.Get(&blockHeight, `SELECT block_height FROM api.all_clips($1)`, ilkEthIdentifier)
+		Expect(blockHeightQueryErr).NotTo(HaveOccurred())
+		Expect(blockHeight).To(Equal(blockTwo))
 	})
 
-	XIt("ignores sales from other contracts", func() {
+	XIt("gets the right sale when there are the same ids on different contracts/ilks", func() {
 		clipKickLogOne := test_data.CreateTestLog(headerOne.Id, db)
 
 		var addressErr error
@@ -138,56 +142,18 @@ var _ = Describe("All clips view", func() {
 		clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleIdOne)
 		test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), test_data.ClipAddress)
 
-		addressIdTwo, addressErr := repository.GetOrCreateAddress(db, anotherContractAddress)
-		Expect(addressErr).NotTo(HaveOccurred())
+		dogBarkLogTwo := test_data.CreateTestLog(headerOne.Id, db)
+		_, _ = shared.GetOrCreateUrn(test_data.UrnAddress, hexBatIlk, db)
+		dogBarkEventTwo := test_data.DogBarkModel()
+		dogBarkEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
+		dogBarkEventTwo.ColumnValues[event.LogFK] = dogBarkLogTwo.ID
+		test_data.AssignIlkID(dogBarkEventTwo, ilkBatIdentifier, db)
+		test_data.AssignUrnID(dogBarkEventTwo, db)
+		test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventTwo, db)
+		test_data.AssignClip(anotherContractAddress, dogBarkEventTwo, db)
 
-		clipKickLogTwo := test_data.CreateTestLog(headerOne.Id, db)
-
-		clipKickEventTwo := test_data.ClipKickModel()
-		clipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
-		clipKickEventTwo.ColumnValues[event.LogFK] = clipKickLogTwo.ID
-		clipKickEventTwo.ColumnValues[event.AddressFK] = addressIdTwo
-		clipKickEventTwo.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleIdTwo)
-		clipKickErr = event.PersistModels([]event.InsertionModel{clipKickEventTwo}, db)
-		Expect(clipKickErr).NotTo(HaveOccurred())
-
-		clipStorageValuesTwo := test_helpers.GetClipStorageValues(2, fakeSaleIdTwo)
-		test_helpers.CreateClip(db, headerOne, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdTwo)), anotherContractAddress)
-
-		var saleCount int
-		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkIdentifier)
-		Expect(countQueryErr).NotTo(HaveOccurred())
-		Expect(saleCount).To(Equal(1))
-	})
-
-	XIt("gets the right sales when there are the same ids on different contracts", func() {
-		clipKickLogOne := test_data.CreateTestLog(headerOne.Id, db)
-
-		var addressErr error
-		addressId, addressErr := repository.GetOrCreateAddress(db, contractAddress)
-		Expect(addressErr).NotTo(HaveOccurred())
-
-		clipKickEventOne := test_data.ClipKickModel()
-		clipKickEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
-		clipKickEventOne.ColumnValues[event.LogFK] = clipKickLogOne.ID
-		clipKickEventOne.ColumnValues[event.AddressFK] = addressId
-		clipKickEventOne.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleIdOne)
-		clipKickErr := event.PersistModels([]event.InsertionModel{clipKickEventOne}, db)
-		Expect(clipKickErr).NotTo(HaveOccurred())
-
-		clipTakeLogOne := test_data.CreateTestLog(headerOne.Id, db)
-		clipTakeOneErr := test_helpers.CreateTake(test_helpers.TakeCreationInput{
-			DB:              db,
-			ContractAddress: contractAddress,
-			SaleId:          fakeSaleIdOne,
-			TakeHeaderId:    headerOne.Id,
-			TakeLogId:       clipTakeLogOne.ID,
-		})
-		Expect(clipTakeOneErr).NotTo(HaveOccurred())
-
-		clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleIdOne)
-		test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), contractAddress)
-
+		dogBarkErr := event.PersistModels([]event.InsertionModel{dogBarkEventTwo}, db)
+		Expect(dogBarkErr).NotTo(HaveOccurred())
 		clipKickLogTwo := test_data.CreateTestLog(headerOne.Id, db)
 
 		addressIdTwo, addressErr := repository.GetOrCreateAddress(db, anotherContractAddress)
@@ -201,21 +167,11 @@ var _ = Describe("All clips view", func() {
 		clipKickErr = event.PersistModels([]event.InsertionModel{clipKickEventTwo}, db)
 		Expect(clipKickErr).NotTo(HaveOccurred())
 
-		clipTakeLogTwo := test_data.CreateTestLog(headerOne.Id, db)
-		clipTakeTwoErr := test_helpers.CreateTake(test_helpers.TakeCreationInput{
-			DB:              db,
-			ContractAddress: anotherContractAddress,
-			SaleId:          fakeSaleIdOne,
-			TakeHeaderId:    headerOne.Id,
-			TakeLogId:       clipTakeLogTwo.ID,
-		})
-		Expect(clipTakeTwoErr).NotTo(HaveOccurred())
-
 		clipStorageValuesTwo := test_helpers.GetClipStorageValues(1, fakeSaleIdOne)
-		test_helpers.CreateClip(db, headerOne, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdTwo)), anotherContractAddress)
+		test_helpers.CreateClip(db, headerOne, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), anotherContractAddress)
 
 		var saleCount int
-		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkIdentifier)
+		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkEthIdentifier)
 		Expect(countQueryErr).NotTo(HaveOccurred())
 		Expect(saleCount).To(Equal(1))
 	})
