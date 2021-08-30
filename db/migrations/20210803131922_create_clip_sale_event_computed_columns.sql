@@ -11,27 +11,31 @@ $$;
 
 CREATE TYPE api.clip_sale_snapshot AS
 (
-    block_height bigint,
-    sale_id      numeric,
-    pos          numeric,
-    tab          numeric,
-    lot          numeric,
-    usr          text,
-    tic          numeric,
-    "top"        numeric,
+    block_height BIGINT,
+    sale_id      NUMERIC,
+    ilk_id       INTEGER,
+    urn_id       INTEGER,
+    pos          NUMERIC,
+    tab          NUMERIC,
+    lot          NUMERIC,
+    usr          TEXT,
+    tic          NUMERIC,
+    "top"        NUMERIC,
 
-    created      timestamp without time zone,
-    updated      timestamp without time zone,
-    clip_address text
+    created      TIMESTAMP WITHOUT TIME ZONE,
+    updated      TIMESTAMP WITHOUT TIME ZONE,
+    clip_address TEXT
 );
 
-CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text,
-                                          block_height bigint DEFAULT api.max_block()) RETURNS api.clip_sale_snapshot
+CREATE FUNCTION api.get_clip_with_address(sale_id NUMERIC, clip_address TEXT,
+                                          block_height BIGINT DEFAULT api.max_block()) RETURNS api.clip_sale_snapshot
     LANGUAGE sql
     STABLE STRICT
 AS
 $$
 WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
+     ilk_id AS (SELECT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
      storage_values AS (
          SELECT pos,
                 tab,
@@ -45,12 +49,14 @@ WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_wit
          FROM maker.clip
          WHERE clip.sale_id = get_clip_with_address.sale_id
            AND clip.address_id = (SELECT id FROM address_id)
-           AND block_number <= block_height
+           AND block_number <= get_clip_with_address.block_height
          ORDER BY block_number DESC
          LIMIT 1
      )
 SELECT storage_values.block_number,
        get_clip_with_address.sale_id,
+       (SELECT ilk_id FROM ilk_id),
+       (SELECT urn_id FROM urn_id),
        storage_values.pos,
        storage_values.tab,
        storage_values.lot,

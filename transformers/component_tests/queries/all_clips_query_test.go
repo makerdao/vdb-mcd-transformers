@@ -49,6 +49,7 @@ var _ = Describe("All clips view", func() {
 		dogBarkEventOne := test_data.DogBarkModel()
 		dogBarkEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
 		dogBarkEventOne.ColumnValues[event.LogFK] = dogBarkLogOne.ID
+		dogBarkEventOne.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleIdOne)
 		test_data.AssignIlkID(dogBarkEventOne, ilkEthIdentifier, db)
 		test_data.AssignUrnID(dogBarkEventOne, db)
 		test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventOne, db)

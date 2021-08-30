@@ -93,6 +93,8 @@ CREATE TYPE api.clip_sale_event AS (
 CREATE TYPE api.clip_sale_snapshot AS (
 	block_height bigint,
 	sale_id numeric,
+	ilk_id integer,
+	urn_id integer,
 	pos numeric,
 	tab numeric,
 	lot numeric,
@@ -504,16 +506,16 @@ BEGIN
         WITH ilk_ids AS (SELECT id
                          FROM maker.ilks
                          WHERE identifier = all_clips.ilk),
-             clip_id AS (
+             clip_ids AS (
                  SELECT DISTINCT clip
                  FROM maker.dog_bark
                  WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
-                 LIMIT 1),
+                 ),
              sales AS (
                  SELECT DISTINCT sale_id, address
                  FROM maker.clip
                           JOIN addresses on clip.address_id = addresses.id
-                 WHERE maker.clip.address_id = (SELECT id FROM clip_id)
+                 WHERE maker.clip.address_id IN (SELECT id FROM clip_ids)
                  ORDER BY sale_id DESC
                  LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET all_clips.result_offset
              )
@@ -1527,6 +1529,8 @@ CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text, bl
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
+     ilk_id AS (SELECT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
      storage_values AS (
          SELECT pos,
                 tab,
@@ -1540,12 +1544,14 @@ WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_wit
          FROM maker.clip
          WHERE clip.sale_id = get_clip_with_address.sale_id
            AND clip.address_id = (SELECT id FROM address_id)
-           AND block_number <= block_height
+           AND block_number <= get_clip_with_address.block_height
          ORDER BY block_number DESC
          LIMIT 1
      )
 SELECT storage_values.block_number,
        get_clip_with_address.sale_id,
+       (SELECT ilk_id FROM ilk_id),
+       (SELECT urn_id FROM urn_id),
        storage_values.pos,
        storage_values.tab,
        storage_values.lot,

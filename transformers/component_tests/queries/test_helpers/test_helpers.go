@@ -658,6 +658,8 @@ type FlipBid struct {
 type ClipSale struct {
 	BlockHeight string `db:"block_height"`
 	SaleId      string `db:"sale_id"`
+	IlkId       string `db:"ilk_id"`
+	UrnId       string `db:"urn_id"`
 	Pos         string
 	Tab         string
 	Lot         string
@@ -666,7 +668,6 @@ type ClipSale struct {
 	Top         string
 	Created     sql.NullString
 	Updated     sql.NullString
-	ClipAddress string `db:"clip_address"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {

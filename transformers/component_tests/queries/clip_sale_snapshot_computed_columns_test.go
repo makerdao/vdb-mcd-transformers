@@ -68,8 +68,8 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 			var actualSaleEvents []test_helpers.SaleEvent
 			queryErr := db.Select(&actualSaleEvents,
 				`SELECT sale_id, act, contract_address FROM api.clip_sale_snapshot_sale_events(
-    					(SELECT (block_height, sale_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-    					 FROM api.get_clip_with_address($1, $2)))`, fakeSaleId, contractAddress)
+    					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
+    					 FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualSaleEvents).To(ConsistOf(expectedClipKickEvent))
 		})
