@@ -1,13 +1,16 @@
 package queries
 
 import (
+	"database/sql"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -22,10 +25,8 @@ import (
 
 var _ = Describe("All clips view", func() {
 	var (
-		headerRepo                 datastore.HeaderRepository
-		anotherContractAddress     = fakes.AnotherFakeAddress.Hex()
-		ilkBatIdentifier           = "BAT-A"
-		hexBatIlk                  = "0x4241542d41"
+		headerRepo             datastore.HeaderRepository
+		anotherContractAddress = fakes.AnotherFakeAddress.Hex()
 		ilkEthIdentifier           = "ETH-A"
 		hexEthIlk                  = "0x4554482d41"
 		blockOne, blockTwo         int
@@ -125,7 +126,7 @@ var _ = Describe("All clips view", func() {
 		Expect(blockHeight).To(Equal(blockTwo))
 	})
 
-	XIt("gets the right sale when there are the same ids on different contracts/ilks", func() {
+	It("gets all clips for a given ilk when there are multiple clippers", func() {
 		clipKickLogOne := test_data.CreateTestLog(headerOne.Id, db)
 
 		var addressErr error
@@ -143,13 +144,15 @@ var _ = Describe("All clips view", func() {
 		clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleIdOne)
 		test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), test_data.ClipAddress)
 
+		anotherUrnAddress := "0x" + fakes.RandomString(40)
 		dogBarkLogTwo := test_data.CreateTestLog(headerOne.Id, db)
-		_, _ = shared.GetOrCreateUrn(test_data.UrnAddress, hexBatIlk, db)
+		barkTwoUrnId, _ := shared.GetOrCreateUrn(anotherUrnAddress, hexEthIlk, db)
 		dogBarkEventTwo := test_data.DogBarkModel()
 		dogBarkEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
 		dogBarkEventTwo.ColumnValues[event.LogFK] = dogBarkLogTwo.ID
-		test_data.AssignIlkID(dogBarkEventTwo, ilkBatIdentifier, db)
-		test_data.AssignUrnID(dogBarkEventTwo, db)
+		dogBarkEventTwo.ColumnValues[constants.UrnColumn] = barkTwoUrnId
+		dogBarkEventTwo.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleIdOne)
+		test_data.AssignIlkID(dogBarkEventTwo, ilkEthIdentifier, db)
 		test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventTwo, db)
 		test_data.AssignClip(anotherContractAddress, dogBarkEventTwo, db)
 
@@ -171,9 +174,44 @@ var _ = Describe("All clips view", func() {
 		clipStorageValuesTwo := test_helpers.GetClipStorageValues(1, fakeSaleIdOne)
 		test_helpers.CreateClip(db, headerOne, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), anotherContractAddress)
 
-		var saleCount int
-		countQueryErr := db.Get(&saleCount, `SELECT COUNT(*) FROM api.all_clips($1)`, ilkEthIdentifier)
-		Expect(countQueryErr).NotTo(HaveOccurred())
-		Expect(saleCount).To(Equal(1))
+		ilkId, _ := shared.GetOrCreateIlk(hexEthIlk, db)
+		barkOneUrnId, _ := shared.GetOrCreateUrn(test_data.UrnAddress, hexEthIlk, db)
+		clipSaleOne := test_helpers.ClipSale{
+			BlockHeight: strconv.Itoa(blockOne),
+			SaleId:      strconv.Itoa(fakeSaleIdOne),
+			IlkId:       strconv.Itoa(int(ilkId)),
+			UrnId:       strconv.Itoa(int(barkOneUrnId)),
+			Pos:         clipStorageValuesOne[clip.SalePos].(string),
+			Tab:         clipStorageValuesOne[clip.SaleTab].(string),
+			Lot:         clipStorageValuesOne[clip.SaleLot].(string),
+			Usr:         clipStorageValuesOne[clip.SaleUsr].(string),
+			Tic:         clipStorageValuesOne[clip.SaleTic].(string),
+			Top:         clipStorageValuesOne[clip.SaleTop].(string),
+			Created:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+			Updated:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+			ClipAddress: test_data.ClipAddress,
+		}
+
+		clipSaleTwo := test_helpers.ClipSale{
+			BlockHeight: strconv.Itoa(blockOne),
+			SaleId:      strconv.Itoa(fakeSaleIdOne),
+			IlkId:       strconv.Itoa(int(ilkId)),
+			UrnId:       strconv.Itoa(int(barkTwoUrnId)),
+			Pos:         clipStorageValuesOne[clip.SalePos].(string),
+			Tab:         clipStorageValuesOne[clip.SaleTab].(string),
+			Lot:         clipStorageValuesOne[clip.SaleLot].(string),
+			Usr:         clipStorageValuesOne[clip.SaleUsr].(string),
+			Tic:         clipStorageValuesOne[clip.SaleTic].(string),
+			Top:         clipStorageValuesOne[clip.SaleTop].(string),
+			Created:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+			Updated:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+			ClipAddress: anotherContractAddress,
+		}
+
+		var actualSales []test_helpers.ClipSale
+		saleQueryErr := db.Select(&actualSales, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address from api.all_clips($1)`, ilkEthIdentifier)
+		Expect(saleQueryErr).NotTo(HaveOccurred())
+		Expect(len(actualSales)).To(Equal(2))
+		Expect(actualSales).To(ConsistOf(clipSaleOne, clipSaleTwo))
 	})
 })

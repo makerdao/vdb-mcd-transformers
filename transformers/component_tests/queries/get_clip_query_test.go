@@ -16,6 +16,7 @@ import (
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
+	"github.com/makerdao/vulcanizedb/pkg/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -74,6 +75,34 @@ var _ = Describe("Single clip view", func() {
 		It("gets only the specified clip", func() {
 			clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleId)
 			test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), test_data.ClipAddress)
+
+			var actualSale test_helpers.ClipSale
+			queryErr := db.Get(&actualSale, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated FROM api.get_clip_with_address($1, $2, $3)`,
+				fakeSaleId, test_data.ClipAddress, blockOne)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualSale.BlockHeight).To(Equal(strconv.Itoa(blockOne)))
+			Expect(actualSale.SaleId).To(Equal(strconv.Itoa(fakeSaleId)))
+			Expect(actualSale.UrnId).To(Equal(strconv.Itoa(int(urnID))))
+			Expect(actualSale.Created).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+			Expect(actualSale.Updated).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+		})
+		It("gets the right clip when the salesIDs are the same for different clippers in the same block", func() {
+			anotherClipAddress := "0x" + fakes.RandomString(38)
+			addressId, addressErr := repository.GetOrCreateAddress(db, anotherClipAddress)
+			Expect(addressErr).NotTo(HaveOccurred())
+
+			clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleId)
+			test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), test_data.ClipAddress)
+			test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), anotherClipAddress)
+
+			clipKickLogTwo := test_data.CreateTestLog(headerOne.Id, db)
+			clipKickEventTwo := test_data.ClipKickModel()
+			clipKickEventTwo.ColumnValues[event.HeaderFK] = headerOne.Id
+			clipKickEventTwo.ColumnValues[event.LogFK] = clipKickLogTwo.ID
+			clipKickEventTwo.ColumnValues[event.AddressFK] = addressId
+			clipKickEventTwo.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleId)
+			clipKickTwoErr := event.PersistModels([]event.InsertionModel{clipKickEventTwo}, db)
+			Expect(clipKickTwoErr).NotTo(HaveOccurred())
 
 			var actualSale test_helpers.ClipSale
 			queryErr := db.Get(&actualSale, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated FROM api.get_clip_with_address($1, $2, $3)`,

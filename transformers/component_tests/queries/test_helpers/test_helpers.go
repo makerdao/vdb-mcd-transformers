@@ -668,6 +668,7 @@ type ClipSale struct {
 	Top         string
 	Created     sql.NullString
 	Updated     sql.NullString
+	ClipAddress string `db:"clip_address"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
