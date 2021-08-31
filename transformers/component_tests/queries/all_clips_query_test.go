@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -25,10 +26,11 @@ import (
 
 var _ = Describe("All clips view", func() {
 	var (
-		headerRepo             datastore.HeaderRepository
-		anotherContractAddress = fakes.AnotherFakeAddress.Hex()
+		headerRepo                 datastore.HeaderRepository
+		anotherContractAddress     = fakes.AnotherFakeAddress.Hex()
 		ilkEthIdentifier           = "ETH-A"
 		hexEthIlk                  = "0x4554482d41"
+		dogBarkUrnAddress          = common.HexToAddress(test_data.DogBarkEventLog.Log.Topics[2].Hex()).Hex()
 		blockOne, blockTwo         int
 		timestampOne, timestampTwo int
 		headerOne                  core.Header
@@ -46,7 +48,7 @@ var _ = Describe("All clips view", func() {
 		fakeSaleIdOne = rand.Int()
 
 		dogBarkLogOne := test_data.CreateTestLog(headerOne.Id, db)
-		_, _ = shared.GetOrCreateUrn(test_data.UrnAddress, hexEthIlk, db)
+		_, _ = shared.GetOrCreateUrn(dogBarkUrnAddress, hexEthIlk, db)
 		dogBarkEventOne := test_data.DogBarkModel()
 		dogBarkEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
 		dogBarkEventOne.ColumnValues[event.LogFK] = dogBarkLogOne.ID
@@ -175,7 +177,7 @@ var _ = Describe("All clips view", func() {
 		test_helpers.CreateClip(db, headerOne, clipStorageValuesTwo, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleIdOne)), anotherContractAddress)
 
 		ilkId, _ := shared.GetOrCreateIlk(hexEthIlk, db)
-		barkOneUrnId, _ := shared.GetOrCreateUrn(test_data.UrnAddress, hexEthIlk, db)
+		barkOneUrnId, _ := shared.GetOrCreateUrn(dogBarkUrnAddress, hexEthIlk, db)
 		clipSaleOne := test_helpers.ClipSale{
 			BlockHeight: strconv.Itoa(blockOne),
 			SaleId:      strconv.Itoa(fakeSaleIdOne),

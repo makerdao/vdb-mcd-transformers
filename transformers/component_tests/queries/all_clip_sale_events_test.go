@@ -236,7 +236,7 @@ var _ = Describe("All clip sale events query", func() {
 			))
 		})
 
-		It("returns sale events from different kinds of clippers (clips with different contract addresses", func() {
+		It("returns sale events from different kinds of clippers (clips with different contract addresses)", func() {
 			anotherAddressId, addressErr := repository.GetOrCreateAddress(db, anotherClipAddress)
 			Expect(addressErr).NotTo(HaveOccurred())
 

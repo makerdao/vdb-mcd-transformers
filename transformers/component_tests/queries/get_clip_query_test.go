@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
@@ -31,6 +32,7 @@ var _ = Describe("Single clip view", func() {
 		fakeSaleId             = rand.Int()
 		headerOne              core.Header
 		headerRepo             datastore.HeaderRepository
+		dogBarkUrnAddress      = common.HexToAddress(test_data.DogBarkEventLog.Log.Topics[2].Hex()).Hex()
 	)
 
 	BeforeEach(func() {
@@ -44,7 +46,7 @@ var _ = Describe("Single clip view", func() {
 		clipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 		dogBarkLogOne := test_data.CreateTestLog(headerOne.Id, db)
 
-		urnID, _ = shared.GetOrCreateUrn(test_data.UrnAddress, hexEthIlk, db)
+		urnID, _ = shared.GetOrCreateUrn(dogBarkUrnAddress, hexEthIlk, db)
 
 		dogBarkEventOne := test_data.DogBarkModel()
 		dogBarkEventOne.ColumnValues[event.HeaderFK] = headerOne.Id

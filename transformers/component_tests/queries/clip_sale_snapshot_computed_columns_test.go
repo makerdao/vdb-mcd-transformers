@@ -4,9 +4,12 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
@@ -27,6 +30,7 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 		addressId              int64
 		fakeSaleId             int
 		blockOne, timestampOne int
+		dogBarkUrnAddress      = common.HexToAddress(test_data.DogBarkEventLog.Log.Topics[2].Hex()).Hex()
 	)
 
 	BeforeEach(func() {
@@ -38,6 +42,22 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 
 		headerRepository = repositories.NewHeaderRepository(db)
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+		dogBarkLogOne := test_data.CreateTestLog(headerOne.Id, db)
+
+		_, _ = shared.GetOrCreateUrn(dogBarkUrnAddress, test_helpers.FakeIlk.Hex, db)
+		ilkID, _ := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+		dogBarkEventOne := test_data.DogBarkModel()
+		dogBarkEventOne.ColumnValues[event.HeaderFK] = headerOne.Id
+		dogBarkEventOne.ColumnValues[event.LogFK] = dogBarkLogOne.ID
+		dogBarkEventOne.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleId)
+		dogBarkEventOne.ColumnValues[constants.IlkColumn] = strconv.Itoa(int(ilkID))
+		test_data.AssignIlkID(dogBarkEventOne, test_helpers.FakeIlk.Identifier, db)
+		test_data.AssignUrnID(dogBarkEventOne, db)
+		test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventOne, db)
+		test_data.AssignClip(contractAddress, dogBarkEventOne, db)
+
+		dogBarkErr := event.PersistModels([]event.InsertionModel{dogBarkEventOne}, db)
+		Expect(dogBarkErr).NotTo(HaveOccurred())
 
 		clipKickLog := test_data.CreateTestLog(headerOne.Id, db)
 
@@ -74,4 +94,52 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 			Expect(actualSaleEvents).To(ConsistOf(expectedClipKickEvent))
 		})
 	})
+
+	Describe("clip_sale_snapshot_ilk", func() {
+		It("returns ilk_snapshot for a clip_sale_snapshot", func() {
+			ilkValues := test_helpers.GetIlkValues(0)
+			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
+
+			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
+
+			var result test_helpers.IlkSnapshot
+			getIlkErr := db.Get(&result, `
+				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
+				FROM api.clip_sale_snapshot_ilk(
+					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
+					 FROM api.get_clip_with_address($1, $2, $3))
+			)`, fakeSaleId, contractAddress, blockOne)
+
+			Expect(getIlkErr).NotTo(HaveOccurred())
+			Expect(result).To(Equal(expectedIlk))
+		})
+	})
+
+	Describe("clip_sale_snapshot_urn", func() {
+		It("returns urn_snapshot for a clip_sale_snapshot", func() {
+			urnSetupData := test_helpers.GetUrnSetupData()
+			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, dogBarkUrnAddress)
+			vatRepository := vat.StorageRepository{}
+			vatRepository.SetDB(db)
+			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
+
+			var actualUrn test_helpers.UrnState
+			getUrnErr := db.Get(&actualUrn, `
+				SELECT urn_identifier, ilk_identifier
+				FROM api.clip_sale_snapshot_urn(
+					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
+					FROM api.get_clip_with_address($1, $2, $3))
+			)`, fakeSaleId, contractAddress, blockOne)
+
+			Expect(getUrnErr).NotTo(HaveOccurred())
+
+			expectedUrn := test_helpers.UrnState{
+				UrnIdentifier: dogBarkUrnAddress,
+				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+			}
+
+			test_helpers.AssertUrn(actualUrn, expectedUrn)
+		})
+	})
+
 })
