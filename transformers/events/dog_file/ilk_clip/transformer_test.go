@@ -15,8 +15,9 @@ import (
 
 var _ = Describe("Dog file ilk clip transformer", func() {
 	var (
-		transformer = ilk_clip.Transformer{}
-		db          = test_config.NewTestDB(test_config.NewTestNode())
+		transformer      = ilk_clip.Transformer{}
+		ilkEthIdentifier = "ETH-A"
+		db               = test_config.NewTestDB(test_config.NewTestNode())
 	)
 
 	BeforeEach(func() {
@@ -37,7 +38,7 @@ var _ = Describe("Dog file ilk clip transformer", func() {
 		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogFileIlkClipEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.DogFileIlkClipModel()
-		test_data.AssignIlkID(expectedModel, db)
+		test_data.AssignIlkID(expectedModel, ilkEthIdentifier, db)
 		test_data.AssignAddressID(test_data.DogFileIlkClipEventLog, expectedModel, db)
 		test_data.AssignClipAddressID(test_data.ClipAddress, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))

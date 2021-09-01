@@ -62,6 +62,52 @@ CREATE TYPE api.bite_event AS (
 
 
 --
+-- Name: sale_act; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.sale_act AS ENUM (
+    'kick',
+    'take',
+    'redo',
+    'yank'
+);
+
+
+--
+-- Name: clip_sale_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.clip_sale_event AS (
+	sale_id numeric,
+	act api.sale_act,
+	block_height bigint,
+	log_id bigint,
+	contract_address text
+);
+
+
+--
+-- Name: clip_sale_snapshot; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.clip_sale_snapshot AS (
+	block_height bigint,
+	sale_id numeric,
+	ilk_id integer,
+	urn_id integer,
+	pos numeric,
+	tab numeric,
+	lot numeric,
+	usr text,
+	tic numeric,
+	top numeric,
+	created timestamp without time zone,
+	updated timestamp without time zone,
+	clip_address text
+);
+
+
+--
 -- Name: era; Type: TYPE; Schema: api; Owner: -
 --
 
@@ -395,6 +441,89 @@ ORDER BY urn_identifier, block_number DESC
 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
     OFFSET
     all_bites.result_offset
+$$;
+
+
+--
+-- Name: all_clip_sale_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_clip_sale_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH address_ids AS (
+    SELECT distinct address_id
+    FROM maker.clip_kick
+)
+SELECT sale_id,
+       'kick'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_kick.address_id)
+FROM maker.clip_kick
+         LEFT JOIN headers ON clip_kick.header_id = headers.id
+UNION
+SELECT sale_id,
+       'take'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_take.address_id)
+FROM maker.clip_take
+         LEFT JOIN headers on clip_take.header_id = headers.id
+WHERE clip_take.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'redo'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_redo.address_id)
+FROM maker.clip_redo
+         LEFT JOIN headers ON clip_redo.header_id = headers.id
+WHERE clip_redo.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'yank'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_yank.address_id)
+FROM maker.clip_yank
+         LEFT JOIN headers ON clip_yank.header_id = headers.id
+WHERE clip_yank.address_id IN (SELECT * FROM address_ids)
+ORDER BY block_height DESC
+LIMIT all_clip_sale_events.max_results OFFSET all_clip_sale_events.result_offset
+$$;
+
+
+--
+-- Name: all_clips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_clips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_snapshot
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+BEGIN
+    RETURN QUERY (
+        WITH ilk_ids AS (SELECT id
+                         FROM maker.ilks
+                         WHERE identifier = all_clips.ilk),
+             clip_ids AS (
+                 SELECT DISTINCT clip
+                 FROM maker.dog_bark
+                 WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
+                 ),
+             sales AS (
+                 SELECT DISTINCT sale_id, address
+                 FROM maker.clip
+                          JOIN addresses on clip.address_id = addresses.id
+                 WHERE maker.clip.address_id IN (SELECT id FROM clip_ids)
+                 ORDER BY sale_id DESC
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET all_clips.result_offset
+             )
+        SELECT f.*
+        FROM sales,
+             LATERAL api.get_clip_with_address(sales.sale_id, sales.address) f
+    );
+END
 $$;
 
 
@@ -1125,6 +1254,78 @@ $$;
 
 
 --
+-- Name: clip_sale_event_sale(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_sale(event api.clip_sale_event) RETURNS api.clip_sale_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_clip_with_address(event.sale_id, event.contract_address, event.block_height)
+$$;
+
+
+--
+-- Name: clip_sale_event_tx(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_tx(event api.clip_sale_event) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_ilk(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_ilk(clip_sale_snapshot api.clip_sale_snapshot) RETURNS api.ilk_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT i.*
+FROM api.ilk_snapshot i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = clip_sale_snapshot.ilk_id
+  AND i.block_number <= clip_sale_snapshot.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_sale_events(api.clip_sale_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_sale_events(clip api.clip_sale_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT sale_id, act, block_height, events.log_id, events.contract_address
+FROM api.all_clip_sale_events() AS events
+WHERE sale_id = clip.sale_id
+  AND contract_address = clip.clip_address
+ORDER BY block_height DESC
+LIMIT clip_sale_snapshot_sale_events.max_results OFFSET clip_sale_snapshot_sale_events.result_offset
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_urn(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_urn(clip api.clip_sale_snapshot) RETURNS api.urn_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_urn(
+        (SELECT identifier FROM maker.ilks WHERE ilks.id = clip.ilk_id),
+        (SELECT identifier FROM maker.urns WHERE urns.id = clip.urn_id),
+        clip.block_height)
+$$;
+
+
+--
 -- Name: epoch_to_datetime(numeric); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1349,6 +1550,50 @@ CREATE FUNCTION api.get_block_heights_for_new_untransformed_diffs() RETURNS SETO
     LANGUAGE sql STABLE
     AS $$
 SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
+$$;
+
+
+--
+-- Name: get_clip_with_address(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text, block_height bigint DEFAULT api.max_block()) RETURNS api.clip_sale_snapshot
+    LANGUAGE sql STABLE STRICT
+    AS $$
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
+     ilk_id AS (SELECT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     storage_values AS (
+         SELECT pos,
+                tab,
+                lot,
+                usr,
+                tic,
+                top,
+                created,
+                updated,
+                block_number
+         FROM maker.clip
+         WHERE clip.sale_id = get_clip_with_address.sale_id
+           AND clip.address_id = (SELECT id FROM address_id)
+           AND block_number <= get_clip_with_address.block_height
+         ORDER BY block_number DESC
+         LIMIT 1
+     )
+SELECT storage_values.block_number,
+       get_clip_with_address.sale_id,
+       (SELECT ilk_id FROM ilk_id),
+       (SELECT urn_id FROM urn_id),
+       storage_values.pos,
+       storage_values.tab,
+       storage_values.lot,
+       storage_values.usr,
+       storage_values.tic,
+       storage_values.top,
+       storage_values.created,
+       storage_values.updated,
+       get_clip_with_address.clip_address
+FROM storage_values
 $$;
 
 
@@ -2362,6 +2607,46 @@ COMMENT ON FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) IS '@omit
 
 
 --
+-- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_kick (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint,
+    kpr bigint,
+    coin numeric
+);
+
+
+--
+-- Name: clear_clip_created(maker.clip_kick); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.clear_clip_created(old_event maker.clip_kick) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE maker.clip
+SET created = clip_sale_time_created(old_event.address_id, old_event.sale_id)
+WHERE clip.address_id = old_event.address_id
+  AND clip.sale_id = old_event.sale_id
+$$;
+
+
+--
+-- Name: FUNCTION clear_clip_created(old_event maker.clip_kick); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.clear_clip_created(old_event maker.clip_kick) IS '@omit';
+
+
+--
 -- Name: flap_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2508,6 +2793,55 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.clear_time_created(old_event maker.vat_init) IS '@omit';
+
+
+--
+-- Name: delete_obsolete_clip(numeric, bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    clip_block      BIGINT     := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);
+    clip_state      maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number = clip_block);
+    prev_clip_state maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number < clip_block
+        ORDER BY clip.block_number DESC
+        LIMIT 1);
+BEGIN
+    DELETE
+    FROM maker.clip
+    WHERE clip.sale_id = delete_obsolete_clip.sale_id
+      AND clip.address_id = delete_obsolete_clip.address_id
+      AND clip.block_number = clip_block
+      AND (clip_state.pos IS NULL OR clip_state.pos = prev_clip_state.pos)
+      AND (clip_state.tab IS NULL OR clip_state.tab = prev_clip_state.tab)
+      AND (clip_state.lot IS NULL OR clip_state.lot = prev_clip_state.lot)
+      AND (clip_state.usr IS NULL OR clip_state.usr = prev_clip_state.usr)
+      AND (clip_state.tic IS NULL OR clip_state.tic = prev_clip_state.tic)
+      AND (clip_state."top" IS NULL OR clip_state."top" = prev_clip_state."top");
+END
+$$;
+
+
+--
+-- Name: FUNCTION delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
@@ -2941,6 +3275,30 @@ $$;
 
 
 --
+-- Name: insert_clip_created(maker.clip_kick); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_clip_created(new_event maker.clip_kick) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE maker.clip
+SET created = api.epoch_to_datetime(headers.block_timestamp)
+FROM public.headers
+WHERE headers.id = new_event.header_id
+  AND clip.address_id = new_event.address_id
+  AND clip.sale_id = new_event.sale_id
+  AND clip.created IS NULL
+$$;
+
+
+--
+-- Name: FUNCTION insert_clip_created(new_event maker.clip_kick); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_clip_created(new_event maker.clip_kick) IS '@omit';
+
+
+--
 -- Name: insert_flap_created(maker.flap_kick); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3147,6 +3505,306 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.insert_new_chop(new_diff maker.cat_ilk_chop) IS '@omit';
+
+
+--
+-- Name: clip_sale_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_lot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    lot numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_lot(maker.clip_sale_lot); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_lot(new_diff maker.clip_sale_lot) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.lot,
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET lot = new_diff.lot
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_lot(new_diff maker.clip_sale_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_lot(new_diff maker.clip_sale_lot) IS '@omit';
+
+
+--
+-- Name: clip_sale_pos; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_pos (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    pos numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_pos(maker.clip_sale_pos); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        new_diff.pos,
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET pos = new_diff.pos
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_pos(new_diff maker.clip_sale_pos); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos) IS '@omit';
+
+
+--
+-- Name: clip_sale_tab; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_tab (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    tab numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_tab(maker.clip_sale_tab); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_tab(new_diff maker.clip_sale_tab) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.tab,
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET tab = new_diff.tab
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_tab(new_diff maker.clip_sale_tab); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_tab(new_diff maker.clip_sale_tab) IS '@omit';
+
+
+--
+-- Name: clip_sale_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_tic (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    tic numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_tic(maker.clip_sale_tic); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_tic(new_diff maker.clip_sale_tic) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.tic,
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET tic = new_diff.tic
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_tic(new_diff maker.clip_sale_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_tic(new_diff maker.clip_sale_tic) IS '@omit';
+
+
+--
+-- Name: clip_sale_top; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_top (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_top(maker.clip_sale_top); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_top(new_diff maker.clip_sale_top) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.top,
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET top = new_diff.top
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_top(new_diff maker.clip_sale_top); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_top(new_diff maker.clip_sale_top) IS '@omit';
+
+
+--
+-- Name: clip_sale_usr; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_usr (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    usr text,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_usr(maker.clip_sale_usr); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_usr(new_diff maker.clip_sale_usr) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.usr,
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET usr = new_diff.usr
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_usr(new_diff maker.clip_sale_usr); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_usr(new_diff maker.clip_sale_usr) IS '@omit';
 
 
 --
@@ -5092,6 +5750,391 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        PERFORM maker.insert_clip_created(NEW);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.clear_clip_created(OLD);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_created(); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_created() IS '@omit';
+
+
+--
+-- Name: update_clip_lot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_lot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_lot(NEW);
+        PERFORM maker.update_clip_lot_until_next_diff(NEW, NEW.lot);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_lot_until_next_diff(
+                OLD,
+                clip_sale_lot_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_lot_until_next_diff(maker.clip_sale_lot, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_lot_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_lot
+                 LEFT JOIN public.headers ON clip_sale_lot.header_id = headers.id
+        WHERE clip_sale_lot.sale_id = start_at_diff.sale_id
+          AND clip_sale_lot.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET lot = new_lot
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_lot_diff_block IS NULL
+        OR clip.block_number < next_lot_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_pos(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_pos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_pos(NEW);
+        PERFORM maker.update_clip_pos_until_next_diff(NEW, NEW.pos);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_pos_until_next_diff(
+                OLD,
+                clip_sale_pos_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_pos_until_next_diff(maker.clip_sale_pos, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_pos_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_pos
+                 LEFT JOIN public.headers ON clip_sale_pos.header_id = headers.id
+        WHERE clip_sale_pos.sale_id = start_at_diff.sale_id
+          AND clip_sale_pos.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET pos = new_pos
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_pos_diff_block IS NULL
+        OR clip.block_number < next_pos_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_tab(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tab() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_tab(NEW);
+        PERFORM maker.update_clip_tab_until_next_diff(NEW, NEW.tab);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_tab_until_next_diff(
+                OLD,
+                clip_sale_tab_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_tab_until_next_diff(maker.clip_sale_tab, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_tab_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_tab
+                 LEFT JOIN public.headers ON clip_sale_tab.header_id = headers.id
+        WHERE clip_sale_tab.sale_id = start_at_diff.sale_id
+          AND clip_sale_tab.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET tab = new_tab
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_tab_diff_block IS NULL
+        OR clip.block_number < next_tab_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_tic(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tic() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_tic(NEW);
+        PERFORM maker.update_clip_tic_until_next_diff(NEW, NEW.tic);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_tic_until_next_diff(
+                OLD,
+                clip_sale_tic_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_tic_until_next_diff(maker.clip_sale_tic, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_tic_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_tic
+                 LEFT JOIN public.headers ON clip_sale_tic.header_id = headers.id
+        WHERE clip_sale_tic.sale_id = start_at_diff.sale_id
+          AND clip_sale_tic.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET tic = new_tic
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_tic_diff_block IS NULL
+        OR clip.block_number < next_tic_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_top(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_top() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_top(NEW);
+        PERFORM maker.update_clip_top_until_next_diff(NEW, NEW.top);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_top_until_next_diff(
+                OLD,
+                clip_sale_top_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_top_until_next_diff(maker.clip_sale_top, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_top_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_top
+                 LEFT JOIN public.headers ON clip_sale_top.header_id = headers.id
+        WHERE clip_sale_top.sale_id = start_at_diff.sale_id
+          AND clip_sale_top.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET "top" = new_top
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_top_diff_block IS NULL
+        OR clip.block_number < next_top_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_usr(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_usr() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_usr(NEW);
+        PERFORM maker.update_clip_usr_until_next_diff(NEW, NEW.usr);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_usr_until_next_diff(
+                OLD,
+                clip_sale_usr_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_usr_until_next_diff(maker.clip_sale_usr, text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_usr_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_usr
+                 LEFT JOIN public.headers ON clip_sale_usr.header_id = headers.id
+        WHERE clip_sale_usr.sale_id = start_at_diff.sale_id
+          AND clip_sale_usr.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET usr = new_usr
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_usr_diff_block IS NULL
+        OR clip.block_number < next_usr_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text) IS '@omit';
 
 
 --
@@ -8019,6 +9062,25 @@ ALTER SEQUENCE maker.checked_headers_id_seq OWNED BY maker.checked_headers.id;
 
 
 --
+-- Name: clip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip (
+    address_id bigint NOT NULL,
+    block_number bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    pos numeric,
+    tab numeric,
+    lot numeric,
+    usr text,
+    tic numeric,
+    top numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: clip_buf; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -8217,25 +9279,6 @@ ALTER SEQUENCE maker.clip_dog_id_seq OWNED BY maker.clip_dog.id;
 
 
 --
--- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_kick (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    top numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint,
-    kpr bigint,
-    coin numeric
-);
-
-
---
 -- Name: clip_kick_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8328,20 +9371,6 @@ ALTER SEQUENCE maker.clip_redo_id_seq OWNED BY maker.clip_redo.id;
 
 
 --
--- Name: clip_sale_lot; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_lot (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    lot numeric NOT NULL,
-    header_id integer NOT NULL
-);
-
-
---
 -- Name: clip_sale_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8359,20 +9388,6 @@ CREATE SEQUENCE maker.clip_sale_lot_id_seq
 --
 
 ALTER SEQUENCE maker.clip_sale_lot_id_seq OWNED BY maker.clip_sale_lot.id;
-
-
---
--- Name: clip_sale_pos; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_pos (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    pos numeric NOT NULL,
-    header_id integer NOT NULL
-);
 
 
 --
@@ -8396,20 +9411,6 @@ ALTER SEQUENCE maker.clip_sale_pos_id_seq OWNED BY maker.clip_sale_pos.id;
 
 
 --
--- Name: clip_sale_tab; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_tab (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    tab numeric NOT NULL,
-    header_id integer NOT NULL
-);
-
-
---
 -- Name: clip_sale_tab_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8427,20 +9428,6 @@ CREATE SEQUENCE maker.clip_sale_tab_id_seq
 --
 
 ALTER SEQUENCE maker.clip_sale_tab_id_seq OWNED BY maker.clip_sale_tab.id;
-
-
---
--- Name: clip_sale_tic; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_tic (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    tic numeric NOT NULL,
-    header_id integer NOT NULL
-);
 
 
 --
@@ -8464,20 +9451,6 @@ ALTER SEQUENCE maker.clip_sale_tic_id_seq OWNED BY maker.clip_sale_tic.id;
 
 
 --
--- Name: clip_sale_top; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_top (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    top numeric NOT NULL,
-    header_id integer NOT NULL
-);
-
-
---
 -- Name: clip_sale_top_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -8495,20 +9468,6 @@ CREATE SEQUENCE maker.clip_sale_top_id_seq
 --
 
 ALTER SEQUENCE maker.clip_sale_top_id_seq OWNED BY maker.clip_sale_top.id;
-
-
---
--- Name: clip_sale_usr; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_sale_usr (
-    id integer NOT NULL,
-    diff_id bigint NOT NULL,
-    address_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    usr text,
-    header_id integer NOT NULL
-);
 
 
 --
@@ -16092,6 +17051,14 @@ ALTER TABLE ONLY maker.clip_kicks
 
 
 --
+-- Name: clip clip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip
+    ADD CONSTRAINT clip_pkey PRIMARY KEY (address_id, sale_id, block_number);
+
+
+--
 -- Name: clip_redo clip_redo_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -19525,6 +20492,13 @@ CREATE INDEX checked_headers_header_index ON maker.checked_headers USING btree (
 
 
 --
+-- Name: clip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_address_index ON maker.clip USING btree (address_id);
+
+
+--
 -- Name: clip_kick_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -22745,6 +23719,55 @@ CREATE INDEX yank_msg_sender ON maker.yank USING btree (msg_sender);
 
 
 --
+-- Name: clip_kick clip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_created_trigger AFTER INSERT OR DELETE ON maker.clip_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_created();
+
+
+--
+-- Name: clip_sale_lot clip_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_lot();
+
+
+--
+-- Name: clip_sale_pos clip_pos; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_pos AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_pos FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_pos();
+
+
+--
+-- Name: clip_sale_tab clip_tab; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tab FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tab();
+
+
+--
+-- Name: clip_sale_tic clip_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tic();
+
+
+--
+-- Name: clip_sale_top clip_top; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_top AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_top FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_top();
+
+
+--
+-- Name: clip_sale_usr clip_usr; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_usr FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_usr();
+
+
+--
 -- Name: deal deal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -23771,6 +24794,14 @@ ALTER TABLE ONLY maker.cdp_manager_vat
 
 ALTER TABLE ONLY maker.checked_headers
     ADD CONSTRAINT checked_headers_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip clip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip
+    ADD CONSTRAINT clip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --

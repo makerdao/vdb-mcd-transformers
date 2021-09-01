@@ -13,8 +13,9 @@ import (
 
 var _ = Describe("DogDigs transformer", func() {
 	var (
-		db          = test_config.NewTestDB(test_config.NewTestNode())
-		transformer = dog_digs.Transformer{}
+		db               = test_config.NewTestDB(test_config.NewTestNode())
+		ilkEthIdentifier = "ETH-A"
+		transformer      = dog_digs.Transformer{}
 	)
 	It("returns an error if converting the log to an entity fails", func() {
 		_, err := transformer.ToModels("wrong abi", []core.EventLog{test_data.DealEventLog}, db)
@@ -26,7 +27,7 @@ var _ = Describe("DogDigs transformer", func() {
 		models, err := transformer.ToModels(constants.DogABI(), []core.EventLog{test_data.DogDigsEventLog}, db)
 		Expect(err).NotTo(HaveOccurred())
 		expectedModel := test_data.DogDigsModel()
-		test_data.AssignIlkID(expectedModel, db)
+		test_data.AssignIlkID(expectedModel, ilkEthIdentifier, db)
 		test_data.AssignAddressID(test_data.DogDigsEventLog, expectedModel, db)
 		Expect(models).To(Equal([]event.InsertionModel{expectedModel}))
 	})
