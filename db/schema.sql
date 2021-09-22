@@ -510,12 +510,12 @@ BEGIN
                  SELECT DISTINCT clip
                  FROM maker.dog_bark
                  WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
-                 ),
+             ),
              sales AS (
                  SELECT DISTINCT sale_id, address
                  FROM maker.clip
                           JOIN addresses on clip.address_id = addresses.id
-                 WHERE maker.clip.address_id IN (SELECT id FROM clip_ids)
+                 WHERE maker.clip.address_id IN (SELECT clip FROM clip_ids)
                  ORDER BY sale_id DESC
                  LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET all_clips.result_offset
              )
@@ -1561,8 +1561,8 @@ CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text, bl
     LANGUAGE sql STABLE STRICT
     AS $$
 WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
-     ilk_id AS (SELECT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
-     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     ilk_id AS (SELECT DISTINCT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id) AND maker.dog_bark.sale_id = get_clip_with_address.sale_id),
      storage_values AS (
          SELECT pos,
                 tab,

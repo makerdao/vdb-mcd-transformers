@@ -116,5 +116,70 @@ var _ = Describe("Single clip view", func() {
 			Expect(actualSale.Created).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
 			Expect(actualSale.Updated).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
 		})
+		It("gets the right clip when many ilk_ids are returned from bark events for a given clipper address", func() {
+			blockTwo := rand.Int()
+			timestampTwo := int(rand.Int31())
+			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
+
+			dogBarkLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
+
+			dogBarkEventTwo := test_data.DogBarkModel()
+			dogBarkEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+			dogBarkEventTwo.ColumnValues[event.LogFK] = dogBarkLogTwo.ID
+			dogBarkEventTwo.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleId + 1)
+			test_data.AssignIlkID(dogBarkEventTwo, ilkEthIdentifier, db)
+			test_data.AssignUrnID(dogBarkEventTwo, db)
+			test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventTwo, db)
+			test_data.AssignClip(test_data.ClipAddress, dogBarkEventTwo, db)
+
+			dogBarkErr := event.PersistModels([]event.InsertionModel{dogBarkEventTwo}, db)
+			Expect(dogBarkErr).NotTo(HaveOccurred())
+
+			clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleId)
+			test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), test_data.ClipAddress)
+
+			var actualSale test_helpers.ClipSale
+			queryErr := db.Get(&actualSale, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated FROM api.get_clip_with_address($1, $2, $3)`,
+				fakeSaleId, test_data.ClipAddress, blockOne)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualSale.BlockHeight).To(Equal(strconv.Itoa(blockOne)))
+			Expect(actualSale.SaleId).To(Equal(strconv.Itoa(fakeSaleId)))
+			Expect(actualSale.UrnId).To(Equal(strconv.Itoa(int(urnID))))
+			Expect(actualSale.Created).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+			Expect(actualSale.Updated).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+		})
+
+		It("gets the right clip when there are multiple urns for a given clip address", func() {
+			blockTwo := rand.Int()
+			timestampTwo := int(rand.Int31())
+			headerTwo := createHeader(blockTwo, timestampTwo, headerRepo)
+			urnIdTwo, _ := shared.GetOrCreateUrn(test_data.RandomString(40), hexEthIlk, db)
+
+			dogBarkLogTwo := test_data.CreateTestLog(headerTwo.Id, db)
+
+			dogBarkEventTwo := test_data.DogBarkModel()
+			dogBarkEventTwo.ColumnValues[event.HeaderFK] = headerTwo.Id
+			dogBarkEventTwo.ColumnValues[event.LogFK] = dogBarkLogTwo.ID
+			dogBarkEventTwo.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(fakeSaleId + 1)
+			dogBarkEventTwo.ColumnValues[constants.UrnColumn] = strconv.Itoa(int(urnIdTwo))
+			test_data.AssignIlkID(dogBarkEventTwo, ilkEthIdentifier, db)
+			test_data.AssignAddressID(test_data.DogBarkEventLog, dogBarkEventTwo, db)
+			test_data.AssignClip(test_data.ClipAddress, dogBarkEventTwo, db)
+
+			dogBarkErr := event.PersistModels([]event.InsertionModel{dogBarkEventTwo}, db)
+			Expect(dogBarkErr).NotTo(HaveOccurred())
+
+			clipStorageValuesOne := test_helpers.GetClipStorageValues(1, fakeSaleId)
+			test_helpers.CreateClip(db, headerOne, clipStorageValuesOne, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), test_data.ClipAddress)
+			var actualSale test_helpers.ClipSale
+			queryErr := db.Get(&actualSale, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated FROM api.get_clip_with_address($1, $2, $3)`,
+				fakeSaleId, test_data.ClipAddress, blockOne)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(actualSale.BlockHeight).To(Equal(strconv.Itoa(blockOne)))
+			Expect(actualSale.SaleId).To(Equal(strconv.Itoa(fakeSaleId)))
+			Expect(actualSale.UrnId).To(Equal(strconv.Itoa(int(urnID))))
+			Expect(actualSale.Created).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+			Expect(actualSale.Updated).To(Equal(sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true}))
+		})
 	})
 })
