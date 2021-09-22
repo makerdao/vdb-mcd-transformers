@@ -191,7 +191,7 @@
     type = "eth_storage"
   [exporter.clip_univ2daiusdt_a_v1_8_0]
     migrations = "db/migrations"
-    path = "transformers/storage/clip/initializers/univ2daiusdt_a_a/v1_8_0"
+    path = "transformers/storage/clip/initializers/univ2daiusdt_a/v1_8_0"
     rank = "0"
     repository = "github.com/makerdao/vdb-mcd-transformers"
     type = "eth_storage"
