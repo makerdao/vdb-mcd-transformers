@@ -5,10 +5,12 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
@@ -197,20 +199,6 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(chostResult, clipChostDiff.ID, header.Id, "5650000000000000000000000000000000000000000000000")
 	})
 
-	It("reads in a Clip Chost storage diff row and persists it", func() {
-		key := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000009")
-		value := common.HexToHash("000000000000000000000003DDAAC3295D6441C938631C35C22F400000000000")
-		clipChostDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
-
-		err := transformer.Execute(clipChostDiff)
-		Expect(err).NotTo(HaveOccurred())
-
-		var chostResult test_helpers.VariableRes
-		err = db.Get(&chostResult, `SELECT diff_id, header_id, chost AS value FROM maker.clip_chost`)
-		Expect(err).NotTo(HaveOccurred())
-		test_helpers.AssertVariable(chostResult, clipChostDiff.ID, header.Id, "5650000000000000000000000000000000000000000000000")
-	})
-
 	It("reads in a Clip Kicks storage diff row and persists it", func() {
 		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000a")
 		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000026")
@@ -223,5 +211,34 @@ var _ = Describe("Executing the transformer", func() {
 		err = db.Get(&kicksResult, `SELECT diff_id, header_id, kicks AS value FROM maker.clip_kicks`)
 		Expect(err).NotTo(HaveOccurred())
 		test_helpers.AssertVariable(kicksResult, clipKicksDiff.ID, header.Id, "38")
+	})
+
+	Describe("Sales", func() {
+		It("reads in a Sales Pos storage diff row and persists it", func() {
+			clipKickLog := test_data.CreateTestLog(header.Id, db)
+			clipKickModel := test_data.ClipKickModel()
+
+			msgSenderAddressID, err := repository.GetOrCreateAddress(db, test_data.ClipLinkAV130Address())
+			Expect(err).NotTo(HaveOccurred())
+
+			clipKickModel.ColumnValues[event.HeaderFK] = header.Id
+			clipKickModel.ColumnValues[event.LogFK] = clipKickLog.ID
+			clipKickModel.ColumnValues[event.AddressFK] = msgSenderAddressID
+			clipKickModel.ColumnValues[constants.SaleIDColumn] = "50"
+			key := common.HexToHash("74c83704300c65b1de76b9ee7537f3f330650a1d59eb262898de510c0c350be2")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000000")
+			clipSalesPosDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+			insertErr := event.PersistModels([]event.InsertionModel{clipKickModel}, db)
+			Expect(insertErr).NotTo(HaveOccurred())
+
+			err = transformer.Execute(clipSalesPosDiff)
+			Expect(err).NotTo(HaveOccurred())
+
+			var salesPosResult test_helpers.VariableRes
+			err = db.Get(&salesPosResult, `SELECT diff_id, header_id, pos AS value FROM maker.clip_sale_pos`)
+			Expect(err).NotTo(HaveOccurred())
+			test_helpers.AssertVariable(salesPosResult, clipSalesPosDiff.ID, header.Id, "0")
+		})
 	})
 })

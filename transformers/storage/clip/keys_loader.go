@@ -109,8 +109,7 @@ func (loader *keysLoader) loadSalesKeys(mappings map[common.Hash]types.ValueMeta
 		mappings[getSalePosKey(hexSaleID)] = getSalePosMetadata(saleID)
 		mappings[getSaleTabKey(hexSaleID)] = getSaleTabMetadata(saleID)
 		mappings[getSaleLotKey(hexSaleID)] = getSaleLotMetadata(saleID)
-		mappings[getSaleUsrKey(hexSaleID)] = getSaleUsrMetadata(saleID)
-		mappings[getSaleTicKey(hexSaleID)] = getSaleTicMetadata(saleID)
+		mappings[getSaleUsrTicKey(hexSaleID)] = getSaleUsrTicMetadata(saleID)
 		mappings[getSaleTopKey(hexSaleID)] = getSaleTopMetadata(saleID)
 	}
 	return mappings, nil
@@ -143,26 +142,19 @@ func getSaleLotMetadata(saleID string) types.ValueMetadata {
 	return types.GetValueMetadata(SaleLot, keys, types.Uint256)
 }
 
-func getSaleUsrKey(hexSaleID string) common.Hash {
+func getSaleUsrTicKey(hexSaleID string) common.Hash {
 	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 3)
 }
 
-func getSaleUsrMetadata(saleID string) types.ValueMetadata {
+func getSaleUsrTicMetadata(saleID string) types.ValueMetadata {
 	keys := map[types.Key]string{constants.SaleId: saleID}
-	return types.GetValueMetadata(SaleUsr, keys, types.Address)
-}
-
-func getSaleTicKey(hexSaleID string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 4)
-}
-
-func getSaleTicMetadata(saleID string) types.ValueMetadata {
-	keys := map[types.Key]string{constants.SaleId: saleID}
-	return types.GetValueMetadata(SaleTic, keys, types.Uint96)
+	packedTypes := map[int]types.ValueType{0: types.Address, 1: types.Uint96}
+	packedNames := map[int]string{0: SaleUsr, 1: SaleTic}
+	return types.GetValueMetadataForPackedSlot(mcdStorage.Packed, keys, types.PackedSlot, packedNames, packedTypes)
 }
 
 func getSaleTopKey(hexSaleID string) common.Hash {
-	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 5)
+	return vdbStorage.GetIncrementedKey(getSalePosKey(hexSaleID), 4)
 }
 
 func getSaleTopMetadata(saleID string) types.ValueMetadata {

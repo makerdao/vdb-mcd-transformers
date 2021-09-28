@@ -430,13 +430,15 @@ func GetFlipMetadatas(bidId string) []types.ValueMetadata {
 
 func GetClipMetadatas(saleId string) []types.ValueMetadata {
 	keys := map[types.Key]string{constants.SaleId: saleId}
+
+	packedTypes := map[int]types.ValueType{0: types.Address, 1: types.Uint96}
+	packedNames := map[int]string{0: clip.SaleUsr, 1: clip.SaleTic}
 	return []types.ValueMetadata{
 		types.GetValueMetadata(clip.SalePos, keys, types.Uint256),
 		types.GetValueMetadata(clip.SaleTab, keys, types.Uint256),
 		types.GetValueMetadata(clip.SaleLot, keys, types.Uint256),
-		types.GetValueMetadata(clip.SaleUsr, keys, types.Address),
-		types.GetValueMetadata(clip.SaleTic, keys, types.Uint96),
 		types.GetValueMetadata(clip.SaleTop, keys, types.Uint256),
+		types.GetValueMetadataForPackedSlot(clip.Packed, keys, types.PackedSlot, packedNames, packedTypes),
 	}
 }
 
@@ -479,12 +481,12 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 
 func GetClipStorageValues(seed int, saleId int) map[string]interface{} {
 	valuesMap := make(map[string]interface{})
+	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed)}
 
 	valuesMap[clip.SalePos] = strconv.Itoa(seed)
 	valuesMap[clip.SaleTab] = strconv.Itoa(1 + seed)
 	valuesMap[clip.SaleLot] = strconv.Itoa(2 + seed)
-	valuesMap[clip.SaleUsr] = "address2" + strconv.Itoa(seed)
-	valuesMap[clip.SaleTic] = strconv.Itoa(3 + seed)
+	valuesMap[clip.Packed] = packedValues
 	valuesMap[clip.SaleTop] = strconv.Itoa(4 + seed)
 	valuesMap[clip.Kicks] = strconv.Itoa(saleId)
 	return valuesMap

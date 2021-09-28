@@ -140,30 +140,21 @@ var _ = Describe("Clip storage keys loader", func() {
 				Expect(mappings[salesLotKey]).To(Equal(expectedMetadata))
 			})
 
-			It("returns value metadata for sales usr", func() {
-				salesUsrKey := vdbStorage.GetIncrementedKey(salesPosKey, 3)
+			It("returns value metadata for sale usr + tic packed slot", func() {
+				saleUsrKey := vdbStorage.GetIncrementedKey(salesPosKey, 3)
 				expectedMetadata := types.ValueMetadata{
-					Name: clip.SaleUsr,
-					Keys: map[types.Key]string{constants.SaleId: fakeUint256},
-					Type: types.Address,
+					Name:        mcdStorage.Packed,
+					Keys:        map[types.Key]string{constants.SaleId: fakeUint256},
+					Type:        types.PackedSlot,
+					PackedTypes: map[int]types.ValueType{0: types.Address, 1: types.Uint96},
+					PackedNames: map[int]string{0: clip.SaleUsr, 1: clip.SaleTic},
 				}
 
-				Expect(mappings[salesUsrKey]).To(Equal(expectedMetadata))
-			})
-
-			It("returns value metadata for sales tic", func() {
-				salesTicKey := vdbStorage.GetIncrementedKey(salesPosKey, 4)
-				expectedMetadata := types.ValueMetadata{
-					Name: clip.SaleTic,
-					Keys: map[types.Key]string{constants.SaleId: fakeUint256},
-					Type: types.Uint96,
-				}
-
-				Expect(mappings[salesTicKey]).To(Equal(expectedMetadata))
+				Expect(mappings[saleUsrKey]).To(Equal(expectedMetadata))
 			})
 
 			It("returns value metadata for sales top", func() {
-				salesTopKey := vdbStorage.GetIncrementedKey(salesPosKey, 5)
+				salesTopKey := vdbStorage.GetIncrementedKey(salesPosKey, 4)
 				expectedMetadata := types.ValueMetadata{
 					Name: clip.SaleTop,
 					Keys: map[types.Key]string{constants.SaleId: fakeUint256},
