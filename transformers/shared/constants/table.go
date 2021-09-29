@@ -40,6 +40,7 @@ const (
 	ClipCuspTable                 = "clip_cusp"
 	ClipChostTable                = "clip_chost"
 	ClipKicksTable                = "clip_kicks"
+	ClipActiveTable               = "clip_active"
 	ClipChipTable                 = "clip_chip"
 	ClipTipTable                  = "clip_tip"
 	ClipKickTable                 = "clip_kick"

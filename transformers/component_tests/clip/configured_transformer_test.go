@@ -213,6 +213,56 @@ var _ = Describe("Executing the transformer", func() {
 		test_helpers.AssertVariable(kicksResult, clipKicksDiff.ID, header.Id, "38")
 	})
 
+	It("reads the Clip Active storage diff row and persists it", func() {
+		key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+		clipActiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		err := transformer.Execute(clipActiveDiff)
+		Expect(err).NotTo(HaveOccurred())
+
+		var activeResult test_helpers.VariableRes
+		err = db.Get(&activeResult, `SELECT diff_id, header_id, active AS value FROM maker.clip_active`)
+		Expect(err).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(activeResult, clipActiveDiff.ID, header.Id, "1")
+	})
+
+	It("reads the Clip Active storage diff row and persists the incremented value", func() {
+		key := common.HexToHash("0175b7a638427703f0dbe7bb9bbf987a2551717b34e79f33b5b1008d1fa01db9")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000032")
+		clipActiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		activeErr := transformer.Execute(clipActiveDiff)
+		Expect(activeErr).NotTo(HaveOccurred())
+
+		var activeResult test_helpers.VariableRes
+		dbErr := db.Get(&activeResult, `SELECT diff_id, header_id, sale_id AS value FROM maker.clip_active_sales`)
+		Expect(dbErr).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(activeResult, clipActiveDiff.ID, header.Id, "50")
+	})
+
+	It("reads the Clip Active storage diff row and persists multiple values", func() {
+		key := common.HexToHash("0175b7a638427703f0dbe7bb9bbf987a2551717b34e79f33b5b1008d1fa01db9")
+		value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000032")
+		clipActiveDiff := test_helpers.CreateDiffRecord(db, header, contractAddress, key, value)
+
+		activeErr := transformer.Execute(clipActiveDiff)
+		Expect(activeErr).NotTo(HaveOccurred())
+
+		keyTwo := common.HexToHash("0175b7a638427703f0dbe7bb9bbf987a2551717b34e79f33b5b1008d1fa01db9")
+		valueTwo := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000033")
+		clipActiveDiffTwo := test_helpers.CreateDiffRecord(db, header, contractAddress, keyTwo, valueTwo)
+
+		activeErrTwo := transformer.Execute(clipActiveDiffTwo)
+		Expect(activeErrTwo).NotTo(HaveOccurred())
+
+		var activeResult []test_helpers.VariableRes
+		dbErr := db.Select(&activeResult, `SELECT diff_id, header_id, sale_id AS value FROM maker.clip_active_sales`)
+		Expect(dbErr).NotTo(HaveOccurred())
+		test_helpers.AssertVariable(activeResult[0], clipActiveDiff.ID, header.Id, "50")
+		test_helpers.AssertVariable(activeResult[1], clipActiveDiff.ID+1, header.Id, "51")
+	})
+
 	//Data from storage diff on chain https://etherscan.io/tx/0x79f7ac4251a177bc2f86709319a65ff22c4eeb8c4eabe5ece4acabfb0a113b2a
 	Describe("Sales", func() {
 		BeforeEach(func() {

@@ -2,8 +2,10 @@ package clip
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/utilities/wards"
@@ -49,6 +51,11 @@ var (
 	KicksKey      = common.HexToHash(vdbStorage.IndexTen)
 	KicksMetadata = types.GetValueMetadata(mcdStorage.Kicks, nil, types.Uint256)
 
+	ActiveKey      = common.HexToHash(vdbStorage.IndexEleven)
+	ActiveMetaData = types.GetValueMetadata(Active, nil, types.Uint256)
+
+	ActiveSaleMetaData = types.GetValueMetadata(ActiveSale, nil, types.Uint256)
+
 	SalesMappingIndex = vdbStorage.IndexTwelve
 )
 
@@ -78,6 +85,10 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	if salesErr != nil {
 		return nil, fmt.Errorf("error adding sales keys to clip keys loader: %w", salesErr)
 	}
+	mappings, activeErr := loader.loadActiveKeys(mappings)
+	if activeErr != nil {
+		return nil, fmt.Errorf("error adding active sales keys to clip keys loader %w", activeErr)
+	}
 	return mappings, nil
 }
 
@@ -93,7 +104,24 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 	mappings[ChipAndTipStorageKey] = ChipAndTipMetadata
 	mappings[ChostKey] = ChostMetadata
 	mappings[KicksKey] = KicksMetadata
+	mappings[ActiveKey] = ActiveMetaData
 	return mappings
+}
+
+func (loader *keysLoader) loadActiveKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
+	lengthString, getErr := loader.storageRepository.GetActiveLength(loader.contractAddress)
+	if getErr != nil {
+		return nil, fmt.Errorf("error getting active array length: %w", getErr)
+	}
+	length, convErr := strconv.Atoi(lengthString)
+	if convErr != nil {
+		return nil, fmt.Errorf("error converting active array length: %w", convErr)
+	}
+	for i := 0; i <= length; i++ {
+		keccakHashedIndex := common.BytesToHash(crypto.Keccak256(ActiveKey.Bytes()))
+		mappings[vdbStorage.GetIncrementedKey(keccakHashedIndex, int64(i))] = ActiveSaleMetaData
+	}
+	return mappings, nil
 }
 
 func (loader *keysLoader) loadSalesKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {

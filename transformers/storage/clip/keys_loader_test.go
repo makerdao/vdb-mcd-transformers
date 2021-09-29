@@ -53,6 +53,42 @@ var _ = Describe("Clip storage keys loader", func() {
 		Expect(mappings[clip.KicksKey]).To(Equal(clip.KicksMetadata))
 	})
 
+	Describe("Active array", func() {
+		Describe("When getting Active array data succeeds", func() {
+			It("returns value metadata for the active field", func() {
+				mappings, err := storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(mappings[clip.ActiveKey]).To(Equal(clip.ActiveMetaData))
+			})
+
+			It("returns value metadata for an array with one element", func() {
+				storageRepository.ActiveLength = "1"
+				mappings, err := storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+
+				clipActiveElementKey := common.BytesToHash(crypto.Keccak256(common.FromHex(vdbStorage.IndexEleven)))
+
+				Expect(storageRepository.GetActiveLengthCalledWith).To(Equal(test_data.ClipLinkAV130Address()))
+				Expect(mappings[clipActiveElementKey]).To(Equal(clip.ActiveSaleMetaData))
+			})
+
+			It("returns value metadata for an array with many elements", func() {
+				var arrayLength = 5
+				storageRepository.ActiveLength = strconv.Itoa(arrayLength)
+				mappings, err := storageKeysLoader.LoadMappings()
+				Expect(err).NotTo(HaveOccurred())
+
+				firstArrayElementKey := common.BytesToHash(crypto.Keccak256(common.FromHex(vdbStorage.IndexEleven)))
+				lastArrayElementKey := vdbStorage.GetIncrementedKey(firstArrayElementKey, int64(arrayLength-1))
+
+				Expect(storageRepository.GetActiveLengthCalledWith).To(Equal(test_data.ClipLinkAV130Address()))
+				Expect(mappings[firstArrayElementKey]).To(Equal(clip.ActiveSaleMetaData))
+				Expect(mappings[lastArrayElementKey]).To(Equal(clip.ActiveSaleMetaData))
+			})
+		})
+	})
+
 	Describe("wards", func() {
 		It("returns value metadata for wards", func() {
 			wardsUser := fakes.FakeAddress.Hex()

@@ -13,18 +13,19 @@ import (
 )
 
 const (
-	Dog     = "dog"
-	Vow     = "vow"
-	Spotter = "spotter"
-	Calc    = "calc"
-	Buf     = "buf"
-	Tail    = "tail"
-	Cusp    = "cusp"
-	Chip    = "chip"
-	Tip     = "tip"
-	Chost   = "chost"
-	Kicks   = "kicks"
-	Active  = "active"
+	Dog        = "dog"
+	Vow        = "vow"
+	Spotter    = "spotter"
+	Calc       = "calc"
+	Buf        = "buf"
+	Tail       = "tail"
+	Cusp       = "cusp"
+	Chip       = "chip"
+	Tip        = "tip"
+	Chost      = "chost"
+	Kicks      = "kicks"
+	Active     = "active"
+	ActiveSale = "active_sale"
 
 	Packed = "packed_storage_values"
 
@@ -35,17 +36,19 @@ const (
 	SaleTic = "sale_tic"
 	SaleTop = "sale_top"
 
-	insertClipDogQuery     = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipVowQuery     = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipSpotterQuery = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipCalcQuery    = `INSERT INTO maker.clip_calc (diff_id, header_id, address_id, calc) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipBufQuery     = `INSERT INTO maker.clip_buf (diff_id, header_id, address_id, buf) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipTailQuery    = `INSERT INTO maker.clip_tail (diff_id, header_id, address_id, tail) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipCuspQuery    = `INSERT INTO maker.clip_cusp (diff_id, header_id, address_id, cusp) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipChipQuery    = `INSERT INTO maker.clip_chip (diff_id, header_id, address_id, chip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipTipQuery     = `INSERT INTO maker.clip_tip (diff_id, header_id, address_id, tip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipChostQuery   = `INSERT INTO maker.clip_chost (diff_id, header_id, address_id, chost) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-	insertClipKicksQuery   = `INSERT INTO maker.clip_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipDogQuery        = `INSERT INTO maker.clip_dog (diff_id, header_id, address_id, dog) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipVowQuery        = `INSERT INTO maker.clip_vow (diff_id, header_id, address_id, vow) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipSpotterQuery    = `INSERT INTO maker.clip_spotter (diff_id, header_id, address_id, spotter) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipCalcQuery       = `INSERT INTO maker.clip_calc (diff_id, header_id, address_id, calc) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipBufQuery        = `INSERT INTO maker.clip_buf (diff_id, header_id, address_id, buf) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipTailQuery       = `INSERT INTO maker.clip_tail (diff_id, header_id, address_id, tail) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipCuspQuery       = `INSERT INTO maker.clip_cusp (diff_id, header_id, address_id, cusp) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipChipQuery       = `INSERT INTO maker.clip_chip (diff_id, header_id, address_id, chip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipTipQuery        = `INSERT INTO maker.clip_tip (diff_id, header_id, address_id, tip) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipChostQuery      = `INSERT INTO maker.clip_chost (diff_id, header_id, address_id, chost) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipKicksQuery      = `INSERT INTO maker.clip_kicks (diff_id, header_id, address_id, kicks) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipActiveQuery     = `INSERT INTO maker.clip_active (diff_id, header_id, address_id, active) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
+	insertClipActiveSaleQuery = `INSERT INTO maker.clip_active_sales (diff_id, header_id, address_id, sale_id) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
 
 	insertSalePosQuery = `INSERT INTO maker.clip_sale_pos (diff_id, header_id, address_id, sale_id, pos) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
 	insertSaleTabQuery = `INSERT INTO maker.clip_sale_tab (diff_id, header_id, address_id, sale_id, tab) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`
@@ -83,6 +86,10 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertChost(diffID, headerID, value.(string))
 	case Kicks:
 		return repo.insertKicks(diffID, headerID, value.(string))
+	case Active:
+		return repo.insertActive(diffID, headerID, value.(string))
+	case ActiveSale:
+		return repo.insertActiveSale(diffID, headerID, value.(string))
 	case wards.Wards:
 		return wards.InsertWards(diffID, headerID, metadata, repo.ContractAddress, value.(string), repo.db)
 	case SalePos:
@@ -269,6 +276,32 @@ func (repo *StorageRepository) insertKicks(diffID, headerID int64, kicks string)
 	_, err := repo.db.Exec(insertClipKicksQuery, diffID, headerID, addressID, kicks)
 	if err != nil {
 		return fmt.Errorf("error inserting clip kicks %s from diff ID %d: %w", kicks, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertActive(diffID, headerID int64, active string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipActiveQuery, diffID, headerID, addressID, active)
+	if err != nil {
+		return fmt.Errorf("error inserting clip active %s from diff ID %d: %w", active, diffID, err)
+	}
+	return nil
+}
+
+func (repo *StorageRepository) insertActiveSale(diffID, headerID int64, saleID string) error {
+	addressID, addressErr := repo.ContractAddressID()
+	if addressErr != nil {
+		return fmt.Errorf("could not retrieve address id for %s, error: %w", repo.ContractAddress, addressErr)
+	}
+
+	_, err := repo.db.Exec(insertClipActiveSaleQuery, diffID, headerID, addressID, saleID)
+	if err != nil {
+		return fmt.Errorf("error inserting clip active sale %s from diff ID %d: %w", saleID, diffID, err)
 	}
 	return nil
 }
