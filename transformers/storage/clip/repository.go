@@ -91,10 +91,6 @@ func (repo *StorageRepository) Create(diffID, headerID int64, metadata types.Val
 		return repo.insertSaleTab(diffID, headerID, metadata, value.(string))
 	case SaleLot:
 		return repo.insertSaleLot(diffID, headerID, metadata, value.(string))
-	case SaleUsr:
-		return repo.insertSaleUsr(diffID, headerID, metadata, value.(string))
-	case SaleTic:
-		return repo.insertSaleTic(diffID, headerID, metadata, value.(string))
 	case SaleTop:
 		return repo.insertSaleTop(diffID, headerID, metadata, value.(string))
 	default:
@@ -285,6 +281,10 @@ func (repo *StorageRepository) insertPackedValueRecord(diffID, headerID int64, m
 			insertErr = repo.insertChip(diffID, headerID, value)
 		case Tip:
 			insertErr = repo.insertTip(diffID, headerID, value)
+		case SaleUsr:
+			insertErr = repo.insertSaleUsr(diffID, headerID, metadata, value)
+		case SaleTic:
+			insertErr = repo.insertSaleTic(diffID, headerID, metadata, value)
 		default:
 			return fmt.Errorf("unrecognized clip contract storage name in packed values: %s", metadata.Name)
 		}
