@@ -33,7 +33,7 @@ type Urn struct {
 type IMakerStorageRepository interface {
 	GetCdpis() ([]string, error)
 	GetClipSalesIDs(contractAddress string) ([]string, error)
-	GetActiveLength(contractAddress string) (string, error)
+	GetMaxActiveLength(contractAddress string) (string, error)
 	GetDaiKeys() ([]string, error)
 	GetFlapBidIDs(string) ([]string, error)
 	GetFlipBidIDs(contractAddress string) ([]string, error)
@@ -68,15 +68,15 @@ func (repository *MakerStorageRepository) GetClipSalesIDs(contractAddress string
 	return saleIDs, err
 }
 
-func (repository *MakerStorageRepository) GetActiveLength(contractAddress string) (string, error) {
-	var activeLength sql.NullString
+func (repository *MakerStorageRepository) GetMaxActiveLength(contractAddress string) (string, error) {
+	var maxActiveLength sql.NullString
 	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
 		return "0", addressErr
 	}
-	err := repository.db.Get(&activeLength, `SELECT max(kicks) FROM maker.clip_kicks WHERE address_id = $1`, addressID)
-	if activeLength.Valid {
-		return activeLength.String, err
+	err := repository.db.Get(&maxActiveLength, `SELECT max(kicks) FROM maker.clip_kicks WHERE address_id = $1`, addressID)
+	if maxActiveLength.Valid {
+		return maxActiveLength.String, err
 	}
 	return "0", err
 }

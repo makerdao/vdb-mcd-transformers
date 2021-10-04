@@ -109,7 +109,7 @@ func loadStaticMappings() map[common.Hash]types.ValueMetadata {
 }
 
 func (loader *keysLoader) loadActiveKeys(mappings map[common.Hash]types.ValueMetadata) (map[common.Hash]types.ValueMetadata, error) {
-	lengthString, getErr := loader.storageRepository.GetActiveLength(loader.contractAddress)
+	lengthString, getErr := loader.storageRepository.GetMaxActiveLength(loader.contractAddress)
 	if getErr != nil {
 		return nil, fmt.Errorf("error getting active array length: %w", getErr)
 	}
