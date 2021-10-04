@@ -72,7 +72,7 @@ func (repository *MakerStorageRepository) GetActiveLength(contractAddress string
 	var activeLength sql.NullString
 	addressID, addressErr := repository.GetOrCreateAddress(contractAddress)
 	if addressErr != nil {
-		return "", addressErr
+		return "0", addressErr
 	}
 	err := repository.db.Get(&activeLength, `SELECT max(kicks) FROM maker.clip_kicks WHERE address_id = $1`, addressID)
 	if activeLength.Valid {
