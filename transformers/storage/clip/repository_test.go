@@ -381,6 +381,23 @@ var _ = Describe("Clip storage repository", func() {
 
 			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
 		})
+
+		Describe("clip active", func() {
+			metadata := types.GetValueMetadata(clip.Active, nil, types.Uint256)
+
+			inputs := shared_behaviors.StorageBehaviorInputs{
+				ValueFieldName:  clip.Active,
+				Value:           fakeUint256,
+				Schema:          constants.MakerSchema,
+				TableName:       constants.ClipActiveTable,
+				ContractAddress: test_data.ClipLinkAV130Address(),
+				Repository:      &repo,
+				Metadata:        metadata,
+				IsAMapping:      false,
+			}
+
+			shared_behaviors.SharedStorageRepositoryBehaviors(&inputs)
+		})
 	})
 
 	Describe("Dynamic Sales storage field", func() {

@@ -7,6 +7,7 @@ import (
 )
 
 type MockMakerStorageRepository struct {
+	MaxActiveLength                  string
 	Cdpis                            []string
 	ClipSalesIDs                     []string
 	DaiKeys                          []string
@@ -24,6 +25,8 @@ type MockMakerStorageRepository struct {
 	Urns                             []storage.Urn
 	VatWardsKeys                     []string
 	WardsKeys                        []string
+	GetMaxActiveLengthCalledWith     string
+	GetMaxActiveLengthError          error
 	GetCdpisCalled                   bool
 	GetCdpisError                    error
 	GetClipSalesIDCalledWith         string
@@ -125,6 +128,14 @@ func (repository *MockMakerStorageRepository) GetPotPieUsers() ([]string, error)
 func (repository *MockMakerStorageRepository) GetClipSalesIDs(contractAddress string) ([]string, error) {
 	repository.GetClipSalesIDCalledWith = contractAddress
 	return repository.ClipSalesIDs, repository.GetClipSalesError
+}
+
+func (repository *MockMakerStorageRepository) GetMaxActiveLength(contractAddress string) (string, error) {
+	repository.GetMaxActiveLengthCalledWith = contractAddress
+	if repository.MaxActiveLength == "" {
+		repository.MaxActiveLength = "0"
+	}
+	return repository.MaxActiveLength, repository.GetMaxActiveLengthError
 }
 
 func (repository *MockMakerStorageRepository) GetVatSinKeys() ([]string, error) {
