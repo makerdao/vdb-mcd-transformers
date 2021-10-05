@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.6
--- Dumped by pg_dump version 11.6
+-- Dumped from database version 11.13
+-- Dumped by pg_dump version 11.13
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1254,6 +1254,66 @@ $$;
 
 
 --
+-- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_kick (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint,
+    kpr bigint,
+    coin numeric
+);
+
+
+--
+-- Name: clip_sale_event_kick_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_kick_event(event api.clip_sale_event) RETURNS maker.clip_kick
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_kick WHERE log_id = event.log_id
+$$;
+
+
+--
+-- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_redo (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint,
+    kpr bigint,
+    coin numeric
+);
+
+
+--
+-- Name: clip_sale_event_redo_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_redo_event(event api.clip_sale_event) RETURNS maker.clip_redo
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_redo WHERE log_id = event.log_id
+$$;
+
+
+--
 -- Name: clip_sale_event_sale(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1266,6 +1326,36 @@ $$;
 
 
 --
+-- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_take (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric,
+    max numeric,
+    price numeric,
+    owe numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint
+);
+
+
+--
+-- Name: clip_sale_event_take_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_take_event(event api.clip_sale_event) RETURNS maker.clip_take
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_take WHERE log_id = event.log_id
+$$;
+
+
+--
 -- Name: clip_sale_event_tx(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -1274,6 +1364,30 @@ CREATE FUNCTION api.clip_sale_event_tx(event api.clip_sale_event) RETURNS SETOF 
     AS $$
 SELECT *
 FROM get_tx_data(event.block_height, event.log_id)
+$$;
+
+
+--
+-- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_yank (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL
+);
+
+
+--
+-- Name: clip_sale_event_yank_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_yank_event(event api.clip_sale_event) RETURNS maker.clip_yank
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_yank WHERE log_id = event.log_id
 $$;
 
 
@@ -2604,25 +2718,6 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) IS '@omit';
-
-
---
--- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_kick (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    top numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint,
-    kpr bigint,
-    coin numeric
-);
 
 
 --
@@ -9398,25 +9493,6 @@ ALTER SEQUENCE maker.clip_kicks_id_seq OWNED BY maker.clip_kicks.id;
 
 
 --
--- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_redo (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    top numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint,
-    kpr bigint,
-    coin numeric
-);
-
-
---
 -- Name: clip_redo_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9623,25 +9699,6 @@ ALTER SEQUENCE maker.clip_tail_id_seq OWNED BY maker.clip_tail.id;
 
 
 --
--- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_take (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric,
-    max numeric,
-    price numeric,
-    owe numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint
-);
-
-
---
 -- Name: clip_take_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
@@ -9725,19 +9782,6 @@ CREATE SEQUENCE maker.clip_vow_id_seq
 --
 
 ALTER SEQUENCE maker.clip_vow_id_seq OWNED BY maker.clip_vow.id;
-
-
---
--- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
---
-
-CREATE TABLE maker.clip_yank (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
-    address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL
-);
 
 
 --
