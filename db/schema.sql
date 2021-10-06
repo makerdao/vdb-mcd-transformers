@@ -1388,6 +1388,17 @@ CREATE FUNCTION api.clip_sale_event_yank_event(event api.clip_sale_event) RETURN
     LANGUAGE sql STABLE
     AS $$
 SELECT * FROM maker.clip_yank WHERE log_id = event.log_id
+-- Name: clip_sale_snapshot_active(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_active(clip_sale_snapshot api.clip_sale_snapshot) RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+SELECT EXISTS(SELECT 1
+              FROM maker.clip_active_sales
+                       JOIN headers h ON clip_active_sales.header_id = h.id
+              WHERE clip_sale_snapshot.sale_id = sale_id
+                AND clip_sale_snapshot.block_height = h.block_number)
 $$;
 
 

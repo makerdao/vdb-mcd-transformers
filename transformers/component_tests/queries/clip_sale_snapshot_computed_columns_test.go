@@ -9,14 +9,17 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/component_tests/queries/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/shared/constants"
+	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
+	storage_test_helpers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
+	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
 	"github.com/makerdao/vulcanizedb/libraries/shared/repository"
 	"github.com/makerdao/vulcanizedb/pkg/core"
 	"github.com/makerdao/vulcanizedb/pkg/datastore"
 	"github.com/makerdao/vulcanizedb/pkg/datastore/postgres/repositories"
-	"github.com/makerdao/vulcanizedb/pkg/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -26,15 +29,16 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 	var (
 		headerOne              core.Header
 		headerRepository       datastore.HeaderRepository
-		contractAddress        = fakes.FakeAddress.Hex()
+		contractAddress        = test_data.ClipLinkAV130Address()
 		addressId              int64
 		fakeSaleId             int
 		blockOne, timestampOne int
 		dogBarkUrnAddress      = common.HexToAddress(test_data.DogBarkEventLog.Log.Topics[2].Hex()).Hex()
+		transformer            storage.Transformer
 	)
 
 	BeforeEach(func() {
-		fakeSaleId = rand.Int()
+		fakeSaleId = 50
 		blockOne = rand.Int()
 		timestampOne = int(rand.Int31())
 
@@ -42,6 +46,16 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 
 		headerRepository = repositories.NewHeaderRepository(db)
 		headerOne = createHeader(blockOne, timestampOne, headerRepository)
+
+		storageKeysLookup := storage.NewKeysLookup(clip.NewKeysLoader(&mcdStorage.MakerStorageRepository{}, contractAddress))
+		clipRepository := clip.StorageRepository{ContractAddress: contractAddress}
+		transformer = storage.Transformer{
+			Address:           common.HexToAddress(contractAddress),
+			StorageKeysLookup: storageKeysLookup,
+			Repository:        &clipRepository,
+		}
+		transformer.NewTransformer(db)
+
 		dogBarkLogOne := test_data.CreateTestLog(headerOne.Id, db)
 
 		_, _ = shared.GetOrCreateUrn(dogBarkUrnAddress, test_helpers.FakeIlk.Hex, db)
@@ -92,6 +106,40 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
     					 FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
 			Expect(queryErr).NotTo(HaveOccurred())
 			Expect(actualSaleEvents).To(ConsistOf(expectedClipKickEvent))
+		})
+	})
+
+	Describe("clip_sale_snapshot_active", func() {
+		It("returns false if the auction is not active", func() {
+			var isActive bool
+			queryErr := db.Get(&isActive, `SELECT api.clip_sale_snapshot_active(
+				(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
+			FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(isActive).To(BeFalse())
+		})
+
+		It("returns true if the auction is active", func() {
+			key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b")
+			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
+			clipActiveLengthDiff := storage_test_helpers.CreateDiffRecord(db, headerOne, common.HexToAddress(contractAddress), key, value)
+
+			err := transformer.Execute(clipActiveLengthDiff)
+			Expect(err).NotTo(HaveOccurred())
+
+			key2 := common.HexToHash("0175b7a638427703f0dbe7bb9bbf987a2551717b34e79f33b5b1008d1fa01db9")
+			value2 := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000032")
+			clipActiveSaleIDDiff := storage_test_helpers.CreateDiffRecord(db, headerOne, common.HexToAddress(contractAddress), key2, value2)
+
+			activeErr := transformer.Execute(clipActiveSaleIDDiff)
+			Expect(activeErr).NotTo(HaveOccurred())
+
+			var isActive bool
+			queryErr := db.Get(&isActive, `SELECT api.clip_sale_snapshot_active(
+				(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
+			FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
+			Expect(queryErr).NotTo(HaveOccurred())
+			Expect(isActive).To(BeTrue())
 		})
 	})
 
