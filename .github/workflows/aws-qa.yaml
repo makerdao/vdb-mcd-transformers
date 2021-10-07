@@ -104,12 +104,12 @@ jobs:
         aws ecs wait services-stable --cluster $CLUSTER_NAME --services $MCD_EXECUTE_NAME-$ENVIRONMENT $EXTRACT_DIFFS_NAME-eu-$ENVIRONMENT $EXTRACT_DIFFS_NAME-us-$ENVIRONMENT && echo $? || echo $?
         aws ecs wait services-stable --cluster $CLUSTER_NAME --services $MCD_EXECUTE_NAME-$ENVIRONMENT $EXTRACT_DIFFS_NAME-eu-$ENVIRONMENT $EXTRACT_DIFFS_NAME-us-$ENVIRONMENT && echo $? || echo $?
 
-    - name: Create Sentry release
-      uses: getsentry/action-release@v1
-      env:
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-      with:
-        environment: qa
-        version_prefix: vdb-mcd-transformers
+#     - name: Create Sentry release
+#       uses: getsentry/action-release@v1
+#       env:
+#         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+#         SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+#       with:
+#         environment: qa
+#         version_prefix: vdb-mcd-transformers
