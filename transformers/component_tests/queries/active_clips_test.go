@@ -1,8 +1,10 @@
 package queries
 
 import (
+	"database/sql"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/makerdao/vdb-mcd-transformers/test_config"
@@ -12,7 +14,6 @@ import (
 	mcdStorage "github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	storage_test_helpers "github.com/makerdao/vdb-mcd-transformers/transformers/storage/test_helpers"
-	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/test_data"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
@@ -25,7 +26,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("clip_sale_snapshot computed columns", func() {
+var _ = Describe("Active clip sales query", func() {
 	var (
 		headerOne              core.Header
 		headerRepository       datastore.HeaderRepository
@@ -35,6 +36,7 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 		blockOne, timestampOne int
 		dogBarkUrnAddress      = common.HexToAddress(test_data.DogBarkEventLog.Log.Topics[2].Hex()).Hex()
 		transformer            storage.Transformer
+		clipStorageValues      map[string]interface{}
 	)
 
 	BeforeEach(func() {
@@ -87,39 +89,12 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 		clipKickErr := event.PersistModels([]event.InsertionModel{clipKickEvent}, db)
 		Expect(clipKickErr).NotTo(HaveOccurred())
 
-		clipStorageValues := test_helpers.GetClipStorageValues(1, fakeSaleId)
+		clipStorageValues = test_helpers.GetClipStorageValues(1, fakeSaleId)
 		test_helpers.CreateClip(db, headerOne, clipStorageValues, test_helpers.GetClipMetadatas(strconv.Itoa(fakeSaleId)), contractAddress)
 	})
 
-	Describe("clip sale snapshot sale events", func() {
-		It("returns the sale events for a clip", func() {
-			expectedClipKickEvent := test_helpers.SaleEvent{
-				SaleId:          strconv.Itoa(fakeSaleId),
-				Act:             "kick",
-				ContractAddress: contractAddress,
-			}
-
-			var actualSaleEvents []test_helpers.SaleEvent
-			queryErr := db.Select(&actualSaleEvents,
-				`SELECT sale_id, act, contract_address FROM api.clip_sale_snapshot_sale_events(
-    					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-    					 FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
-			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(actualSaleEvents).To(ConsistOf(expectedClipKickEvent))
-		})
-	})
-
-	Describe("clip_sale_snapshot_active", func() {
-		It("returns false if the auction is not active", func() {
-			var isActive bool
-			queryErr := db.Get(&isActive, `SELECT api.clip_sale_snapshot_active(
-				(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-			FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
-			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(isActive).To(BeFalse())
-		})
-
-		It("returns true if the auction is active", func() {
+	Describe("active clips", func() {
+		It("returns clips that are currently active", func() {
 			key := common.HexToHash("000000000000000000000000000000000000000000000000000000000000000b")
 			value := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000001")
 			clipActiveLengthDiff := storage_test_helpers.CreateDiffRecord(db, headerOne, common.HexToAddress(contractAddress), key, value)
@@ -131,63 +106,34 @@ var _ = Describe("clip_sale_snapshot computed columns", func() {
 			value2 := common.HexToHash("0000000000000000000000000000000000000000000000000000000000000032")
 			clipActiveSaleIDDiff := storage_test_helpers.CreateDiffRecord(db, headerOne, common.HexToAddress(contractAddress), key2, value2)
 
+			barkUrnId, urnErr := shared.GetOrCreateUrn(dogBarkUrnAddress, test_helpers.FakeIlk.Hex, db)
+			Expect(urnErr).NotTo(HaveOccurred())
+
+			ilkId, ilkErr := shared.GetOrCreateIlk(test_helpers.FakeIlk.Hex, db)
+			Expect(ilkErr).NotTo(HaveOccurred())
+
 			activeErr := transformer.Execute(clipActiveSaleIDDiff)
 			Expect(activeErr).NotTo(HaveOccurred())
-
-			var isActive bool
-			queryErr := db.Get(&isActive, `SELECT api.clip_sale_snapshot_active(
-				(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-			FROM api.get_clip_with_address($1, $2, $3)))`, fakeSaleId, contractAddress, blockOne)
-			Expect(queryErr).NotTo(HaveOccurred())
-			Expect(isActive).To(BeTrue())
-		})
-	})
-
-	Describe("clip_sale_snapshot_ilk", func() {
-		It("returns ilk_snapshot for a clip_sale_snapshot", func() {
-			ilkValues := test_helpers.GetIlkValues(0)
-			test_helpers.CreateIlk(db, headerOne, ilkValues, test_helpers.FakeIlkVatMetadatas, test_helpers.FakeIlkCatMetadatas, test_helpers.FakeIlkJugMetadatas, test_helpers.FakeIlkSpotMetadatas)
-
-			expectedIlk := test_helpers.IlkSnapshotFromValues(test_helpers.FakeIlk.Hex, headerOne.Timestamp, headerOne.Timestamp, ilkValues)
-
-			var result test_helpers.IlkSnapshot
-			getIlkErr := db.Get(&result, `
-				SELECT ilk_identifier, rate, art, spot, line, dust, chop, lump, flip, rho, duty, pip, mat, dunk, created, updated
-				FROM api.clip_sale_snapshot_ilk(
-					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-					 FROM api.get_clip_with_address($1, $2, $3))
-			)`, fakeSaleId, contractAddress, blockOne)
-
-			Expect(getIlkErr).NotTo(HaveOccurred())
-			Expect(result).To(Equal(expectedIlk))
-		})
-	})
-
-	Describe("clip_sale_snapshot_urn", func() {
-		It("returns urn_snapshot for a clip_sale_snapshot", func() {
-			urnSetupData := test_helpers.GetUrnSetupData()
-			urnMetadata := test_helpers.GetUrnMetadata(test_helpers.FakeIlk.Hex, dogBarkUrnAddress)
-			vatRepository := vat.StorageRepository{}
-			vatRepository.SetDB(db)
-			test_helpers.CreateUrn(db, urnSetupData, headerOne, urnMetadata, vatRepository)
-
-			var actualUrn test_helpers.UrnState
-			getUrnErr := db.Get(&actualUrn, `
-				SELECT urn_identifier, ilk_identifier
-				FROM api.clip_sale_snapshot_urn(
-					(SELECT (block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address)::api.clip_sale_snapshot
-					FROM api.get_clip_with_address($1, $2, $3))
-			)`, fakeSaleId, contractAddress, blockOne)
-
-			Expect(getUrnErr).NotTo(HaveOccurred())
-
-			expectedUrn := test_helpers.UrnState{
-				UrnIdentifier: dogBarkUrnAddress,
-				IlkIdentifier: test_helpers.FakeIlk.Identifier,
+			clipSaleOne := test_helpers.ClipSale{
+				BlockHeight: strconv.Itoa(blockOne),
+				SaleId:      strconv.Itoa(fakeSaleId),
+				IlkId:       strconv.Itoa(int(ilkId)),
+				UrnId:       strconv.Itoa(int(barkUrnId)),
+				Pos:         clipStorageValues[clip.SalePos].(string),
+				Tab:         clipStorageValues[clip.SaleTab].(string),
+				Lot:         clipStorageValues[clip.SaleLot].(string),
+				Usr:         clipStorageValues[clip.Packed].(map[int]string)[0],
+				Tic:         clipStorageValues[clip.Packed].(map[int]string)[1],
+				Top:         clipStorageValues[clip.SaleTop].(string),
+				Created:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+				Updated:     sql.NullString{String: time.Unix(int64(timestampOne), 0).UTC().Format(time.RFC3339), Valid: true},
+				ClipAddress: contractAddress,
 			}
 
-			test_helpers.AssertUrn(actualUrn, expectedUrn)
+			var actualSales []test_helpers.ClipSale
+			saleQueryErr := db.Select(&actualSales, `SELECT block_height, sale_id, ilk_id, urn_id, pos, tab, lot, usr, tic, "top", created, updated, clip_address from api.active_clips($1)`, test_helpers.FakeIlk.Identifier)
+			Expect(saleQueryErr).NotTo(HaveOccurred())
+			Expect(actualSales).To(ContainElement(clipSaleOne))
 		})
 	})
-
 })
