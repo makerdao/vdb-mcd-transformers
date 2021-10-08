@@ -450,7 +450,8 @@ BEGIN
                  FROM maker.clip_active_sales
                           JOIN addresses ON clip_active_sales.address_id = addresses.id
                           JOIN headers ON clip_active_sales.header_id = headers.id
-                 WHERE maker.clip_active_sales.address_id IN (SELECT clip FROM clip_ids) AND headers.block_number = active_clips.block_height
+                 WHERE maker.clip_active_sales.address_id IN (SELECT clip FROM clip_ids)
+                   AND headers.block_number = active_clips.block_height
                  ORDER BY sale_id DESC
                  LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET active_clips.result_offset
              )
@@ -1422,6 +1423,10 @@ CREATE FUNCTION api.clip_sale_event_yank_event(event api.clip_sale_event) RETURN
     LANGUAGE sql STABLE
     AS $$
 SELECT * FROM maker.clip_yank WHERE log_id = event.log_id
+$$;
+
+
+--
 -- Name: clip_sale_snapshot_active(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
 --
 
