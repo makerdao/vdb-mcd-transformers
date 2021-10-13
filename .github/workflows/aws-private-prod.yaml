@@ -48,7 +48,7 @@ jobs:
       env:
         SHA_TAG: ${{ steps.vars.outputs.sha_short }}
         LATEST_TAG: latest
-        BRANCH_TAG: develop
+        BRANCH_TAG: prod
       run: |
         # Build a docker container and
         # push it to Docker repo so that it can
