@@ -9,7 +9,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
-	github.com/makerdao/vdb-transformer-utilities v0.0.0-20210824224301-b5a3d744cec6
+	github.com/makerdao/vdb-transformer-utilities v0.0.1
 	github.com/makerdao/vulcanizedb v0.1.2
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/onsi/ginkgo v1.14.1
