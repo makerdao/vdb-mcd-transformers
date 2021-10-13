@@ -47,7 +47,6 @@ jobs:
       id: build-image
       env:
         SHA_TAG: ${{ steps.vars.outputs.sha_short }}
-        LATEST_TAG: latest
         BRANCH_TAG: develop
       run: |
         # Build a docker container and
@@ -55,22 +54,18 @@ jobs:
         # be deployed to ECS.
         docker build -f dockerfiles/extract_diffs/Dockerfile \
                      -t $DOCKER_ORG/$EXTRACT_DIFFS_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$EXTRACT_DIFFS_NAME:$LATEST_TAG \
                      -t $DOCKER_ORG/$EXTRACT_DIFFS_NAME:$BRANCH_TAG \
                      .
         docker build -f dockerfiles/backfill_storage/Dockerfile \
                      -t $DOCKER_ORG/$BACKFILL_STORAGE_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$BACKFILL_STORAGE_NAME:$LATEST_TAG \
                      -t $DOCKER_ORG/$BACKFILL_STORAGE_NAME:$BRANCH_TAG \
                      .
         docker build -f dockerfiles/backfill_events/Dockerfile \
                      -t $DOCKER_ORG/$BACKFILL_EVENTS_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$BACKFILL_EVENTS_NAME:$LATEST_TAG \
                      -t $DOCKER_ORG/$BACKFILL_EVENTS_NAME:$BRANCH_TAG \
                      .
         docker build -f dockerfiles/execute/Dockerfile \
                      -t $DOCKER_ORG/$MCD_EXECUTE_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$MCD_EXECUTE_NAME:$LATEST_TAG \
                      -t $DOCKER_ORG/$MCD_EXECUTE_NAME:$BRANCH_TAG \
                      .
         docker push $DOCKER_ORG/$EXTRACT_DIFFS_NAME --all-tags
@@ -104,12 +99,12 @@ jobs:
         aws ecs wait services-stable --cluster $CLUSTER_NAME --services $MCD_EXECUTE_NAME-$ENVIRONMENT $EXTRACT_DIFFS_NAME-eu-$ENVIRONMENT $EXTRACT_DIFFS_NAME-us-$ENVIRONMENT && echo $? || echo $?
         aws ecs wait services-stable --cluster $CLUSTER_NAME --services $MCD_EXECUTE_NAME-$ENVIRONMENT $EXTRACT_DIFFS_NAME-eu-$ENVIRONMENT $EXTRACT_DIFFS_NAME-us-$ENVIRONMENT && echo $? || echo $?
 
-#     - name: Create Sentry release
-#       uses: getsentry/action-release@v1
-#       env:
-#         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-#         SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-#       with:
-#         environment: qa
-#         version_prefix: vdb-mcd-transformers
+    - name: Create Sentry release
+      uses: getsentry/action-release@v1
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      with:
+        environment: qa
+        version_prefix: vdb-mcd-transformers
