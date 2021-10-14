@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.6
--- Dumped by pg_dump version 11.6
+-- Dumped from database version 11.13
+-- Dumped by pg_dump version 11.13
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -58,6 +58,52 @@ CREATE TYPE api.bite_event AS (
 	block_height bigint,
 	log_id bigint,
 	flip_address text
+);
+
+
+--
+-- Name: sale_act; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.sale_act AS ENUM (
+    'kick',
+    'take',
+    'redo',
+    'yank'
+);
+
+
+--
+-- Name: clip_sale_event; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.clip_sale_event AS (
+	sale_id numeric,
+	act api.sale_act,
+	block_height bigint,
+	log_id bigint,
+	contract_address text
+);
+
+
+--
+-- Name: clip_sale_snapshot; Type: TYPE; Schema: api; Owner: -
+--
+
+CREATE TYPE api.clip_sale_snapshot AS (
+	block_height bigint,
+	sale_id numeric,
+	ilk_id integer,
+	urn_id integer,
+	pos numeric,
+	tab numeric,
+	lot numeric,
+	usr text,
+	tic numeric,
+	top numeric,
+	created timestamp without time zone,
+	updated timestamp without time zone,
+	clip_address text
 );
 
 
@@ -371,6 +417,53 @@ CREATE TYPE api.tx AS (
 
 
 --
+-- Name: max_block(); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.max_block() RETURNS bigint
+    LANGUAGE sql STABLE
+    AS $$
+SELECT max(block_number)
+FROM public.headers
+$$;
+
+
+--
+-- Name: active_clips(text, bigint, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.active_clips(ilk text, block_height bigint DEFAULT api.max_block(), max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_snapshot
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+BEGIN
+    RETURN QUERY (
+        WITH ilk_ids AS (SELECT id
+                         FROM maker.ilks
+                         WHERE identifier = active_clips.ilk),
+             clip_ids AS (
+                 SELECT DISTINCT clip
+                 FROM maker.dog_bark
+                 WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
+             ),
+             active_sales AS (
+                 SELECT DISTINCT sale_id, address
+                 FROM maker.clip_active_sales
+                          JOIN addresses ON clip_active_sales.address_id = addresses.id
+                          JOIN headers ON clip_active_sales.header_id = headers.id
+                 WHERE maker.clip_active_sales.address_id IN (SELECT clip FROM clip_ids)
+                   AND headers.block_number = active_clips.block_height
+                 ORDER BY sale_id DESC
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET active_clips.result_offset
+             )
+        SELECT f.*
+        FROM active_sales,
+             LATERAL api.get_clip_with_address(active_sales.sale_id, active_sales.address) f
+    );
+END
+$$;
+
+
+--
 -- Name: all_bites(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
 --
 
@@ -395,6 +488,89 @@ ORDER BY urn_identifier, block_number DESC
 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END
     OFFSET
     all_bites.result_offset
+$$;
+
+
+--
+-- Name: all_clip_sale_events(integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_clip_sale_events(max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
+    LANGUAGE sql STABLE
+    AS $$
+WITH address_ids AS (
+    SELECT distinct address_id
+    FROM maker.clip_kick
+)
+SELECT sale_id,
+       'kick'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_kick.address_id)
+FROM maker.clip_kick
+         LEFT JOIN headers ON clip_kick.header_id = headers.id
+UNION
+SELECT sale_id,
+       'take'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_take.address_id)
+FROM maker.clip_take
+         LEFT JOIN headers on clip_take.header_id = headers.id
+WHERE clip_take.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'redo'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_redo.address_id)
+FROM maker.clip_redo
+         LEFT JOIN headers ON clip_redo.header_id = headers.id
+WHERE clip_redo.address_id IN (SELECT * FROM address_ids)
+UNION
+SELECT sale_id,
+       'yank'::api.sale_act AS act,
+       block_number         AS block_height,
+       log_id,
+       (SELECT address FROM addresses WHERE id = clip_yank.address_id)
+FROM maker.clip_yank
+         LEFT JOIN headers ON clip_yank.header_id = headers.id
+WHERE clip_yank.address_id IN (SELECT * FROM address_ids)
+ORDER BY block_height DESC
+LIMIT all_clip_sale_events.max_results OFFSET all_clip_sale_events.result_offset
+$$;
+
+
+--
+-- Name: all_clips(text, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.all_clips(ilk text, max_results integer DEFAULT '-1'::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_snapshot
+    LANGUAGE plpgsql STABLE STRICT
+    AS $$
+BEGIN
+    RETURN QUERY (
+        WITH ilk_ids AS (SELECT id
+                         FROM maker.ilks
+                         WHERE identifier = all_clips.ilk),
+             clip_ids AS (
+                 SELECT DISTINCT clip
+                 FROM maker.dog_bark
+                 WHERE dog_bark.ilk_id = (SELECT id from ilk_ids)
+             ),
+             sales AS (
+                 SELECT DISTINCT sale_id, address
+                 FROM maker.clip
+                          JOIN addresses on clip.address_id = addresses.id
+                 WHERE maker.clip.address_id IN (SELECT clip FROM clip_ids)
+                 ORDER BY sale_id DESC
+                 LIMIT CASE WHEN max_results = -1 THEN NULL ELSE max_results END OFFSET all_clips.result_offset
+             )
+        SELECT f.*
+        FROM sales,
+             LATERAL api.get_clip_with_address(sales.sale_id, sales.address) f
+    );
+END
 $$;
 
 
@@ -888,18 +1064,6 @@ all_ilk_file_events.result_offset
 $$;
 
 
---
--- Name: max_block(); Type: FUNCTION; Schema: api; Owner: -
---
-
-CREATE FUNCTION api.max_block() RETURNS bigint
-    LANGUAGE sql STABLE
-    AS $$
-SELECT max(block_number)
-FROM public.headers
-$$;
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -1121,6 +1285,207 @@ CREATE FUNCTION api.bite_event_urn(event api.bite_event) RETURNS api.urn_snapsho
     AS $$
 SELECT *
 FROM api.get_urn(event.ilk_identifier, event.urn_identifier, event.block_height)
+$$;
+
+
+--
+-- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_kick (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint,
+    kpr bigint,
+    coin numeric
+);
+
+
+--
+-- Name: clip_sale_event_kick_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_kick_event(event api.clip_sale_event) RETURNS maker.clip_kick
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_kick WHERE log_id = event.log_id
+$$;
+
+
+--
+-- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_redo (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint,
+    kpr bigint,
+    coin numeric
+);
+
+
+--
+-- Name: clip_sale_event_redo_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_redo_event(event api.clip_sale_event) RETURNS maker.clip_redo
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_redo WHERE log_id = event.log_id
+$$;
+
+
+--
+-- Name: clip_sale_event_sale(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_sale(event api.clip_sale_event) RETURNS api.clip_sale_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_clip_with_address(event.sale_id, event.contract_address, event.block_height)
+$$;
+
+
+--
+-- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_take (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric,
+    max numeric,
+    price numeric,
+    owe numeric,
+    tab numeric,
+    lot numeric,
+    usr bigint
+);
+
+
+--
+-- Name: clip_sale_event_take_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_take_event(event api.clip_sale_event) RETURNS maker.clip_take
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_take WHERE log_id = event.log_id
+$$;
+
+
+--
+-- Name: clip_sale_event_tx(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_tx(event api.clip_sale_event) RETURNS SETOF api.tx
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM get_tx_data(event.block_height, event.log_id)
+$$;
+
+
+--
+-- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_yank (
+    id integer NOT NULL,
+    header_id integer NOT NULL,
+    address_id bigint NOT NULL,
+    log_id bigint NOT NULL,
+    sale_id numeric NOT NULL
+);
+
+
+--
+-- Name: clip_sale_event_yank_event(api.clip_sale_event); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_event_yank_event(event api.clip_sale_event) RETURNS maker.clip_yank
+    LANGUAGE sql STABLE
+    AS $$
+SELECT * FROM maker.clip_yank WHERE log_id = event.log_id
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_active(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_active(clip_sale_snapshot api.clip_sale_snapshot) RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+SELECT EXISTS(SELECT 1
+              FROM maker.clip_active_sales
+                       JOIN headers h ON clip_active_sales.header_id = h.id
+              WHERE clip_sale_snapshot.sale_id = sale_id
+                AND clip_sale_snapshot.block_height = h.block_number)
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_ilk(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_ilk(clip_sale_snapshot api.clip_sale_snapshot) RETURNS api.ilk_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT i.*
+FROM api.ilk_snapshot i
+         LEFT JOIN maker.ilks ON ilks.identifier = i.ilk_identifier
+WHERE ilks.id = clip_sale_snapshot.ilk_id
+  AND i.block_number <= clip_sale_snapshot.block_height
+ORDER BY i.block_number DESC
+LIMIT 1
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_sale_events(api.clip_sale_snapshot, integer, integer); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_sale_events(clip api.clip_sale_snapshot, max_results integer DEFAULT NULL::integer, result_offset integer DEFAULT 0) RETURNS SETOF api.clip_sale_event
+    LANGUAGE sql STABLE
+    AS $$
+SELECT sale_id, act, block_height, events.log_id, events.contract_address
+FROM api.all_clip_sale_events() AS events
+WHERE sale_id = clip.sale_id
+  AND contract_address = clip.clip_address
+ORDER BY block_height DESC
+LIMIT clip_sale_snapshot_sale_events.max_results OFFSET clip_sale_snapshot_sale_events.result_offset
+$$;
+
+
+--
+-- Name: clip_sale_snapshot_urn(api.clip_sale_snapshot); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.clip_sale_snapshot_urn(clip api.clip_sale_snapshot) RETURNS api.urn_snapshot
+    LANGUAGE sql STABLE
+    AS $$
+SELECT *
+FROM api.get_urn(
+        (SELECT identifier FROM maker.ilks WHERE ilks.id = clip.ilk_id),
+        (SELECT identifier FROM maker.urns WHERE urns.id = clip.urn_id),
+        clip.block_height)
 $$;
 
 
@@ -1349,6 +1714,50 @@ CREATE FUNCTION api.get_block_heights_for_new_untransformed_diffs() RETURNS SETO
     LANGUAGE sql STABLE
     AS $$
 SELECT block_height FROM public.storage_diff WHERE status = 'new' ORDER BY block_height ASC
+$$;
+
+
+--
+-- Name: get_clip_with_address(numeric, text, bigint); Type: FUNCTION; Schema: api; Owner: -
+--
+
+CREATE FUNCTION api.get_clip_with_address(sale_id numeric, clip_address text, block_height bigint DEFAULT api.max_block()) RETURNS api.clip_sale_snapshot
+    LANGUAGE sql STABLE STRICT
+    AS $$
+WITH address_id AS (SELECT id FROM public.addresses WHERE address = get_clip_with_address.clip_address),
+     ilk_id AS (SELECT DISTINCT ilk_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id)),
+     urn_id AS (SELECT urn_id FROM maker.dog_bark WHERE clip = (SELECT id FROM address_id) AND maker.dog_bark.sale_id = get_clip_with_address.sale_id),
+     storage_values AS (
+         SELECT pos,
+                tab,
+                lot,
+                usr,
+                tic,
+                top,
+                created,
+                updated,
+                block_number
+         FROM maker.clip
+         WHERE clip.sale_id = get_clip_with_address.sale_id
+           AND clip.address_id = (SELECT id FROM address_id)
+           AND block_number <= get_clip_with_address.block_height
+         ORDER BY block_number DESC
+         LIMIT 1
+     )
+SELECT storage_values.block_number,
+       get_clip_with_address.sale_id,
+       (SELECT ilk_id FROM ilk_id),
+       (SELECT urn_id FROM urn_id),
+       storage_values.pos,
+       storage_values.tab,
+       storage_values.lot,
+       storage_values.usr,
+       storage_values.tic,
+       storage_values.top,
+       storage_values.created,
+       storage_values.updated,
+       get_clip_with_address.clip_address
+FROM storage_values
 $$;
 
 
@@ -2362,6 +2771,27 @@ COMMENT ON FUNCTION maker.clear_bid_event_ilk(old_diff maker.flip_ilk) IS '@omit
 
 
 --
+-- Name: clear_clip_created(maker.clip_kick); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.clear_clip_created(old_event maker.clip_kick) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE maker.clip
+SET created = clip_sale_time_created(old_event.address_id, old_event.sale_id)
+WHERE clip.address_id = old_event.address_id
+  AND clip.sale_id = old_event.sale_id
+$$;
+
+
+--
+-- Name: FUNCTION clear_clip_created(old_event maker.clip_kick); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.clear_clip_created(old_event maker.clip_kick) IS '@omit';
+
+
+--
 -- Name: flap_kick; Type: TABLE; Schema: maker; Owner: -
 --
 
@@ -2508,6 +2938,55 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.clear_time_created(old_event maker.vat_init) IS '@omit';
+
+
+--
+-- Name: delete_obsolete_clip(numeric, bigint, integer); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    clip_block      BIGINT     := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = header_id);
+    clip_state      maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number = clip_block);
+    prev_clip_state maker.clip := (
+        SELECT (clip.address_id, block_number, clip.sale_id, pos, tab, lot, usr, tic, "top", created, updated)
+        FROM maker.clip
+        WHERE clip.sale_id = delete_obsolete_clip.sale_id
+          AND clip.address_id = delete_obsolete_clip.address_id
+          AND clip.block_number < clip_block
+        ORDER BY clip.block_number DESC
+        LIMIT 1);
+BEGIN
+    DELETE
+    FROM maker.clip
+    WHERE clip.sale_id = delete_obsolete_clip.sale_id
+      AND clip.address_id = delete_obsolete_clip.address_id
+      AND clip.block_number = clip_block
+      AND (clip_state.pos IS NULL OR clip_state.pos = prev_clip_state.pos)
+      AND (clip_state.tab IS NULL OR clip_state.tab = prev_clip_state.tab)
+      AND (clip_state.lot IS NULL OR clip_state.lot = prev_clip_state.lot)
+      AND (clip_state.usr IS NULL OR clip_state.usr = prev_clip_state.usr)
+      AND (clip_state.tic IS NULL OR clip_state.tic = prev_clip_state.tic)
+      AND (clip_state."top" IS NULL OR clip_state."top" = prev_clip_state."top");
+END
+$$;
+
+
+--
+-- Name: FUNCTION delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.delete_obsolete_clip(sale_id numeric, address_id bigint, header_id integer) IS '@omit';
 
 
 --
@@ -2941,6 +3420,30 @@ $$;
 
 
 --
+-- Name: insert_clip_created(maker.clip_kick); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_clip_created(new_event maker.clip_kick) RETURNS void
+    LANGUAGE sql
+    AS $$
+UPDATE maker.clip
+SET created = api.epoch_to_datetime(headers.block_timestamp)
+FROM public.headers
+WHERE headers.id = new_event.header_id
+  AND clip.address_id = new_event.address_id
+  AND clip.sale_id = new_event.sale_id
+  AND clip.created IS NULL
+$$;
+
+
+--
+-- Name: FUNCTION insert_clip_created(new_event maker.clip_kick); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_clip_created(new_event maker.clip_kick) IS '@omit';
+
+
+--
 -- Name: insert_flap_created(maker.flap_kick); Type: FUNCTION; Schema: maker; Owner: -
 --
 
@@ -3147,6 +3650,306 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.insert_new_chop(new_diff maker.cat_ilk_chop) IS '@omit';
+
+
+--
+-- Name: clip_sale_lot; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_lot (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    lot numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_lot(maker.clip_sale_lot); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_lot(new_diff maker.clip_sale_lot) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.lot,
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET lot = new_diff.lot
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_lot(new_diff maker.clip_sale_lot); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_lot(new_diff maker.clip_sale_lot) IS '@omit';
+
+
+--
+-- Name: clip_sale_pos; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_pos (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    pos numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_pos(maker.clip_sale_pos); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        new_diff.pos,
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET pos = new_diff.pos
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_pos(new_diff maker.clip_sale_pos); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_pos(new_diff maker.clip_sale_pos) IS '@omit';
+
+
+--
+-- Name: clip_sale_tab; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_tab (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    tab numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_tab(maker.clip_sale_tab); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_tab(new_diff maker.clip_sale_tab) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.tab,
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET tab = new_diff.tab
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_tab(new_diff maker.clip_sale_tab); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_tab(new_diff maker.clip_sale_tab) IS '@omit';
+
+
+--
+-- Name: clip_sale_tic; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_tic (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    tic numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_tic(maker.clip_sale_tic); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_tic(new_diff maker.clip_sale_tic) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.tic,
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET tic = new_diff.tic
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_tic(new_diff maker.clip_sale_tic); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_tic(new_diff maker.clip_sale_tic) IS '@omit';
+
+
+--
+-- Name: clip_sale_top; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_top (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    top numeric NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_top(maker.clip_sale_top); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_top(new_diff maker.clip_sale_top) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_usr_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.top,
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET top = new_diff.top
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_top(new_diff maker.clip_sale_top); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_top(new_diff maker.clip_sale_top) IS '@omit';
+
+
+--
+-- Name: clip_sale_usr; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_sale_usr (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    usr text,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: insert_new_clip_usr(maker.clip_sale_usr); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.insert_new_clip_usr(new_diff maker.clip_sale_usr) RETURNS void
+    LANGUAGE sql
+    AS $$
+WITH diff_block AS (
+    SELECT block_number, block_timestamp
+    FROM public.headers
+    WHERE id = new_diff.header_id
+)
+INSERT
+INTO maker.clip (sale_id, address_id, block_number, pos, tab, lot, usr, tic, "top", updated, created)
+VALUES (new_diff.sale_id,
+        new_diff.address_id,
+        (SELECT block_number FROM diff_block),
+        clip_sale_pos_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_tab_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_lot_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        new_diff.usr,
+        clip_sale_tic_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        clip_sale_top_before_block(new_diff.sale_id, new_diff.address_id, new_diff.header_id),
+        (SELECT api.epoch_to_datetime(block_timestamp) FROM diff_block),
+        clip_sale_time_created(new_diff.address_id, new_diff.sale_id))
+ON CONFLICT (block_number, sale_id, address_id) DO UPDATE SET usr = new_diff.usr
+$$;
+
+
+--
+-- Name: FUNCTION insert_new_clip_usr(new_diff maker.clip_sale_usr); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.insert_new_clip_usr(new_diff maker.clip_sale_usr) IS '@omit';
 
 
 --
@@ -5092,6 +5895,391 @@ $$;
 --
 
 COMMENT ON FUNCTION maker.update_chops_until_next_diff(start_at_diff maker.cat_ilk_chop, new_chop numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_created(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_created() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        PERFORM maker.insert_clip_created(NEW);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.clear_clip_created(OLD);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_created(); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_created() IS '@omit';
+
+
+--
+-- Name: update_clip_lot(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_lot() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_lot(NEW);
+        PERFORM maker.update_clip_lot_until_next_diff(NEW, NEW.lot);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_lot_until_next_diff(
+                OLD,
+                clip_sale_lot_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_lot_until_next_diff(maker.clip_sale_lot, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_lot_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_lot
+                 LEFT JOIN public.headers ON clip_sale_lot.header_id = headers.id
+        WHERE clip_sale_lot.sale_id = start_at_diff.sale_id
+          AND clip_sale_lot.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET lot = new_lot
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_lot_diff_block IS NULL
+        OR clip.block_number < next_lot_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_lot_until_next_diff(start_at_diff maker.clip_sale_lot, new_lot numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_pos(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_pos() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_pos(NEW);
+        PERFORM maker.update_clip_pos_until_next_diff(NEW, NEW.pos);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_pos_until_next_diff(
+                OLD,
+                clip_sale_pos_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_pos_until_next_diff(maker.clip_sale_pos, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_pos_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_pos
+                 LEFT JOIN public.headers ON clip_sale_pos.header_id = headers.id
+        WHERE clip_sale_pos.sale_id = start_at_diff.sale_id
+          AND clip_sale_pos.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET pos = new_pos
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_pos_diff_block IS NULL
+        OR clip.block_number < next_pos_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_pos_until_next_diff(start_at_diff maker.clip_sale_pos, new_pos numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_tab(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tab() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_tab(NEW);
+        PERFORM maker.update_clip_tab_until_next_diff(NEW, NEW.tab);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_tab_until_next_diff(
+                OLD,
+                clip_sale_tab_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_tab_until_next_diff(maker.clip_sale_tab, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_tab_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_tab
+                 LEFT JOIN public.headers ON clip_sale_tab.header_id = headers.id
+        WHERE clip_sale_tab.sale_id = start_at_diff.sale_id
+          AND clip_sale_tab.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET tab = new_tab
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_tab_diff_block IS NULL
+        OR clip.block_number < next_tab_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_tab_until_next_diff(start_at_diff maker.clip_sale_tab, new_tab numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_tic(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tic() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_tic(NEW);
+        PERFORM maker.update_clip_tic_until_next_diff(NEW, NEW.tic);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_tic_until_next_diff(
+                OLD,
+                clip_sale_tic_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_tic_until_next_diff(maker.clip_sale_tic, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_tic_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_tic
+                 LEFT JOIN public.headers ON clip_sale_tic.header_id = headers.id
+        WHERE clip_sale_tic.sale_id = start_at_diff.sale_id
+          AND clip_sale_tic.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET tic = new_tic
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_tic_diff_block IS NULL
+        OR clip.block_number < next_tic_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_tic_until_next_diff(start_at_diff maker.clip_sale_tic, new_tic numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_top(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_top() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_top(NEW);
+        PERFORM maker.update_clip_top_until_next_diff(NEW, NEW.top);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_top_until_next_diff(
+                OLD,
+                clip_sale_top_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_top_until_next_diff(maker.clip_sale_top, numeric); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_top_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_top
+                 LEFT JOIN public.headers ON clip_sale_top.header_id = headers.id
+        WHERE clip_sale_top.sale_id = start_at_diff.sale_id
+          AND clip_sale_top.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET "top" = new_top
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_top_diff_block IS NULL
+        OR clip.block_number < next_top_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_top_until_next_diff(start_at_diff maker.clip_sale_top, new_top numeric) IS '@omit';
+
+
+--
+-- Name: update_clip_usr(); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_usr() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (TG_OP IN ('INSERT', 'UPDATE')) THEN
+        PERFORM maker.insert_new_clip_usr(NEW);
+        PERFORM maker.update_clip_usr_until_next_diff(NEW, NEW.usr);
+    ELSIF (TG_OP = 'DELETE') THEN
+        PERFORM maker.update_clip_usr_until_next_diff(
+                OLD,
+                clip_sale_usr_before_block(OLD.sale_id, OLD.address_id, OLD.header_id));
+        PERFORM maker.delete_obsolete_clip(OLD.sale_id, OLD.address_id, OLD.header_id);
+    END IF;
+    RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: update_clip_usr_until_next_diff(maker.clip_sale_usr, text); Type: FUNCTION; Schema: maker; Owner: -
+--
+
+CREATE FUNCTION maker.update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    diff_block_number   BIGINT := (
+        SELECT block_number
+        FROM public.headers
+        WHERE id = start_at_diff.header_id);
+    next_usr_diff_block BIGINT := (
+        SELECT MIN(block_number)
+        FROM maker.clip_sale_usr
+                 LEFT JOIN public.headers ON clip_sale_usr.header_id = headers.id
+        WHERE clip_sale_usr.sale_id = start_at_diff.sale_id
+          AND clip_sale_usr.address_id = start_at_diff.address_id
+          AND block_number > diff_block_number);
+BEGIN
+    UPDATE maker.clip
+    SET usr = new_usr
+    WHERE clip.sale_id = start_at_diff.sale_id
+      AND clip.address_id = start_at_diff.address_id
+      AND clip.block_number >= diff_block_number
+      AND (next_usr_diff_block IS NULL
+        OR clip.block_number < next_usr_diff_block);
+END
+$$;
+
+
+--
+-- Name: FUNCTION update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text); Type: COMMENT; Schema: maker; Owner: -
+--
+
+COMMENT ON FUNCTION maker.update_clip_usr_until_next_diff(start_at_diff maker.clip_sale_usr, new_usr text) IS '@omit';
 
 
 --
@@ -8019,22 +9207,286 @@ ALTER SEQUENCE maker.checked_headers_id_seq OWNED BY maker.checked_headers.id;
 
 
 --
--- Name: clip_kick; Type: TABLE; Schema: maker; Owner: -
+-- Name: clip; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.clip_kick (
-    id integer NOT NULL,
-    header_id integer NOT NULL,
+CREATE TABLE maker.clip (
     address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    bid_id numeric NOT NULL,
-    top numeric,
+    block_number bigint NOT NULL,
+    sale_id numeric NOT NULL,
+    pos numeric,
     tab numeric,
     lot numeric,
-    usr bigint,
-    kpr bigint,
-    coin numeric
+    usr text,
+    tic numeric,
+    top numeric,
+    created timestamp without time zone,
+    updated timestamp without time zone NOT NULL
 );
+
+
+--
+-- Name: clip_active; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_active (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    active numeric NOT NULL
+);
+
+
+--
+-- Name: clip_active_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_active_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_active_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_active_id_seq OWNED BY maker.clip_active.id;
+
+
+--
+-- Name: clip_active_sales; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_active_sales (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    sale_id numeric NOT NULL
+);
+
+
+--
+-- Name: clip_active_sales_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_active_sales_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_active_sales_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_active_sales_id_seq OWNED BY maker.clip_active_sales.id;
+
+
+--
+-- Name: clip_buf; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_buf (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    buf numeric NOT NULL
+);
+
+
+--
+-- Name: clip_buf_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_buf_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_buf_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_buf_id_seq OWNED BY maker.clip_buf.id;
+
+
+--
+-- Name: clip_calc; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_calc (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    calc bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_calc_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_calc_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_calc_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_calc_id_seq OWNED BY maker.clip_calc.id;
+
+
+--
+-- Name: clip_chip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_chip (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    chip numeric NOT NULL
+);
+
+
+--
+-- Name: clip_chip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_chip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_chip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_chip_id_seq OWNED BY maker.clip_chip.id;
+
+
+--
+-- Name: clip_chost; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_chost (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    chost numeric NOT NULL
+);
+
+
+--
+-- Name: clip_chost_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_chost_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_chost_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_chost_id_seq OWNED BY maker.clip_chost.id;
+
+
+--
+-- Name: clip_cusp; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_cusp (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    cusp numeric NOT NULL
+);
+
+
+--
+-- Name: clip_cusp_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_cusp_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_cusp_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_cusp_id_seq OWNED BY maker.clip_cusp.id;
+
+
+--
+-- Name: clip_dog; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_dog (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dog bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_dog_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_dog_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_dog_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_dog_id_seq OWNED BY maker.clip_dog.id;
 
 
 --
@@ -8058,22 +9510,36 @@ ALTER SEQUENCE maker.clip_kick_id_seq OWNED BY maker.clip_kick.id;
 
 
 --
--- Name: clip_redo; Type: TABLE; Schema: maker; Owner: -
+-- Name: clip_kicks; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.clip_redo (
+CREATE TABLE maker.clip_kicks (
     id integer NOT NULL,
-    header_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL,
-    top numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint,
-    kpr bigint,
-    coin numeric
+    header_id integer NOT NULL,
+    kicks numeric NOT NULL
 );
+
+
+--
+-- Name: clip_kicks_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_kicks_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_kicks_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_kicks_id_seq OWNED BY maker.clip_kicks.id;
 
 
 --
@@ -8097,22 +9563,189 @@ ALTER SEQUENCE maker.clip_redo_id_seq OWNED BY maker.clip_redo.id;
 
 
 --
--- Name: clip_take; Type: TABLE; Schema: maker; Owner: -
+-- Name: clip_sale_lot_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.clip_take (
+CREATE SEQUENCE maker.clip_sale_lot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_lot_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_lot_id_seq OWNED BY maker.clip_sale_lot.id;
+
+
+--
+-- Name: clip_sale_pos_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_pos_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_pos_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_pos_id_seq OWNED BY maker.clip_sale_pos.id;
+
+
+--
+-- Name: clip_sale_tab_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_tab_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_tab_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_tab_id_seq OWNED BY maker.clip_sale_tab.id;
+
+
+--
+-- Name: clip_sale_tic_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_tic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_tic_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_tic_id_seq OWNED BY maker.clip_sale_tic.id;
+
+
+--
+-- Name: clip_sale_top_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_top_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_top_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_top_id_seq OWNED BY maker.clip_sale_top.id;
+
+
+--
+-- Name: clip_sale_usr_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_sale_usr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_sale_usr_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_sale_usr_id_seq OWNED BY maker.clip_sale_usr.id;
+
+
+--
+-- Name: clip_spotter; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_spotter (
     id integer NOT NULL,
-    header_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric,
-    max numeric,
-    price numeric,
-    owe numeric,
-    tab numeric,
-    lot numeric,
-    usr bigint
+    spotter bigint NOT NULL,
+    header_id integer NOT NULL
 );
+
+
+--
+-- Name: clip_spotter_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_spotter_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_spotter_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_spotter_id_seq OWNED BY maker.clip_spotter.id;
+
+
+--
+-- Name: clip_tail; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_tail (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    header_id integer NOT NULL,
+    tail numeric NOT NULL
+);
+
+
+--
+-- Name: clip_tail_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_tail_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_tail_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_tail_id_seq OWNED BY maker.clip_tail.id;
 
 
 --
@@ -8136,16 +9769,69 @@ ALTER SEQUENCE maker.clip_take_id_seq OWNED BY maker.clip_take.id;
 
 
 --
--- Name: clip_yank; Type: TABLE; Schema: maker; Owner: -
+-- Name: clip_tip; Type: TABLE; Schema: maker; Owner: -
 --
 
-CREATE TABLE maker.clip_yank (
+CREATE TABLE maker.clip_tip (
     id integer NOT NULL,
-    header_id integer NOT NULL,
+    diff_id bigint NOT NULL,
     address_id bigint NOT NULL,
-    log_id bigint NOT NULL,
-    sale_id numeric NOT NULL
+    header_id integer NOT NULL,
+    tip numeric NOT NULL
 );
+
+
+--
+-- Name: clip_tip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_tip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_tip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_tip_id_seq OWNED BY maker.clip_tip.id;
+
+
+--
+-- Name: clip_vow; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.clip_vow (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    vow bigint NOT NULL,
+    header_id integer NOT NULL
+);
+
+
+--
+-- Name: clip_vow_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.clip_vow_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: clip_vow_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.clip_vow_id_seq OWNED BY maker.clip_vow.id;
 
 
 --
@@ -8580,6 +10266,142 @@ CREATE SEQUENCE maker.dog_hole_id_seq
 --
 
 ALTER SEQUENCE maker.dog_hole_id_seq OWNED BY maker.dog_hole.id;
+
+
+--
+-- Name: dog_ilk_chop; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_chop (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    chop numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_chop_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_chop_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_chop_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_chop_id_seq OWNED BY maker.dog_ilk_chop.id;
+
+
+--
+-- Name: dog_ilk_clip; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_clip (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    clip text,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_clip_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_clip_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_clip_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_clip_id_seq OWNED BY maker.dog_ilk_clip.id;
+
+
+--
+-- Name: dog_ilk_dirt; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_dirt (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    dirt numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_dirt_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_dirt_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_dirt_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_dirt_id_seq OWNED BY maker.dog_ilk_dirt.id;
+
+
+--
+-- Name: dog_ilk_hole; Type: TABLE; Schema: maker; Owner: -
+--
+
+CREATE TABLE maker.dog_ilk_hole (
+    id integer NOT NULL,
+    diff_id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    hole numeric NOT NULL,
+    header_id integer NOT NULL,
+    ilk_id integer NOT NULL
+);
+
+
+--
+-- Name: dog_ilk_hole_id_seq; Type: SEQUENCE; Schema: maker; Owner: -
+--
+
+CREATE SEQUENCE maker.dog_ilk_hole_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dog_ilk_hole_id_seq; Type: SEQUENCE OWNED BY; Schema: maker; Owner: -
+--
+
+ALTER SEQUENCE maker.dog_ilk_hole_id_seq OWNED BY maker.dog_ilk_hole.id;
 
 
 --
@@ -13459,10 +15281,73 @@ ALTER TABLE ONLY maker.checked_headers ALTER COLUMN id SET DEFAULT nextval('make
 
 
 --
+-- Name: clip_active id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active ALTER COLUMN id SET DEFAULT nextval('maker.clip_active_id_seq'::regclass);
+
+
+--
+-- Name: clip_active_sales id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales ALTER COLUMN id SET DEFAULT nextval('maker.clip_active_sales_id_seq'::regclass);
+
+
+--
+-- Name: clip_buf id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf ALTER COLUMN id SET DEFAULT nextval('maker.clip_buf_id_seq'::regclass);
+
+
+--
+-- Name: clip_calc id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc ALTER COLUMN id SET DEFAULT nextval('maker.clip_calc_id_seq'::regclass);
+
+
+--
+-- Name: clip_chip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip ALTER COLUMN id SET DEFAULT nextval('maker.clip_chip_id_seq'::regclass);
+
+
+--
+-- Name: clip_chost id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost ALTER COLUMN id SET DEFAULT nextval('maker.clip_chost_id_seq'::regclass);
+
+
+--
+-- Name: clip_cusp id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp ALTER COLUMN id SET DEFAULT nextval('maker.clip_cusp_id_seq'::regclass);
+
+
+--
+-- Name: clip_dog id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog ALTER COLUMN id SET DEFAULT nextval('maker.clip_dog_id_seq'::regclass);
+
+
+--
 -- Name: clip_kick id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.clip_kick ALTER COLUMN id SET DEFAULT nextval('maker.clip_kick_id_seq'::regclass);
+
+
+--
+-- Name: clip_kicks id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks ALTER COLUMN id SET DEFAULT nextval('maker.clip_kicks_id_seq'::regclass);
 
 
 --
@@ -13473,10 +15358,80 @@ ALTER TABLE ONLY maker.clip_redo ALTER COLUMN id SET DEFAULT nextval('maker.clip
 
 
 --
+-- Name: clip_sale_lot id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_lot_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_pos id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_pos_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_tab id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_tab_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_tic id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_tic_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_top id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_top_id_seq'::regclass);
+
+
+--
+-- Name: clip_sale_usr id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr ALTER COLUMN id SET DEFAULT nextval('maker.clip_sale_usr_id_seq'::regclass);
+
+
+--
+-- Name: clip_spotter id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter ALTER COLUMN id SET DEFAULT nextval('maker.clip_spotter_id_seq'::regclass);
+
+
+--
+-- Name: clip_tail id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail ALTER COLUMN id SET DEFAULT nextval('maker.clip_tail_id_seq'::regclass);
+
+
+--
 -- Name: clip_take id; Type: DEFAULT; Schema: maker; Owner: -
 --
 
 ALTER TABLE ONLY maker.clip_take ALTER COLUMN id SET DEFAULT nextval('maker.clip_take_id_seq'::regclass);
+
+
+--
+-- Name: clip_tip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip ALTER COLUMN id SET DEFAULT nextval('maker.clip_tip_id_seq'::regclass);
+
+
+--
+-- Name: clip_vow id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow ALTER COLUMN id SET DEFAULT nextval('maker.clip_vow_id_seq'::regclass);
 
 
 --
@@ -13568,6 +15523,34 @@ ALTER TABLE ONLY maker.dog_file_vow ALTER COLUMN id SET DEFAULT nextval('maker.d
 --
 
 ALTER TABLE ONLY maker.dog_hole ALTER COLUMN id SET DEFAULT nextval('maker.dog_hole_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_chop id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_chop_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_clip id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_clip_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_dirt id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_dirt_id_seq'::regclass);
+
+
+--
+-- Name: dog_ilk_hole id; Type: DEFAULT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole ALTER COLUMN id SET DEFAULT nextval('maker.dog_ilk_hole_id_seq'::regclass);
 
 
 --
@@ -15114,6 +17097,134 @@ ALTER TABLE ONLY maker.checked_headers
 
 
 --
+-- Name: clip_active clip_active_diff_id_header_id_address_id_active_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active
+    ADD CONSTRAINT clip_active_diff_id_header_id_address_id_active_key UNIQUE (diff_id, header_id, address_id, active);
+
+
+--
+-- Name: clip_active clip_active_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active
+    ADD CONSTRAINT clip_active_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_active_sales clip_active_sales_diff_id_header_id_address_id_sale_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales
+    ADD CONSTRAINT clip_active_sales_diff_id_header_id_address_id_sale_id_key UNIQUE (diff_id, header_id, address_id, sale_id);
+
+
+--
+-- Name: clip_active_sales clip_active_sales_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales
+    ADD CONSTRAINT clip_active_sales_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_buf clip_buf_diff_id_header_id_buf_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_diff_id_header_id_buf_key UNIQUE (diff_id, header_id, buf);
+
+
+--
+-- Name: clip_buf clip_buf_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_calc clip_calc_diff_id_header_id_calc_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_diff_id_header_id_calc_key UNIQUE (diff_id, header_id, calc);
+
+
+--
+-- Name: clip_calc clip_calc_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_chip clip_chip_diff_id_header_id_chip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_diff_id_header_id_chip_key UNIQUE (diff_id, header_id, chip);
+
+
+--
+-- Name: clip_chip clip_chip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_chost clip_chost_diff_id_header_id_chost_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_diff_id_header_id_chost_key UNIQUE (diff_id, header_id, chost);
+
+
+--
+-- Name: clip_chost clip_chost_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_cusp clip_cusp_diff_id_header_id_cusp_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_diff_id_header_id_cusp_key UNIQUE (diff_id, header_id, cusp);
+
+
+--
+-- Name: clip_cusp clip_cusp_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_dog clip_dog_diff_id_header_id_dog_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_diff_id_header_id_dog_key UNIQUE (diff_id, header_id, dog);
+
+
+--
+-- Name: clip_dog clip_dog_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: clip_kick clip_kick_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15127,6 +17238,30 @@ ALTER TABLE ONLY maker.clip_kick
 
 ALTER TABLE ONLY maker.clip_kick
     ADD CONSTRAINT clip_kick_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_kicks clip_kicks_diff_id_header_id_kicks_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_diff_id_header_id_kicks_key UNIQUE (diff_id, header_id, kicks);
+
+
+--
+-- Name: clip_kicks clip_kicks_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip clip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip
+    ADD CONSTRAINT clip_pkey PRIMARY KEY (address_id, sale_id, block_number);
 
 
 --
@@ -15146,6 +17281,134 @@ ALTER TABLE ONLY maker.clip_redo
 
 
 --
+-- Name: clip_sale_lot clip_sale_lot_diff_id_header_id_sale_id_address_id_lot_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_diff_id_header_id_sale_id_address_id_lot_key UNIQUE (diff_id, header_id, sale_id, address_id, lot);
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_diff_id_header_id_sale_id_address_id_pos_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_diff_id_header_id_sale_id_address_id_pos_key UNIQUE (diff_id, header_id, sale_id, address_id, pos);
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_diff_id_header_id_sale_id_address_id_tab_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_diff_id_header_id_sale_id_address_id_tab_key UNIQUE (diff_id, header_id, sale_id, address_id, tab);
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_tic clip_sale_tic_diff_id_header_id_sale_id_address_id_tic_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic
+    ADD CONSTRAINT clip_sale_tic_diff_id_header_id_sale_id_address_id_tic_key UNIQUE (diff_id, header_id, sale_id, address_id, tic);
+
+
+--
+-- Name: clip_sale_tic clip_sale_tic_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic
+    ADD CONSTRAINT clip_sale_tic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_top clip_sale_top_diff_id_header_id_sale_id_address_id_top_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top
+    ADD CONSTRAINT clip_sale_top_diff_id_header_id_sale_id_address_id_top_key UNIQUE (diff_id, header_id, sale_id, address_id, top);
+
+
+--
+-- Name: clip_sale_top clip_sale_top_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top
+    ADD CONSTRAINT clip_sale_top_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_sale_usr clip_sale_usr_diff_id_header_id_sale_id_address_id_usr_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr
+    ADD CONSTRAINT clip_sale_usr_diff_id_header_id_sale_id_address_id_usr_key UNIQUE (diff_id, header_id, sale_id, address_id, usr);
+
+
+--
+-- Name: clip_sale_usr clip_sale_usr_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr
+    ADD CONSTRAINT clip_sale_usr_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_spotter clip_spotter_diff_id_header_id_spotter_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_diff_id_header_id_spotter_key UNIQUE (diff_id, header_id, spotter);
+
+
+--
+-- Name: clip_spotter clip_spotter_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_tail clip_tail_diff_id_header_id_tail_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_diff_id_header_id_tail_key UNIQUE (diff_id, header_id, tail);
+
+
+--
+-- Name: clip_tail clip_tail_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: clip_take clip_take_header_id_log_id_key; Type: CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -15159,6 +17422,38 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_tip clip_tip_diff_id_header_id_tip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_diff_id_header_id_tip_key UNIQUE (diff_id, header_id, tip);
+
+
+--
+-- Name: clip_tip clip_tip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: clip_vow clip_vow_diff_id_header_id_vow_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_diff_id_header_id_vow_key UNIQUE (diff_id, header_id, vow);
+
+
+--
+-- Name: clip_vow clip_vow_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_pkey PRIMARY KEY (id);
 
 
 --
@@ -15367,6 +17662,70 @@ ALTER TABLE ONLY maker.dog_hole
 
 ALTER TABLE ONLY maker.dog_hole
     ADD CONSTRAINT dog_hole_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_diff_id_header_id_ilk_id_chop_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_diff_id_header_id_ilk_id_chop_key UNIQUE (diff_id, header_id, ilk_id, chop);
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_diff_id_header_id_ilk_id_clip_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_diff_id_header_id_ilk_id_clip_key UNIQUE (diff_id, header_id, ilk_id, clip);
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_diff_id_header_id_ilk_id_dirt_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_diff_id_header_id_ilk_id_dirt_key UNIQUE (diff_id, header_id, ilk_id, dirt);
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_diff_id_header_id_ilk_id_hole_key; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_diff_id_header_id_ilk_id_hole_key UNIQUE (diff_id, header_id, ilk_id, hole);
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_pkey; Type: CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_pkey PRIMARY KEY (id);
 
 
 --
@@ -18339,6 +20698,13 @@ CREATE INDEX checked_headers_header_index ON maker.checked_headers USING btree (
 
 
 --
+-- Name: clip_address_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX clip_address_index ON maker.clip USING btree (address_id);
+
+
+--
 -- Name: clip_kick_address_index; Type: INDEX; Schema: maker; Owner: -
 --
 
@@ -18349,7 +20715,7 @@ CREATE INDEX clip_kick_address_index ON maker.clip_kick USING btree (address_id)
 -- Name: clip_kick_bid_id_index; Type: INDEX; Schema: maker; Owner: -
 --
 
-CREATE INDEX clip_kick_bid_id_index ON maker.clip_kick USING btree (bid_id);
+CREATE INDEX clip_kick_bid_id_index ON maker.clip_kick USING btree (sale_id);
 
 
 --
@@ -18791,6 +21157,90 @@ CREATE INDEX dog_hole_address_index ON maker.dog_hole USING btree (address_id);
 --
 
 CREATE INDEX dog_hole_header_index ON maker.dog_hole USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_chop_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_address_id_index ON maker.dog_ilk_chop USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_chop_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_header_id_index ON maker.dog_ilk_chop USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_chop_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_chop_ilk_index ON maker.dog_ilk_chop USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_clip_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_address_id_index ON maker.dog_ilk_clip USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_clip_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_header_id_index ON maker.dog_ilk_clip USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_clip_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_clip_ilk_index ON maker.dog_ilk_clip USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_dirt_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_address_id_index ON maker.dog_ilk_dirt USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_dirt_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_header_id_index ON maker.dog_ilk_dirt USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_dirt_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_dirt_ilk_index ON maker.dog_ilk_dirt USING btree (ilk_id);
+
+
+--
+-- Name: dog_ilk_hole_address_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_address_id_index ON maker.dog_ilk_hole USING btree (address_id);
+
+
+--
+-- Name: dog_ilk_hole_header_id_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_header_id_index ON maker.dog_ilk_hole USING btree (header_id);
+
+
+--
+-- Name: dog_ilk_hole_ilk_index; Type: INDEX; Schema: maker; Owner: -
+--
+
+CREATE INDEX dog_ilk_hole_ilk_index ON maker.dog_ilk_hole USING btree (ilk_id);
 
 
 --
@@ -21475,6 +23925,55 @@ CREATE INDEX yank_msg_sender ON maker.yank USING btree (msg_sender);
 
 
 --
+-- Name: clip_kick clip_created_trigger; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_created_trigger AFTER INSERT OR DELETE ON maker.clip_kick FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_created();
+
+
+--
+-- Name: clip_sale_lot clip_lot; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_lot AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_lot FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_lot();
+
+
+--
+-- Name: clip_sale_pos clip_pos; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_pos AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_pos FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_pos();
+
+
+--
+-- Name: clip_sale_tab clip_tab; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_tab AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tab FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tab();
+
+
+--
+-- Name: clip_sale_tic clip_tic; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_tic AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_tic FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_tic();
+
+
+--
+-- Name: clip_sale_top clip_top; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_top AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_top FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_top();
+
+
+--
+-- Name: clip_sale_usr clip_usr; Type: TRIGGER; Schema: maker; Owner: -
+--
+
+CREATE TRIGGER clip_usr AFTER INSERT OR DELETE OR UPDATE ON maker.clip_sale_usr FOR EACH ROW EXECUTE PROCEDURE maker.update_clip_usr();
+
+
+--
 -- Name: deal deal; Type: TRIGGER; Schema: maker; Owner: -
 --
 
@@ -22504,6 +25003,222 @@ ALTER TABLE ONLY maker.checked_headers
 
 
 --
+-- Name: clip_active clip_active_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active
+    ADD CONSTRAINT clip_active_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_active clip_active_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active
+    ADD CONSTRAINT clip_active_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_active clip_active_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active
+    ADD CONSTRAINT clip_active_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_active_sales clip_active_sales_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales
+    ADD CONSTRAINT clip_active_sales_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_active_sales clip_active_sales_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales
+    ADD CONSTRAINT clip_active_sales_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_active_sales clip_active_sales_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_active_sales
+    ADD CONSTRAINT clip_active_sales_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip clip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip
+    ADD CONSTRAINT clip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_buf clip_buf_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_buf
+    ADD CONSTRAINT clip_buf_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_calc clip_calc_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_calc clip_calc_calc_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_calc_fkey FOREIGN KEY (calc) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_calc clip_calc_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_calc clip_calc_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_calc
+    ADD CONSTRAINT clip_calc_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chip clip_chip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chip clip_chip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chip clip_chip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chip
+    ADD CONSTRAINT clip_chip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_chost clip_chost_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_chost
+    ADD CONSTRAINT clip_chost_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_cusp clip_cusp_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_cusp
+    ADD CONSTRAINT clip_cusp_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_dog_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_dog_fkey FOREIGN KEY (dog) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_dog clip_dog_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_dog
+    ADD CONSTRAINT clip_dog_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: clip_kick clip_kick_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22525,6 +25240,30 @@ ALTER TABLE ONLY maker.clip_kick
 
 ALTER TABLE ONLY maker.clip_kick
     ADD CONSTRAINT clip_kick_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_kicks clip_kicks_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_kicks
+    ADD CONSTRAINT clip_kicks_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
 
 
 --
@@ -22552,6 +25291,206 @@ ALTER TABLE ONLY maker.clip_redo
 
 
 --
+-- Name: clip_sale_lot clip_sale_lot_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_lot clip_sale_lot_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_lot
+    ADD CONSTRAINT clip_sale_lot_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_pos clip_sale_pos_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_pos
+    ADD CONSTRAINT clip_sale_pos_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tab clip_sale_tab_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tab
+    ADD CONSTRAINT clip_sale_tab_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tic clip_sale_tic_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic
+    ADD CONSTRAINT clip_sale_tic_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tic clip_sale_tic_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic
+    ADD CONSTRAINT clip_sale_tic_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_tic clip_sale_tic_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_tic
+    ADD CONSTRAINT clip_sale_tic_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_top clip_sale_top_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top
+    ADD CONSTRAINT clip_sale_top_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_top clip_sale_top_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top
+    ADD CONSTRAINT clip_sale_top_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_top clip_sale_top_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_top
+    ADD CONSTRAINT clip_sale_top_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_usr clip_sale_usr_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr
+    ADD CONSTRAINT clip_sale_usr_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_usr clip_sale_usr_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr
+    ADD CONSTRAINT clip_sale_usr_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_sale_usr clip_sale_usr_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_sale_usr
+    ADD CONSTRAINT clip_sale_usr_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_spotter clip_spotter_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_spotter clip_spotter_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_spotter clip_spotter_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_spotter clip_spotter_spotter_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_spotter
+    ADD CONSTRAINT clip_spotter_spotter_fkey FOREIGN KEY (spotter) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tail clip_tail_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tail
+    ADD CONSTRAINT clip_tail_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
 -- Name: clip_take clip_take_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
 --
 
@@ -22573,6 +25512,62 @@ ALTER TABLE ONLY maker.clip_take
 
 ALTER TABLE ONLY maker.clip_take
     ADD CONSTRAINT clip_take_log_id_fkey FOREIGN KEY (log_id) REFERENCES public.event_logs(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_tip clip_tip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_tip
+    ADD CONSTRAINT clip_tip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clip_vow clip_vow_vow_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.clip_vow
+    ADD CONSTRAINT clip_vow_vow_fkey FOREIGN KEY (vow) REFERENCES public.addresses(id) ON DELETE CASCADE;
 
 
 --
@@ -22973,6 +25968,134 @@ ALTER TABLE ONLY maker.dog_hole
 
 ALTER TABLE ONLY maker.dog_hole
     ADD CONSTRAINT dog_hole_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_chop dog_ilk_chop_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_chop
+    ADD CONSTRAINT dog_ilk_chop_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_clip dog_ilk_clip_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_clip
+    ADD CONSTRAINT dog_ilk_clip_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_dirt dog_ilk_dirt_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_dirt
+    ADD CONSTRAINT dog_ilk_dirt_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_address_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.addresses(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_diff_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_diff_id_fkey FOREIGN KEY (diff_id) REFERENCES public.storage_diff(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_header_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_header_id_fkey FOREIGN KEY (header_id) REFERENCES public.headers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dog_ilk_hole dog_ilk_hole_ilk_id_fkey; Type: FK CONSTRAINT; Schema: maker; Owner: -
+--
+
+ALTER TABLE ONLY maker.dog_ilk_hole
+    ADD CONSTRAINT dog_ilk_hole_ilk_id_fkey FOREIGN KEY (ilk_id) REFERENCES maker.ilks(id) ON DELETE CASCADE;
 
 
 --

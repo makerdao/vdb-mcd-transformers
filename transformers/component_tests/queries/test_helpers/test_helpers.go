@@ -30,6 +30,7 @@ import (
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cat"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager"
+	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flap"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flip"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/flop"
@@ -427,6 +428,20 @@ func GetFlipMetadatas(bidId string) []types.ValueMetadata {
 		types.GetValueMetadata(storage.BidTab, keys, types.Uint256))
 }
 
+func GetClipMetadatas(saleId string) []types.ValueMetadata {
+	keys := map[types.Key]string{constants.SaleId: saleId}
+
+	packedTypes := map[int]types.ValueType{0: types.Address, 1: types.Uint96}
+	packedNames := map[int]string{0: clip.SaleUsr, 1: clip.SaleTic}
+	return []types.ValueMetadata{
+		types.GetValueMetadata(clip.SalePos, keys, types.Uint256),
+		types.GetValueMetadata(clip.SaleTab, keys, types.Uint256),
+		types.GetValueMetadata(clip.SaleLot, keys, types.Uint256),
+		types.GetValueMetadata(clip.SaleTop, keys, types.Uint256),
+		types.GetValueMetadataForPackedSlot(clip.Packed, keys, types.PackedSlot, packedNames, packedTypes),
+	}
+}
+
 func GetCdpManagerStorageValues(seed int, ilkHex string, urnGuy string, cdpi int) map[string]interface{} {
 	valuesMap := make(map[string]interface{})
 	valuesMap[cdp_manager.Cdpi] = strconv.Itoa(cdpi)
@@ -461,6 +476,19 @@ func GetFlipStorageValues(seed int, ilk string, bidId int) map[string]interface{
 	valuesMap[storage.BidGal] = "address2" + strconv.Itoa(seed)
 	valuesMap[storage.BidUsr] = "address3" + strconv.Itoa(seed)
 	valuesMap[storage.BidTab] = strconv.Itoa(5 + seed)
+	return valuesMap
+}
+
+func GetClipStorageValues(seed int, saleId int) map[string]interface{} {
+	valuesMap := make(map[string]interface{})
+	packedValues := map[int]string{0: "address1" + strconv.Itoa(seed), 1: strconv.Itoa(1 + seed)}
+
+	valuesMap[clip.SalePos] = strconv.Itoa(seed)
+	valuesMap[clip.SaleTab] = strconv.Itoa(1 + seed)
+	valuesMap[clip.SaleLot] = strconv.Itoa(2 + seed)
+	valuesMap[clip.Packed] = packedValues
+	valuesMap[clip.SaleTop] = strconv.Itoa(4 + seed)
+	valuesMap[clip.Kicks] = strconv.Itoa(saleId)
 	return valuesMap
 }
 
@@ -512,6 +540,12 @@ func CreateFlip(db *postgres.DB, header core.Header, valuesMap map[string]interf
 	flipRepo := flip.StorageRepository{ContractAddress: contractAddress}
 	flipRepo.SetDB(db)
 	InsertValues(db, &flipRepo, header, valuesMap, flipMetadatas)
+}
+
+func CreateClip(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, clipMetadatas []types.ValueMetadata, contractAddress string) {
+	clipRepo := clip.StorageRepository{ContractAddress: contractAddress}
+	clipRepo.SetDB(db)
+	InsertValues(db, &clipRepo, header, valuesMap, clipMetadatas)
 }
 
 func CreateManagedCdp(db *postgres.DB, header core.Header, valuesMap map[string]interface{}, metadatas []types.ValueMetadata) error {
@@ -621,6 +655,22 @@ type FlipBid struct {
 	Tab         string
 	FlipAddress string `db:"flip_address"`
 	BlockHeight string `db:"block_height"`
+}
+
+type ClipSale struct {
+	BlockHeight string `db:"block_height"`
+	SaleId      string `db:"sale_id"`
+	IlkId       string `db:"ilk_id"`
+	UrnId       string `db:"urn_id"`
+	Pos         string
+	Tab         string
+	Lot         string
+	Usr         string
+	Tic         string
+	Top         string
+	Created     sql.NullString
+	Updated     sql.NullString
+	ClipAddress string `db:"clip_address"`
 }
 
 func SetUpFlipBidContext(setupData FlipBidContextInput) (ilkId, urnId int64, err error) {
@@ -760,6 +810,32 @@ func CreateDent(input DentCreationInput) (err error) {
 	return event.PersistModels([]event.InsertionModel{dentModel}, input.DB)
 }
 
+func CreateTake(input TakeCreationInput) (err error) {
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
+	Expect(addressErr).NotTo(HaveOccurred())
+	takeModel := test_data.ClipTakeModel()
+	takeLog := test_data.CreateTestLog(input.TakeHeaderId, input.DB)
+	takeModel.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(input.SaleId)
+	takeModel.ColumnValues[event.AddressFK] = addressID
+	takeModel.ColumnValues[event.HeaderFK] = input.TakeHeaderId
+	takeModel.ColumnValues[event.LogFK] = takeLog.ID
+	test_data.AssignMessageSenderID(test_data.ClipTakeEventLog, takeModel, input.DB)
+	return event.PersistModels([]event.InsertionModel{takeModel}, input.DB)
+}
+
+func CreateRedo(input RedoCreationInput) (err error) {
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
+	Expect(addressErr).NotTo(HaveOccurred())
+	redoModel := test_data.ClipRedoModel()
+	takeLog := test_data.CreateTestLog(input.RedoHeaderId, input.DB)
+	redoModel.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(input.SaleId)
+	redoModel.ColumnValues[event.AddressFK] = addressID
+	redoModel.ColumnValues[event.HeaderFK] = input.RedoHeaderId
+	redoModel.ColumnValues[event.LogFK] = takeLog.ID
+	test_data.AssignMessageSenderID(test_data.ClipRedoEventLog, redoModel, input.DB)
+	return event.PersistModels([]event.InsertionModel{redoModel}, input.DB)
+}
+
 func CreateYank(input YankCreationInput) (err error) {
 	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
 	Expect(addressErr).NotTo(HaveOccurred())
@@ -770,6 +846,18 @@ func CreateYank(input YankCreationInput) (err error) {
 	test_data.AssignMessageSenderID(test_data.YankEventLog, yankModel, input.DB)
 	yankModel.ColumnValues[constants.BidIDColumn] = strconv.Itoa(input.BidId)
 	return event.PersistModels([]event.InsertionModel{yankModel}, input.DB)
+}
+
+func CreateClipYank(input ClipYankCreationInput) (err error) {
+	addressID, addressErr := repository.GetOrCreateAddress(input.DB, input.ContractAddress)
+	Expect(addressErr).NotTo(HaveOccurred())
+	clipYankModel := test_data.ClipYankModel()
+	clipYankModel.ColumnValues[event.AddressFK] = addressID
+	clipYankModel.ColumnValues[event.HeaderFK] = input.ClipYankHeaderId
+	clipYankModel.ColumnValues[event.LogFK] = input.ClipYankLogId
+	test_data.AssignMessageSenderID(test_data.YankEventLog, clipYankModel, input.DB)
+	clipYankModel.ColumnValues[constants.SaleIDColumn] = strconv.Itoa(input.SaleId)
+	return event.PersistModels([]event.InsertionModel{clipYankModel}, input.DB)
 }
 
 func CreateTick(input TickCreationInput) (err error) {
@@ -793,6 +881,14 @@ type YankCreationInput struct {
 	YankLogId       int64
 }
 
+type ClipYankCreationInput struct {
+	DB               *postgres.DB
+	ContractAddress  string
+	SaleId           int
+	ClipYankHeaderId int64
+	ClipYankLogId    int64
+}
+
 type TendCreationInput struct {
 	DB              *postgres.DB
 	ContractAddress string
@@ -811,6 +907,22 @@ type DentCreationInput struct {
 	BidAmount       int
 	DentHeaderId    int64
 	DentLogId       int64
+}
+
+type TakeCreationInput struct {
+	DB              *postgres.DB
+	ContractAddress string
+	SaleId          int
+	TakeHeaderId    int64
+	TakeLogId       int64
+}
+
+type RedoCreationInput struct {
+	DB              *postgres.DB
+	ContractAddress string
+	SaleId          int
+	RedoHeaderId    int64
+	RedoLogId       int64
 }
 
 type DealCreationInput struct {
@@ -852,6 +964,12 @@ type BidEvent struct {
 	BidId           string `db:"bid_id"`
 	Lot             string
 	BidAmount       string `db:"bid_amount"`
+	Act             string
+	ContractAddress string `db:"contract_address"`
+}
+
+type SaleEvent struct {
+	SaleId          string `db:"sale_id"`
 	Act             string
 	ContractAddress string `db:"contract_address"`
 }

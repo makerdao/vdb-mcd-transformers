@@ -1,6 +1,6 @@
 FROM makerdao/vdb-builder:latest as builder
 
-ARG VDB_VERSION=prod
+ARG VDB_VERSION
 
 WORKDIR /go/src/github.com/makerdao/vdb-mcd-transformers
 COPY . .

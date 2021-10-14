@@ -18,11 +18,13 @@ if [ "$ENVIRONMENT" == "prod" ]; then
     TAG=latest
     REGION=$PROD_REGION
     ECS_NETWORK_CONFIG=$PROD_NETWORK_CONFIG
+    VDB_VERSION="prod"
 elif [ "$ENVIRONMENT" == "private-prod" ]; then
     ENVIRONMENT="prod"
     TAG=latest
     REGION=$PRIVATE_PROD_REGION
     ECS_NETWORK_CONFIG=$PRIVATE_PROD_NETWORK_CONFIG
+    VDB_VERSION="prod"
 elif [ "$ENVIRONMENT" == "staging" ]; then
     TAG=staging
     REGION=$STAGING_REGION
@@ -31,6 +33,7 @@ elif [ "$ENVIRONMENT" == "qa" ]; then
     TAG=develop
     REGION=$QA_REGION
     ECS_NETWORK_CONFIG=$QA_NETWORK_CONFIG
+    VDB_VERSION="develop"
 else
     message UNKNOWN ENVIRONMENT
     echo 'You must specify an environment (bash deploy.sh <ENVIRONMENT>).'
@@ -47,20 +50,20 @@ COMMIT_HASH=${TRAVIS_COMMIT::7}
 IMMUTABLE_TAG=$TRAVIS_BUILD_NUMBER-$COMMIT_HASH
 
 message BUILDING EXTRACT-DIFFS DOCKER IMAGE
-docker build -f dockerfiles/extract_diffs/Dockerfile . -t makerdao/vdb-extract-diffs:$TAG -t makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
+docker build --build-arg VDB_VERSION=$VDB_VERSION -f dockerfiles/extract_diffs/Dockerfile . -t makerdao/vdb-extract-diffs:$TAG -t makerdao/vdb-extract-diffs:$IMMUTABLE_TAG
 
 message BUILDING BACKFILL-STORAGE DOCKER IMAGE
-docker build -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG -t makerdao/vdb-backfill-storage:$IMMUTABLE_TAG
+docker build --build-arg VDB_VERSION=$VDB_VERSION -f dockerfiles/backfill_storage/Dockerfile . -t makerdao/vdb-backfill-storage:$TAG -t makerdao/vdb-backfill-storage:$IMMUTABLE_TAG
 
 message BUILDING BACKFILL-EVENTS DOCKER IMAGE
-docker build -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG -t makerdao/vdb-backfill-events:$IMMUTABLE_TAG
+docker build --build-arg VDB_VERSION=$VDB_VERSION -f dockerfiles/backfill_events/Dockerfile . -t makerdao/vdb-backfill-events:$TAG -t makerdao/vdb-backfill-events:$IMMUTABLE_TAG
 
 if [ "$ENVIRONMENT" == "staging" ]; then
   message BUILDING EXECUTE DOCKER IMAGE
-  docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG -t makerdao/vdb-execute:$IMMUTABLE_TAG
+  docker build --build-arg VDB_VERSION=$VDB_VERSION -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-execute:$TAG -t makerdao/vdb-execute:$IMMUTABLE_TAG
 else
   message BUILDING EXECUTE DOCKER IMAGE
-  docker build -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG -t makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
+  docker build --build-arg VDB_VERSION=$VDB_VERSION -f dockerfiles/execute/Dockerfile . -t makerdao/vdb-mcd-execute:$TAG -t makerdao/vdb-mcd-execute:$IMMUTABLE_TAG
 fi
 
 #--------------------------
