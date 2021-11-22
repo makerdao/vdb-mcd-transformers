@@ -420,6 +420,8 @@ github.com/makerdao/vdb-transformer-utilities v0.0.0-20210805172636-589addc1f71b
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20210805172636-589addc1f71b/go.mod h1:EdAZfYZ6xFOuDUc90AO3xWvOAFWmVLkz0HzLYy3tY/I=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20210824224301-b5a3d744cec6 h1:K47wCnZVngjipD4ynNs9a17zMFcztCB0Qi5CGK9bPcs=
 github.com/makerdao/vdb-transformer-utilities v0.0.0-20210824224301-b5a3d744cec6/go.mod h1:u3YGI7cxTPNaw/vPdIXBstZZBM4nU+9lZpqYHSYBYkU=
+github.com/makerdao/vdb-transformer-utilities v0.0.1 h1:B4Geg+mgVIQuwD8Huth1bYNxUDThT94t/NEm+RQ6FN8=
+github.com/makerdao/vdb-transformer-utilities v0.0.1/go.mod h1:Id2qqddSMOPRZxuUIKcCU+p6Hpx/4aTsl/iIE6apXwA=
 github.com/makerdao/vulcanizedb v0.0.15-rc.1.0.20200923220430-893edc1b439b/go.mod h1:1vWEtupceW2bhXe0/NpRmhEpoUWzdmk+44xLxBsDx80=
 github.com/makerdao/vulcanizedb v0.1.0 h1:CPNLVGaw6R3+tHnUlBiDULr3lsKziFa0UM8Nc/JsYnw=
 github.com/makerdao/vulcanizedb v0.1.0/go.mod h1:VXiGa8YKMzA2aiKanFNA2vtMS4n7dP2fVxCUt4Bar4w=

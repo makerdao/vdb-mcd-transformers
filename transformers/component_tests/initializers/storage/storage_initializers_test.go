@@ -28,7 +28,7 @@ import (
 	clip_univ2wbtcdai_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2wbtcdai_a/v1_8_0"
 	clip_univ2wbtceth_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2wbtceth_a/v1_8_0"
 	clip_wbtc_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/wbtc_a/v1_5_0"
-	clip_wbtc_b_v2_0_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/wbtc_b/v2_0_0"
+	clip_wbtc_b_v1_9_10 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/wbtc_b/v1_9_10"
 	clip_yfi_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/yfi_a/v1_5_0"
 	clip_zrx_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/zrx_a/v1_6_0"
 	dog_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_3_0"
@@ -273,9 +273,9 @@ var _ = Describe("Storage transformer initializers", func() {
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
 
-	It("configures the v2_0_0 clip wbtc_b", func() {
-		address := test_data.ClipWbtcBV200Address()
-		transformer := clip_wbtc_b_v2_0_0.StorageTransformerInitializer(db)
+	It("configures the v1_9_10 clip wbtc_b", func() {
+		address := test_data.ClipWbtcBV1910Address()
+		transformer := clip_wbtc_b_v1_9_10.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
