@@ -1,4 +1,4 @@
-FROM makerdao/vdb-builder:latest as builder
+FROM yaoandrew/vdb-builder:v0.0.1 as builder
 
 ARG VDB_VERSION
 
@@ -19,7 +19,7 @@ RUN make plugin PACKAGE=github.com/makerdao/vdb-mcd-transformers \
     OUTPUT_LOCATION=$GOPATH/src/github.com/makerdao/vdb-mcd-transformers/plugins/transformerExporter.so
 
 # app container
-FROM makerdao/vdb-runner:latest as runner
+FROM yaoandrew/vdb-runner:v0.0.1 as runner
 WORKDIR /go/src/github.com/makerdao/vulcanizedb
 
 ARG CONFIG_FILE=environments/mcdTransformers.toml
