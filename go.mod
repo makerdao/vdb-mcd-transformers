@@ -6,7 +6,7 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.1.1
 	github.com/BurntSushi/toml v0.3.1
 	github.com/dave/jennifer v1.3.0
-	github.com/ethereum/go-ethereum v1.9.25
+	github.com/ethereum/go-ethereum v1.10.8
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
 	github.com/makerdao/vdb-transformer-utilities v0.0.1
@@ -23,4 +23,3 @@ require (
 replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
 
 replace github.com/ethereum/go-ethereum => github.com/makerdao/go-ethereum v1.10.8-vdb-go-ethereum
-
