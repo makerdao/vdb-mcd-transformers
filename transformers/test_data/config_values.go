@@ -88,6 +88,11 @@ func ClipUniV2DaiUsdtAddress() string {
 func ClipWbtcAV150Address() string {
 	return checksum(constants.GetContractAddress("MCD_CLIP_WBTC_A_1_5_0"))
 }
+
+func ClipWbtcBV200Address() string {
+	return checksum(constants.GetContractAddress("MCD_CLIP_WBTC_B_2_0_0"))
+}
+
 func ClipYfiAV150Address() string {
 	return checksum(constants.GetContractAddress("MCD_CLIP_YFI_A_1_5_0"))
 }
