@@ -378,10 +378,10 @@ github.com/mailru/easyjson v0.0.0-20190614124828-94de47d64c63/go.mod h1:C1wdFJiN
 github.com/mailru/easyjson v0.0.0-20190626092158-b2ccc519800e/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
 github.com/makerdao/go-ethereum v1.10.12-vdb-go-ethereum.0.20211118212515-d19ab4da6d77 h1:A+RyKOGUzqCDnG9U3JymBvnYLm/aMV5Ry5IcjKPzp3E=
 github.com/makerdao/go-ethereum v1.10.12-vdb-go-ethereum.0.20211118212515-d19ab4da6d77/go.mod h1:3zme9UXmdXI9QeWiwPPs9yBOC0E3Hdx4FqJqzkKltcI=
-github.com/makerdao/vdb-transformer-utilities v0.0.1 h1:B4Geg+mgVIQuwD8Huth1bYNxUDThT94t/NEm+RQ6FN8=
-github.com/makerdao/vdb-transformer-utilities v0.0.1/go.mod h1:Id2qqddSMOPRZxuUIKcCU+p6Hpx/4aTsl/iIE6apXwA=
-github.com/makerdao/vulcanizedb v0.1.3-0.20211119163305-8e86e0a76830 h1:en/LnA3zITL8RJrXSaJxqk7m2ZpqKUfjxtyoG7+7tdA=
-github.com/makerdao/vulcanizedb v0.1.3-0.20211119163305-8e86e0a76830/go.mod h1:JO56uMmKyD7VmHwUEcasnZ2DuetreRBCogaGWtryRfc=
+github.com/makerdao/vdb-transformer-utilities v0.0.2-0.20211123042918-da0dcd4be3ba h1:7B5tSpR64Bt34sL6tmPHcxrm1S5niYo20SMJMTaVuPk=
+github.com/makerdao/vdb-transformer-utilities v0.0.2-0.20211123042918-da0dcd4be3ba/go.mod h1:EqfzfkqFl+UzueYYbD/3Fle8NYdCi8t7C1Bv4U8hSLI=
+github.com/makerdao/vulcanizedb v0.1.3-0.20211123042207-479c8682a14f h1:aOkvP9Oxg6du81fvkmD52T/Qy8q7VdNDa86UN6Ps/1o=
+github.com/makerdao/vulcanizedb v0.1.3-0.20211123042207-479c8682a14f/go.mod h1:I57tCBG3zm2xe3PKZ7tzGqFTYU3N+yTnW4UbPaJm0LA=
 github.com/matryer/moq v0.0.0-20190312154309-6cfb0558e1bd/go.mod h1:9ELz6aaclSIGnZBoaSLZ3NAl1VTufbOrXBPvtcy6WiQ=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=

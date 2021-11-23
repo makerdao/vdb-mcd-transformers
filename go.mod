@@ -24,4 +24,6 @@ replace gopkg.in/urfave/cli.v1 => gopkg.in/urfave/cli.v1 v1.20.0
 
 replace github.com/ethereum/go-ethereum => github.com/makerdao/go-ethereum v1.10.12-vdb-go-ethereum.0.20211118212515-d19ab4da6d77
 
-replace github.com/makerdao/vulcanizedb => github.com/makerdao/vulcanizedb v0.1.3-0.20211119163305-8e86e0a76830
+replace github.com/makerdao/vulcanizedb => github.com/makerdao/vulcanizedb v0.1.3-0.20211123042207-479c8682a14f
+
+replace github.com/makerdao/vdb-transformer-utilities => github.com/makerdao/vdb-transformer-utilities v0.0.2-0.20211123042918-da0dcd4be3ba
