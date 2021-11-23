@@ -105,6 +105,7 @@ import (
 	clip_univ2wbtcdai_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2wbtcdai_a/v1_8_0"
 	clip_univ2wbtceth_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2wbtceth_a/v1_8_0"
 	clip_wbtc_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/wbtc_a/v1_5_0"
+	clip_wbtc_b_v1_9_10 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/wbtc_b/v1_9_10"
 	clip_yfi_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/yfi_a/v1_5_0"
 	clip_zrx_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/zrx_a/v1_6_0"
 	dog_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/dog/initializers/v1_3_0"
@@ -296,6 +297,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			clip_univ2wbtcdai_a_v1_8_0.StorageTransformerInitializer,
 			clip_univ2wbtceth_a_v1_8_0.StorageTransformerInitializer,
 			clip_wbtc_a_v1_5_0.StorageTransformerInitializer,
+			clip_wbtc_b_v1_9_10.StorageTransformerInitializer,
 			clip_yfi_a_v1_5_0.StorageTransformerInitializer,
 			clip_zrx_a_v1_6_0.StorageTransformerInitializer,
 			dog_v1_3_0.StorageTransformerInitializer,
