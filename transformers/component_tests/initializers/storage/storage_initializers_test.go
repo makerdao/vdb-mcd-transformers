@@ -16,6 +16,7 @@ import (
 	clip_link_a_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/link_a/v1_3_0"
 	clip_lrc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/lrc_a/v1_6_0"
 	clip_mana_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/mana_a/v1_6_0"
+	clip_matic_a_v1_9_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/matic_a/v1_9_4"
 	clip_renbtc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/renbtc_a/v1_6_0"
 	clip_uni_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/uni_a/v1_6_0"
 	clip_univ2aaveeth_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2aaveeth_a/v1_8_0"
@@ -185,6 +186,13 @@ var _ = Describe("Storage transformer initializers", func() {
 	It("configures the v1_6_0 clip mana_a", func() {
 		address := test_data.ClipManaAV160Address()
 		transformer := clip_mana_a_v1_6_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
+	It("configures the v1_9_4 clip matic_a", func() {
+		address := test_data.ClipMaticAV180Address()
+		transformer := clip_matic_a_v1_9_4.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
