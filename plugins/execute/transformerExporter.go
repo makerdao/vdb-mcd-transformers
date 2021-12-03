@@ -93,6 +93,7 @@ import (
 	clip_link_a_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/link_a/v1_3_0"
 	clip_lrc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/lrc_a/v1_6_0"
 	clip_mana_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/mana_a/v1_6_0"
+	clip_matic_a_v1_9_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/matic_a/v1_9_4"
 	clip_renbtc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/renbtc_a/v1_6_0"
 	clip_uni_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/uni_a/v1_6_0"
 	clip_univ2aaveeth_a_v1_8_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/univ2aaveeth_a/v1_8_0"
@@ -173,6 +174,7 @@ import (
 	median_link_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_link/v1_1_2"
 	median_lrc_v1_1_2 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_lrc/v1_1_2"
 	median_mana_v1_0_9 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_mana/v1_0_9"
+	median_matic_v1_9_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_matic/v1_9_4"
 	median_uni_v1_2_1 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_uni/v1_2_1"
 	median_usdt_v1_0_4 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_usdt/v1_0_4"
 	median_wbtc_v1_0_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_wbtc/v1_0_6"
@@ -285,6 +287,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			clip_link_a_v1_3_0.StorageTransformerInitializer,
 			clip_lrc_a_v1_6_0.StorageTransformerInitializer,
 			clip_mana_a_v1_6_0.StorageTransformerInitializer,
+			clip_matic_a_v1_9_4.StorageTransformerInitializer,
 			clip_renbtc_a_v1_6_0.StorageTransformerInitializer,
 			clip_uni_a_v1_6_0.StorageTransformerInitializer,
 			clip_univ2aaveeth_a_v1_8_0.StorageTransformerInitializer,
@@ -365,6 +368,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			median_link_v1_1_2.StorageTransformerInitializer,
 			median_lrc_v1_1_2.StorageTransformerInitializer,
 			median_mana_v1_0_9.StorageTransformerInitializer,
+			median_matic_v1_9_4.StorageTransformerInitializer,
 			median_uni_v1_2_1.StorageTransformerInitializer,
 			median_usdt_v1_0_4.StorageTransformerInitializer,
 			median_wbtc_v1_0_6.StorageTransformerInitializer,
