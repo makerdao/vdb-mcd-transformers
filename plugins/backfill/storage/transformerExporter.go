@@ -10,6 +10,7 @@ import (
 	clip_eth_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_a/v1_5_0"
 	clip_eth_b_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_b/v1_5_0"
 	clip_eth_c_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_c/v1_5_0"
+	clip_guniv3daiusdc_1_v1_9_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/guniv3daiusdc_1/v1_9_6"
 	clip_knc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/knc_a/v1_6_0"
 	clip_link_a_v1_3_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/link_a/v1_3_0"
 	clip_lrc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/lrc_a/v1_6_0"
@@ -51,6 +52,7 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			clip_eth_a_v1_5_0.StorageTransformerInitializer,
 			clip_eth_b_v1_5_0.StorageTransformerInitializer,
 			clip_eth_c_v1_5_0.StorageTransformerInitializer,
+			clip_guniv3daiusdc_1_v1_9_6.StorageTransformerInitializer,
 			clip_knc_a_v1_6_0.StorageTransformerInitializer,
 			clip_link_a_v1_3_0.StorageTransformerInitializer,
 			clip_lrc_a_v1_6_0.StorageTransformerInitializer,
