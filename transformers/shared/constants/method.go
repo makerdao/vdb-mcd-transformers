@@ -34,6 +34,7 @@ func ClipV150ABI() string {
 		"MCD_CLIP_ETH_C_1_5_0",
 		"MCD_CLIP_MATIC_A_1_9_4",
 		"MCD_CLIP_WBTC_A_1_5_0",
+		"MCD_CLIP_WSTETH_A_1_9_8",
 		"MCD_CLIP_YFI_A_1_5_0",
 	})
 }
@@ -130,6 +131,7 @@ func MedianV114ABI() string {
 		"MEDIAN_AAVE_1_2_2",
 		"MEDIAN_BAL_1_1_14",
 		"MEDIAN_UNI_1_2_1",
+		"MEDIAN_WSTETH_1_9_8",
 		"MEDIAN_YFI_1_1_14",
 	})
 }
@@ -148,6 +150,7 @@ func OsmABI() string {
 		"OSM_UNI",
 		"OSM_USDT",
 		"OSM_WBTC",
+		"OSM_WSTETH",
 		"OSM_YFI",
 		"OSM_ZRX",
 	})
