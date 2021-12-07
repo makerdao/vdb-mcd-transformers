@@ -152,6 +152,7 @@ func Clip180Addresses() []string {
 		"MCD_CLIP_UNIV2AAVEETH_A_1_8_0",
 		"MCD_CLIP_UNIV2DAIUSDT_A_1_8_0",
 		"MCD_CLIP_WBTC_B_1_9_10",
+		"MCD_CLIP_WBTC_C_1_9_11",
 	})
 
 	for _, address := range clipAddresses {
@@ -162,6 +163,9 @@ func Clip180Addresses() []string {
 
 func ClipWbtcBV1910Address() string {
 	return checksum(constants.GetContractAddress("MCD_CLIP_WBTC_B_1_9_10"))
+}
+func ClipWbtcCV1911Address() string {
+	return checksum(constants.GetContractAddress("MCD_CLIP_WBTC_C_1_9_11"))
 }
 func Dog130Address() string   { return checksum(constants.GetContractAddress("MCD_DOG_1_3_0")) }
 func FlapV100Address() string { return checksum(constants.GetContractAddress("MCD_FLAP_1_0_0")) }
