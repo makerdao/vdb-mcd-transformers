@@ -112,14 +112,6 @@ aws ecs run-task \
   --network-configuration $ECS_NETWORK_CONFIG \
   --region $REGION
 
-message DEPLOYING BACKFILL-STORAGE TO $ENVIRONMENT in $REGION
-aws ecs run-task \
-  --cluster vdb-cluster-$ENVIRONMENT \
-  --launch-type FARGATE \
-  --task-definition vdb-backfill-storage-$ENVIRONMENT \
-  --network-configuration $ECS_NETWORK_CONFIG \
-  --region $REGION
-
 if [ "$ENVIRONMENT" == "staging" ]; then
   EXECUTE_NAME=vdb-execute
   EXTRACT_DIFFS_NAME=vdb-extract-diffs
