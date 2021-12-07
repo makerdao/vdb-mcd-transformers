@@ -30,6 +30,9 @@ func ClipEthBV150Address() string {
 func ClipEthCV150Address() string {
 	return checksum(constants.GetContractAddress("MCD_CLIP_ETH_C_1_5_0"))
 }
+func ClipGuniv3daiusdc1V196Address() string {
+	return checksum(constants.GetContractAddress("MCD_CLIP_GUNIV3DAIUSDC_1_1_9_6"))
+}
 func ClipKncAV160Address() string {
 	return checksum(constants.GetContractAddress("MCD_CLIP_KNC_A_1_6_0"))
 }
@@ -146,6 +149,7 @@ func Clip180Addresses() []string {
 	var addressesResult []string
 	clipAddresses := constants.GetContractAddresses([]string{
 		"MCD_CLIP_MATIC_A_1_9_4",
+		"MCD_CLIP_GUNIV3DAIUSDC_1_1_9_6",
 		"MCD_CLIP_UNIV2DAIETH_A_1_8_0",
 		"MCD_CLIP_UNIV2USDCETH_A_1_8_0",
 		"MCD_CLIP_UNIV2ETHUSDT_A_1_8_0",
