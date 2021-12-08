@@ -32,7 +32,9 @@ func ClipV150ABI() string {
 		"MCD_CLIP_ETH_A_1_5_0",
 		"MCD_CLIP_ETH_B_1_5_0",
 		"MCD_CLIP_ETH_C_1_5_0",
+		"MCD_CLIP_MATIC_A_1_9_4",
 		"MCD_CLIP_WBTC_A_1_5_0",
+		"MCD_CLIP_WSTETH_A_1_9_8",
 		"MCD_CLIP_YFI_A_1_5_0",
 	})
 }
@@ -117,6 +119,7 @@ func MedianV100ABI() string {
 		"MEDIAN_LINK_1_1_2",
 		"MEDIAN_LRC_1_1_2",
 		"MEDIAN_MANA_1_0_9",
+		"MEDIAN_MATIC_1_9_4",
 		"MEDIAN_USDT_1_0_4",
 		"MEDIAN_WBTC_1_0_6",
 		"MEDIAN_ZRX_1_0_8",
@@ -128,6 +131,7 @@ func MedianV114ABI() string {
 		"MEDIAN_AAVE_1_2_2",
 		"MEDIAN_BAL_1_1_14",
 		"MEDIAN_UNI_1_2_1",
+		"MEDIAN_WSTETH_1_9_8",
 		"MEDIAN_YFI_1_1_14",
 	})
 }
@@ -142,9 +146,11 @@ func OsmABI() string {
 		"OSM_LINK",
 		"OSM_LRC",
 		"OSM_MANA",
+		"OSM_MATIC",
 		"OSM_UNI",
 		"OSM_USDT",
 		"OSM_WBTC",
+		"OSM_WSTETH",
 		"OSM_YFI",
 		"OSM_ZRX",
 	})
