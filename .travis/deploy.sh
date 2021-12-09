@@ -104,14 +104,6 @@ fi
 #--------------------------
 message DEPLOY TO $ENVIRONMENT
 
-message DEPLOYING BACKFILL-EVENTS TO $ENVIRONMENT in $REGION
-aws ecs run-task \
-  --cluster vdb-cluster-$ENVIRONMENT \
-  --launch-type FARGATE \
-  --task-definition vdb-backfill-events-$ENVIRONMENT \
-  --network-configuration $ECS_NETWORK_CONFIG \
-  --region $REGION
-
 if [ "$ENVIRONMENT" == "staging" ]; then
   EXECUTE_NAME=vdb-execute
   EXTRACT_DIFFS_NAME=vdb-extract-diffs
