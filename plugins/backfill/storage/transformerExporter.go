@@ -3,7 +3,6 @@
 package main
 
 import (
-	cdp_manager "github.com/makerdao/vdb-mcd-transformers/transformers/storage/cdp_manager/initializer"
 	clip_aave_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/aave_a/v1_6_0"
 	clip_bal_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/bal_a/v1_6_0"
 	clip_bat_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/bat_a/v1_6_0"
@@ -57,7 +56,6 @@ import (
 	median_zrx_v1_0_8 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/median/initializers/median_zrx/v1_0_8"
 	pot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/pot/initializer"
 	spot "github.com/makerdao/vdb-mcd-transformers/transformers/storage/spot/initializer"
-	vat "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat/initializer"
 	vow "github.com/makerdao/vdb-mcd-transformers/transformers/storage/vow/initializer"
 	event "github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 	storage "github.com/makerdao/vulcanizedb/libraries/shared/factories/storage"
@@ -71,7 +69,6 @@ var Exporter exporter
 func (e exporter) Export() ([]event.TransformerInitializer, []storage.TransformerInitializer, []interface1.ContractTransformerInitializer) {
 	return []event.TransformerInitializer{},
 		[]storage.TransformerInitializer{
-			cdp_manager.StorageTransformerInitializer,
 			clip_aave_a_v1_6_0.StorageTransformerInitializer,
 			clip_bal_a_v1_6_0.StorageTransformerInitializer,
 			clip_bat_a_v1_6_0.StorageTransformerInitializer,
@@ -125,7 +122,6 @@ func (e exporter) Export() ([]event.TransformerInitializer, []storage.Transforme
 			median_zrx_v1_0_8.StorageTransformerInitializer,
 			pot.StorageTransformerInitializer,
 			spot.StorageTransformerInitializer,
-			vat.StorageTransformerInitializer,
 			vow.StorageTransformerInitializer,
 		},
 		[]interface1.ContractTransformerInitializer{}
