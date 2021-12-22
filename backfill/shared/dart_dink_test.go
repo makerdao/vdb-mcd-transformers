@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/mocks"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/shared"
@@ -201,7 +200,7 @@ var _ = Describe("Dart Dink helpers", func() {
 				Address:      shared.VatAddress,
 				BlockHash:    common.HexToHash(fakeHeader.Hash),
 				BlockHeight:  int(fakeHeader.BlockNumber),
-				StorageKey:   crypto.Keccak256Hash(expectedUrnInkKey.Bytes()),
+				StorageKey:   expectedUrnInkKey,
 				StorageValue: common.BytesToHash(fakeValue),
 			}
 			Expect(mockStorageRepository.InsertDiffPassedDiff).To(Equal(expectedDiff))
