@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/makerdao/vdb-mcd-transformers/backfill/repository"
 	"github.com/makerdao/vdb-mcd-transformers/transformers/storage/vat"
 	"github.com/makerdao/vulcanizedb/libraries/shared/storage/types"
@@ -104,7 +103,7 @@ func (retriever dartDinkRetriever) getAndPersistVatDiffs(keys []common.Hash, hea
 			Address:      VatAddress,
 			BlockHash:    common.HexToHash(header.Hash),
 			BlockHeight:  int(header.BlockNumber),
-			StorageKey:   crypto.Keccak256Hash(k.Bytes()),
+			StorageKey:   k,
 			StorageValue: common.BytesToHash(v),
 		}
 		createDiffErr := retriever.storageRepository.InsertDiff(diff)
