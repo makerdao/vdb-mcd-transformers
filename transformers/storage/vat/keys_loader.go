@@ -101,10 +101,6 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	if wardsErr != nil {
 		return nil, fmt.Errorf("error adding wards keys to vat keys loader: %w", wardsErr)
 	}
-	mappings, daiErr := loader.addDaiKeys(mappings)
-	if daiErr != nil {
-		return nil, fmt.Errorf("error adding dai keys to vat keys loader: %w", daiErr)
-	}
 	mappings, gemErr := loader.addGemKeys(mappings)
 	if gemErr != nil {
 		return nil, fmt.Errorf("error adding gem geys to vat keys loader: %w", gemErr)
@@ -116,10 +112,6 @@ func (loader *keysLoader) LoadMappings() (map[common.Hash]types.ValueMetadata, e
 	mappings, sinErr := loader.addSinKeys(mappings)
 	if sinErr != nil {
 		return nil, fmt.Errorf("error adding sin keys to vat keys loader: %w", sinErr)
-	}
-	mappings, urnErr := loader.addUrnKeys(mappings)
-	if urnErr != nil {
-		return nil, fmt.Errorf("error adding urn keys to vat keys loader: %w", urnErr)
 	}
 	return mappings, nil
 }
