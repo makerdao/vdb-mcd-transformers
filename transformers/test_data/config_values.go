@@ -427,8 +427,8 @@ func MedianWbtcAddress() string  { return checksum(constants.GetContractAddress(
 func MedianWstethAddress() string {
 	return checksum(constants.GetContractAddress("MEDIAN_WSTETH_1_9_8"))
 }
-func MedianYfiAddress() string   { return checksum(constants.GetContractAddress("MEDIAN_YFI_1_1_14")) }
-func MedianZrxAddress() string   { return checksum(constants.GetContractAddress("MEDIAN_ZRX_1_0_8")) }
+func MedianYfiAddress() string { return checksum(constants.GetContractAddress("MEDIAN_YFI_1_1_14")) }
+func MedianZrxAddress() string { return checksum(constants.GetContractAddress("MEDIAN_ZRX_1_0_8")) }
 func OsmAddresses() []string {
 	var addressesResult []string
 	// Does not include OSM_USDC since that's actually just a DSValue contract right now, not an OSM
