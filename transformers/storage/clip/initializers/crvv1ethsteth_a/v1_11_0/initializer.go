@@ -5,5 +5,5 @@ import (
 	"github.com/makerdao/vdb-transformer-utilities/pkg/shared/constants"
 )
 
-var contractAddress = constants.GetContractAddress("MCD_CLIP_GUNIV3DAIUSDC_1_1_9_6")
+var contractAddress = constants.GetContractAddress("MCD_CLIP_CRVV1ETHSTETH_A_1_11_0")
 var StorageTransformerInitializer = initializers.GenerateStorageTransformerInitializer(contractAddress)

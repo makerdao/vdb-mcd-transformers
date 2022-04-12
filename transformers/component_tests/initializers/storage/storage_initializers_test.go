@@ -9,10 +9,10 @@ import (
 	clip_bal_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/bal_a/v1_6_0"
 	clip_bat_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/bat_a/v1_6_0"
 	clip_comp_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/comp_a/v1_6_0"
+	clip_crvv1ethsteth_a_v1_11_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/crvv1ethsteth_a/v1_11_0"
 	clip_eth_a_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_a/v1_5_0"
 	clip_eth_b_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_b/v1_5_0"
 	clip_eth_c_v1_5_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/eth_c/v1_5_0"
-	clip_crvv1ethsteth_a_v1_11_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/crvv1ethsteth_a/v1_11_0"
 	clip_guniv3daiusdc_1_v1_9_6 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/guniv3daiusdc_1/v1_9_6"
 	clip_guniv3daiusdc_2_v1_9_12 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/guniv3daiusdc_2/v1_9_12"
 	clip_knc_a_v1_6_0 "github.com/makerdao/vdb-mcd-transformers/transformers/storage/clip/initializers/knc_a/v1_6_0"
@@ -146,6 +146,13 @@ var _ = Describe("Storage transformer initializers", func() {
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
 
+	It("configures the v1_11_0 clip crvv1ethsteth_a", func() {
+		address := test_data.ClipCrvv1ethstethAV1110Address()
+		transformer := clip_crvv1ethsteth_a_v1_11_0.StorageTransformerInitializer(db)
+
+		Expect(transformer.GetContractAddress().String()).To(Equal(address))
+	})
+
 	It("configures the v1_5_0 clip eth_a", func() {
 		address := test_data.ClipEthAV150Address()
 		transformer := clip_eth_a_v1_5_0.StorageTransformerInitializer(db)
@@ -163,13 +170,6 @@ var _ = Describe("Storage transformer initializers", func() {
 	It("configures the v1_5_0 clip eth_c", func() {
 		address := test_data.ClipEthCV150Address()
 		transformer := clip_eth_c_v1_5_0.StorageTransformerInitializer(db)
-
-		Expect(transformer.GetContractAddress().String()).To(Equal(address))
-	})
-
-	It("configures the v1_11_0 clip crvv1ethsteth_a", func() {
-		address := test_data.ClipCrvv1ethstethAV1110Address()
-		transformer := clip_crvv1ethsteth_a_v1_11_0.StorageTransformerInitializer(db)
 
 		Expect(transformer.GetContractAddress().String()).To(Equal(address))
 	})
