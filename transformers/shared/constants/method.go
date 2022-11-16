@@ -36,7 +36,7 @@ func ClipV150ABI() string {
 		"MCD_CLIP_WBTC_A_1_5_0",
 		"MCD_CLIP_WSTETH_A_1_9_8",
 		"MCD_CLIP_YFI_A_1_5_0",
-		"MCD_CLIP_RETH_A_15_11_22"
+		"MCD_CLIP_RETH_A_15_11_22",
 	})
 }
 func DogABI() string { return constants.GetContractABI("MCD_DOG_1_3_0") }
