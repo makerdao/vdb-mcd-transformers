@@ -477,7 +477,7 @@ func OsmLinkAddress() string    { return checksum(constants.GetContractAddress("
 func OsmLrcAddress() string     { return checksum(constants.GetContractAddress("OSM_LRC")) }
 func OsmManaAddress() string    { return checksum(constants.GetContractAddress("OSM_MANA")) }
 func OsmMaticAddress() string   { return checksum(constants.GetContractAddress("OSM_MATIC")) }
-func OsmRethAddress() string   { return checksum(constants.GetContractAddress("OSM_RETH")) }
+func OsmRethAddress() string    { return checksum(constants.GetContractAddress("OSM_RETH")) }
 func OsmUniAddress() string     { return checksum(constants.GetContractAddress("OSM_UNI")) }
 func OsmUsdtAddress() string    { return checksum(constants.GetContractAddress("OSM_USDT")) }
 func OsmWbtcAddress() string    { return checksum(constants.GetContractAddress("OSM_WBTC")) }
