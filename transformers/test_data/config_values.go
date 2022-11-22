@@ -430,7 +430,7 @@ func MedianLinkAddress() string  { return checksum(constants.GetContractAddress(
 func MedianLrcAddress() string   { return checksum(constants.GetContractAddress("MEDIAN_LRC_1_1_2")) }
 func MedianManaAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_MANA_1_0_9")) }
 func MedianMaticAddress() string { return checksum(constants.GetContractAddress("MEDIAN_MATIC_1_9_4")) }
-func MedianRethAddress() string { return checksum(constants.GetContractAddress("MEDIAN_RETH_15_11_22")) }
+func MedianRethAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_RETH_15_11_22")) }
 func MedianUniAddress() string   { return checksum(constants.GetContractAddress("MEDIAN_UNI_1_2_1")) }
 func MedianUsdtAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_USDT_1_0_4")) }
 func MedianWbtcAddress() string  { return checksum(constants.GetContractAddress("MEDIAN_WBTC_1_0_6")) }
