@@ -37,6 +37,7 @@ func ClipV150ABI() string {
 		"MCD_CLIP_WSTETH_A_1_9_8",
 		"MCD_CLIP_YFI_A_1_5_0",
 		"MCD_CLIP_RETH_A_15_11_22",
+		"MCD_CLIP_GNO_A_12_16_22",
 	})
 }
 func DogABI() string { return constants.GetContractABI("MCD_DOG_1_3_0") }
@@ -122,6 +123,7 @@ func MedianV100ABI() string {
 		"MEDIAN_MANA_1_0_9",
 		"MEDIAN_MATIC_1_9_4",
 		"MEDIAN_RETH_15_11_22",
+		"MEDIAN_GNO_12_16_22",
 		"MEDIAN_USDT_1_0_4",
 		"MEDIAN_WBTC_1_0_6",
 		"MEDIAN_ZRX_1_0_8",
@@ -150,6 +152,7 @@ func OsmABI() string {
 		"OSM_MANA",
 		"OSM_MATIC",
 		"OSM_RETH",
+		"OSM_GNO",
 		"OSM_UNI",
 		"OSM_USDT",
 		"OSM_WBTC",
